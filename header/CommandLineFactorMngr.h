@@ -12,7 +12,10 @@ typedef vector<string> FactorList;
 class CommandLineFactorMngr
 {
 public:
-	void setAddonFactorFileDirectory();
+	//this func may need to rewrite for windows
+	void searchAddonFactorFile();
+	
+	void setAddonFactorFileDirectory(string path);
 	uint32 addonFactorAnalyser();
 private:
 	string mAddonFactorDefineFile
