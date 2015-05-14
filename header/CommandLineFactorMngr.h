@@ -22,8 +22,8 @@ public:
 	uint32 addonFactorAnalyser();
 
 private:
-	string mAddonFactorDefineFile
+	string mAddonFactorDefineFile;
 	FactorList mOriginalFactorList;
-}
+};
 
 #endif //__COMMAND_LINE_FACTOR_MNGR_H__

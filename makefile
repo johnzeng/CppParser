@@ -17,7 +17,7 @@ SOURCES=$(wildcard ./*/*.c ./*/*.cpp)
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 
 $TARGET:$(OBJS) $(myLib)
-	$(CC) -o $(TARGET) $(INCLUDE_FLAGS) $(OTHER_CPP_FLAGS) $(OBJS) $(myLib) main.cpp
+	$(CPPCC) -o $(TARGET) $(INCLUDE_FLAGS) $(OTHER_CPP_FLAGS) $(OBJS) $(myLib) main.cpp
 
 $(myLib):
 	cd $(mylib_PATH) && make
