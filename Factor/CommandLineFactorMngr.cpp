@@ -40,6 +40,7 @@ void CommandLineFactorMngr::setAddonFactorFileDirectory(string path)
 	if(0 == access(path.c_str(), F_OK))
 	{
 		mAddonFactorDefineFile = path;
+		mAddonFactorFileDirectory = JZGetFileDirectory(path.c_str());			
 	}
 }
 

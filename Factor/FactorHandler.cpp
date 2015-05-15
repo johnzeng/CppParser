@@ -3,6 +3,9 @@
 #include "JZFileUtil.h"
 #include "JZLogger.h"
 #include "ErrorCode.h"
+#include <unistd.h>
+#include <fcntl.h>
+
 using namespace std;
 using namespace JZErrorCode;
 
@@ -31,8 +34,11 @@ uint32 CommandLineFactorMngr::handleBarI(string param)
 	string wholeParam = param.substr(2);
 
 	//this call may get problem for some -I,futher test is needed
-	string wholePath = JZGetAbsolutePath(wholeParam.c_str());
-	if ("" == wholeParam) {
+	string wholePath = mAddonFactorFileDirectory + "/./" + wholeParam;
+
+	wholePath = JZGetAbsolutePath(wholePath.c_str());
+
+	if ("" == wholeParam || 0 != access(wholePath.c_str(), F_OK)) {
 		return errNoSuchPath;
 	}
 	JZWRITE_DEBUG("%s", wholePath.c_str());

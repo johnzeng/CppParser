@@ -1,11 +1,12 @@
 mylib_PATH=../mylib
 myLib=$(mylib_PATH)/mylib.a
+PLATFORM_FLAG=-D_LINUX_
 CC=clang
 CPPCC=clang++
 AR=ar
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header
-OTHER_C_FLAGS=-DDEBUG
-OTHER_CPP_FLAGS=-DDEBUG
+OTHER_C_FLAGS=-DDEBUG $(PLATFORM_FLAG)
+OTHER_CPP_FLAGS=-DDEBUG $(PLATFORM_FLAG)
 TARGET=precomile
 
 %.o: %.c
