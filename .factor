@@ -1,0 +1,2 @@
+-DLinux
+-DDebugLevel=4
