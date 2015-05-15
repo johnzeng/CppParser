@@ -9,7 +9,6 @@ using namespace std;
 
 #define DEFAULT_COMMON_LINE_FACTOR_FILE_NAME ".factor"
 
-typedef vector<string> FactorList;
 
 //Currently, I think that -D param can only define a word,no marco function is concerned.
 //BTW, value can be empty, it turns out to be ""
@@ -30,11 +29,14 @@ public:
 	uint32 addonFactorAnalyser();
 
 	uint32 handleBarD(string param);
+	uint32 handleBarI(string param);
 
 private:
 	string 			mAddonFactorDefineFile;
-	FactorList 		mOriginalFactorList;
+	string			mAddonFactorFileDirectory;
+	StringList		mOriginalFactorList;
 	DefineMarcoMap 	mDefMap;
+	StringSet		mHeaderFileSearchPath;
 };
 
 #endif //__COMMAND_LINE_FACTOR_MNGR_H__

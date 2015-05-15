@@ -13,8 +13,6 @@
 using namespace std;
 using namespace JZErrorCode;
 
-
-
 CommandLineFactorMngr::CommandLineFactorMngr()
 {
 	
@@ -33,7 +31,7 @@ void CommandLineFactorMngr::searchAddonFactorFile()
 {
 	string curPath = JZGetCurrentWorkingPath();
 	string addonFilePath = JZTryToSearchFileUntilRoot(curPath.c_str(), DEFAULT_COMMON_LINE_FACTOR_FILE_NAME);
-	mAddonFactorDefineFile = addonFilePath;
+	setAddonFactorFileDirectory(addonFilePath);
 }
 
 
@@ -67,12 +65,21 @@ uint32 CommandLineFactorMngr::addonFactorAnalyser()
 		}
 		
 		JZWRITE_DEBUG("%s",inputLine.c_str());
+		mOriginalFactorList.push_back(inputLine);
 		if (2 < inputLine.size()) {
+			uint32 errorCode = errNoError;
 			if ('-' == inputLine[0] && 'D' == inputLine[1]) {
-				handleBarD(inputLine);
+				errorCode = handleBarD(inputLine);
+			}else if ('-' == inputLine[0] && 'I' == inputLine[1]) {
+				errorCode = handleBarI(inputLine);
+			}
+
+			if (errNoError != errorCode) {
+				return errorCode;
 			}
 		}
 	}while(true);
+
 	return errNoError;
 }
 

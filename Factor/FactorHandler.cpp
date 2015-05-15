@@ -1,5 +1,6 @@
 #include "CommandLineFactorMngr.h"
 #include <string>
+#include "JZFileUtil.h"
 #include "JZLogger.h"
 #include "ErrorCode.h"
 using namespace std;
@@ -22,5 +23,19 @@ uint32 CommandLineFactorMngr::handleBarD(string param)
 		JZWRITE_DEBUG("add define=value : %s = %s", key.c_str(), value.c_str());
 	}
 
+	return errNoError;
+}
+
+uint32 CommandLineFactorMngr::handleBarI(string param)
+{
+	string wholeParam = param.substr(2);
+
+	//this call may get problem for some -I,futher test is needed
+	string wholePath = JZGetAbsolutePath(wholeParam.c_str());
+	if ("" == wholeParam) {
+		return errNoSuchPath;
+	}
+	JZWRITE_DEBUG("%s", wholePath.c_str());
+	mHeaderFileSearchPath.insert(wholePath);
 	return errNoError;
 }

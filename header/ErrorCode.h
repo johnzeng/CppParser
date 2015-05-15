@@ -8,6 +8,7 @@ namespace JZErrorCode
 		errNoError		= 0,
 		errUnknow 		= 1,
 		errOpenFileFail = 2,
+		errNoSuchPath	= 3,
 	};
 };
 
