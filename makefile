@@ -7,7 +7,7 @@ AR=ar
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header
 OTHER_C_FLAGS=-DDEBUG $(PLATFORM_FLAG)
 OTHER_CPP_FLAGS=-DDEBUG $(PLATFORM_FLAG)
-TARGET=precomile
+TARGET=preprocessor
 
 %.o: %.c
 	$(CC) $(OTHER_C_FLAGS) $(INCLUDE_FLAGS) -c $< -o $@

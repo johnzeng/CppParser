@@ -26,6 +26,6 @@ private:
 	StringList EnvIncludePathForC;
 	StringList EnvIncludePathForCPP;
 	StringList EnvIncludePathForOBJC;
-}
+};
 
 #endif  // __INCLUDE_HANDLER_H__

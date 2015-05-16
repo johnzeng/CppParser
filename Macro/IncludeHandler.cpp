@@ -20,12 +20,12 @@ void IncludeHandler::init()
 
 string IncludeHandler::getFullPathForIncludeFile(string fileName)
 {
-
+	return "";
 }
 
 string IncludeHandler::getFileData(string FullPathName)
 {
-
+	return "";
 }
 
 void IncludeHandler::handleEnvIncludePath()
