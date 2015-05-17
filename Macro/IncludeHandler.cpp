@@ -1,4 +1,6 @@
 #include "IncludeHandler.h"
+#include <stdlib.h>
+#include "StringUtil.h"
 
 IncludeHandler::IncludeHandler()
 {
@@ -16,6 +18,10 @@ IncludeHandler* IncludeHandler::getInstance()
 
 void IncludeHandler::init()
 {
+#ifdef _LINUX_
+
+#endif
+	this->handleEnvIncludePath();
 }
 
 string IncludeHandler::getFullPathForIncludeFile(string fileName)
@@ -31,4 +37,27 @@ string IncludeHandler::getFileData(string FullPathName)
 void IncludeHandler::handleEnvIncludePath()
 {
 	//@todo
+	//handle c include path at first
+	char *cIncludePath = NULL;
+	cIncludePath = getenv(C_INC_ENV_PATH);
+	if (NULL != cIncludePath) {
+
+		StringUtil::splitString(cIncludePath, ENV_SEPERATOR, mEnvIncludePathForC);
+
+	}
+	char *cppIncludePath = NULL;
+	cppIncludePath = getenv(CPP_INC_ENV_PATH);
+	if (NULL != cppIncludePath) {
+
+		StringUtil::splitString(cppIncludePath, ENV_SEPERATOR, mEnvIncludePathForCPP);
+
+	}
+
+	char *objCIncludePath = NULL;
+	objCIncludePath = getenv(OBJC_INC_ENV_PATH);
+	if (NULL != objCIncludePath) {
+
+		StringUtil::splitString(objCIncludePath, ENV_SEPERATOR, mEnvIncludePathForOBJC);
+
+	}
 }
