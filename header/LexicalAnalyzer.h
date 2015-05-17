@@ -29,7 +29,7 @@ struct SymbolNode
 	vector<SymbolNode*> child;
 	int blockType;
 	string symbolName;
-	string symbolType;
+	string symbolType;			//For basic define, symbolType will be the keyword, and no defineNode should be set
 	SymbolNode* defineNode;
 };
 
@@ -42,7 +42,9 @@ public:
 
 	void init();
 	void setSourceCodeDir(string path);
-	
+
+	void doAnalyze(string path);
+
 private:
 	StringList mOriginalWords;
 	SymbolNode mRootSymbolNode;		//this node means no symbol,only for root	
