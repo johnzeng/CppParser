@@ -14,6 +14,12 @@ enum SymbolBlockTypeDef
 	eSymBlockIf	= 5,			//if block
 	eSymBlockWhile = 6,			//while block
 	eSymBlockDo = 7,			//do block
+	eSymBlockClass = 8,			//class block
+	eSymBlockNameSpace = 9,		//name space block
+	eSymBlockStruct = 10,		//struct block
+	eSymBlockEnum = 11,			//enum block
+	eSymBlockUnion = 12,		//union block
+	eSymBlockTemplate = 13,		//template block
 }
 
 struct SymbolNode
@@ -38,7 +44,7 @@ public:
 	
 private:
 	StringList mOriginalWords;
-	
+	SymbolNode mRootSymbolNode;		//this node means no symbol,only for root	
 };
 
 #endif /* end of include guard: LEXICALANALYZER_H */

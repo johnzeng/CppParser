@@ -47,5 +47,12 @@ const string C_KEY_WORD_CONTINUE = "continue";
 const string C_KEY_WORD_RETURN = "return";
 const string C_KEY_WORD_DEFAULT = "default";
 
+//cpp key word
+const string CPP_KEY_WORD_CLASS = "class";
+const string CPP_KEY_WORD_NAMESPACE = "namespace";
+const string CPP_KEY_WORD_TEMPLATE = "template";
+const string CPP_KEY_WORD_PUBLIC = "public";
+const string CPP_KEY_WORD_PRIVATE = "private";
+const string CPP_KEY_WORD_PROTECTED = "protected";
 
 #endif // __KEY_WORD_DEFINE_H__
