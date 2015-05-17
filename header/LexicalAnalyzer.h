@@ -7,6 +7,7 @@ using namespace std;
 
 enum SymbolBlockTypeDef
 {
+	eSymBlockRoot = 0,			//root node
 	eSymBlockGolbal = 1,		//golbal symbol
 	eSymBlockNone = 2,			//only surrounded with {}
 	eSymBlockFunc = 3,			//func block
@@ -20,7 +21,7 @@ enum SymbolBlockTypeDef
 	eSymBlockEnum = 11,			//enum block
 	eSymBlockUnion = 12,		//union block
 	eSymBlockTemplate = 13,		//template block
-}
+};
 
 struct SymbolNode
 {
