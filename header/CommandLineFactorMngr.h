@@ -31,6 +31,9 @@ public:
 	uint32 handleBarD(string param);
 	uint32 handleBarI(string param);
 
+	string* getDefine(string src);
+	const StringSet& getHeaderFileSearchPath();
+
 private:
 	string 			mAddonFactorDefineFile;
 	string			mAddonFactorFileDirectory;
