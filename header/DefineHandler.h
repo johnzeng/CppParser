@@ -4,7 +4,8 @@
 #include "JZCommonDefine.h"
 
 #include <map>
-
+#include <string>
+using namespace std;
 //no instance is provide! this class handle one key word a time.
 //DefineMngr is needed
 

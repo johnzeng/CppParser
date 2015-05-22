@@ -13,6 +13,18 @@ const string C_MACRO_WORD_IFDEF = "#ifdef";
 const string C_MACRO_WORD_IFNDEF = "#ifndef";
 const string C_MACRO_WORD_INCLUDE = "#include";
 
+//pragma code
+const string COMPILE_CODE_PRAGMA = "#pragma";
+const string COMPILE_CODE_WARNING = "warning";
+const string COMPILE_CODE_DATA_SEG = "data_seg";
+const string COMPILE_CODE_COMMENT = "comment";
+const string COMPILE_CODE_HDRSTOP = "hdrstop";
+const string COMPILE_CODE_PACKAGE = "package";
+const string COMPILE_CODE_RESOURCE = "resource";
+const string COMPILE_CODE_MESSAGE = "message";
+const string COMPILE_CODE_ONCE = "once";
+const string COMPILE_CODE_DISABLE = "disable";
+
 //data type
 const stirng C_KEY_WORD_INT = "int";
 const stirng C_KEY_WORD_CHAR = "char";
