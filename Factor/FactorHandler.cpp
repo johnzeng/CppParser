@@ -13,7 +13,7 @@ uint32 CommandLineFactorMngr::handleBarD(string param)
 {
 	string wholeParam = param.substr(2);
 	int firstEqual = wholeParam.find_first_of("=");
-	JZWRITE_DEBUG("firequal is : %d", firstEqual);
+	JZWRITE_DEBUG("first equal is : %d", firstEqual);
 
 	if (string::npos == firstEqual) {
 		//no equal is set,only define
