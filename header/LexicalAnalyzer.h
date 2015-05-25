@@ -33,6 +33,13 @@ struct SymbolNode
 	SymbolNode* defineNode;
 };
 
+struct LexicalRecord
+{
+	int line;
+	string word;
+	LexicalRecord* expendList;	//if it is a macro or include mark(anyway, or other expendable keyword) .Otherwise this will be null
+} /* optional variable list */;
+
 class LexicalAnalyzer {
 public:
 	LexicalAnalyzer ();

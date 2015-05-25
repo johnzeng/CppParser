@@ -9,6 +9,7 @@ using namespace std;
 #define COMMENT_FLAG_LINE_COMMENT 2
 #define COMMENT_FLAG_BLOCK_COMMENT 3
 #define COMMENT_FLAG_END 4
+#define COMMENT_FLAG_STR 5
 
 CommentHandler::CommentHandler()
 {
@@ -32,7 +33,33 @@ std::string CommentHandler::eraseComment(const std::string& src)
 	string line;
 	while(false != getline(ioStream, line))
 	{
-		JZWRITE_DEBUG("get line : %s", line.c_str());	
+		JZWRITE_DEBUG("get line : %s", line.c_str());
+		for (int i = 0; i < line.size; i++) {
+			if ('\\' == line[i])
+			{
+				//handle "\" here
+
+			}
+			if('"' == line[i] && (flag == COMMENT_FLAG_NON || flag == COMMENT_FLAG_SRC))
+			{
+				//in src code ,now enter the str mode
+				flag = COMMENT_FLAG_STR;
+				continue;	
+			}
+
+			switch(flag)
+			{
+				case COMMENT_FLAG_NON:
+				{
+					break;	
+				}
+				default:
+				{
+					break;	
+				}
+			}			
+		}
+		
 	}
 	return "";
 }
