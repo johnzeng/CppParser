@@ -4,7 +4,7 @@
 #include "JZFileUtil.h"
 #include <unistd.h>
 #include "CmdInputFactor.h"
-#include "CommentHandler.h"
+#include "LexicalAnalyzer.h"
 
 int main(int argc, char* argv[])
 {
@@ -20,9 +20,9 @@ int main(int argc, char* argv[])
 	string toCompileFile = "";
 	while((toCompileFile = CmdInputFactor::getInstance()->getNextFile() ) != "")
 	{
-		char* fileData = (char*)JZGetFileData(toCompileFile.c_str());
-		JZIF_NULL_RETURN(fileData, 1);
-		CommentHandler::getInstance()->eraseComment(fileData);
-		delete fileData;
+		LexicalAnalyzer* analyzer = new LexicalAnalyzer();
+		analyzer->setSourceCodeDir(toCompileFile);
+		analyzer->doAnalyze();
+		AnalyzerCollector::getInstance()->addAnalyzer(toCompileFile, analyzer)	;
 	}
 }

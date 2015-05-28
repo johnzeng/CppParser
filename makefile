@@ -26,3 +26,6 @@ $TARGET:$(OBJS) $(myLib) makefile
 
 $(myLib):
 	cd $(mylib_PATH) && make
+
+lib:
+	cd $(mylib_PATH) && make

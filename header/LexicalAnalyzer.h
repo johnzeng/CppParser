@@ -33,6 +33,11 @@ struct SymbolNode
 	SymbolNode* defineNode;
 };
 
+/*
+ * Log about LexicalAnalyzer's word
+ * 		word will be "\ " if there is a '\' at the end of input(nothing but empty input is followed)
+ * */
+
 struct LexicalRecord
 {
 	int line;
@@ -45,16 +50,34 @@ public:
 	LexicalAnalyzer ();
 	virtual ~LexicalAnalyzer ();
 
-	static LexicalAnalyzer* getInstance();
-
 	void init();
 	void setSourceCodeDir(string path);
 
-	void doAnalyze(string path);
+	void doAnalyze();
 
 private:
+	void saveAWrodAndCleanIt(int line, string& word);
+	void saveAWord(line, const string word);
+	bool isInterpunction(char input);
+	bool isEmptyInput(char input);
+	bool isEmptyFromIndexTillEnd(const std::string& str, int index);
+
+	std::vector<LexicalRecord> mRecordList;
+	std::string mCodePath;
 	StringList mOriginalWords;
 	SymbolNode mRootSymbolNode;		//this node means no symbol,only for root	
+};
+
+class AnalyzerCollector {
+public:
+	AnalyzerCollector (){};
+	virtual ~AnalyzerCollector ();
+
+	static AnalyzerCollector* getInstance();
+	
+	void addAnalyzer(const std::string& filePath, LexicalAnalyzer* analyzer );
+private:
+	std::map<std::string, LexicalAnalyzer*> mCollectMap;
 };
 
 #endif /* end of include guard: LEXICALANALYZER_H */
