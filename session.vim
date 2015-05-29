@@ -45,9 +45,10 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +58 ~/SimpleCompletor/header/LexicalAnalyzer.h
-badd +226 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+badd +248 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+badd +1 ~/mylib/header/StringUtil.h
 silent! argdel *
-edit ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+edit ~/SimpleCompletor/header/LexicalAnalyzer.h
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -135,7 +136,7 @@ setlocal noshortname
 setlocal nosmartindent
 setlocal softtabstop=0
 setlocal nospell
-setlocal spellcapcheck=
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
 setlocal statusline=
@@ -155,11 +156,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 226 - ((18 * winheight(0) + 18) / 37)
+let s:l = 64 - ((18 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-226
+64
 normal! 0
 wincmd w
 argglobal
@@ -259,12 +260,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 58 - ((0 * winheight(0) + 18) / 37)
+let s:l = 64 - ((18 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-58
-normal! 07l
+64
+normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
 exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)

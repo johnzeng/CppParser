@@ -56,8 +56,8 @@ public:
 	void doAnalyze();
 
 private:
-	void saveAWrodAndCleanIt(int line, string& word);
-	void saveAWord(line, const string word);
+	void saveAWordAndCleanIt(int line, string& word);
+	void saveAWord(int line, const string& word);
 	bool isInterpunction(char input);
 	bool isEmptyInput(char input);
 	bool isEmptyFromIndexTillEnd(const std::string& str, int index);

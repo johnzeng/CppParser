@@ -1,6 +1,7 @@
 #include "LexicalAnalyzer.h"
 #include "JZLogger.h"
 #include "JZFileUtil.h"
+#include "StringUtil.h"
 
 #include <sstream>
 using namespace std;
@@ -52,6 +53,7 @@ void LexicalAnalyzer::doAnalyze()
 	string curWord;
 	
 	bool inStringFlag = false;
+	bool inIncludeFlag = false;
 	bool inCommentBlockFlag = false;
 	bool inCommentLineFlag = false;
 	bool inCharFlag = false;
@@ -86,8 +88,8 @@ void LexicalAnalyzer::doAnalyze()
 					if(line[i] == '*' && line[i+1] == '/')
 					{
 						inCommentBlockFlag = false;	
-						saveAWrodAndCleanIt(lineNum, curWord);
-						saveAWrod(lineNum, "*/");
+						saveAWordAndCleanIt(lineNum, curWord);
+						saveAWord(lineNum, "*/");
 						i++;
 						continue;
 					}
@@ -108,6 +110,18 @@ void LexicalAnalyzer::doAnalyze()
 					goto LexicalAnalyzer_doAnalyze_addcurWord;	
 				}
 			}
+			//handle include input
+			if (true == inIncludeFlag)
+			{
+				if ('>' == line[i])
+				{
+					inIncludeFlag = false;
+					saveAWordAndCleanIt(lineNum, curWord);
+					saveAWord(lineNum, ">");
+					continue;
+				}
+				goto LexicalAnalyzer_doAnalyze_addcurWord;
+			}
 			//handle char input
 			if (inCharFlag == true)
 			{
@@ -122,7 +136,7 @@ void LexicalAnalyzer::doAnalyze()
 				if(line[i] == '\'')
 				{
 					inCharFlag = false;
-					saveAWrodAndCleanIt(lineNum, curWord);
+					saveAWordAndCleanIt(lineNum, curWord);
 					continue;
 				}
 				goto LexicalAnalyzer_doAnalyze_addcurWord;
@@ -135,8 +149,8 @@ void LexicalAnalyzer::doAnalyze()
 				{
 					if (isEmptyFromIndexTillEnd(line, i))
 					{
-						saveAWrodAndCleanIt(lineNum, curWord);
-						saveAWrod(lineNum, "\ ");
+						saveAWordAndCleanIt(lineNum, curWord);
+						saveAWord(lineNum, "\\ ");
 						backSlantEndFlag = true;
 						break;
 					}
@@ -159,8 +173,10 @@ void LexicalAnalyzer::doAnalyze()
 				}
 				else if(line[i] == '\"')
 				{
-					saveAWrod(lineNum, "\"");		
+					saveAWordAndCleanIt(lineNum, curWord);
+					saveAWord(lineNum, "\"");
 					inStringFlag = false;
+					continue;
 				}
 				goto LexicalAnalyzer_doAnalyze_addcurWord;
 			}
@@ -168,27 +184,33 @@ void LexicalAnalyzer::doAnalyze()
 			//handle inter punction
 			if(isInterpunction(line[i]))
 			{
-				saveAWrodAndCleanIt(lineNum, curWord);
+				saveAWordAndCleanIt(lineNum, curWord);
 				if(i + 1 < line.size())
 				{
 					JZWRITE_DEBUG("test double length interpunction");
 					if (line[i] == '-' && line[i+1] == '>')
 					{
-						saveAWrod(lineNum, "->");
+						saveAWord(lineNum, "->");
 						i++;
 						continue;
 					}
 					else if(line[i] == ':' && line[i+1] == ':')
 					{
-						saveAWrod(lineNum, "::");
+						saveAWord(lineNum, "::");
 						i++;
 						continue;
 					}
 					else if(line[i] == '/' && line[i+1] == '/')
 					{
-						saveAWrod(lineNum, "//");
+						saveAWord(lineNum, "//");
 						i++;
 						inCommentLineFlag = true;
+						continue;
+					}
+					else if ('#' == line[i] && '#' == line[i+1])
+					{
+						saveAWord(lineNum, "##");
+						i++;
 						continue;
 					}
 					//add other doule length inter punction
@@ -198,13 +220,30 @@ void LexicalAnalyzer::doAnalyze()
 				if (line[i] == '"')
 				{
 					inStringFlag = true;
-					saveAWrod(lineNum, "\"");
+					saveAWord(lineNum, "\"");
 					continue;
 				}
 				else if(line[i] == '\'')
 				{
-					saveAWrod(lineNum, "'");	
+					saveAWord(lineNum, "'");	
 					inCharFlag = true;
+					continue;
+				}
+				else if (line[i] == '<')
+				{
+					saveAWord(lineNum, "<");
+					inIncludeFlag = true;
+					continue;
+				}
+				else if(!isEmptyInput(line[i]))
+				{
+					curWord += line[i];
+					saveAWordAndCleanIt(lineNum, curWord);
+					continue;
+				}
+				else
+				{
+					//empty input
 					continue;
 				}
 
@@ -214,8 +253,8 @@ void LexicalAnalyzer::doAnalyze()
 				if (isEmptyFromIndexTillEnd(line, i))
 				{
 					JZWRITE_DEBUG("this is a back slant ,now handle it");
-					saveAWrodAndCleanIt(lineNum, curWord);
-					saveAWrod(lineNum, "\ ");
+					saveAWordAndCleanIt(lineNum, curWord);
+					saveAWord(lineNum, "\\ ");
 					continue;	
 				}
 				else
@@ -230,9 +269,22 @@ LexicalAnalyzer_doAnalyze_addcurWord:
 		if ("" != curWord)
 		{	
 			JZWRITE_DEBUG("save a word at the end of line");
-			saveAWrodAndCleanIt(lineNum, curWord);
+			saveAWordAndCleanIt(lineNum, curWord);
 		}
 	}
+
+#ifdef DEBUG
+	JZWRITE_DEBUG("end of analyze , now print words");
+	string outPut = "";
+	auto it = mRecordList.begin();	
+	for(; it != mRecordList.end() ;it++)
+	{
+		outPut += "At line : ";
+		outPut += StringUtil::tostr(it->line);
+		outPut += "\nWord : --" + it->word + "--\n";
+	}
+	JZWRITE_DEBUG("now write the output : \n%s", outPut.c_str());
+#endif
 }
 
 bool LexicalAnalyzer::isEmptyInput(char input)
@@ -256,7 +308,7 @@ bool LexicalAnalyzer::isEmptyInput(char input)
 bool LexicalAnalyzer::isEmptyFromIndexTillEnd(const std::string& str, int index)
 {
 	//@todo
-	for (int i = 0; i < str.size(); i++) {
+	for (int i = index + 1; i < str.size(); i++) {
 		if(false == isEmptyInput(str[i]))
 		{
 			return false;	
@@ -300,6 +352,7 @@ bool LexicalAnalyzer::isInterpunction(char input)
 		case '?':
 		case '%':
 		case '=':
+		case '#':
 		{
 			return true;
 			break;	
@@ -312,17 +365,20 @@ bool LexicalAnalyzer::isInterpunction(char input)
 	}
 	return false;
 }
-void LexicalAnalyzer::saveAWrodAndCleanIt(int line, string& word)
+void LexicalAnalyzer::saveAWordAndCleanIt(int line, string& word)
 {
 	saveAWord(line, word);
 	word = "";
 }
-void LexicalRecord::saveAWord(line, const string word)
+void LexicalAnalyzer::saveAWord(int line, const string& word)
 {
+	if ("" == word)
+	{
+		return;
+	}
 	LexicalRecord record;
-	record.line = 0;
-	record.word =word 
-	expendList = NULL;
+	record.line = line;
+	record.word = word ;
 	mRecordList.push_back(record);
 
 }
