@@ -94,6 +94,7 @@ void LexicalAnalyzer::doAnalyze()
 						continue;
 					}
 				}
+				goto LexicalAnalyzer_doAnalyze_addcurWord;
 			}
 
 			//handle comment line
@@ -205,6 +206,13 @@ void LexicalAnalyzer::doAnalyze()
 						saveAWord(lineNum, "//");
 						i++;
 						inCommentLineFlag = true;
+						continue;
+					}
+					else if ('/' == line[i] && '*' == line[i + 1])
+					{
+						saveAWord(lineNum, "/*");
+						i++;
+						inCommentBlockFlag = true;
 						continue;
 					}
 					else if ('#' == line[i] && '#' == line[i+1])
