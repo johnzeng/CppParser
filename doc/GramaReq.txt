@@ -1,13 +1,47 @@
 本文档罗列语法规则
 规则定义如下:
 1、符号映射表:
-	() -- MIN_BRACKET_BEIN MIN_BRACKET_END
-	[] -- MID_BRACKET_BEGIN MID_BRACKET_END
-	{} -- BIG_BRACKET_BEGIN BIG_BRACKET_END
-	<> -- SHRP_BACKET_BEGIN SHARP_BACKET_END
-	.	-- OPERATOR is to be descripe in detail.need more info
-	# -- SHARP
-2、语法描述符号
-	[] -- 可选模块。
-	() -- 出错可选模块
+	c原文 	-- 语法描述文字
 
+	() 		-- MIN_BRACKET_BEIN MIN_BRACKET_END
+	[] 		-- MID_BRACKET_BEGIN MID_BRACKET_END
+	{} 		-- BIG_BRACKET_BEGIN BIG_BRACKET_END
+	<> 		-- SHRP_BACKET_BEGIN SHARP_BACKET_END
+	# 		-- SHARP
+	;		-- END_OF_INPUT
+	/		-- SLANT
+	\		-- BACK_SLANT
+	\t,\b	-- BLANK_INPUT
+	"		-- DOULBE_QUETS
+	'		-- QUETS
+	blah.	-- OPERATOR is to be descripe in detail.need more info
+
+2、语法描述符号
+	n[] 		-- 可选模块,n表示可以重复重现，若为常亮，表示职能重复出现常量定义的次数，若为n，表示允许出现无数次。
+	() 			-- 出错可选模块
+	{}			-- 强制声明
+		sample :
+		{in same line} 	一行某处开始，直到该行结束的内容
+		{in next line} 	in same line的结束，然后接下来的内容出现在下一行
+		{end of line}	这一行结束，后面没有输入
+	SYMBOL 		-- 一个符号，可以是任何由英文，数字，下划线组成的东西。仅限着三样
+	<symbol> 	-- symbol 为一个固定符号，必须是该符号
+	$symbol		-- symbol 为前面已经声明的一个定义
+
+//规则定义结束
+
+语法定义
+类别一：
+通用定义
+LineSererator : {in same line}n[SYMBOL] [BACK_SLANT]n[BLANK_INPUT] {in next line}n[SYMBOL]{end of line}
+
+类别二：
+注释定义
+LineComment : SLANT SLANT n[$LineSererator]
+BlockComment : symbol</*> n[SYMBOL] symbol<*/>
+
+类别三：
+宏定义
+DefineSymbol : symbol<#define> SYMBOL n[$LineSererator]
+DefineFunc : symbol<#define> SYMBOL MIN_BRACKET_BEIN [SYMBOL n[symbol<,>SYMBOL]] MIN_BRACKET_END n[$LineSererator]
+DefineTest : symbol<#ifdef> SYMBOL n[BLANK_INPUT] {end of line}
