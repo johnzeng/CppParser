@@ -10,6 +10,9 @@
  * commetn block
  *	//comment line in comment block
  * */
+
+#define MARROC_HELLO "a"
+
 int main()
 {
 	printf("hello world"

@@ -222,6 +222,11 @@ void LexicalAnalyzer::doAnalyze()
 						continue;
 					}
 					//add other doule length inter punction
+					//need a function to tell diff....otherwise I will die..
+					//todo: == >= <= !=
+					//		<< >> ++ --
+					//		%= += -= *= /=
+					//
 				}
 
 				//any way check other interpunction

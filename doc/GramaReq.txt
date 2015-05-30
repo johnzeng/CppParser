@@ -1,0 +1,13 @@
+本文档罗列语法规则
+规则定义如下:
+1、符号映射表:
+	() -- MIN_BRACKET_BEIN MIN_BRACKET_END
+	[] -- MID_BRACKET_BEGIN MID_BRACKET_END
+	{} -- BIG_BRACKET_BEGIN BIG_BRACKET_END
+	<> -- SHRP_BACKET_BEGIN SHARP_BACKET_END
+	.	-- OPERATOR is to be descripe in detail.need more info
+	# -- SHARP
+2、语法描述符号
+	[] -- 可选模块。
+	() -- 出错可选模块
+

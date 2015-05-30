@@ -45,8 +45,10 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +74 ~/SimpleCompletor/header/LexicalAnalyzer.h
-badd +248 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+badd +277 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 badd +1 ~/mylib/header/StringUtil.h
+badd +6 ~/mylib/header/JZMarcoFunc.h
+badd +73 ~/mylib/header/JZLogger.h
 silent! argdel *
 edit ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 set splitbelow splitright
@@ -58,8 +60,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
-exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
+exe 'vert 1resize ' . ((&columns * 40 + 79) / 158)
+exe 'vert 2resize ' . ((&columns * 117 + 79) / 158)
 argglobal
 setlocal noautoindent
 setlocal nobinary
@@ -156,11 +158,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 215 - ((32 * winheight(0) + 18) / 37)
+let s:l = 217 - ((23 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-215
+217
 normal! 014l
 wincmd w
 argglobal
@@ -260,15 +262,16 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 64 - ((18 * winheight(0) + 18) / 37)
+let s:l = 74 - ((27 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-64
+74
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
-exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
+2wincmd w
+exe 'vert 1resize ' . ((&columns * 40 + 79) / 158)
+exe 'vert 2resize ' . ((&columns * 117 + 79) / 158)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
