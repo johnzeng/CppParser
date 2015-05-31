@@ -6,7 +6,7 @@
 	() 		-- MIN_BRACKET_BEIN MIN_BRACKET_END
 	[] 		-- MID_BRACKET_BEGIN MID_BRACKET_END
 	{} 		-- BIG_BRACKET_BEGIN BIG_BRACKET_END
-	<> 		-- SHRP_BACKET_BEGIN SHARP_BACKET_END
+	<> 		-- SHARP_BACKET_BEGIN SHARP_BACKET_END
 	# 		-- SHARP
 	;		-- END_OF_INPUT
 	/		-- SLANT
@@ -43,5 +43,33 @@ BlockComment : symbol</*> n[SYMBOL] symbol<*/>
 类别三：
 宏定义
 DefineSymbol : symbol<#define> SYMBOL n[$LineSererator]
+
 DefineFunc : symbol<#define> SYMBOL MIN_BRACKET_BEIN [SYMBOL n[symbol<,>SYMBOL]] MIN_BRACKET_END n[$LineSererator]
-DefineTest : symbol<#ifdef> SYMBOL n[BLANK_INPUT] {end of line}
+
+IfDefine: 
+	symbol<#ifdef> SYMBOL n[BLANK_INPUT]
+	{in next line}n[SYMBOL]
+	[{in next line}symbol<#else> n[BLANK_INPUT]
+	{in next line}nBLANK_INPUT]
+	{in next line}symbol<#endif>n[BLANK_INPUT]{end of line}
+
+IfMarco:
+	symbol<#if> SYMBOL n[BLANK_INPUT]
+	[{in next line}n[SYMBOL]]
+	n[{in next line}symbol<#elif> n[BLANK_INPUT]
+	[{in next line} n[SYMBOL]]]
+	[{in next line}symbol<#else> n[BLANK_INPUT]
+	[{in next line}n[SYMBOL]]]
+	{in next line}symbol<#endif>n[BLANK_INPUT]{end of line}
+
+//Defined is a opertor, which only use in #if marco. 
+//Addon: it's ok if there is no MIN_BRACKET surrounded.
+DefinedOperate : symbol<defined> [MIN_BRACKET_BEIN] SYM [MIN_BRACKET_END]
+
+IncludeA: symbol<#include>SHARP_BACKET_BEGIN SYMBOL SHARP_BACKET_END
+IncludeB: symbol<#include>DOULBE_QUETS SYMBOL DOULBE_QUETS
+
+//need more further info
+Pragma: symbol<#pragma>nSYMBOL {end of line}
+
+
