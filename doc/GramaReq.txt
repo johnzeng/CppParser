@@ -72,4 +72,21 @@ IncludeB: symbol<#include>DOULBE_QUETS SYMBOL DOULBE_QUETS
 //need more further info
 Pragma: symbol<#pragma>nSYMBOL {end of line}
 
+类别四:
+定义类型
 
+//I thing there is more work to do ....
+struct
+typedf
+class
+TypeSymbol
+enum
+union
+
+
+
+
+
+
+
+//end of gram define
