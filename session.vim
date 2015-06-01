@@ -21,6 +21,7 @@ snoremap <Right> a
 snoremap <BS> b<BS>
 snoremap <silent> <S-Tab> i<Right>=BackwardsSnippet()
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
+nmap <F2> :mksession!
 inoremap <silent> 	 =TriggerSnippet()
 inoremap <silent> 	 =ShowAvailableSnips()
 let &cpo=s:cpo_save
@@ -44,13 +45,13 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +74 ~/SimpleCompletor/header/LexicalAnalyzer.h
-badd +277 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
-badd +1 ~/mylib/header/StringUtil.h
+badd +1 ~/SimpleCompletor/header/LexicalAnalyzer.h
+badd +108 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+badd +15 ~/mylib/header/StringUtil.h
 badd +6 ~/mylib/header/JZMarcoFunc.h
-badd +73 ~/mylib/header/JZLogger.h
+badd +79 ~/mylib/header/JZLogger.h
 silent! argdel *
-edit ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+edit ~/SimpleCompletor/header/LexicalAnalyzer.h
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -60,8 +61,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 40 + 79) / 158)
-exe 'vert 2resize ' . ((&columns * 117 + 79) / 158)
+exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
+exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
 argglobal
 setlocal noautoindent
 setlocal nobinary
@@ -138,7 +139,7 @@ setlocal noshortname
 setlocal nosmartindent
 setlocal softtabstop=0
 setlocal nospell
-setlocal spellcapcheck=
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
 setlocal spellfile=
 setlocal spelllang=en
 setlocal statusline=
@@ -158,11 +159,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 217 - ((23 * winheight(0) + 18) / 37)
+let s:l = 66 - ((25 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-217
+66
 normal! 014l
 wincmd w
 argglobal
@@ -262,16 +263,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 74 - ((27 * winheight(0) + 18) / 37)
+let s:l = 66 - ((25 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-74
-normal! 0
+66
+normal! 014l
 wincmd w
-2wincmd w
-exe 'vert 1resize ' . ((&columns * 40 + 79) / 158)
-exe 'vert 2resize ' . ((&columns * 117 + 79) / 158)
+exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
+exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

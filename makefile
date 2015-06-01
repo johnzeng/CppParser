@@ -29,3 +29,6 @@ $(myLib):
 
 lib:
 	cd $(mylib_PATH) && make
+clean:
+	rm $(TARGET)
+	rm $(OBJS)

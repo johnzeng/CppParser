@@ -15,6 +15,11 @@
 
 int main()
 {
+	int a = 1, b = 3;
+	a <<= 3;
+	a |= 4;
+	a && b;
+	a = b;
 	printf("hello world"
 			"\n");
 	return 0;

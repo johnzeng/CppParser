@@ -61,6 +61,9 @@ private:
 	bool isInterpunction(char input);
 	bool isEmptyInput(char input);
 	bool isEmptyFromIndexTillEnd(const std::string& str, int index);
+	bool isDoubleableInterpunction(char input); //like ++,--,<<,>> 's begin
+	bool isSeflEqualInterpunction(char input); // like +=, -= 's begin
+	bool isComparorEqualInterpunction(char input); // like !=, >= 's begin
 
 	std::vector<LexicalRecord> mRecordList;
 	std::string mCodePath;

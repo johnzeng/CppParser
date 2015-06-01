@@ -186,23 +186,32 @@ void LexicalAnalyzer::doAnalyze()
 			if(isInterpunction(line[i]))
 			{
 				saveAWordAndCleanIt(lineNum, curWord);
+				if(i + 2 < line.size())
+				{
+					JZWRITE_DEBUG("test triple length interpunction");
+					if(line[i] == line[i+1] && line[i+2] == '=')
+					{
+						if(line[i] == '>' || line[i] == '<')
+						{
+						string toSaveWord = "";
+						toSaveWord += line[i];
+						toSaveWord += line[i+1];
+						toSaveWord += line[i+2];
+						saveAWord(lineNum, toSaveWord);
+						i++;i++;
+						continue;	
+						}
+					}	
+				}
 				if(i + 1 < line.size())
 				{
 					JZWRITE_DEBUG("test double length interpunction");
-					if (line[i] == '-' && line[i+1] == '>')
+					if(line[i] == '/' && line[i+1] == '/')
 					{
-						saveAWord(lineNum, "->");
-						i++;
-						continue;
-					}
-					else if(line[i] == ':' && line[i+1] == ':')
-					{
-						saveAWord(lineNum, "::");
-						i++;
-						continue;
-					}
-					else if(line[i] == '/' && line[i+1] == '/')
-					{
+						//actually ,if you don't handle '//' here,
+						//it will jump into isDoubleableInterpunction
+						//but that can not make inCommentLineFlag true.
+						//so I handle it here
 						saveAWord(lineNum, "//");
 						i++;
 						inCommentLineFlag = true;
@@ -215,18 +224,21 @@ void LexicalAnalyzer::doAnalyze()
 						inCommentBlockFlag = true;
 						continue;
 					}
-					else if ('#' == line[i] && '#' == line[i+1])
+					else if(
+						(true == isDoubleableInterpunction(line[i]) && line[i] == line[i+1])
+						||(true == isSeflEqualInterpunction(line[i]) && line[i+1] == '=')
+						||(true == isComparorEqualInterpunction(line[i]) && line[i+1] == '=')
+						||(line[i] == '-' && line[i+1] == '>')
+						)
 					{
-						saveAWord(lineNum, "##");
+						string toSaveWord = "";
+						toSaveWord += line[i];
+						toSaveWord += line[i+1];
+						saveAWord(lineNum, toSaveWord);
 						i++;
 						continue;
 					}
-					//add other doule length inter punction
-					//need a function to tell diff....otherwise I will die..
-					//todo: == >= <= !=
-					//		<< >> ++ --
-					//		%= += -= *= /=
-					//
+
 				}
 
 				//any way check other interpunction
@@ -288,15 +300,15 @@ LexicalAnalyzer_doAnalyze_addcurWord:
 
 #ifdef DEBUG
 	JZWRITE_DEBUG("end of analyze , now print words");
-	string outPut = "";
 	auto it = mRecordList.begin();	
 	for(; it != mRecordList.end() ;it++)
 	{
+		string outPut = "";
 		outPut += "At line : ";
 		outPut += StringUtil::tostr(it->line);
 		outPut += "\nWord : --" + it->word + "--\n";
+		JZWRITE_DEBUG(outPut.c_str());
 	}
-	JZWRITE_DEBUG("now write the output : \n%s", outPut.c_str());
 #endif
 }
 
@@ -335,6 +347,18 @@ bool LexicalAnalyzer::isInterpunction(char input)
 {
 	//@todo
 	if (true == isEmptyInput(input))
+	{
+		return true;
+	}
+	if (true == isSeflEqualInterpunction(input))
+	{
+		return true;
+	}
+	if (true == isDoubleableInterpunction(input))
+	{
+		return true;
+	}
+	if (true == isComparorEqualInterpunction(input))
 	{
 		return true;
 	}
@@ -378,6 +402,79 @@ bool LexicalAnalyzer::isInterpunction(char input)
 	}
 	return false;
 }
+bool LexicalAnalyzer::isComparorEqualInterpunction(char input)
+{
+	switch(input)
+	{
+		case '!':
+		case '>':
+		case '<':
+		case '=':
+		{
+			return true;
+			break;	
+		}	
+		default:
+		{
+			return false;
+			break;	
+		}
+	}
+	return false;
+}
+
+bool LexicalAnalyzer::isDoubleableInterpunction(char input)
+{
+	switch(input)
+	{
+		case '+':
+		case '-':
+		case '>':
+		case '<':
+		case '#':
+		case '|':
+		case '&':
+		case '/':
+		case ':':
+		case '=':
+		{
+			return true;
+			break;	
+		}	
+		default:
+		{
+			return false;
+			break;	
+		}
+	}
+	return false;
+}
+
+bool LexicalAnalyzer::isSeflEqualInterpunction(char input)
+{
+	switch(input)
+	{
+		case '+':
+		case '-':
+		case '*':
+		case '/':
+		case '%':
+		case '|':
+		case '&':
+		case '^':
+		{
+			return true;
+			break;	
+		}	
+		default:
+		{
+			return false;
+			break;	
+		}
+	}
+	return false;
+}
+
 void LexicalAnalyzer::saveAWordAndCleanIt(int line, string& word)
 {
 	saveAWord(line, word);
