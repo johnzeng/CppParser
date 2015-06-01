@@ -27,7 +27,6 @@ void LexicalAnalyzer::init()
 
 void LexicalAnalyzer::setSourceCodeDir(string path)
 {
-	//@todo
 	if(false == JZFileAccessable(path.c_str()))
 	{
 		JZWRITE_DEBUG("can not access file path");

@@ -4,7 +4,13 @@ PLATFORM_FLAG=-D_LINUX_
 CC=clang
 CPPCC=clang++
 AR=ar
+
+debug_var=1
+ifeq ($(debug_var),1)
 RELEASE_FLAG=-DDEBUG -g
+else
+DEBUG_FLAG=-DRELEASE
+endif
 
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header
 OTHER_C_FLAGS=
@@ -29,6 +35,9 @@ $(myLib):
 
 lib:
 	cd $(mylib_PATH) && make
+release:clean makefile
+	make debug_var=0	
+
 clean:
 	rm $(TARGET)
 	rm $(OBJS)

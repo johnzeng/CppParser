@@ -45,13 +45,15 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 ~/SimpleCompletor/header/LexicalAnalyzer.h
+badd +46 ~/SimpleCompletor/header/LexicalAnalyzer.h
 badd +108 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 badd +15 ~/mylib/header/StringUtil.h
 badd +6 ~/mylib/header/JZMarcoFunc.h
 badd +79 ~/mylib/header/JZLogger.h
+badd +1 ~/SimpleCompletor/header/GrammarAnalyzer.h
+badd +0 ~/SimpleCompletor/Core/GrammarAnalyzer.cpp
 silent! argdel *
-edit ~/SimpleCompletor/header/LexicalAnalyzer.h
+edit ~/SimpleCompletor/Core/GrammarAnalyzer.cpp
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -139,7 +141,7 @@ setlocal noshortname
 setlocal nosmartindent
 setlocal softtabstop=0
 setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellcapcheck=
 setlocal spellfile=
 setlocal spelllang=en
 setlocal statusline=
@@ -159,12 +161,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 66 - ((25 * winheight(0) + 18) / 37)
+let s:l = 3 - ((2 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-66
-normal! 014l
+3
+normal! 05l
 wincmd w
 argglobal
 edit ~/SimpleCompletor/header/LexicalAnalyzer.h
@@ -263,12 +265,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 66 - ((25 * winheight(0) + 18) / 37)
+let s:l = 48 - ((0 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-66
-normal! 014l
+48
+normal! 016l
 wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
 exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
