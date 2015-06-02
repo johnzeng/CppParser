@@ -31,8 +31,8 @@ public:
 	uint32 handleBarD(string param);
 	uint32 handleBarI(string param);
 
-	string* getDefine(string src);
 	const StringSet& getHeaderFileSearchPath();
+	const DefineMarcoMap& getDefineMap();
 
 private:
 	string 			mAddonFactorDefineFile;

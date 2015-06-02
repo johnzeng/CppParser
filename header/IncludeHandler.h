@@ -10,6 +10,14 @@ using namespace std;
 #define CPP_INC_ENV_PATH "CPLUS_INCLUDE_PATH"
 #define OBJC_INC_ENV_PATH "OBJC_INCLUDE_PATH"
 
+//there is a very large problem that
+//I can not get the include search path in my engine...
+//I can just try now...
+const string gHeadSearchPath[] = {
+	"/usr/include/",
+	"/usr/local/include/"
+};
+
 class IncludeHandler
 {
 public:
@@ -20,11 +28,14 @@ public:
 	void init();
 
 	string getFullPathForIncludeFile(string fileName);
-	string getFileData(string FullPathName);
+
+	void addSystemHeaderSearchPath(string path);
+	void addUserHeaderSearchPath(string path);
 
 private:
 	void handleEnvIncludePath();
 
+	StringList mUserIncludePath;
 	StringList mSystemIncludePath;
 	StringList mEnvIncludePathForC;
 	StringList mEnvIncludePathForCPP;

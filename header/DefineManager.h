@@ -1,6 +1,7 @@
 #ifndef DEFINEMANAGER_H
 #define DEFINEMANAGER_H
 
+#include "JZCommonDefine.h"
 #include <map>
 #include <string>
 using namespace std;
@@ -19,14 +20,16 @@ public:
 
 	//if defined ,return defined word, maybe ""
 	//if not defined ,retrun NULL
-	string* findDefineMap(const string& srcDefine);
+	const string* findDefineMap(const string& srcDefine);
 
 	bool isDefined(const string& src);
 
-	void addDefineMap(const string& src, const string& define);
+	//will return error code
+	int addDefineMap(const string& src, const string& define);
 
 private:
-	std::map<string, string> srcDefineMap;		
+	std::map<string, string> mSrcDefineMap;
+	StringSet mCanceledDefine;
 };
 
 #endif /* end of include guard: DEFINEMANAGER_H */

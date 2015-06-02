@@ -15,7 +15,9 @@ public:
 	virtual ~DefineHandler ();
 
 	std::string analyzeDefine(string srcDef);
+
 private:
+
 	StringSet searchedSet;
 };
 

@@ -72,6 +72,10 @@ IncludeB: symbol<#include>DOULBE_QUETS SYMBOL DOULBE_QUETS
 //need more further info
 Pragma: symbol<#pragma>nSYMBOL {end of line}
 
+
+Log 2015/06/01
+	先把上面的宏定义解析做了。。。
+
 类别四:
 定义类型
 

@@ -84,3 +84,12 @@ uint32 CommandLineFactorMngr::addonFactorAnalyser()
 	return errNoError;
 }
 
+const StringSet& CommandLineFactorMngr::getHeaderFileSearchPath()
+{
+	return mHeaderFileSearchPath;
+}
+
+const DefineMarcoMap& CommandLineFactorMngr::getDefineMap()
+{
+	return mDefMap;
+}

@@ -1,6 +1,8 @@
 #include "IncludeHandler.h"
 #include <stdlib.h>
 #include "StringUtil.h"
+#include "JZLogger.h"
+#include "JZFileUtil.h"
 
 IncludeHandler::IncludeHandler()
 {
@@ -18,19 +20,70 @@ IncludeHandler* IncludeHandler::getInstance()
 
 void IncludeHandler::init()
 {
-#ifdef _LINUX_
-
-#endif
+	int headerSearchPathListSize = sizeof(gHeadSearchPath)/sizeof(string);
+	JZWRITE_DEBUG("path list size is : %d", headerSearchPathListSize);
+	
+	for(int i = 0 ; i < headerSearchPathListSize; i ++)
+	{
+		mSystemIncludePath.push_back(gHeadSearchPath[i]);	
+	}
 	this->handleEnvIncludePath();
 }
 
+//some operator will make some search path unuseable
 string IncludeHandler::getFullPathForIncludeFile(string fileName)
 {
-	return "";
-}
+	//search user path at first
+	auto userPathIt = mUserIncludePath.begin();
+	for( ; userPathIt != mUserIncludePath.end();  userPathIt++)
+	{
+		string fullPath = (*userPathIt) + "/" + fileName;
+		if (true == JZFileAccessable(fullPath.c_str()))
+		{
+			return fullPath;
+		}
+	}
 
-string IncludeHandler::getFileData(string FullPathName)
-{
+	//search for evn set path
+	auto cenvPathIt = mEnvIncludePathForC.begin();
+	for( ; cenvPathIt != mEnvIncludePathForC.end() ;cenvPathIt++ )
+	{
+		string fullPath = (*cenvPathIt) + "/" + fileName;
+		if (true == JZFileAccessable(fullPath.c_str()))
+		{
+			return fullPath;
+		}
+	}
+
+	auto cppenvPathIt = mEnvIncludePathForCPP.begin();
+	for( ; cppenvPathIt != mEnvIncludePathForCPP.end() ;cppenvPathIt++ )
+	{
+		string fullPath = (*cppenvPathIt) + "/" + fileName;
+		if (true == JZFileAccessable(fullPath.c_str()))
+		{
+			return fullPath;
+		}
+	}
+
+	auto objcenvPathIt = mEnvIncludePathForOBJC.begin();
+	for( ; objcenvPathIt != mEnvIncludePathForOBJC.end() ;objcenvPathIt++ )
+	{
+		string fullPath = (*objcenvPathIt) + "/" + fileName;
+		if (true == JZFileAccessable(fullPath.c_str()))
+		{
+			return fullPath;
+		}
+	}
+
+	auto sysPathIt = mSystemIncludePath.begin();
+	for(; sysPathIt != mSystemIncludePath.end(); sysPathIt++)
+	{
+		string fullPath = (*sysPathIt) + "/" + fileName;
+		if (true == JZFileAccessable(fullPath.c_str()))
+		{
+			return fullPath;
+		}
+	}
 	return "";
 }
 
@@ -60,4 +113,22 @@ void IncludeHandler::handleEnvIncludePath()
 		StringUtil::splitString(objCIncludePath, ENV_SEPERATOR, mEnvIncludePathForOBJC);
 
 	}
+}
+
+void IncludeHandler::addSystemHeaderSearchPath(string path)
+{
+	if ("" == path)
+	{
+		return;
+	}
+	mSystemIncludePath.push_back(path);
+}
+
+void IncludeHandler::addUserHeaderSearchPath(string path)
+{
+	if ("" == path)
+	{
+		return;
+	}
+	mUserIncludePath.push_back(path);
 }

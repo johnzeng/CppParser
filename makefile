@@ -14,7 +14,7 @@ endif
 
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header
 OTHER_C_FLAGS=
-OTHER_CPP_FLAGS= 
+OTHER_CPP_FLAGS=--std=c++0x
 OTHER_FLAGS=${RELEASE_FLAG} $(PLATFORM_FLAG)
 
 TARGET=preprocessor

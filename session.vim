@@ -5,11 +5,14 @@ set cpo&vim
 inoremap <silent> <S-Tab> =BackwardsSnippet()
 nmap  :NERDTree
 snoremap <silent> 	 i<Right>=TriggerSnippet()
+nmap <silent>  :grep -IR '=expand("<cword>")' ./*
 nmap  :LeaderfMru
 snoremap  b<BS>
 snoremap % b<BS>%
 snoremap ' b<BS>'
 snoremap U b<BS>U
+nmap \k :bp
+nmap \j :bn
 snoremap \ b<BS>\
 nnoremap <silent> \b :LeaderfBuffer
 nnoremap <silent> \f :Leaderf
@@ -45,15 +48,26 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +46 ~/SimpleCompletor/header/LexicalAnalyzer.h
+badd +59 ~/SimpleCompletor/header/LexicalAnalyzer.h
 badd +108 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 badd +15 ~/mylib/header/StringUtil.h
 badd +6 ~/mylib/header/JZMarcoFunc.h
 badd +79 ~/mylib/header/JZLogger.h
-badd +1 ~/SimpleCompletor/header/GrammarAnalyzer.h
-badd +0 ~/SimpleCompletor/Core/GrammarAnalyzer.cpp
+badd +3 ~/SimpleCompletor/header/GrammarAnalyzer.h
+badd +3 ~/SimpleCompletor/Core/GrammarAnalyzer.cpp
+badd +31 ~/SimpleCompletor/header/IncludeHandler.h
+badd +1 ~/SimpleCompletor/Macro/IncludeHandler.cpp
+badd +41 ~/SimpleCompletor/main.cpp
+badd +45 ~/SimpleCompletor/header/CommandLineFactorMngr.h
+badd +24 ~/SimpleCompletor/header/CmdInputFactor.h
+badd +84 ~/SimpleCompletor/Factor/CommandLineFactorMngr.cpp
+badd +1 ~/mylib/header/JZFileUtil.h
+badd +20 ~/SimpleCompletor/header/DefineHandler.h
+badd +25 ~/SimpleCompletor/header/DefineManager.h
+badd +20 ~/SimpleCompletor/Macro/DefineManager.cpp
+badd +16 ~/SimpleCompletor/header/ErrorCode.h
 silent! argdel *
-edit ~/SimpleCompletor/Core/GrammarAnalyzer.cpp
+edit ~/SimpleCompletor/Macro/DefineManager.cpp
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -105,7 +119,7 @@ setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
 setlocal formatexpr=
-setlocal formatoptions=croql
+setlocal formatoptions=tcq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
 setlocal iminsert=0
@@ -161,15 +175,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 3 - ((2 * winheight(0) + 18) / 37)
+let s:l = 35 - ((33 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3
-normal! 05l
+35
+normal! 01l
 wincmd w
 argglobal
-edit ~/SimpleCompletor/header/LexicalAnalyzer.h
+edit ~/SimpleCompletor/Macro/DefineManager.cpp
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -209,7 +223,7 @@ setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
 setlocal formatexpr=
-setlocal formatoptions=croql
+setlocal formatoptions=tcq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
 setlocal iminsert=0
@@ -245,7 +259,7 @@ setlocal noshortname
 setlocal nosmartindent
 setlocal softtabstop=0
 setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellcapcheck=
 setlocal spellfile=
 setlocal spelllang=en
 setlocal statusline=
@@ -265,13 +279,14 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 48 - ((0 * winheight(0) + 18) / 37)
+let s:l = 16 - ((15 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-48
-normal! 016l
+16
+normal! 0
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
 exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
 tabnext 1

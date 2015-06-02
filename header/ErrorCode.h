@@ -9,6 +9,7 @@ namespace JZErrorCode
 		errUnknow 		= 1,
 		errOpenFileFail = 2,
 		errNoSuchPath	= 3,
+		errDoubleDefineMarco = 4,
 	};
 };
 
