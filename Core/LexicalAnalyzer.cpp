@@ -479,6 +479,7 @@ void LexicalAnalyzer::saveAWordAndCleanIt(int line, string& word)
 	saveAWord(line, word);
 	word = "";
 }
+
 void LexicalAnalyzer::saveAWord(int line, const string& word)
 {
 	if ("" == word)
@@ -491,6 +492,21 @@ void LexicalAnalyzer::saveAWord(int line, const string& word)
 	mRecordList.push_back(record);
 
 }
+
+bool LexicalAnalyzer::consumeToken(int index)
+{
+	if (index >= mRecordList.size())
+	{
+		return false;
+	}
+	if (true == mRecordList[index].isConsumed)
+	{
+		return false;
+	}
+	mRecordList[index].isConsumed = true;
+	return true;
+}
+
 //end of Lexical analyzer
 
 AnalyzerCollector::~AnalyzerCollector ()

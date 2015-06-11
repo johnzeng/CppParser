@@ -11,11 +11,11 @@ snoremap  b<BS>
 snoremap % b<BS>%
 snoremap ' b<BS>'
 snoremap U b<BS>U
-nmap \k :bp
-nmap \j :bn
 snoremap \ b<BS>\
 nnoremap <silent> \b :LeaderfBuffer
 nnoremap <silent> \f :Leaderf
+nmap \k :bp
+nmap \j :bn
 snoremap ^ b<BS>^
 snoremap ` b<BS>`
 nmap gx <Plug>NetrwBrowseX
@@ -33,9 +33,11 @@ set backspace=2
 set cindent
 set fileencodings=ucs-bom,utf-8,default,latin1
 set helplang=cn
+set hlsearch
 set incsearch
 set modelines=0
 set mouse=a
+set ruler
 set runtimepath=~/.vim,~/.vim/bundle/LeaderF,~/.vim/bundle/nerdtree,~/.vim/bundle/snipmate.vim,/usr/share/vim/vimfiles,/usr/share/vim/vim73,/usr/share/vim/vimfiles/after,~/.vim/after,~/.vim/bundle/Vundle.vim,~/.vim/bundle/LeaderF/after,~/.vim/bundle/nerdtree/after,~/.vim/bundle/snipmate.vim/after
 set shiftwidth=4
 set tabstop=4
@@ -64,10 +66,10 @@ badd +84 ~/SimpleCompletor/Factor/CommandLineFactorMngr.cpp
 badd +1 ~/mylib/header/JZFileUtil.h
 badd +20 ~/SimpleCompletor/header/DefineHandler.h
 badd +25 ~/SimpleCompletor/header/DefineManager.h
-badd +20 ~/SimpleCompletor/Macro/DefineManager.cpp
+badd +35 ~/SimpleCompletor/Macro/DefineManager.cpp
 badd +16 ~/SimpleCompletor/header/ErrorCode.h
 silent! argdel *
-edit ~/SimpleCompletor/Macro/DefineManager.cpp
+edit ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -119,7 +121,7 @@ setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
 setlocal formatexpr=
-setlocal formatoptions=tcq
+setlocal formatoptions=croql
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
 setlocal iminsert=0
@@ -175,15 +177,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 35 - ((33 * winheight(0) + 18) / 37)
+let s:l = 496 - ((22 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-35
-normal! 01l
+496
+normal! 019l
 wincmd w
 argglobal
-edit ~/SimpleCompletor/Macro/DefineManager.cpp
+edit ~/SimpleCompletor/header/LexicalAnalyzer.h
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -223,7 +225,7 @@ setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
 setlocal formatexpr=
-setlocal formatoptions=tcq
+setlocal formatoptions=croql
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
 setlocal iminsert=0
@@ -279,14 +281,13 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 16 - ((15 * winheight(0) + 18) / 37)
+let s:l = 1 - ((0 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-16
+1
 normal! 0
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
 exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
 tabnext 1
