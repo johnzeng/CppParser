@@ -4,14 +4,19 @@
 #include <string>
 using namespace std;
 
-//macro
-const string C_MACRO_WORD_DEFINE = "#define";
-const string C_MACRO_WORD_IF = "#if";
-const string C_MACRO_WORD_ELSE = "#else";
-const string C_MACRO_WORD_ENDIF = "#endif";
-const string C_MACRO_WORD_IFDEF = "#ifdef";
-const string C_MACRO_WORD_IFNDEF = "#ifndef";
-const string C_MACRO_WORD_INCLUDE = "#include";
+//macro 
+//for a marco ,it is not necessary to begin wit #keyword,
+//it may looks like:
+//#   include""
+//or
+//#   if
+const string C_MACRO_WORD_DEFINE = "define";
+const string C_MACRO_WORD_IF = "if";
+const string C_MACRO_WORD_ELSE = "else";
+const string C_MACRO_WORD_ENDIF = "endif";
+const string C_MACRO_WORD_IFDEF = "ifdef";
+const string C_MACRO_WORD_IFNDEF = "ifndef";
+const string C_MACRO_WORD_INCLUDE = "include";
 
 //pragma code
 const string COMPILE_CODE_PRAGMA = "#pragma";
