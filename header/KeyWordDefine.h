@@ -66,5 +66,6 @@ const string CPP_KEY_WORD_TEMPLATE = "template";
 const string CPP_KEY_WORD_PUBLIC = "public";
 const string CPP_KEY_WORD_PRIVATE = "private";
 const string CPP_KEY_WORD_PROTECTED = "protected";
+const string CPP_KEY_WORD_BOOL = "bool";
 
 #endif // __KEY_WORD_DEFINE_H__

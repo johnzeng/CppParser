@@ -22,7 +22,7 @@ void GrammarAnalyzer::init(LexicalAnalyzer* rootLexInput)
 /*********************************************************
 	init basic symbol key word list 
  ********************************************************/
-	int curIndex = mSymbolList.size() - 1;
+	int nextIndex = mSymbolList.size();
 	SymbolNode basicSymbol;
 
 	basicSymbol.father = &mRootSymbolNode;
@@ -31,43 +31,51 @@ void GrammarAnalyzer::init(LexicalAnalyzer* rootLexInput)
 	basicSymbol.symbolType = C_KEY_WORD_INT;
 	basicSymbol.defineNode = NULL;
 	mSymbolList.push_back(basicSymbol);
-	mRootSymbolNode.child.push_back(&mSymbolList[curIndex]);	
-	curIndex++;
+	mRootSymbolNode.child.push_back(&mSymbolList[nextIndex]);	
+	nextIndex++;
 
 	basicSymbol.symbolName = C_KEY_WORD_CHAR;	
 	basicSymbol.symbolType = C_KEY_WORD_CHAR;
 	basicSymbol.defineNode = NULL;
 	mSymbolList.push_back(basicSymbol);
-	mRootSymbolNode.child.push_back(&mSymbolList[curIndex]);	
-	curIndex++;
+	mRootSymbolNode.child.push_back(&mSymbolList[nextIndex]);	
+	nextIndex++;
 
 	basicSymbol.symbolName = C_KEY_WORD_LONG;	
 	basicSymbol.symbolType = C_KEY_WORD_LONG;
 	basicSymbol.defineNode = NULL;
 	mSymbolList.push_back(basicSymbol);
-	mRootSymbolNode.child.push_back(&mSymbolList[curIndex]);	
-	curIndex++;
+	mRootSymbolNode.child.push_back(&mSymbolList[nextIndex]);	
+	nextIndex++;
 
 	basicSymbol.symbolName = C_KEY_WORD_DOUBLE;	
 	basicSymbol.symbolType = C_KEY_WORD_DOUBLE;
 	basicSymbol.defineNode = NULL;
 	mSymbolList.push_back(basicSymbol);
-	mRootSymbolNode.child.push_back(&mSymbolList[curIndex]);	
-	curIndex++;
+	mRootSymbolNode.child.push_back(&mSymbolList[nextIndex]);	
+	nextIndex++;
 
 	basicSymbol.symbolName = C_KEY_WORD_FLOAT;	
 	basicSymbol.symbolType = C_KEY_WORD_FLOAT;
 	basicSymbol.defineNode = NULL;
 	mSymbolList.push_back(basicSymbol);
-	mRootSymbolNode.child.push_back(&mSymbolList[curIndex]);	
-	curIndex++;
+	mRootSymbolNode.child.push_back(&mSymbolList[nextIndex]);	
+	nextIndex++;
 
 	basicSymbol.symbolName = C_KEY_WORD_SHORT;	
 	basicSymbol.symbolType = C_KEY_WORD_SHORT;
 	basicSymbol.defineNode = NULL;
 	mSymbolList.push_back(basicSymbol);
-	mRootSymbolNode.child.push_back(&mSymbolList[curIndex]);	
-	curIndex++;
+	mRootSymbolNode.child.push_back(&mSymbolList[nextIndex]);	
+	nextIndex++;
+
+	basicSymbol.symbolName = CPP_KEY_WORD_BOOL;	
+	basicSymbol.symbolType = CPP_KEY_WORD_BOOL;
+	basicSymbol.defineNode = NULL;
+	mSymbolList.push_back(basicSymbol);
+	mRootSymbolNode.child.push_back(&mSymbolList[nextIndex]);	
+	nextIndex++;
+
 }
 
 void GrammarAnalyzer::turnOnCppMode(bool turnOn)
