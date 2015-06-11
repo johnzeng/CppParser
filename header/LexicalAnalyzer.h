@@ -5,6 +5,8 @@
 #include <stack>
 using namespace std;
 
+class LexicalAnalyzer;
+
 enum SymbolBlockTypeDef
 {
 	eSymBlockRoot = 0,			//root node
@@ -40,9 +42,17 @@ struct SymbolNode
 
 struct LexicalRecord
 {
+	LexicalRecord()
+	{
+		expendAnalyzer = NULL;
+		line = 0;
+		word = "";
+		isConsumed = false;	
+	}
 	int line;
 	string word;
-	LexicalRecord* expendList;	//if it is a macro or include mark(anyway, or other expendable keyword) .Otherwise this will be null
+	bool isConsumed;
+	LexicalAnalyzer* expendAnalyzer;	//if it is a macro or include mark(anyway, or other expendable keyword) .Otherwise this will be null
 } /* optional variable list */;
 
 class LexicalAnalyzer {
@@ -54,6 +64,8 @@ public:
 	void setSourceCodeDir(string path);
 
 	void doAnalyze();
+
+	bool consumeToken(int index);
 
 private:
 	void saveAWordAndCleanIt(int line, string& word);

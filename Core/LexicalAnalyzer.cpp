@@ -59,7 +59,7 @@ void LexicalAnalyzer::doAnalyze()
 	bool backSlantEndFlag = false;
 	int lineNum = 0;
 
-	while(false != getline(ioStream,line))
+	while(getline(ioStream,line))
 	{
 		lineNum ++;
 		JZWRITE_DEBUG(line.c_str());
