@@ -16,12 +16,6 @@ LexicalAnalyzer::~LexicalAnalyzer()
 
 void LexicalAnalyzer::init()
 {
-	mRootSymbolNode.father = NULL;
-	mRootSymbolNode.blockType = eSymBlockRoot;
-	mRootSymbolNode.symbolName = "";
-	mRootSymbolNode.defineNode = NULL;
-	mRootSymbolNode.symbolType = "";
-
 	mCodePath = "";
 }
 
@@ -495,6 +489,10 @@ void LexicalAnalyzer::saveAWord(int line, const string& word)
 
 bool LexicalAnalyzer::consumeToken(int index)
 {
+	if (index < 0)
+	{
+		return false;
+	}
 	if (index >= mRecordList.size())
 	{
 		return false;
@@ -504,6 +502,38 @@ bool LexicalAnalyzer::consumeToken(int index)
 		return false;
 	}
 	mRecordList[index].isConsumed = true;
+	return true;
+}
+
+const LexicalRecord* LexicalAnalyzer::getLexiRecord(int index)const
+{
+	if (mRecordList.size() <= index)
+	{
+		return NULL;
+	}
+	if (index < 0)
+	{
+		return NULL;
+	}
+	return &mRecordList[index];
+}
+
+bool LexicalAnalyzer::setExpandLexiRecord(LexicalAnalyzer* analyzer, int index)
+{
+	if (index < 0)
+	{
+		return false;
+	}
+	if (mRecordList.size() >= index)
+	{
+		return false;
+	}
+	if(mRecordList[index].expendAnalyzer != NULL)
+	{
+		//don't allow double set
+		return false;	
+	}
+	mRecordList[index].expendAnalyzer = analyzer; 
 	return true;
 }
 

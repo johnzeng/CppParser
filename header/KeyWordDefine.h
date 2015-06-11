@@ -26,12 +26,12 @@ const string COMPILE_CODE_ONCE = "once";
 const string COMPILE_CODE_DISABLE = "disable";
 
 //data type
-const stirng C_KEY_WORD_INT = "int";
-const stirng C_KEY_WORD_CHAR = "char";
-const stirng C_KEY_WORD_UNSIGNED= "unsigned";
-const stirng C_KEY_WORD_LONG= "long";
-const stirng C_KEY_WORD_DOUBLE= "double";
-const stirng C_KEY_WORD_FLOAT= "float";
+const string C_KEY_WORD_INT = "int";
+const string C_KEY_WORD_CHAR = "char";
+const string C_KEY_WORD_UNSIGNED= "unsigned";
+const string C_KEY_WORD_LONG= "long";
+const string C_KEY_WORD_DOUBLE= "double";
+const string C_KEY_WORD_FLOAT= "float";
 const string C_KEY_WORD_STRUCT = "struct";
 const string C_KEY_WORD_TYPEDEF = "typedef";
 const string C_KEY_WORD_ENUM = "enum";

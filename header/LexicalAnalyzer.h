@@ -7,39 +7,11 @@ using namespace std;
 
 class LexicalAnalyzer;
 
-enum SymbolBlockTypeDef
-{
-	eSymBlockRoot = 0,			//root node
-	eSymBlockGolbal = 1,		//golbal symbol
-	eSymBlockNone = 2,			//only surrounded with {}
-	eSymBlockFunc = 3,			//func block
-	eSymBlockFor = 4,			//for block
-	eSymBlockIf	= 5,			//if block
-	eSymBlockWhile = 6,			//while block
-	eSymBlockDo = 7,			//do block
-	eSymBlockClass = 8,			//class block
-	eSymBlockNameSpace = 9,		//name space block
-	eSymBlockStruct = 10,		//struct block
-	eSymBlockEnum = 11,			//enum block
-	eSymBlockUnion = 12,		//union block
-	eSymBlockTemplate = 13,		//template block
-};
-
-struct SymbolNode
-{
-	SymbolNode* father;
-	vector<SymbolNode*> child;
-	int blockType;
-	string symbolName;
-	string symbolType;			//For basic define, symbolType will be the keyword, and no defineNode should be set
-	SymbolNode* defineNode;
-};
 
 /*
  * Log about LexicalAnalyzer's word
  * 		word will be "\ " if there is a '\' at the end of input(nothing but empty input is followed)
  * */
-
 struct LexicalRecord
 {
 	LexicalRecord()
@@ -49,6 +21,7 @@ struct LexicalRecord
 		word = "";
 		isConsumed = false;	
 	}
+
 	int line;
 	string word;
 	bool isConsumed;
@@ -67,7 +40,13 @@ public:
 
 	bool consumeToken(int index);
 
+	//if reach end of record,return NULL
+	const LexicalRecord* getLexiRecord(int index)const;
+
+	bool setExpandLexiRecord(LexicalAnalyzer* analyzer, int index);
+	
 private:
+
 	void saveAWordAndCleanIt(int line, string& word);
 	void saveAWord(int line, const string& word);
 	bool isInterpunction(char input);
@@ -85,10 +64,7 @@ private:
 
 	std::vector<LexicalRecord> mRecordList;
 	std::string mCodePath;
-	StringList mOriginalWords;
 
-	//this node means no symbol,only for root	
-	SymbolNode mRootSymbolNode;		
 };
 
 class AnalyzerCollector {
