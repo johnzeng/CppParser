@@ -36,13 +36,13 @@ int main(int argc, char* argv[])
 	}
 
 	//init define manager
-	DefineManager::getInstance()->init();
+	DefineManager::getGlobalInstance()->init();
 	auto userDefineMap = CommandLineFactorMngr::getInstance()->getDefineMap();
 	//add addon define
 	auto defineMapIt = userDefineMap.begin();
 	for(; defineMapIt != userDefineMap.end() ; defineMapIt++ )
 	{
-		int32 err = DefineManager::getInstance()->addDefineMap(defineMapIt->first, defineMapIt->second);
+		int32 err = DefineManager::getGlobalInstance()->addDefineMap(defineMapIt->first, defineMapIt->second);
 		if (err != JZErrorCode::errNoError)
 		{
 			JZWRITE_ERROR("double define : %s", defineMapIt->first.c_str());

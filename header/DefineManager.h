@@ -15,7 +15,7 @@ class DefineManager {
 public:
 	DefineManager ();
 	virtual ~DefineManager ();
-	static DefineManager* getInstance();
+	static DefineManager* getGlobalInstance();
 	void init();
 
 	//if defined ,return defined word, maybe ""

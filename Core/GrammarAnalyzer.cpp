@@ -4,8 +4,8 @@
 
 GrammarAnalyzer::GrammarAnalyzer()
 {
-	rootLex = NULL;
-	isCPPMode = true;
+	mRootLex = NULL;
+	mIsCPPMode = true;
 
 	mRootSymbolNode.blockType = eSymBlockRoot;
 }
@@ -17,7 +17,7 @@ GrammarAnalyzer::~GrammarAnalyzer()
 void GrammarAnalyzer::init(LexicalAnalyzer* rootLexInput)
 {
 
-	this->rootLex = rootLexInput;
+	this->mRootLex = rootLexInput;
 
 /*********************************************************
 	init basic symbol key word list 
@@ -80,5 +80,15 @@ void GrammarAnalyzer::init(LexicalAnalyzer* rootLexInput)
 
 void GrammarAnalyzer::turnOnCppMode(bool turnOn)
 {
-	isCPPMode = turnOn;
+	mIsCPPMode = turnOn;
+}
+
+void GrammarAnalyzer::doAnalyze()
+{
+	expendMarco();
+}
+
+void GrammarAnalyzer::expendMarco()
+{
+	
 }

@@ -22,7 +22,7 @@ OTHER_FLAGS=${RELEASE_FLAG} $(PLATFORM_FLAG)
 CFLAGS=$(INCLUDE_FLAGS) $(OTHER_FLAGS) $(OTHER_FLAGS)
 CPPFLAGS=$(INCLUDE_FLAGS) $(OTHER_CPP_FLAGS) $(OTHER_FLAGS)
 
-TARGET=preprocessor
+TARGET=analyzer
 
 SOURCES=$(wildcard ./*/*.c ./*/*.cpp)
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))

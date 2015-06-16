@@ -52,11 +52,15 @@ public:
 
 	void turnOnCppMode(bool turnOn);
 
+	void doAnalyze();
+
 private:
+	
+	void expendMarco();
 
-	bool isCPPMode;
+	bool mIsCPPMode;
 
-	LexicalAnalyzer* rootLex;
+	LexicalAnalyzer* mRootLex;
 
 	//this node means no symbol,only for root	
 	SymbolNode mRootSymbolNode;	

@@ -44,7 +44,9 @@ public:
 	const LexicalRecord* getLexiRecord(int index)const;
 
 	bool setExpandLexiRecord(LexicalAnalyzer* analyzer, int index);
-	
+
+	//this func will handle the annoying \\ symbol
+	std::vector<LexicalRecord*>	getLineRecordTillLineEnd(int index);
 private:
 
 	void saveAWordAndCleanIt(int line, string& word);

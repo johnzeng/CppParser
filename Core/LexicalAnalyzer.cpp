@@ -518,6 +518,28 @@ const LexicalRecord* LexicalAnalyzer::getLexiRecord(int index)const
 	return &mRecordList[index];
 }
 
+std::vector<LexicalRecord*> LexicalAnalyzer::getLineRecordTillLineEnd(int index)
+{
+	std::vector<LexicalRecord*> ret;
+	int initLine = -1;
+	for(int i = index; i < mRecordList.size(); i ++)
+	{
+		if(initLine == -1)
+		{
+			initLine = mRecordList[i].line;
+		}	
+		if(mRecordList[i] == "\\ ")
+		{
+			//reset initLine;
+			initLine = -1;
+			continue;
+		}
+		ret.push_back(&mRecordList[i]);
+	}
+
+	return ret;
+}
+
 bool LexicalAnalyzer::setExpandLexiRecord(LexicalAnalyzer* analyzer, int index)
 {
 	if (index < 0)

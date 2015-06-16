@@ -11,7 +11,7 @@ DefineManager::~DefineManager()
 
 }
 
-DefineManager* DefineManager::getInstance()
+DefineManager* DefineManager::getGlobalInstance()
 {
 	static DefineManager* instance = NULL;
 	if (NULL == instance)
@@ -47,6 +47,16 @@ bool DefineManager::isDefined(const string& srcDefine)
 	{
 		return false;
 	}
+	DefineManager* globalInstance = DefineManager::getGlobalInstance();
+	if(this != globalInstance)
+	{
+		//this is not global instance
+		bool ret = globalInstance->isDefined(srcDefine);
+		if (false == ret)
+		{
+			return ret;
+		}
+	}
 	return true;
 }
 
@@ -56,6 +66,17 @@ const string* DefineManager::findDefineMap(const string& srcDefine)
 	{
 		return NULL;
 	}
+
+	DefineManager* globalInstance = DefineManager::getGlobalInstance();
+	if (this != globalInstance)
+	{
+		auto ret = globalInstance->findDefineMap(srcDefine);
+		if(NULL != ret)
+		{
+			return ret;	
+		}
+	}
+
 	auto it = mSrcDefineMap.find(srcDefine);
 	if (mSrcDefineMap.end() == it)
 	{
