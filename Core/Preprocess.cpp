@@ -52,15 +52,20 @@ void Preprocess::analyze()
 				JZWRITE_DEBUG("you define word : %s, context is :%s",keyWord.c_str(), defineWord.c_str() );
 				i += recordList.size();
 			}
-			else
+			else 
 			{
-				JZWRITE_DEBUG("not handling yet");
+				//handle other marco word
 			}
+		}
+		else if(true == mDefinemanager.isDefined(record->word))
+		{
+			//if this is a defined marco,handle it
+			
 		}
 		else
 		{
-			//if this is a defined marco,handle it
+			//no need to handle
+			this->mExpendedList.push_back(*record);	
 		}
-
 	}
 }

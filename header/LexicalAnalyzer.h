@@ -47,6 +47,13 @@ public:
 
 	//this func will handle the annoying \\ symbol
 	std::vector<LexicalRecord*>	getLineRecordTillLineEnd(int index);
+
+	void analyzeALine(
+			const string& line,int lineNum,
+			bool* inStringFlag, bool* inIncludeFlag,
+		   	bool* inCommentBlockFlag, bool* inCommentLineFlag,
+		   	bool* inCharFlag, bool* backSlantEndFlag);
+
 private:
 
 	void saveAWordAndCleanIt(int line, string& word);

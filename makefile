@@ -29,6 +29,7 @@ OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
 
 $(TARGET):$(OBJS) $(myLib) main.o
+	@echo $(OBJS)
 	$(CXX) -o $(TARGET) $(INCLUDE_FLAGS) ${OTHER_FLAGS} $(OTHER_CPP_FLAGS) $(OBJS) $(myLib) main.o
 
 $(myLib):
@@ -50,4 +51,4 @@ clean:
 
 depend:$(HEADERS) $(SOURCES)
 	@echo "=================== now gen depend =============="
-	-@sh $(depend_generator) "$(CPPFLAGS)" > /dev/null
+	-@sh $(depend_generator) "$(CPPFLAGS)" 2>&1 > /dev/null

@@ -54,9 +54,8 @@ void LexicalAnalyzer::doAnalyze()
 
 	while(getline(iStream,line))
 	{
-		lineNum ++;
+		lineNum++;
 		JZWRITE_DEBUG("current line is : %s",line.c_str());
-		curWord = "";
 
 		//check error flag statue
 		if (!backSlantEndFlag && !inStringFlag)
@@ -76,228 +75,11 @@ void LexicalAnalyzer::doAnalyze()
 			inCharFlag = false;
 		}
 		backSlantEndFlag = false;
-
-		//now read line
-		for(int i = 0 ; i < line.size() ; i ++ )	
-		{
-
-			//handle comment block
-			if(inCommentBlockFlag == true)
-			{
-				JZWRITE_DEBUG("in comment block");	
-				if(i+1 < line.size())
-				{
-					if(line[i] == '*' && line[i+1] == '/')
-					{
-						inCommentBlockFlag = false;	
-						saveAWordAndCleanIt(lineNum, curWord);
-						saveAWord(lineNum, "*/");
-						i++;
-						continue;
-					}
-				}
-				goto LexicalAnalyzer_doAnalyze_addcurWord;
-			}
-
-			//handle comment line
-			if (inCommentLineFlag == true)
-			{
-				JZWRITE_DEBUG("in comment line");
-				if(line[i] == '\\' && isEmptyFromIndexTillEnd(line, i))
-				{
-					JZWRITE_DEBUG("end with back slant");
-					backSlantEndFlag = true;
-				}
-				else
-				{
-					goto LexicalAnalyzer_doAnalyze_addcurWord;	
-				}
-			}
-			//handle include input
-			if (true == inIncludeFlag)
-			{
-				if ('>' == line[i])
-				{
-					inIncludeFlag = false;
-					saveAWordAndCleanIt(lineNum, curWord);
-					saveAWord(lineNum, ">");
-					continue;
-				}
-				goto LexicalAnalyzer_doAnalyze_addcurWord;
-			}
-			//handle char input
-			if (inCharFlag == true)
-			{
-				if(line[i] == '\\' && line.size() > i+1)	
-				{
-					//eat next input
-					curWord += line[i];
-					curWord += line[i+1];
-					i++;
-					continue;	
-				}
-				if(line[i] == '\'')
-				{
-					inCharFlag = false;
-					saveAWordAndCleanIt(lineNum, curWord);
-					continue;
-				}
-				goto LexicalAnalyzer_doAnalyze_addcurWord;
-			}
-			//handle string input
-			if(inStringFlag == true)
-			{
-				//@todo handle string input	
-				if(line[i] == '\\')
-				{
-					if (isEmptyFromIndexTillEnd(line, i))
-					{
-						saveAWordAndCleanIt(lineNum, curWord);
-						saveAWord(lineNum, "\\ ");
-						backSlantEndFlag = true;
-						break;
-					}
-					else
-					{
-						//eat the next char
-						if(i+1 < line.size())
-						{
-							curWord += line[i];
-							curWord += line[i+1];	
-							i++;
-							continue;
-						}
-						else
-						{
-							JZWRITE_DEBUG("unlikely to reach here");	
-						}
-					}
-					JZWRITE_DEBUG("not in the end of input");
-				}
-				else if(line[i] == '\"')
-				{
-					saveAWordAndCleanIt(lineNum, curWord);
-					saveAWord(lineNum, "\"");
-					inStringFlag = false;
-					continue;
-				}
-				goto LexicalAnalyzer_doAnalyze_addcurWord;
-			}
-
-			//handle inter punction
-			if(isInterpunction(line[i]))
-			{
-				saveAWordAndCleanIt(lineNum, curWord);
-				if(i + 2 < line.size())
-				{
-					JZWRITE_DEBUG("test triple length interpunction");
-					if(line[i] == line[i+1] && line[i+2] == '=')
-					{
-						if(line[i] == '>' || line[i] == '<')
-						{
-						string toSaveWord = "";
-						toSaveWord += line[i];
-						toSaveWord += line[i+1];
-						toSaveWord += line[i+2];
-						saveAWord(lineNum, toSaveWord);
-						i++;i++;
-						continue;	
-						}
-					}	
-				}
-				if(i + 1 < line.size())
-				{
-					JZWRITE_DEBUG("test double length interpunction");
-					if(line[i] == '/' && line[i+1] == '/')
-					{
-						//actually ,if you don't handle '//' here,
-						//it will jump into isDoubleableInterpunction
-						//but that can not make inCommentLineFlag true.
-						//so I handle it here
-						saveAWord(lineNum, "//");
-						i++;
-						inCommentLineFlag = true;
-						continue;
-					}
-					else if ('/' == line[i] && '*' == line[i + 1])
-					{
-						saveAWord(lineNum, "/*");
-						i++;
-						inCommentBlockFlag = true;
-						continue;
-					}
-					else if(
-						(true == isDoubleableInterpunction(line[i]) && line[i] == line[i+1])
-						||(true == isSeflEqualInterpunction(line[i]) && line[i+1] == '=')
-						||(true == isComparorEqualInterpunction(line[i]) && line[i+1] == '=')
-						||(line[i] == '-' && line[i+1] == '>')
-						)
-					{
-						string toSaveWord = "";
-						toSaveWord += line[i];
-						toSaveWord += line[i+1];
-						saveAWord(lineNum, toSaveWord);
-						i++;
-						continue;
-					}
-
-				}
-
-				//any way check other interpunction
-				if (line[i] == '"')
-				{
-					inStringFlag = true;
-					saveAWord(lineNum, "\"");
-					continue;
-				}
-				else if(line[i] == '\'')
-				{
-					saveAWord(lineNum, "'");	
-					inCharFlag = true;
-					continue;
-				}
-				else if (line[i] == '<')
-				{
-					saveAWord(lineNum, "<");
-					inIncludeFlag = true;
-					continue;
-				}
-				else if(!isEmptyInput(line[i]))
-				{
-					curWord += line[i];
-					saveAWordAndCleanIt(lineNum, curWord);
-					continue;
-				}
-				else
-				{
-					//empty input
-					continue;
-				}
-
-			}
-			if(line[i] == '\\')
-			{
-				if (isEmptyFromIndexTillEnd(line, i))
-				{
-					JZWRITE_DEBUG("this is a back slant ,now handle it");
-					saveAWordAndCleanIt(lineNum, curWord);
-					saveAWord(lineNum, "\\ ");
-					continue;	
-				}
-				else
-				{
-					JZWRITE_DEBUG("unknow appended after \\");
-				}
-			}
-LexicalAnalyzer_doAnalyze_addcurWord:
-			//need filter to test if it is all empty
-			curWord+=line[i];
-		}
-		if ("" != curWord)
-		{	
-			JZWRITE_DEBUG("save a word at the end of line");
-			saveAWordAndCleanIt(lineNum, curWord);
-		}
+		analyzeALine(
+				line,lineNum,
+				&inStringFlag,&inIncludeFlag,
+				&inCommentBlockFlag, &inCommentLineFlag,
+				&inCharFlag, &backSlantEndFlag);
 	}
 
 //#ifdef DEBUG
@@ -570,6 +352,235 @@ bool LexicalAnalyzer::setExpandLexiRecord(LexicalAnalyzer* analyzer, int index)
 	}
 	mRecordList[index].expendAnalyzer = analyzer; 
 	return true;
+}
+void LexicalAnalyzer::analyzeALine(
+		const string& line,int lineNum,
+		bool* inStringFlag, bool* inIncludeFlag,
+		bool* inCommentBlockFlag, bool* inCommentLineFlag,
+		bool* inCharFlag, bool* backSlantEndFlag)
+{
+	string curWord = "";
+	//now read line
+	for(int i = 0 ; i < line.size() ; i ++ )	
+	{
+
+		//handle comment block
+		if(*inCommentBlockFlag == true)
+		{
+			JZWRITE_DEBUG("in comment block");	
+			if(i+1 < line.size())
+			{
+				if(line[i] == '*' && line[i+1] == '/')
+				{
+					*inCommentBlockFlag = false;	
+					saveAWordAndCleanIt(lineNum, curWord);
+					saveAWord(lineNum, "*/");
+					i++;
+					continue;
+				}
+			}
+			goto LexicalAnalyzer_doAnalyze_addcurWord;
+		}
+
+		//handle comment line
+		if (*inCommentLineFlag == true)
+		{
+			JZWRITE_DEBUG("in comment line");
+			if(line[i] == '\\' && isEmptyFromIndexTillEnd(line, i))
+			{
+				JZWRITE_DEBUG("end with back slant");
+				*backSlantEndFlag = true;
+			}
+			else
+			{
+				goto LexicalAnalyzer_doAnalyze_addcurWord;	
+			}
+		}
+		//handle include input
+		if (true == *inIncludeFlag)
+		{
+			if ('>' == line[i])
+			{
+				*inIncludeFlag = false;
+				saveAWordAndCleanIt(lineNum, curWord);
+				saveAWord(lineNum, ">");
+				continue;
+			}
+			goto LexicalAnalyzer_doAnalyze_addcurWord;
+		}
+		//handle char input
+		if (*inCharFlag == true)
+		{
+			if(line[i] == '\\' && line.size() > i+1)	
+			{
+				//eat next input
+				curWord += line[i];
+				curWord += line[i+1];
+				i++;
+				continue;	
+			}
+			if(line[i] == '\'')
+			{
+				*inCharFlag = false;
+				saveAWordAndCleanIt(lineNum, curWord);
+				continue;
+			}
+			goto LexicalAnalyzer_doAnalyze_addcurWord;
+		}
+		//handle string input
+		if(*inStringFlag == true)
+		{
+			//@todo handle string input	
+			if(line[i] == '\\')
+			{
+				if (isEmptyFromIndexTillEnd(line, i))
+				{
+					saveAWordAndCleanIt(lineNum, curWord);
+					saveAWord(lineNum, "\\ ");
+					*backSlantEndFlag = true;
+					break;
+				}
+				else
+				{
+					//eat the next char
+					if(i+1 < line.size())
+					{
+						curWord += line[i];
+						curWord += line[i+1];	
+						i++;
+						continue;
+					}
+					else
+					{
+						JZWRITE_DEBUG("unlikely to reach here");	
+					}
+				}
+				JZWRITE_DEBUG("not in the end of input");
+			}
+			else if(line[i] == '\"')
+			{
+				saveAWordAndCleanIt(lineNum, curWord);
+				saveAWord(lineNum, "\"");
+				*inStringFlag = false;
+				continue;
+			}
+			goto LexicalAnalyzer_doAnalyze_addcurWord;
+		}
+
+		//handle inter punction
+		if(isInterpunction(line[i]))
+		{
+			saveAWordAndCleanIt(lineNum, curWord);
+			if(i + 2 < line.size())
+			{
+				JZWRITE_DEBUG("test triple length interpunction");
+				if(line[i] == line[i+1] && line[i+2] == '=')
+				{
+					if(line[i] == '>' || line[i] == '<')
+					{
+					string toSaveWord = "";
+					toSaveWord += line[i];
+					toSaveWord += line[i+1];
+					toSaveWord += line[i+2];
+					saveAWord(lineNum, toSaveWord);
+					i++;i++;
+					continue;	
+					}
+				}	
+			}
+			if(i + 1 < line.size())
+			{
+				JZWRITE_DEBUG("test double length interpunction");
+				if(line[i] == '/' && line[i+1] == '/')
+				{
+					//actually ,if you don't handle '//' here,
+					//it will jump into isDoubleableInterpunction
+					//but that can not make inCommentLineFlag true.
+					//so I handle it here
+					saveAWord(lineNum, "//");
+					i++;
+					*inCommentLineFlag = true;
+					continue;
+				}
+				else if ('/' == line[i] && '*' == line[i + 1])
+				{
+					saveAWord(lineNum, "/*");
+					i++;
+					*inCommentBlockFlag = true;
+					continue;
+				}
+				else if(
+					(true == isDoubleableInterpunction(line[i]) && line[i] == line[i+1])
+					||(true == isSeflEqualInterpunction(line[i]) && line[i+1] == '=')
+					||(true == isComparorEqualInterpunction(line[i]) && line[i+1] == '=')
+					||(line[i] == '-' && line[i+1] == '>')
+					)
+				{
+					string toSaveWord = "";
+					toSaveWord += line[i];
+					toSaveWord += line[i+1];
+					saveAWord(lineNum, toSaveWord);
+					i++;
+					continue;
+				}
+
+			}
+
+			//any way check other interpunction
+			if (line[i] == '"')
+			{
+				*inStringFlag = true;
+				saveAWord(lineNum, "\"");
+				continue;
+			}
+			else if(line[i] == '\'')
+			{
+				saveAWord(lineNum, "'");	
+				*inCharFlag = true;
+				continue;
+			}
+			else if (line[i] == '<')
+			{
+				saveAWord(lineNum, "<");
+				*inIncludeFlag = true;
+				continue;
+			}
+			else if(!isEmptyInput(line[i]))
+			{
+				curWord += line[i];
+				saveAWordAndCleanIt(lineNum, curWord);
+				continue;
+			}
+			else
+			{
+				//empty input
+				continue;
+			}
+
+		}
+		if(line[i] == '\\')
+		{
+			if (isEmptyFromIndexTillEnd(line, i))
+			{
+				JZWRITE_DEBUG("this is a back slant ,now handle it");
+				saveAWordAndCleanIt(lineNum, curWord);
+				saveAWord(lineNum, "\\ ");
+				continue;	
+			}
+			else
+			{
+				JZWRITE_DEBUG("unknow appended after \\");
+			}
+		}
+LexicalAnalyzer_doAnalyze_addcurWord:
+		//need filter to test if it is all empty
+		curWord+=line[i];
+	}
+	if ("" != curWord)
+	{	
+		JZWRITE_DEBUG("save a word at the end of line");
+		saveAWordAndCleanIt(lineNum, curWord);
+	}
 }
 
 //end of Lexical analyzer
