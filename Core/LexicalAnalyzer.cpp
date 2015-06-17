@@ -300,18 +300,18 @@ LexicalAnalyzer_doAnalyze_addcurWord:
 		}
 	}
 
-#ifdef DEBUG
-	JZWRITE_DEBUG("end of analyze , now print words");
-	auto it = mRecordList.begin();	
-	for(; it != mRecordList.end() ;it++)
-	{
-		string outPut = "";
-		outPut += "At line : ";
-		outPut += StringUtil::tostr(it->line);
-		outPut += "\nWord : --" + it->word + "--\n";
-		JZWRITE_DEBUG(outPut.c_str());
-	}
-#endif
+//#ifdef DEBUG
+//	JZWRITE_DEBUG("end of analyze , now print words");
+//	auto it = mRecordList.begin();	
+//	for(; it != mRecordList.end() ;it++)
+//	{
+//		string outPut = "";
+//		outPut += "At line : ";
+//		outPut += StringUtil::tostr(it->line);
+//		outPut += "\nWord : --" + it->word + "--\n";
+//		JZWRITE_DEBUG(outPut.c_str());
+//	}
+//#endif
 }
 
 bool LexicalAnalyzer::isEmptyInput(char input)

@@ -14,6 +14,8 @@ snoremap U b<BS>U
 snoremap \ b<BS>\
 nnoremap <silent> \b :LeaderfBuffer
 nnoremap <silent> \f :Leaderf
+vmap \c :call CommentTrigger()
+nmap \c :call CommentTrigger()
 nmap \k :bp
 nmap \j :bn
 snoremap ^ b<BS>^
@@ -32,6 +34,7 @@ unlet s:cpo_save
 set backspace=2
 set cindent
 set fileencodings=ucs-bom,utf-8,default,latin1
+set formatoptions=ql
 set helplang=cn
 set hlsearch
 set incsearch
@@ -70,9 +73,9 @@ badd +3 ~/SimpleCompletor/Macro/DefineManager.cpp
 badd +16 ~/SimpleCompletor/header/ErrorCode.h
 badd +20 ~/SimpleCompletor/header/KeyWordDefine.h
 badd +34 ~/SimpleCompletor/Core/Preprocess.cpp
-badd +1 ~/SimpleCompletor/header/Preprocess.h
+badd +12 ~/SimpleCompletor/header/Preprocess.h
 silent! argdel *
-edit ~/SimpleCompletor/header/Preprocess.h
+edit ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -180,11 +183,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 6 - ((5 * winheight(0) + 18) / 37)
+let s:l = 293 - ((8 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-6
+293
 normal! 0
 wincmd w
 argglobal
@@ -284,14 +287,13 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 12 - ((11 * winheight(0) + 18) / 37)
+let s:l = 23 - ((22 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-12
+23
 normal! 0
 wincmd w
-2wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
 exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
 tabnext 1
