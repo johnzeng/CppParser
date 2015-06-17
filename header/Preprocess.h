@@ -2,6 +2,8 @@
 #define PREPROCESS_H
 
 #include "LexicalAnalyzer.h"
+#include "DefineManager.h"
+
 class Preprocess {
 public:
 	Preprocess ();

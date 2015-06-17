@@ -4,3 +4,73 @@ Log2:	还是不太明白要怎么处理backSlant
 
 2015/6/16
 Log1:	include并非完全是把头文件拓展开来。\的影响不会从上一个文件继承到下一个文件
+
+2015/6/17
+Log1:	#define允许重定义，但是以最后一个定义为准
+Log2:	#define在定义的时候并不关心是否能翻译。只是在展开的时候关心是否已经定义。并且定义里面调用定义也是在展开的时候看的。例如下面的代码是可以编译通过的：
+例如下面的代码是可以编译通过的
+	File: marco.cpp
+
+	#include <stdio.h>
+
+	#define b() a()
+	#define a() {printf("hello\n");}
+	#define hello a()
+
+	int main(int argc, const char *argv[])
+	{
+		hello;
+		b();
+		return 0;
+	}
+
+	File end :marco.cpp
+
+但是另一方面，如果展开的时候出现循环，就会重现无法扩展。原因是宏定义只能展开一次。例如下面的代码无法编译通过:	
+	File: marco_error.cpp
+
+	#include <stdio.h>
+	//间接出现循环
+	#define b() a()
+	#define a() {printf("hello\n");b();}
+	#define hello a()
+
+	int main(int argc, const char *argv[])
+	{
+		hello;
+		b();
+		return 0;
+	}
+
+	File end :marco_error.cpp
+
+	File: marco_error2.cpp
+
+	#include <stdio.h>
+
+	//直接循环
+	#define a() {printf("hello\n");a();}
+	#define hello a()
+
+	int main(int argc, const char *argv[])
+	{
+		hello;
+		return 0;
+	}
+
+	File end :marco_error2.cpp
+
+Log3: 并非所有define都是直接拓展的。下面的代码将会报错：
+	File marco_error3.cpp
+	
+	#include <stdio.h>
+
+	#define hello " 123+ 1
+
+	int main(int argc, const char *argv[])
+	{
+		printf("%s", hello ");
+		return 0;
+	}
+
+	File end :marco_error3.cpp

@@ -8,17 +8,15 @@
 #include "IncludeHandler.h"
 #include "DefineManager.h"
 #include "ErrorCode.h"
+#include "Preprocess.h"
 
-int main(int argc, char* argv[])
+void globalInitAtBegin()
 {
-
 	//init logger
 	JZLoggerInit();
 	JZSetLoggerLevel(JZ_LOG_ALL);
-	JZSetLoggerOutPutStatue(1,0);
-
-	//analyze command line input
-	CmdInputFactor::getInstance()->analyze(argc, argv);
+	JZSetLoggerOutPutStatue(1,1);
+	JZSetLogFileName("log");
 
 	//analyze command line addon data from .factor file
 	CommandLineFactorMngr::getInstance()->searchAddonFactorFile();
@@ -34,8 +32,8 @@ int main(int argc, char* argv[])
 	{
 		IncludeHandler::getInstance()->addUserHeaderSearchPath(*headerSearchFileIt);	
 	}
-
-	//init define manager
+	
+	//init global define manager
 	DefineManager::getGlobalInstance()->init();
 	auto userDefineMap = CommandLineFactorMngr::getInstance()->getDefineMap();
 	//add addon define
@@ -46,9 +44,18 @@ int main(int argc, char* argv[])
 		if (err != JZErrorCode::errNoError)
 		{
 			JZWRITE_ERROR("double define : %s", defineMapIt->first.c_str());
-			return err;
+			return ;
 		}
 	}
+}
+
+int main(int argc, char* argv[])
+{
+	//init
+	globalInitAtBegin();
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
 
 	//now begin to analyze the files input from command line
 	string toCompileFile = "";
@@ -60,5 +67,8 @@ int main(int argc, char* argv[])
 		analyzer->doAnalyze();
 		//add it into collector, so you will not do it again
 		AnalyzerCollector::getInstance()->addAnalyzer(toCompileFile, analyzer)	;
+		Preprocess preprocessor;
+		preprocessor.init(analyzer);		
+		preprocessor.analyze();
 	}
 }

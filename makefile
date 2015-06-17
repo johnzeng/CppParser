@@ -28,11 +28,14 @@ SOURCES=$(wildcard ./*/*.c ./*/*.cpp)
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
 
-$TARGET:$(OBJS) $(myLib) main.o
+$(TARGET):$(OBJS) $(myLib) main.o
 	$(CXX) -o $(TARGET) $(INCLUDE_FLAGS) ${OTHER_FLAGS} $(OTHER_CPP_FLAGS) $(OBJS) $(myLib) main.o
 
 $(myLib):
 	cd $(mylib_PATH) && make
+
+test:$(TARGET)
+	./$(TARGET) testcpp.cpp
 
 lib:
 	cd $(mylib_PATH) && make

@@ -20,7 +20,7 @@ void Preprocess::init(LexicalAnalyzer* rootLex)
 
 void Preprocess::analyze()
 {
-	LexicalRecord* record = NULL;
+	const LexicalRecord* record = NULL;
 	int i = 0;
 	while ((record = mRootLex->getLexiRecord(i)) != NULL)
 	{
@@ -30,7 +30,7 @@ void Preprocess::analyze()
 		if ("#" == record->word)
 		{
 			//oh! a marco is begining!
-			LexicalRecord* nextRecord = mRootLex->getLexiRecord(i);
+			const LexicalRecord* nextRecord = mRootLex->getLexiRecord(i);
 			i++;
 
 			if ("define" == nextRecord->word)
@@ -46,11 +46,21 @@ void Preprocess::analyze()
 				std::string defineWord = "";
 				for(int j = 1; j < recordList.size(); j ++)
 				{
-					defineword += (recordptrit[j])->word;
-					defineword += " ";
+					defineWord += (recordList[j])->word;
 				}
-				JZWRITE_DEBUG("you define word : %s, context is :%s", );
+				mDefinemanager.addDefineMap(keyWord, defineWord);	
+				JZWRITE_DEBUG("you define word : %s, context is :%s",keyWord.c_str(), defineWord.c_str() );
+				i += recordList.size();
+			}
+			else
+			{
+				JZWRITE_DEBUG("not handling yet");
 			}
 		}
+		else
+		{
+			//if this is a defined marco,handle it
+		}
+
 	}
 }

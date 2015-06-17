@@ -1,5 +1,6 @@
 #include "DefineManager.h"
 #include "ErrorCode.h"
+#include "JZLogger.h"
 
 DefineManager::DefineManager()
 {
@@ -30,7 +31,7 @@ int DefineManager::addDefineMap(const string& src, const string& define)
 {
 	if (true == isDefined(src))
 	{
-		return JZErrorCode::errDoubleDefineMarco;
+		JZWRITE_ERROR("double define marco, now rewrite it");
 	}
 	mSrcDefineMap[src] = define;
 
@@ -67,6 +68,13 @@ const string* DefineManager::findDefineMap(const string& srcDefine)
 		return NULL;
 	}
 
+	//for define marco ,use the one that is latest defined
+	auto it = mSrcDefineMap.find(srcDefine);
+	if (mSrcDefineMap.end() != it)
+	{
+		return &(it->second);
+	}
+
 	DefineManager* globalInstance = DefineManager::getGlobalInstance();
 	if (this != globalInstance)
 	{
@@ -76,11 +84,5 @@ const string* DefineManager::findDefineMap(const string& srcDefine)
 			return ret;	
 		}
 	}
-
-	auto it = mSrcDefineMap.find(srcDefine);
-	if (mSrcDefineMap.end() == it)
-	{
-		return NULL;
-	}
-	return &(it->second);
+	return NULL;
 }

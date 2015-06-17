@@ -11,7 +11,7 @@
  *	//comment line in comment block
  * */
 
-#define MARROC_HELLO "a"
+#define MARROC_HELLO "a
 
 int main()
 {
@@ -21,6 +21,6 @@ int main()
 	a && b;
 	a = b;
 	printf("hello world"
-			"\n");
+			"%s\n",MARROC_HELLO");
 	return 0;
 }

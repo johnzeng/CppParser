@@ -3,7 +3,7 @@
 #include "JZFileUtil.h"
 #include "StringUtil.h"
 
-#include <sstream>
+#include <fstream>
 using namespace std;
 
 LexicalAnalyzer::LexicalAnalyzer()
@@ -37,9 +37,8 @@ void LexicalAnalyzer::doAnalyze()
 		JZWRITE_DEBUG("code path is not set ,now return");
 		return;
 	}
-	char* inputChar = (char*)JZGetFileData(mCodePath.c_str());
-	stringstream ioStream;
-	ioStream << inputChar;
+	ifstream iStream;
+	iStream.open(mCodePath,ios::in);
 
 	//ioStream init finished.Now read line
 	string line;
@@ -53,11 +52,21 @@ void LexicalAnalyzer::doAnalyze()
 	bool backSlantEndFlag = false;
 	int lineNum = 0;
 
-	while(getline(ioStream,line))
+	while(getline(iStream,line))
 	{
 		lineNum ++;
-		JZWRITE_DEBUG(line.c_str());
+		JZWRITE_DEBUG("current line is : %s",line.c_str());
 		curWord = "";
+
+		//check error flag statue
+		if (!backSlantEndFlag && !inStringFlag)
+		{
+			JZWRITE_ERROR("line %d:didn't end with seperator:\"",lineNum - 1);
+		}
+		if (!backSlantEndFlag && !inCharFlag)
+		{
+			JZWRITE_ERROR("line %d:didn't end with seperator:'",lineNum - 1);
+		}
 
 		//re init flags;
 		if(!backSlantEndFlag)
@@ -527,8 +536,12 @@ std::vector<LexicalRecord*> LexicalAnalyzer::getLineRecordTillLineEnd(int index)
 		if(initLine == -1)
 		{
 			initLine = mRecordList[i].line;
-		}	
-		if(mRecordList[i] == "\\ ")
+		}
+		if (mRecordList[i].line != initLine)
+		{
+			break;
+		}
+		if(mRecordList[i].word == "\\ ")
 		{
 			//reset initLine;
 			initLine = -1;
