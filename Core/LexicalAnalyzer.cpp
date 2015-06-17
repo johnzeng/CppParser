@@ -58,11 +58,11 @@ void LexicalAnalyzer::doAnalyze()
 		JZWRITE_DEBUG("current line is : %s",line.c_str());
 
 		//check error flag statue
-		if (!backSlantEndFlag && !inStringFlag)
+		if (false == backSlantEndFlag && true == inStringFlag)
 		{
 			JZWRITE_ERROR("line %d:didn't end with seperator:\"",lineNum - 1);
 		}
-		if (!backSlantEndFlag && !inCharFlag)
+		if (false == backSlantEndFlag && true == inCharFlag)
 		{
 			JZWRITE_ERROR("line %d:didn't end with seperator:'",lineNum - 1);
 		}
@@ -82,18 +82,18 @@ void LexicalAnalyzer::doAnalyze()
 				&inCharFlag, &backSlantEndFlag);
 	}
 
-//#ifdef DEBUG
-//	JZWRITE_DEBUG("end of analyze , now print words");
-//	auto it = mRecordList.begin();	
-//	for(; it != mRecordList.end() ;it++)
-//	{
-//		string outPut = "";
-//		outPut += "At line : ";
-//		outPut += StringUtil::tostr(it->line);
-//		outPut += "\nWord : --" + it->word + "--\n";
-//		JZWRITE_DEBUG(outPut.c_str());
-//	}
-//#endif
+#ifdef DEBUG
+	JZWRITE_DEBUG("end of analyze , now print words");
+	auto it = mRecordList.begin();	
+	for(; it != mRecordList.end() ;it++)
+	{
+		string outPut = "";
+		outPut += "At line : ";
+		outPut += StringUtil::tostr(it->line);
+		outPut += "\nWord : --" + it->word + "--\n";
+		JZWRITE_DEBUG(outPut.c_str());
+	}
+#endif
 }
 
 bool LexicalAnalyzer::isEmptyInput(char input)
