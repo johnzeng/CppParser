@@ -611,4 +611,17 @@ void AnalyzerCollector::addAnalyzer(const std::string& filePath, LexicalAnalyzer
 		JZWRITE_DEBUG("double use of analyzer");
 	}
 }
+
+LexicalAnalyzer* AnalyzerCollector::getAnalyzer(const std::string& filePath)
+{
+	auto it = mCollectMap.find(filePath);
+	if (mCollectMap.end() == it)
+	{
+		return NULL;
+	}
+	else
+	{
+		return it->second;
+	}
+}
 //end of collector

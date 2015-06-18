@@ -84,6 +84,9 @@ public:
 	static AnalyzerCollector* getInstance();
 	
 	void addAnalyzer(const std::string& filePath, LexicalAnalyzer* analyzer );
+
+	//if no lex is set ,return null;
+	LexicalAnalyzer* getAnalyzer(const std::string& filePath);
 private:
 	std::map<std::string, LexicalAnalyzer*> mCollectMap;
 };

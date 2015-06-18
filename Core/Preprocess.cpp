@@ -1,5 +1,8 @@
 #include "Preprocess.h"
 #include "JZLogger.h"
+#include "JZMarcoFunc.h"
+#include "IncludeHandler.h"
+#include "JZFileUtil.h"
 
 Preprocess::Preprocess()
 {
@@ -7,7 +10,8 @@ Preprocess::Preprocess()
 }
 
 Preprocess::~Preprocess()
-{}
+{
+}
 
 void Preprocess::init(LexicalAnalyzer* rootLex)
 {
@@ -15,78 +19,99 @@ void Preprocess::init(LexicalAnalyzer* rootLex)
 	{
 		JZWRITE_DEBUG("no lex is set");
 	}
-	mRootLex = rootLex;
+	LexReaderStruct rootReader;
+	rootReader.lexPtr = rootLex;
+	mLexStack.push(rootReader);
 }
 
 void Preprocess::analyze()
 {
-	const LexicalRecord* record = NULL;
-	int i = 0;
-	while ((record = mRootLex->getLexiRecord(i)) != NULL)
+	while (!mLexStack.empty())
 	{
-		i++;
+		auto curReader = mLexStack.top();
+		mLexStack.pop();
+		auto curLex = curReader.lexPtr;
+		
+		const LexicalRecord* record = NULL;
+		while((record = curLex->getLexiRecord(curReader.curIndex))!=NULL)
+		{
+			//now analyze this record
+			if ("#" == record->word)
+			{
+				//oh! a marco is begining!
+				const LexicalRecord* nextRecord = curLex->getLexiRecord(curReader.curIndex);
+				curReader.curIndex++;
 
-		//now analyze this record
-		if ("#" == record->word)
-		{
-			//oh! a marco is begining!
-			const LexicalRecord* nextRecord = mRootLex->getLexiRecord(i);
-			i++;
+				if ("define" == nextRecord->word)
+				{
+					//this is a define
+					auto recordList = curLex->getLineRecordTillLineEnd(curReader.curIndex);
+					if (recordList.size() == 0)
+					{
+						JZWRITE_DEBUG("define following nothing!");
+						continue;
+					}
+					std::string keyWord = recordList[0]->word;
+					std::string defineWord = "";
+					for(int j = 1; j < recordList.size(); j ++)
+					{
+						defineWord += (recordList[j])->word;
+					}
+					mDefinemanager.addDefineMap(keyWord, defineWord);	
+					JZWRITE_DEBUG("you define word : %s, context is :%s",keyWord.c_str(), defineWord.c_str() );
+					curReader.curIndex += recordList.size();
+				}
+				else if ("include" == nextRecord->word)
+				{
+					string fileName = "";
+					auto suroundMarkA = curLex->getLexiRecord(curReader.curIndex);
+					JZIF_NULL_RETURN(suroundMarkA);
+					curReader.curIndex++;	
+					auto includeRecord = curLex->getLexiRecord(curReader.curIndex);
+					JZIF_NULL_RETURN(includeRecord);
+					curReader.curIndex++;
+					auto suroundMarkB = curLex->getLexiRecord(curReader.curIndex);
+					JZIF_NULL_RETURN(suroundMarkB);
+					fileName = includeRecord->word;
+					string fullPath = IncludeHandler::getInstance()->getFullPathForIncludeFile(fileName);
+					if (false == JZFileAccessable(fullPath.c_str()))
+					{
+						JZWRITE_ERROR("can not access to file : %s",fileName.c_str());
+						continue;
+					}
+					//expand include file
+					LexicalAnalyzer* includeLex = AnalyzerCollector::getInstance()->getAnalyzer(fullPath);
+					if (NULL == includeLex)
+					{
+						includeLex = new LexicalAnalyzer();
+						includeLex->setSourceCodeDir(fullPath);
+						includeLex->doAnalyze();
 
-			if ("define" == nextRecord->word)
-			{
-				//this is a define
-				auto recordList = mRootLex->getLineRecordTillLineEnd(i);
-				if (recordList.size() == 0)
-				{
-					JZWRITE_DEBUG("define following nothing!");
-					continue;
+						AnalyzerCollector::getInstance()->addAnalyzer(fullPath, includeLex);
+					}
+					mLexStack.push(curReader);
+					LexReaderStruct includeReaderStruct;
+					includeReaderStruct.lexPtr = includeLex;
+					mLexStack.push(includeReaderStruct);
+					//break,so you can analyze the new include file
+					break;
 				}
-				std::string keyWord = recordList[0]->word;
-				std::string defineWord = "";
-				for(int j = 1; j < recordList.size(); j ++)
+				else 
 				{
-					defineWord += (recordList[j])->word;
+					//handle other marco word
 				}
-				mDefinemanager.addDefineMap(keyWord, defineWord);	
-				JZWRITE_DEBUG("you define word : %s, context is :%s",keyWord.c_str(), defineWord.c_str() );
-				i += recordList.size();
 			}
-			else if ("include" == nextRecord->word)
+			else if(true == mDefinemanager.isDefined(record->word))
 			{
-				string fileName = "";
-				auto suroundMarkA = mRootLex->getLexiRecord(i);
-				JZIF_NULL_RETURN(suroundMarkA);
-			   	i++;	
-				auto includeRecord = mRootLex->getLexiRecord(i);
-				JZIF_NULL_RETURN(includeRecord);
-				i++;
-				auto suroundMarkB = mRootLex->getLexiRecord(i);
-				JZIF_NULL_RETURN(suroundMarkB);
-				fileName = includeRecord->word;
-				string fullPath = IncludeHandler->getInstance()->getFullPathForIncludeFile(fileName);
-				if (false == JZFileAccessable(fullPath.c_str()))
-				{
-					JZWRITE_ERROR("can not access to file : %s",fileName.c_str());
-					continue;
-				}
-				//expand include file
-				//so here comes the problem...how do I do it.
+				//if this is a defined marco,handle it
+				
 			}
-			else 
+			else
 			{
-				//handle other marco word
+				//no need to handle
+				this->mExpendedList.push_back(*record);	
 			}
-		}
-		else if(true == mDefinemanager.isDefined(record->word))
-		{
-			//if this is a defined marco,handle it
-			
-		}
-		else
-		{
-			//no need to handle
-			this->mExpendedList.push_back(*record);	
-		}
+		
+		};
 	}
 }
