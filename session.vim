@@ -54,15 +54,15 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +35 ~/SimpleCompletor/header/LexicalAnalyzer.h
-badd +552 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+badd +402 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 badd +15 ~/mylib/header/StringUtil.h
-badd +6 ~/mylib/header/JZMarcoFunc.h
+badd +7 ~/mylib/header/JZMarcoFunc.h
 badd +79 ~/mylib/header/JZLogger.h
 badd +20 ~/SimpleCompletor/header/GrammarAnalyzer.h
 badd +60 ~/SimpleCompletor/Core/GrammarAnalyzer.cpp
-badd +31 ~/SimpleCompletor/header/IncludeHandler.h
+badd +27 ~/SimpleCompletor/header/IncludeHandler.h
 badd +1 ~/SimpleCompletor/Macro/IncludeHandler.cpp
-badd +62 ~/SimpleCompletor/main.cpp
+badd +74 ~/SimpleCompletor/main.cpp
 badd +21 ~/SimpleCompletor/header/CommandLineFactorMngr.h
 badd +24 ~/SimpleCompletor/header/CmdInputFactor.h
 badd +84 ~/SimpleCompletor/Factor/CommandLineFactorMngr.cpp
@@ -75,7 +75,7 @@ badd +20 ~/SimpleCompletor/header/KeyWordDefine.h
 badd +34 ~/SimpleCompletor/Core/Preprocess.cpp
 badd +12 ~/SimpleCompletor/header/Preprocess.h
 silent! argdel *
-edit ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+edit ~/SimpleCompletor/Core/Preprocess.cpp
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -183,15 +183,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 293 - ((8 * winheight(0) + 18) / 37)
+let s:l = 75 - ((31 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-293
-normal! 0
+75
+normal! 03l
 wincmd w
 argglobal
-edit ~/SimpleCompletor/main.cpp
+edit ~/mylib/header/JZFileUtil.h
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -287,11 +287,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 23 - ((22 * winheight(0) + 18) / 37)
+let s:l = 18 - ((17 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-23
+18
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)

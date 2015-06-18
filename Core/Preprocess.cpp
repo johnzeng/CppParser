@@ -52,6 +52,27 @@ void Preprocess::analyze()
 				JZWRITE_DEBUG("you define word : %s, context is :%s",keyWord.c_str(), defineWord.c_str() );
 				i += recordList.size();
 			}
+			else if ("include" == nextRecord->word)
+			{
+				string fileName = "";
+				auto suroundMarkA = mRootLex->getLexiRecord(i);
+				JZIF_NULL_RETURN(suroundMarkA);
+			   	i++;	
+				auto includeRecord = mRootLex->getLexiRecord(i);
+				JZIF_NULL_RETURN(includeRecord);
+				i++;
+				auto suroundMarkB = mRootLex->getLexiRecord(i);
+				JZIF_NULL_RETURN(suroundMarkB);
+				fileName = includeRecord->word;
+				string fullPath = IncludeHandler->getInstance()->getFullPathForIncludeFile(fileName);
+				if (false == JZFileAccessable(fullPath.c_str()))
+				{
+					JZWRITE_ERROR("can not access to file : %s",fileName.c_str());
+					continue;
+				}
+				//expand include file
+				//so here comes the problem...how do I do it.
+			}
 			else 
 			{
 				//handle other marco word
