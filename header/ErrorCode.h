@@ -10,6 +10,11 @@ namespace JZErrorCode
 		errOpenFileFail = 2,
 		errNoSuchPath	= 3,
 		errDoubleDefineMarco = 4,
+		errSharpFollowNothing = 5,
+		errSharpFollowWithUnknowKeyWord = 6,
+		errSharDefineFollowWithNothing = 7,
+		errSharpIncludeNotSurroundWithRightSeperator = 8,
+		errSharpIncludeFollowNoFile = 9,
 	};
 };
 

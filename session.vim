@@ -54,7 +54,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +35 ~/SimpleCompletor/header/LexicalAnalyzer.h
-badd +402 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+badd +312 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 badd +15 ~/mylib/header/StringUtil.h
 badd +7 ~/mylib/header/JZMarcoFunc.h
 badd +79 ~/mylib/header/JZLogger.h
@@ -66,14 +66,14 @@ badd +74 ~/SimpleCompletor/main.cpp
 badd +21 ~/SimpleCompletor/header/CommandLineFactorMngr.h
 badd +24 ~/SimpleCompletor/header/CmdInputFactor.h
 badd +84 ~/SimpleCompletor/Factor/CommandLineFactorMngr.cpp
-badd +1 ~/mylib/header/JZFileUtil.h
+badd +18 ~/mylib/header/JZFileUtil.h
 badd +4 ~/SimpleCompletor/header/DefineHandler.h
 badd +24 ~/SimpleCompletor/header/DefineManager.h
 badd +3 ~/SimpleCompletor/Macro/DefineManager.cpp
-badd +16 ~/SimpleCompletor/header/ErrorCode.h
+badd +15 ~/SimpleCompletor/header/ErrorCode.h
 badd +20 ~/SimpleCompletor/header/KeyWordDefine.h
-badd +34 ~/SimpleCompletor/Core/Preprocess.cpp
-badd +12 ~/SimpleCompletor/header/Preprocess.h
+badd +40 ~/SimpleCompletor/Core/Preprocess.cpp
+badd +42 ~/SimpleCompletor/header/Preprocess.h
 silent! argdel *
 edit ~/SimpleCompletor/Core/Preprocess.cpp
 set splitbelow splitright
@@ -81,12 +81,24 @@ wincmd _ | wincmd |
 vsplit
 1wincmd h
 wincmd w
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+2wincmd k
+wincmd w
+wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
+exe '2resize ' . ((&lines * 8 + 19) / 39)
 exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
+exe '3resize ' . ((&lines * 9 + 19) / 39)
+exe 'vert 3resize ' . ((&columns * 78 + 79) / 158)
+exe '4resize ' . ((&lines * 18 + 19) / 39)
+exe 'vert 4resize ' . ((&columns * 78 + 79) / 158)
 argglobal
 setlocal noautoindent
 setlocal nobinary
@@ -183,15 +195,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 75 - ((31 * winheight(0) + 18) / 37)
+let s:l = 209 - ((13 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-75
-normal! 03l
+209
+normal! 015l
 wincmd w
 argglobal
-edit ~/mylib/header/JZFileUtil.h
+edit ~/SimpleCompletor/header/ErrorCode.h
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -287,15 +299,228 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 18 - ((17 * winheight(0) + 18) / 37)
+let s:l = 17 - ((7 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-18
+17
+normal! 033l
+wincmd w
+argglobal
+edit ~/SimpleCompletor/header/KeyWordDefine.h
+setlocal noautoindent
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal cindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal colorcolumn=
+setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'cpp'
+setlocal filetype=cpp
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=manual
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=croql
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=0
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=ccomplete#Complete
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'cpp'
+setlocal syntax=cpp
+endif
+setlocal tabstop=4
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal noundofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+silent! normal! zE
+let s:l = 28 - ((7 * winheight(0) + 4) / 9)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+28
+normal! 013l
+wincmd w
+argglobal
+edit ~/SimpleCompletor/header/Preprocess.h
+setlocal noautoindent
+setlocal nobinary
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal cindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal colorcolumn=
+setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal noexpandtab
+if &filetype != 'cpp'
+setlocal filetype=cpp
+endif
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=manual
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=croql
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=0
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=@,48-57,_,192-255
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal nolist
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=ccomplete#Complete
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+setlocal norelativenumber
+setlocal noscrollbind
+setlocal shiftwidth=4
+setlocal noshortname
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'cpp'
+setlocal syntax=cpp
+endif
+setlocal tabstop=4
+setlocal tags=
+setlocal textwidth=0
+setlocal thesaurus=
+setlocal noundofile
+setlocal nowinfixheight
+setlocal nowinfixwidth
+setlocal wrap
+setlocal wrapmargin=0
+silent! normal! zE
+let s:l = 54 - ((7 * winheight(0) + 9) / 18)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+54
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)
+exe '2resize ' . ((&lines * 8 + 19) / 39)
 exe 'vert 2resize ' . ((&columns * 78 + 79) / 158)
+exe '3resize ' . ((&lines * 9 + 19) / 39)
+exe 'vert 3resize ' . ((&columns * 78 + 79) / 158)
+exe '4resize ' . ((&lines * 18 + 19) / 39)
+exe 'vert 4resize ' . ((&columns * 78 + 79) / 158)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
