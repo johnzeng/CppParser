@@ -11,7 +11,7 @@ debug_var=1
 ifeq ($(debug_var),1)
 RELEASE_FLAG=-DDEBUG -g
 else
-DEBUG_FLAG=-DRELEASE
+RELEASE_FLAG=-DRELEASE
 endif
 
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header

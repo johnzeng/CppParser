@@ -77,23 +77,28 @@ void LexicalAnalyzer::doAnalyze()
 		backSlantEndFlag = false;
 		analyzeALine(
 				line,lineNum,
-				&inStringFlag,&inIncludeFlag,
+				&inStringFlag, &inIncludeFlag,
 				&inCommentBlockFlag, &inCommentLineFlag,
 				&inCharFlag, &backSlantEndFlag);
 	}
 
-#ifdef DEBUG
-	JZWRITE_DEBUG("end of analyze , now print words");
-	auto it = mRecordList.begin();	
-	for(; it != mRecordList.end() ;it++)
-	{
-		string outPut = "";
-		outPut += "At line : ";
-		outPut += StringUtil::tostr(it->line);
-		outPut += "\nWord : --" + it->word + "--\n";
-		JZWRITE_DEBUG(outPut.c_str());
-	}
-#endif
+//#ifdef DEBUG
+//	JZWRITE_DEBUG("end of analyze , now print words");
+//	auto it = mRecordList.begin();	
+//	for(; it != mRecordList.end() ;it++)
+//	{
+//		string outPut = "";
+//		outPut += "At line : ";
+//		outPut += StringUtil::tostr(it->line);
+//		outPut += "\nWord : --" + it->word + "--";
+//		JZWRITE_DEBUG(outPut.c_str());
+//	}
+//#endif
+}
+
+const std::string LexicalAnalyzer::getSrcCodeFileName()
+{
+	return mCodePath;
 }
 
 bool LexicalAnalyzer::isEmptyInput(char input)
@@ -148,6 +153,7 @@ bool LexicalAnalyzer::isInterpunction(char input)
 	}
 	switch(input)
 	{
+		case '!':
 		case '+':
 		case '-':
 		case '*':
@@ -274,6 +280,7 @@ void LexicalAnalyzer::saveAWord(int line, const string& word)
 	LexicalRecord record;
 	record.line = line;
 	record.word = word ;
+	record.fromAnalyzer = this;
 	mRecordList.push_back(record);
 
 }
@@ -363,7 +370,10 @@ void LexicalAnalyzer::analyzeALine(
 	//now read line
 	for(int i = 0 ; i < line.size() ; i ++ )	
 	{
-
+		if (i == 0)
+		{
+			JZWRITE_DEBUG("now begin to analyze this line");
+		}
 		//handle comment block
 		if(*inCommentBlockFlag == true)
 		{
@@ -399,6 +409,7 @@ void LexicalAnalyzer::analyzeALine(
 		//handle include input
 		if (true == *inIncludeFlag)
 		{
+			JZWRITE_DEBUG("in include flag");
 			if ('>' == line[i])
 			{
 				*inIncludeFlag = false;
@@ -541,8 +552,15 @@ void LexicalAnalyzer::analyzeALine(
 			}
 			else if (line[i] == '<')
 			{
+				int index = mRecordList.size() - 1;
+				if (index >= 1 
+					&& mRecordList[index].word == "include"
+					&& mRecordList[index - 1].word == "#")
+				{
+					//not all < lead to include flag,ok?
+					*inIncludeFlag = true;
+				}
 				saveAWord(lineNum, "<");
-				*inIncludeFlag = true;
 				continue;
 			}
 			else if(!isEmptyInput(line[i]))
@@ -623,5 +641,23 @@ LexicalAnalyzer* AnalyzerCollector::getAnalyzer(const std::string& filePath)
 	{
 		return it->second;
 	}
+}
+
+void AnalyzerCollector::addTmpAnalyzer(LexicalAnalyzer* analyzer)
+{
+	if (NULL == analyzer)
+	{
+		return;
+	}
+	mTmpCollectList.push_back(analyzer);
+}
+
+void AnalyzerCollector::clearTmpAnalyzer()
+{
+	for(int i = 0 ;i < mTmpCollectList.size();i++ )
+	{
+		delete mTmpCollectList[i];	
+	}
+	mTmpCollectList.clear();
 }
 //end of collector

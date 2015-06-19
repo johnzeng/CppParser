@@ -17,6 +17,7 @@ struct LexicalRecord
 	LexicalRecord()
 	{
 		expendAnalyzer = NULL;
+		fromAnalyzer = NULL;
 		line = 0;
 		word = "";
 		isConsumed = false;	
@@ -25,8 +26,13 @@ struct LexicalRecord
 	int line;
 	string word;
 	bool isConsumed;
-	LexicalAnalyzer* expendAnalyzer;	//if it is a macro or include mark(anyway, or other expendable keyword) .Otherwise this will be null
-} /* optional variable list */;
+
+	//very import to tell that this record is from where
+	LexicalAnalyzer* fromAnalyzer;
+
+	//if it is a macro or include mark(anyway, or other expendable keyword) .Otherwise this will be null
+	LexicalAnalyzer* expendAnalyzer;	
+};
 
 class LexicalAnalyzer {
 public:
@@ -53,6 +59,8 @@ public:
 			bool* inStringFlag, bool* inIncludeFlag,
 		   	bool* inCommentBlockFlag, bool* inCommentLineFlag,
 		   	bool* inCharFlag, bool* backSlantEndFlag);
+
+	const std::string getSrcCodeFileName();
 
 private:
 
@@ -87,8 +95,14 @@ public:
 
 	//if no lex is set ,return null;
 	LexicalAnalyzer* getAnalyzer(const std::string& filePath);
+
+	void addTmpAnalyzer(LexicalAnalyzer* analyzer);
+
+	void clearTmpAnalyzer();
+
 private:
 	std::map<std::string, LexicalAnalyzer*> mCollectMap;
+	std::vector<LexicalAnalyzer*> mTmpCollectList;
 };
 
 #endif /* end of include guard: LEXICALANALYZER_H */

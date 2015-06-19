@@ -7,6 +7,7 @@ nmap  :NERDTree
 snoremap <silent> 	 i<Right>=TriggerSnippet()
 nmap <silent>  :grep -IR '=expand("<cword>")' ./*
 nmap  :LeaderfMru
+nmap  :wa:qa
 snoremap  b<BS>
 snoremap % b<BS>%
 snoremap ' b<BS>'
@@ -29,6 +30,7 @@ nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>")
 nmap <F2> :mksession!
 inoremap <silent> 	 =TriggerSnippet()
 inoremap <silent> 	 =ShowAvailableSnips()
+imap  :waa
 let &cpo=s:cpo_save
 unlet s:cpo_save
 set backspace=2
@@ -72,10 +74,10 @@ badd +24 ~/SimpleCompletor/header/DefineManager.h
 badd +3 ~/SimpleCompletor/Macro/DefineManager.cpp
 badd +15 ~/SimpleCompletor/header/ErrorCode.h
 badd +20 ~/SimpleCompletor/header/KeyWordDefine.h
-badd +167 ~/SimpleCompletor/Core/Preprocess.cpp
+badd +231 ~/SimpleCompletor/Core/Preprocess.cpp
 badd +42 ~/SimpleCompletor/header/Preprocess.h
 silent! argdel *
-edit ~/SimpleCompletor/Core/Preprocess.cpp
+edit ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -195,12 +197,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 30 - ((0 * winheight(0) + 18) / 37)
+let s:l = 558 - ((15 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-30
-normal! 0
+558
+normal! 024l
 wincmd w
 argglobal
 edit ~/SimpleCompletor/header/ErrorCode.h
@@ -507,11 +509,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 50 - ((3 * winheight(0) + 9) / 18)
+let s:l = 64 - ((0 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-50
+64
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)

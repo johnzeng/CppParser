@@ -60,6 +60,13 @@ void Preprocess::analyze()
 		}
 	
 	};
+#if defined(DEBUG)
+	auto it = mExpendedList.begin();
+	for(;it != mExpendedList.end() ; it++ )
+	{
+		JZWRITE_DEBUG("%s",it->word.c_str());
+	}
+#endif
 	JZFUNC_END_LOG();
 }
 
@@ -104,6 +111,14 @@ std::vector<LexicalRecord*> Preprocess::getLineRecordTillLineEnd()
 		}
 		ret = lastLexReader.lexPtr->getLineRecordTillLineEnd(lastLexReader.curIndex);
 		lastLexReader.curIndex += ret.size();
+		//need to calculat the \\ num
+		if (ret.size() > 0)
+		{
+			int beginLine = ret[0]->line;
+			uint32 endIndex = ret.size() - 1;
+			int endLine = ret[endIndex]->line;
+			lastLexReader.curIndex += (endLine - beginLine);
+		}
 	}
 	return ret;
 }
@@ -217,6 +232,7 @@ int Preprocess::handleSharpInclude()
 	}
 	LexReaderStruct includeReaderStruct;
 	includeReaderStruct.lexPtr = includeLex;
+//	to debug,don't push it yet
 	pushLexReader(includeReaderStruct);
 	JZFUNC_END_LOG();
 	return errNoError;
