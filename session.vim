@@ -57,7 +57,7 @@ badd +35 ~/SimpleCompletor/header/LexicalAnalyzer.h
 badd +312 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 badd +15 ~/mylib/header/StringUtil.h
 badd +7 ~/mylib/header/JZMarcoFunc.h
-badd +79 ~/mylib/header/JZLogger.h
+badd +82 ~/mylib/header/JZLogger.h
 badd +20 ~/SimpleCompletor/header/GrammarAnalyzer.h
 badd +60 ~/SimpleCompletor/Core/GrammarAnalyzer.cpp
 badd +27 ~/SimpleCompletor/header/IncludeHandler.h
@@ -72,7 +72,7 @@ badd +24 ~/SimpleCompletor/header/DefineManager.h
 badd +3 ~/SimpleCompletor/Macro/DefineManager.cpp
 badd +15 ~/SimpleCompletor/header/ErrorCode.h
 badd +20 ~/SimpleCompletor/header/KeyWordDefine.h
-badd +40 ~/SimpleCompletor/Core/Preprocess.cpp
+badd +167 ~/SimpleCompletor/Core/Preprocess.cpp
 badd +42 ~/SimpleCompletor/header/Preprocess.h
 silent! argdel *
 edit ~/SimpleCompletor/Core/Preprocess.cpp
@@ -195,12 +195,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 209 - ((13 * winheight(0) + 18) / 37)
+let s:l = 30 - ((0 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-209
-normal! 015l
+30
+normal! 0
 wincmd w
 argglobal
 edit ~/SimpleCompletor/header/ErrorCode.h
@@ -299,12 +299,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 17 - ((7 * winheight(0) + 4) / 8)
+let s:l = 18 - ((4 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-17
-normal! 033l
+18
+normal! 027l
 wincmd w
 argglobal
 edit ~/SimpleCompletor/header/KeyWordDefine.h
@@ -507,11 +507,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 54 - ((7 * winheight(0) + 9) / 18)
+let s:l = 50 - ((3 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-54
+50
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)

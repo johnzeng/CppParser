@@ -15,6 +15,7 @@ namespace JZErrorCode
 		errSharDefineFollowWithNothing = 7,
 		errSharpIncludeNotSurroundWithRightSeperator = 8,
 		errSharpIncludeFollowNoFile = 9,
+		errCommentBlockDoEnd = 10,
 	};
 };
 

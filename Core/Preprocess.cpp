@@ -31,41 +31,36 @@ void Preprocess::init(LexicalAnalyzer* rootLex)
 
 void Preprocess::analyze()
 {
-	while (!mLexStack.empty())
+	JZFUNC_BEGIN_LOG();
+	const LexicalRecord* record = NULL;
+	while((record = getNextRecord())!=NULL)
 	{
-		auto curReader = mLexStack.top();
-		mLexStack.pop();
-		auto curLex = curReader.lexPtr;
-		
-		const LexicalRecord* record = NULL;
-		while((record = getNextRecord())!=NULL)
+		//now analyze this record
+		if ("#" == record->word)
 		{
-			//now analyze this record
-			if ("#" == record->word)
-			{
-				handleSharp();
-			}
-			else if("//" == record->word)
-			{
-				handleLineComment();
-			}
-			else if("/*" == record->word)
-			{
-				handleBlockComment();	
-			}
-			else if(true == mDefinemanager.isDefined(record->word))
-			{
-				//if this is a defined marco,handle it
-				
-			}
-			else
-			{
-				//no need to handle
-				this->mExpendedList.push_back(*record);	
-			}
-		
-		};
-	}
+			handleSharp();
+		}
+		else if("//" == record->word)
+		{
+			handleLineComment();
+		}
+		else if("/*" == record->word)
+		{
+			handleBlockComment();	
+		}
+		else if(true == mDefinemanager.isDefined(record->word))
+		{
+			//if this is a defined marco,handle it
+			
+		}
+		else
+		{
+			//no need to handle
+			this->mExpendedList.push_back(*record);	
+		}
+	
+	};
+	JZFUNC_END_LOG();
 }
 
 const LexicalRecord* Preprocess::getNextRecord()
@@ -121,26 +116,31 @@ void Preprocess::pushLexReader(LexReaderStruct reader)
 
 int Preprocess::handleSharp()
 {
+	JZFUNC_BEGIN_LOG();
 	const LexicalRecord* record = getNextRecord();
 	JZIF_NULL_RETURN(record,errSharpFollowNothing);
 
 	if (C_MACRO_WORD_DEFINE == record->word)
 	{
+		JZFUNC_END_LOG();
 		return handleSharpDefine();
 	}
 	else if (C_MACRO_WORD_INCLUDE == record->word)
 	{
+		JZFUNC_END_LOG();
 		return handleSharpInclude();
 	}
 	else
 	{
 		//no key word is found!
+		JZFUNC_END_LOG();
 		return errSharpFollowWithUnknowKeyWord;
 	}
 }
 
 int Preprocess::handleSharpDefine()
 {
+	JZFUNC_BEGIN_LOG();
 	auto recordList = getLineRecordTillLineEnd();
 	if (recordList.size() == 0)
 	{
@@ -168,11 +168,13 @@ int Preprocess::handleSharpDefine()
 	}
 	mDefinemanager.addDefineMap(keyWord, defineWord);	
 	JZWRITE_DEBUG("you define word : %s, context is :%s",keyWord.c_str(), defineWord.c_str() );
+	JZFUNC_END_LOG();
 	return errNoError;	
 }
 
 int Preprocess::handleSharpInclude()
 {
+	JZFUNC_BEGIN_LOG();
 	string fileName = "";
 	auto suroundMarkA = getNextRecord(); 
 	JZIF_NULL_RETURN(suroundMarkA, errSharpIncludeNotSurroundWithRightSeperator);
@@ -216,17 +218,30 @@ int Preprocess::handleSharpInclude()
 	LexReaderStruct includeReaderStruct;
 	includeReaderStruct.lexPtr = includeLex;
 	pushLexReader(includeReaderStruct);
+	JZFUNC_END_LOG();
 	return errNoError;
 }
 
 int Preprocess::handleLineComment()
 {
+	JZFUNC_BEGIN_LOG();
 	getLineRecordTillLineEnd();	
+	JZFUNC_END_LOG();
 	return errNoError;
 }
 
 int Preprocess::handleBlockComment()
 {
-	getNextRecord();
-	return errNoError;
+	JZFUNC_BEGIN_LOG();
+	const LexicalRecord* lex = NULL;
+	while ((lex = getNextRecord() ) != NULL)
+	{
+		if(lex->word == "*/")
+		{
+			JZFUNC_END_LOG();
+			return errNoError;	
+		}
+	}
+	JZFUNC_END_LOG();
+	return errCommentBlockDoEnd;
 }
