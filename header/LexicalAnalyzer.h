@@ -33,7 +33,7 @@ struct LexicalRecord
 	//if it is a macro or include mark(anyway, or other expendable keyword) .Otherwise this will be null
 	LexicalAnalyzer* expendAnalyzer;	
 };
-
+typedef std::vector<LexicalRecord> LexRecordList;
 class LexicalAnalyzer {
 public:
 	LexicalAnalyzer ();

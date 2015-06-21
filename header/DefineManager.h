@@ -4,13 +4,14 @@
 #include "JZCommonDefine.h"
 #include <map>
 #include <string>
+#include <LexicalAnalyzer.h>
+
 using namespace std;
 
 /*
  * This class will manage the command line factor, too
  * 
  */
-
 class DefineManager {
 public:
 	DefineManager ();
@@ -26,9 +27,11 @@ public:
 
 	//will return error code
 	int addDefineMap(const string& src, const string& define);
+	int addDefineMap(const string& src, const LexRecordList& recList);
 
 private:
 	std::map<string, string> mSrcDefineMap;
+	std::map<strgin, LexRecordList> mSrcLexMap;
 	StringSet mCanceledDefine;
 };
 

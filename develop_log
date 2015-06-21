@@ -1,3 +1,6 @@
+2015/6/21
+Log1:	重写define mngr，这个东西不能直接返回string。或者说，应该直接返回lex record比较好.
+
 2015/6/19
 Log1:	preprocess过程开始就应该使用语法分析器进行分析了。
 		不应该在一个for里面判断一堆if

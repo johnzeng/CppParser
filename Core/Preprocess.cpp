@@ -60,13 +60,13 @@ void Preprocess::analyze()
 		}
 	
 	};
-#if defined(DEBUG)
-	auto it = mExpendedList.begin();
-	for(;it != mExpendedList.end() ; it++ )
-	{
-		JZWRITE_DEBUG("%s",it->word.c_str());
-	}
-#endif
+//#if defined(DEBUG)
+//	auto it = mExpendedList.begin();
+//	for(;it != mExpendedList.end() ; it++ )
+//	{
+//		JZWRITE_DEBUG("%s",it->word.c_str());
+//	}
+//#endif
 	JZFUNC_END_LOG();
 }
 
