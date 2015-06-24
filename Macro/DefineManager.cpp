@@ -33,7 +33,17 @@ int DefineManager::addDefineMap(const string& src, const string& define)
 	{
 		JZWRITE_ERROR("double define marco, now rewrite it");
 	}
-	mSrcDefineMap[src] = define;
+
+//	mSrcLexMap[src] = define;
+	LexRecordList list;
+	if ("" != define)
+	{
+		LexicalRecord record;
+		record.word = define;
+		list.push_back(record);
+	}
+
+	this->addDefineMap(src, list);
 
 	return JZErrorCode::errNoError;
 }
@@ -44,12 +54,12 @@ bool DefineManager::isDefined(const string& srcDefine)
 	{
 		return false;
 	}
-	if (mSrcDefineMap.end() == mSrcDefineMap.find(srcDefine))
+	if (mSrcLexMap.end() == mSrcLexMap.find(srcDefine))
 	{
 		return false;
 	}
 	DefineManager* globalInstance = DefineManager::getGlobalInstance();
-	if(this != globalInstance)
+	if(this != globalInstance && NULL != globalInstance)
 	{
 		//this is not global instance
 		bool ret = globalInstance->isDefined(srcDefine);
@@ -61,7 +71,18 @@ bool DefineManager::isDefined(const string& srcDefine)
 	return true;
 }
 
-const string* DefineManager::findDefineMap(const string& srcDefine)
+int DefineManager::addDefineMap(const string& src, const LexRecordList& recList)
+{
+	if(true == isDefined(src))
+	{
+		return JZErrorCode::errDoubleDefineMarco;
+	}
+	mSrcLexMap[src] = recList;
+
+	return JZErrorCode::errNoError;
+}
+
+const vector<LexicalRecord>* DefineManager::findDefineMap(const string& srcDefine)
 {
 	if (false == isDefined(srcDefine))
 	{
@@ -69,14 +90,14 @@ const string* DefineManager::findDefineMap(const string& srcDefine)
 	}
 
 	//for define marco ,use the one that is latest defined
-	auto it = mSrcDefineMap.find(srcDefine);
-	if (mSrcDefineMap.end() != it)
+	auto it = mSrcLexMap.find(srcDefine);
+	if (mSrcLexMap.end() != it)
 	{
 		return &(it->second);
 	}
 
 	DefineManager* globalInstance = DefineManager::getGlobalInstance();
-	if (this != globalInstance)
+	if (this != globalInstance && NULL != globalInstance)
 	{
 		auto ret = globalInstance->findDefineMap(srcDefine);
 		if(NULL != ret)

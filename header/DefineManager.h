@@ -21,7 +21,7 @@ public:
 
 	//if defined ,return defined word, maybe ""
 	//if not defined ,retrun NULL
-	const string* findDefineMap(const string& srcDefine);
+	const vector<LexicalRecord>* findDefineMap(const string& srcDefine);
 
 	bool isDefined(const string& src);
 
@@ -30,8 +30,8 @@ public:
 	int addDefineMap(const string& src, const LexRecordList& recList);
 
 private:
-	std::map<string, string> mSrcDefineMap;
-	std::map<strgin, LexRecordList> mSrcLexMap;
+//	std::map<string, string> mSrcDefineMap;
+	std::map<string, LexRecordList> mSrcLexMap;
 	StringSet mCanceledDefine;
 };
 

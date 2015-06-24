@@ -15,13 +15,17 @@ uint32 CommandLineFactorMngr::handleBarD(string param)
 	int firstEqual = wholeParam.find_first_of("=");
 	JZWRITE_DEBUG("first equal is : %d", firstEqual);
 
-	if (string::npos == firstEqual) {
+	if (string::npos == firstEqual)
+   	{
 		//no equal is set,only define
 		mDefMap[wholeParam] = "";
 		JZWRITE_DEBUG("add define : %s", wholeParam.c_str() );
-	}else{
+	}
+	else
+	{
 		string key = wholeParam.substr(0, firstEqual);
 		string value = wholeParam.substr(firstEqual + 1, wholeParam.size() - firstEqual);
+		//handle the string here ,so it is no more a string ,but lex list
 		mDefMap[key] = value;
 		JZWRITE_DEBUG("add define=value : %s = %s", key.c_str(), value.c_str());
 	}
@@ -38,7 +42,8 @@ uint32 CommandLineFactorMngr::handleBarI(string param)
 
 	wholePath = JZGetAbsolutePath(wholePath.c_str());
 
-	if ("" == wholeParam || 0 != access(wholePath.c_str(), F_OK)) {
+	if ("" == wholeParam || 0 != access(wholePath.c_str(), F_OK))
+   	{
 		return errNoSuchPath;
 	}
 	JZWRITE_DEBUG("%s", wholePath.c_str());
