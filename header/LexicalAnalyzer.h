@@ -63,6 +63,9 @@ public:
 
 	const std::string getSrcCodeFileName();
 
+	void setRecordList(vector<LexicalRecord> list);
+	const std::vector<LexicalRecord> getRecordList();
+
 private:
 
 	void saveAWordAndCleanIt(int line, string& word);

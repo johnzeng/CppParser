@@ -484,11 +484,24 @@ void LexicalAnalyzer::analyzeALine(
 			saveAWordAndCleanIt(lineNum, curWord);
 			if(i + 2 < line.size())
 			{
-				JZWRITE_DEBUG("test triple length interpunction");
 				if(line[i] == line[i+1] && line[i+2] == '=')
 				{
 					if(line[i] == '>' || line[i] == '<')
 					{
+						JZWRITE_DEBUG("check a triple length word");
+						string toSaveWord = "";
+						toSaveWord += line[i];
+						toSaveWord += line[i+1];
+						toSaveWord += line[i+2];
+						saveAWord(lineNum, toSaveWord);
+						i++;i++;
+						continue;	
+					}
+				}
+				else if ('.' == line[i] && line[i] == line[i+1] && line[i] == line[i+2])
+				{
+					//this is a ver long input
+					JZWRITE_DEBUG("check a triple length word");
 					string toSaveWord = "";
 					toSaveWord += line[i];
 					toSaveWord += line[i+1];
@@ -496,12 +509,10 @@ void LexicalAnalyzer::analyzeALine(
 					saveAWord(lineNum, toSaveWord);
 					i++;i++;
 					continue;	
-					}
-				}	
+				}
 			}
 			if(i + 1 < line.size())
 			{
-				JZWRITE_DEBUG("test double length interpunction");
 				if(line[i] == '/' && line[i+1] == '/')
 				{
 					//actually ,if you don't handle '//' here,
@@ -599,6 +610,18 @@ LexicalAnalyzer_doAnalyze_addcurWord:
 		JZWRITE_DEBUG("save a word at the end of line");
 		saveAWordAndCleanIt(lineNum, curWord);
 	}
+}
+
+void LexicalAnalyzer::setRecordList(std::vector<LexicalRecord> list)
+{
+	JZFUNC_BEGIN_LOG();
+	mRecordList = list;
+	JZFUNC_END_LOG();
+}
+
+const std::vector<LexicalRecord> LexicalAnalyzer::getRecordList()
+{
+	return mRecordList;
 }
 
 //end of Lexical analyzer

@@ -55,6 +55,9 @@ private:
 //handle block comment
 	int handleBlockComment();
 
+//handle define
+	int handleDefine(const LexicalRecord* recordPtr);
+
 private:
 	//follow the private member variables
 	
