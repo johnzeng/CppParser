@@ -50,7 +50,7 @@ int Preprocess::handleSharpDefine()
 	if (i >= recordList.size())
 	{
 		JZWRITE_ERROR("define end with nothing");
-		return errUnknow;
+		return errSharpDefineFollowWithNothing;
 	}
 
 	keyWord = recordList[i]->word;
@@ -155,7 +155,11 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 		return errUnknow;
 	}
 
-	auto defineLex = mDefinemanager.findDefineMap(record->word);	
-		
+	auto defineLex = mDefinemanager.findDefineMap(record->word);
+	if (NULL == defineLex)
+	{
+		return errNoDefineIsFind;
+	}
+	
 	return errNoError;
 }

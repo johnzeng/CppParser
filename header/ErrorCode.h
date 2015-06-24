@@ -12,10 +12,11 @@ namespace JZErrorCode
 		errDoubleDefineMarco = 4,
 		errSharpFollowNothing = 5,
 		errSharpFollowWithUnknowKeyWord = 6,
-		errSharDefineFollowWithNothing = 7,
+		errSharpDefineFollowWithNothing = 7,
 		errSharpIncludeNotSurroundWithRightSeperator = 8,
 		errSharpIncludeFollowNoFile = 9,
 		errCommentBlockDoEnd = 10,
+		errNoDefineIsFind = 11,
 	};
 };
 
