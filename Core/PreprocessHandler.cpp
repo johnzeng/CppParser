@@ -39,7 +39,7 @@ int Preprocess::handleSharpDefine()
 	if (recordList.size() == 0)
 	{
 		JZWRITE_DEBUG("define following nothing!");
-		return errSharDefineFollowWithNothing;
+		return errSharpDefineFollowWithNothing;
 	}
 	std::string keyWord = "";
 	int i = 0;
