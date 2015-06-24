@@ -31,6 +31,9 @@ private:
 
 	//these two method may need to be abstrat as a father method
 	const LexicalRecord* getNextRecord();
+
+	//only get none empty record
+	const LexicalRecord* getNextRecordAndSkipEmptyRecord();
 	
 	std::vector<LexicalRecord*> getLineRecordTillLineEnd();
 

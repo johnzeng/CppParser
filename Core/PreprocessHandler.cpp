@@ -11,7 +11,7 @@ using namespace JZErrorCode;
 int Preprocess::handleSharp()
 {
 	JZFUNC_BEGIN_LOG();
-	const LexicalRecord* record = getNextRecord();
+	const LexicalRecord* record = getNextRecordAndSkipEmptyRecord();
 	JZIF_NULL_RETURN(record,errSharpFollowNothing);
 
 	if (C_MACRO_WORD_DEFINE == record->word)
@@ -42,30 +42,28 @@ int Preprocess::handleSharpDefine()
 		return errSharDefineFollowWithNothing;
 	}
 	std::string keyWord = "";
-	if (NULL != recordList[0])
+	int i = 0;
+	while (i < recordList.size() && " " == recordList[i]->word )
 	{
-		keyWord = recordList[0]->word;
+		i++;
 	}
-	else
+	if (i >= recordList.size())
 	{
-		JZWRITE_ERROR("return with NULL ptr");
+		JZWRITE_ERROR("define end with nothing");
 		return errUnknow;
 	}
-	std::string defineWord = "";
-	for(int j = 1; j < recordList.size(); j ++)
-	{
-		if (NULL == recordList[j])
-		{
-			continue;
-		}
-		defineWord += (recordList[j])->word;
-	}
-	LexicalAnalyzer *analyzer = new LexicalAnalyzer();
-	bool inStringFlag = false,inIncludeFlag = false,inCommentBlockFlag = false,inCommentLineFlag = false, inCharFlag = false, backSlantEndFlag =false;
-	analyzer->analyzeALine(defineWord, -1,&inStringFlag, &inIncludeFlag, & inCommentBlockFlag, &inCommentLineFlag, &inCharFlag, &backSlantEndFlag);
-	mDefinemanager.addDefineMap(keyWord, analyzer->getRecordList());	
 
-	JZWRITE_DEBUG("you define word : %s, context is :%s",keyWord.c_str(), defineWord.c_str() );
+	keyWord = recordList[i]->word;
+	LexRecordList list;
+	while(i < recordList.size())
+	{
+		list.push_back(*recordList[i]);	
+		i++;
+	}
+	mDefinemanager.addDefineMap(keyWord, list);	
+
+	JZWRITE_DEBUG("you define word : %s",keyWord.c_str());
+
 	JZFUNC_END_LOG();
 	return errNoError;	
 }
@@ -74,17 +72,17 @@ int Preprocess::handleSharpInclude()
 {
 	JZFUNC_BEGIN_LOG();
 	string fileName = "";
-	auto suroundMarkA = getNextRecord(); 
+	auto suroundMarkA = getNextRecordAndSkipEmptyRecord(); 
 	JZIF_NULL_RETURN(suroundMarkA, errSharpIncludeNotSurroundWithRightSeperator);
 	if ("\"" != suroundMarkA->word && "<" != suroundMarkA->word)
 	{
 		return errSharpIncludeNotSurroundWithRightSeperator;
 	}
 
-	auto includeRecord = getNextRecord();
+	auto includeRecord = getNextRecordAndSkipEmptyRecord();
 	JZIF_NULL_RETURN(includeRecord,errSharpIncludeFollowNoFile);
 	
-	auto suroundMarkB = getNextRecord();
+	auto suroundMarkB = getNextRecordAndSkipEmptyRecord();
 	JZIF_NULL_RETURN(suroundMarkB,errSharpIncludeNotSurroundWithRightSeperator);
 
 	if ("\"" == suroundMarkA->word && "\"" != suroundMarkB->word)
@@ -134,7 +132,7 @@ int Preprocess::handleBlockComment()
 {
 	JZFUNC_BEGIN_LOG();
 	const LexicalRecord* lex = NULL;
-	while ((lex = getNextRecord() ) != NULL)
+	while ((lex = getNextRecordAndSkipEmptyRecord() ) != NULL)
 	{
 		if(lex->word == "*/")
 		{
@@ -151,5 +149,13 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 	//find out the deine record list
 	//match the current func
 	//then you can find out the define
+	
+	if (NULL == record)
+	{
+		return errUnknow;
+	}
+
+	auto defineLex = mDefinemanager.findDefineMap(record->word);	
+		
 	return errNoError;
 }

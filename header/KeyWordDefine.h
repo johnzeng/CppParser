@@ -17,6 +17,7 @@ const string C_MACRO_WORD_ENDIF = "endif";
 const string C_MACRO_WORD_IFDEF = "ifdef";
 const string C_MACRO_WORD_IFNDEF = "ifndef";
 const string C_MACRO_WORD_INCLUDE = "include";
+const string C_MACRO_WORD___VA_ARGS__="__VA_ARGS__";
 
 //pragma code
 const string COMPILE_CODE_PRAGMA = "#pragma";

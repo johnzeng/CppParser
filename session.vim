@@ -19,6 +19,7 @@ vmap \c :call CommentTrigger()
 nmap \c :call CommentTrigger()
 nmap \k :bp
 nmap \j :bn
+nmap \s :waa
 snoremap ^ b<BS>^
 snoremap ` b<BS>`
 nmap gx <Plug>NetrwBrowseX
@@ -56,7 +57,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +35 ~/SimpleCompletor/header/LexicalAnalyzer.h
-badd +312 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+badd +580 ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
 badd +15 ~/mylib/header/StringUtil.h
 badd +7 ~/mylib/header/JZMarcoFunc.h
 badd +82 ~/mylib/header/JZLogger.h
@@ -76,8 +77,9 @@ badd +15 ~/SimpleCompletor/header/ErrorCode.h
 badd +20 ~/SimpleCompletor/header/KeyWordDefine.h
 badd +231 ~/SimpleCompletor/Core/Preprocess.cpp
 badd +42 ~/SimpleCompletor/header/Preprocess.h
+badd +0 ~/SimpleCompletor/Core/PreprocessHandler.cpp
 silent! argdel *
-edit ~/SimpleCompletor/Core/LexicalAnalyzer.cpp
+edit ~/SimpleCompletor/Core/PreprocessHandler.cpp
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -197,12 +199,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 558 - ((15 * winheight(0) + 18) / 37)
+let s:l = 8 - ((7 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-558
-normal! 024l
+8
+normal! 0
 wincmd w
 argglobal
 edit ~/SimpleCompletor/header/ErrorCode.h

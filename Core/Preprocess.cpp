@@ -31,9 +31,10 @@ void Preprocess::init(LexicalAnalyzer* rootLex)
 
 void Preprocess::analyze()
 {
+//	return;
 	JZFUNC_BEGIN_LOG();
 	const LexicalRecord* record = NULL;
-	while((record = getNextRecord())!=NULL)
+	while((record = getNextRecordAndSkipEmptyRecord())!=NULL)
 	{
 		//now analyze this record
 		if ("#" == record->word)
@@ -127,3 +128,15 @@ void Preprocess::pushLexReader(LexReaderStruct reader)
 	mLexStack.push(reader);
 }
 
+const LexicalRecord* Preprocess::getNextRecordAndSkipEmptyRecord()
+{
+	const LexicalRecord* ret = NULL;
+	while ((ret = getNextRecord()))
+	{
+		if (ret->word != " ")
+		{
+			return ret;
+		}
+	}
+	return ret;
+}

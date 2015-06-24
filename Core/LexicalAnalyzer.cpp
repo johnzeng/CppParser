@@ -82,18 +82,18 @@ void LexicalAnalyzer::doAnalyze()
 				&inCharFlag, &backSlantEndFlag);
 	}
 
-//#ifdef DEBUG
-//	JZWRITE_DEBUG("end of analyze , now print words");
-//	auto it = mRecordList.begin();	
-//	for(; it != mRecordList.end() ;it++)
-//	{
-//		string outPut = "";
-//		outPut += "At line : ";
-//		outPut += StringUtil::tostr(it->line);
-//		outPut += "\nWord : --" + it->word + "--";
-//		JZWRITE_DEBUG(outPut.c_str());
-//	}
-//#endif
+#ifdef DEBUG
+	JZWRITE_DEBUG("end of analyze , now print words");
+	auto it = mRecordList.begin();	
+	for(; it != mRecordList.end() ;it++)
+	{
+		string outPut = "";
+		outPut += "At line : ";
+		outPut += StringUtil::tostr(it->line);
+		outPut += "\nWord : .." + it->word + "..";
+		JZWRITE_DEBUG("At line : %d:\nWord:[%s]",it->line, it->word.c_str());
+	}
+#endif
 }
 
 const std::string LexicalAnalyzer::getSrcCodeFileName()
@@ -389,7 +389,7 @@ void LexicalAnalyzer::analyzeALine(
 					continue;
 				}
 			}
-			goto LexicalAnalyzer_doAnalyze_addcurWord;
+			goto LexicalAnalyzer_analyzeALine_addCurWord;
 		}
 
 		//handle comment line
@@ -403,7 +403,7 @@ void LexicalAnalyzer::analyzeALine(
 			}
 			else
 			{
-				goto LexicalAnalyzer_doAnalyze_addcurWord;	
+				goto LexicalAnalyzer_analyzeALine_addCurWord;	
 			}
 		}
 		//handle include input
@@ -417,7 +417,7 @@ void LexicalAnalyzer::analyzeALine(
 				saveAWord(lineNum, ">");
 				continue;
 			}
-			goto LexicalAnalyzer_doAnalyze_addcurWord;
+			goto LexicalAnalyzer_analyzeALine_addCurWord;
 		}
 		//handle char input
 		if (*inCharFlag == true)
@@ -436,7 +436,7 @@ void LexicalAnalyzer::analyzeALine(
 				saveAWordAndCleanIt(lineNum, curWord);
 				continue;
 			}
-			goto LexicalAnalyzer_doAnalyze_addcurWord;
+			goto LexicalAnalyzer_analyzeALine_addCurWord;
 		}
 		//handle string input
 		if(*inStringFlag == true)
@@ -475,7 +475,7 @@ void LexicalAnalyzer::analyzeALine(
 				*inStringFlag = false;
 				continue;
 			}
-			goto LexicalAnalyzer_doAnalyze_addcurWord;
+			goto LexicalAnalyzer_analyzeALine_addCurWord;
 		}
 
 		//handle inter punction
@@ -583,31 +583,36 @@ void LexicalAnalyzer::analyzeALine(
 			else
 			{
 				//empty input
+				while (i+1 < line.size() && true == isEmptyInput(line[i+1]))
+				{
+					//make sure the next line is empty ,then add 1
+					i++;
+				}
+				saveAWord(lineNum, " ");
 				continue;
 			}
 
 		}
-		if(line[i] == '\\')
-		{
-			if (isEmptyFromIndexTillEnd(line, i))
-			{
-				JZWRITE_DEBUG("this is a back slant ,now handle it");
-				saveAWordAndCleanIt(lineNum, curWord);
-				saveAWord(lineNum, "\\ ");
-				continue;	
-			}
-			else
-			{
-				JZWRITE_DEBUG("unknow appended after \\");
-			}
-		}
-LexicalAnalyzer_doAnalyze_addcurWord:
+//		if(line[i] == '\\')
+//		{
+//			if (isEmptyFromIndexTillEnd(line, i))
+//			{
+//				JZWRITE_DEBUG("this is a back slant ,now handle it");
+//				saveAWordAndCleanIt(lineNum, curWord);
+//				saveAWord(lineNum, "\\ ");
+//				continue;	
+//			}
+//			else
+//			{
+//				JZWRITE_DEBUG("unknow appended after \\");
+//			}
+//		}
+LexicalAnalyzer_analyzeALine_addCurWord:
 		//need filter to test if it is all empty
-		curWord+=line[i];
+		curWord += line[i];
 	}
-	if ("" != curWord)
+	if ("" != curWord && " " != curWord)
 	{	
-		JZWRITE_DEBUG("save a word at the end of line");
 		saveAWordAndCleanIt(lineNum, curWord);
 	}
 }
