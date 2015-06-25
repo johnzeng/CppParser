@@ -37,6 +37,23 @@ struct LexicalRecord
 typedef std::vector<LexicalRecord> LexRecordList;
 class LexicalAnalyzer {
 public:
+
+//	public tool functions
+
+	// like ++,--,<<,>> 's begin
+	static bool isDoubleableInterpunction(char input); 
+
+	// like +=, -= 's begin
+	static bool isSeflEqualInterpunction(char input); 
+
+	// like !=, >= 's begin
+	static bool isComparorEqualInterpunction(char input); 
+	
+	static bool isInterpunction(char input);
+
+	static bool isEmptyInput(char input);
+
+public:
 	LexicalAnalyzer ();
 	virtual ~LexicalAnalyzer ();
 
@@ -70,18 +87,8 @@ private:
 
 	void saveAWordAndCleanIt(int line, string& word);
 	void saveAWord(int line, const string& word);
-	bool isInterpunction(char input);
-	bool isEmptyInput(char input);
 	bool isEmptyFromIndexTillEnd(const std::string& str, int index);
 
-	// like ++,--,<<,>> 's begin
-	bool isDoubleableInterpunction(char input); 
-
-	// like +=, -= 's begin
-	bool isSeflEqualInterpunction(char input); 
-
-	// like !=, >= 's begin
-	bool isComparorEqualInterpunction(char input); 
 
 	std::vector<LexicalRecord> mRecordList;
 	std::string mCodePath;

@@ -4,7 +4,7 @@
 #include "JZCommonDefine.h"
 #include <map>
 #include <string>
-#include <LexicalAnalyzer.h>
+#include "LexicalAnalyzer.h"
 
 using namespace std;
 

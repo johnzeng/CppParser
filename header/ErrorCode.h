@@ -17,6 +17,9 @@ namespace JZErrorCode
 		errSharpIncludeFollowNoFile = 9,
 		errCommentBlockDoEnd = 10,
 		errNoDefineIsFind = 11,
+		errMissingSeperator = 12,
+		errFuncLikeMarcoParamError = 13,
+		errVarParamAtWrongPose = 14,
 	};
 };
 

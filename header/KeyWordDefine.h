@@ -74,4 +74,5 @@ const string CPP_KEY_WORD_PRIVATE = "private";
 const string CPP_KEY_WORD_PROTECTED = "protected";
 const string CPP_KEY_WORD_BOOL = "bool";
 
+const string C_KEY_WORD_VAR_LENGTH_PARAM = "...";
 #endif // __KEY_WORD_DEFINE_H__
