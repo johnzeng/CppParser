@@ -79,7 +79,7 @@ const LexicalRecord* Preprocess::getNextRecord()
 		if (lastLexReader.lexPtr == NULL)
 		{
 			JZWRITE_ERROR("no ptr is set! Now pop this reader");
-			mLexStack.pop();
+			popLexReader();
 			continue;
 		}
 		ret = lastLexReader.lexPtr->getLexiRecord(lastLexReader.curIndex);
@@ -87,8 +87,7 @@ const LexicalRecord* Preprocess::getNextRecord()
 
 		if (NULL == ret)
 		{
-			//this lex reach the end
-			mLexStack.pop();
+			popLexReader();
 		}
 		else
 		{
@@ -107,7 +106,7 @@ std::vector<LexicalRecord*> Preprocess::getLineRecordTillLineEnd()
 		if (lastLexReader.lexPtr == NULL)
 		{
 			JZWRITE_ERROR("no ptr is set! now pop this reader");
-			mLexStack.pop();
+			popLexReader();
 		}
 		ret = lastLexReader.lexPtr->getLineRecordTillLineEnd(lastLexReader.curIndex);
 		lastLexReader.curIndex += ret.size();
@@ -139,4 +138,20 @@ const LexicalRecord* Preprocess::getNextRecordAndSkipEmptyRecord()
 		}
 	}
 	return ret;
+}
+
+void Preprocess::popLexReader()
+{
+	if (mLexStack.empty())
+	{
+		return;
+	}
+	auto lastLexReader = mLexStack.top();
+	auto marcoIt = mExpendingMarcoSet.find(lastLexReader.expendingMarco);
+	if (mExpendingMarcoSet.end() != marcoIt )
+	{
+		mExpendingMarcoSet.erase(marcoIt);
+	}
+	mLexStack.pop();
+
 }

@@ -175,6 +175,8 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 		LexReaderStruct reader;
 		reader.curIndex = 0;
 		reader.lexPtr = tmpLex;
+		reader.expendingMarco = record->word;
+		mExpendingMarcoSet.insert(record->word);
 		this->pushLexReader(reader);
 		return errNoError;
 	}

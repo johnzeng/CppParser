@@ -13,7 +13,9 @@ struct LexReaderStruct
 	{
 		curIndex = 0;
 		lexPtr = NULL;
+		expendingMarco = "";
 	}
+	string expendingMarco;
 	int curIndex;
 	LexicalAnalyzer* lexPtr;
 };
@@ -38,6 +40,8 @@ private:
 	std::vector<LexicalRecord*> getLineRecordTillLineEnd();
 
 	void pushLexReader(LexReaderStruct reader);
+
+	void popLexReader();
 
 private:
 	//follow the private member functions
@@ -65,6 +69,7 @@ private:
 	//follow the private member variables
 	
 //	LexicalAnalyzer *mRootLex;
+	set<string>	mExpendingMarcoSet;
 	stack<LexReaderStruct> mLexStack;
 	DefineManager mDefinemanager;
 	std::vector<LexicalRecord> mExpendedList;
