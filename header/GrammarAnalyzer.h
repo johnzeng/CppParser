@@ -56,7 +56,7 @@ public:
 
 private:
 	
-	void expendMarco();
+	void expendMacro();
 
 	bool mIsCPPMode;
 

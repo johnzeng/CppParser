@@ -89,7 +89,7 @@ const StringSet& CommandLineFactorMngr::getHeaderFileSearchPath()
 	return mHeaderFileSearchPath;
 }
 
-const DefineMarcoMap& CommandLineFactorMngr::getDefineMap()
+const DefineMacroMap& CommandLineFactorMngr::getDefineMap()
 {
 	return mDefMap;
 }

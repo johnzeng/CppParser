@@ -1,6 +1,6 @@
 #include "Preprocess.h"
 #include "JZLogger.h"
-#include "JZMarcoFunc.h"
+#include "JZMacroFunc.h"
 #include "IncludeHandler.h"
 #include "JZFileUtil.h"
 #include "ErrorCode.h"
@@ -147,10 +147,10 @@ void Preprocess::popLexReader()
 		return;
 	}
 	auto lastLexReader = mLexStack.top();
-	auto marcoIt = mExpendingMarcoSet.find(lastLexReader.expendingMarco);
-	if (mExpendingMarcoSet.end() != marcoIt )
+	auto macroIt = mExpendingMacroSet.find(lastLexReader.expendingMacro);
+	if (mExpendingMacroSet.end() != macroIt )
 	{
-		mExpendingMarcoSet.erase(marcoIt);
+		mExpendingMacroSet.erase(macroIt);
 	}
 	mLexStack.pop();
 

@@ -5,7 +5,7 @@
 using namespace std;
 
 //macro 
-//for a marco ,it is not necessary to begin wit #keyword,
+//for a macro ,it is not necessary to begin wit #keyword,
 //it may looks like:
 //#   include""
 //or

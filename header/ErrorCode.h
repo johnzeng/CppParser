@@ -9,7 +9,7 @@ namespace JZErrorCode
 		errUnknow 		= 1,
 		errOpenFileFail = 2,
 		errNoSuchPath	= 3,
-		errDoubleDefineMarco = 4,
+		errDoubleDefineMacro = 4,
 		errSharpFollowNothing = 5,
 		errSharpFollowWithUnknowKeyWord = 6,
 		errSharpDefineFollowWithNothing = 7,
@@ -18,7 +18,7 @@ namespace JZErrorCode
 		errCommentBlockDoEnd = 10,
 		errNoDefineIsFind = 11,
 		errMissingSeperator = 12,
-		errFuncLikeMarcoParamError = 13,
+		errFuncLikeMacroParamError = 13,
 		errVarParamAtWrongPose = 14,
 	};
 };

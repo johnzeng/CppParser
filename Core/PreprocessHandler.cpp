@@ -1,6 +1,6 @@
 #include "Preprocess.h"
 #include "JZLogger.h"
-#include "JZMarcoFunc.h"
+#include "JZMacroFunc.h"
 #include "IncludeHandler.h"
 #include "JZFileUtil.h"
 #include "ErrorCode.h"
@@ -163,26 +163,26 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 
 	if (defineLex->size() == 0)
 	{
-		//this is possible
+		//this is possible,when it is an empty macro
 		return errNoError;
 	}
 	if ((*defineLex)[0].word != "(")
 	{
-		//not a func marco !,so just replace it!
+		//not a func macro !,so just replace it!
 		LexicalAnalyzer *tmpLex = new LexicalAnalyzer();
 		tmpLex->setRecordList(*defineLex);
 		AnalyzerCollector::getInstance()->addTmpAnalyzer(tmpLex);
 		LexReaderStruct reader;
 		reader.curIndex = 0;
 		reader.lexPtr = tmpLex;
-		reader.expendingMarco = record->word;
-		mExpendingMarcoSet.insert(record->word);
+		reader.expendingMacro = record->word;
+		mExpendingMacroSet.insert(record->word);
 		this->pushLexReader(reader);
 		return errNoError;
 	}
 	else
 	{
-		//a func marco !!!
+		//a func macro !!!
 		//now check match !
 		//actually, actual param can be a little strange,cause it may be another lex list
 		vector<LexRecordList> actualParamList; 
@@ -228,7 +228,7 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 							(curWord[0])
 							))
 				{
-					JZWRITE_ERROR("function-like marco expect ')'before other seperator join");
+					JZWRITE_ERROR("function-like macro expect ')'before other seperator join");
 					return errMissingSeperator;
 				}
 				JZWRITE_DEBUG("push back a new param : %s", curWord.c_str());
@@ -252,7 +252,7 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 			else
 			{
 				JZWRITE_ERROR("unexpect input!");
-				return errFuncLikeMarcoParamError;
+				return errFuncLikeMacroParamError;
 			}
 		}
 
@@ -274,4 +274,9 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 	}
 	
 	return errNoError;
+}
+
+void Preprocess::getMacroParams(vector<LexRecordList>& ret)
+{
+	
 }

@@ -77,7 +77,7 @@ badd +15 ~/SimpleCompletor/header/ErrorCode.h
 badd +20 ~/SimpleCompletor/header/KeyWordDefine.h
 badd +231 ~/SimpleCompletor/Core/Preprocess.cpp
 badd +42 ~/SimpleCompletor/header/Preprocess.h
-badd +0 ~/SimpleCompletor/Core/PreprocessHandler.cpp
+badd +1 ~/SimpleCompletor/Core/PreprocessHandler.cpp
 silent! argdel *
 edit ~/SimpleCompletor/Core/PreprocessHandler.cpp
 set splitbelow splitright
@@ -199,11 +199,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 8 - ((7 * winheight(0) + 18) / 37)
+let s:l = 278 - ((31 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
+278
 normal! 0
 wincmd w
 argglobal
@@ -511,11 +511,11 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 64 - ((0 * winheight(0) + 9) / 18)
+let s:l = 70 - ((9 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-64
+70
 normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 79 + 79) / 158)

@@ -10,9 +10,9 @@ using namespace std;
 #define DEFAULT_COMMON_LINE_FACTOR_FILE_NAME ".factor"
 
 
-//Currently, I think that -D param can only define a word,no marco function is concerned.
+//Currently, I think that -D param can only define a word,no macro function is concerned.
 //BTW, value can be empty, it turns out to be ""
-typedef map<string ,string> DefineMarcoMap;
+typedef map<string ,string> DefineMacroMap;
 
 class CommandLineFactorMngr
 {
@@ -32,13 +32,13 @@ public:
 	uint32 handleBarI(string param);
 
 	const StringSet& getHeaderFileSearchPath();
-	const DefineMarcoMap& getDefineMap();
+	const DefineMacroMap& getDefineMap();
 
 private:
 	string 			mAddonFactorDefineFile;
 	string			mAddonFactorFileDirectory;
 	StringList		mOriginalFactorList;
-	DefineMarcoMap 	mDefMap;
+	DefineMacroMap 	mDefMap;
 	StringSet		mHeaderFileSearchPath;
 };
 

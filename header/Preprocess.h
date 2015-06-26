@@ -13,9 +13,9 @@ struct LexReaderStruct
 	{
 		curIndex = 0;
 		lexPtr = NULL;
-		expendingMarco = "";
+		expendingMacro = "";
 	}
-	string expendingMarco;
+	string expendingMacro;
 	int curIndex;
 	LexicalAnalyzer* lexPtr;
 };
@@ -66,10 +66,13 @@ private:
 	int handleDefine(const LexicalRecord* recordPtr);
 
 private:
+	void getMacroParams(vector<LexRecordList>& ret);
+
+private:
 	//follow the private member variables
 	
 //	LexicalAnalyzer *mRootLex;
-	set<string>	mExpendingMarcoSet;
+	set<string>	mExpendingMacroSet;
 	stack<LexReaderStruct> mLexStack;
 	DefineManager mDefinemanager;
 	std::vector<LexicalRecord> mExpendedList;

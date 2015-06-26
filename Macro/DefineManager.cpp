@@ -31,7 +31,7 @@ int DefineManager::addDefineMap(const string& src, const string& define)
 {
 	if (true == isDefined(src))
 	{
-		JZWRITE_ERROR("double define marco, now rewrite it");
+		JZWRITE_ERROR("double define macro, now rewrite it");
 	}
 
 //	mSrcLexMap[src] = define;
@@ -75,7 +75,7 @@ int DefineManager::addDefineMap(const string& src, const LexRecordList& recList)
 {
 	if(true == isDefined(src))
 	{
-		return JZErrorCode::errDoubleDefineMarco;
+		return JZErrorCode::errDoubleDefineMacro;
 	}
 	mSrcLexMap[src] = recList;
 
@@ -89,7 +89,7 @@ const vector<LexicalRecord>* DefineManager::findDefineMap(const string& srcDefin
 		return NULL;
 	}
 
-	//for define marco ,use the one that is latest defined
+	//for define macro ,use the one that is latest defined
 	auto it = mSrcLexMap.find(srcDefine);
 	if (mSrcLexMap.end() != it)
 	{

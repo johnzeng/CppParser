@@ -1,5 +1,5 @@
 #include "JZLogger.h"
-#include "JZMarcoFunc.h"
+#include "JZMacroFunc.h"
 #include "CommandLineFactorMngr.h"
 #include "JZFileUtil.h"
 #include <unistd.h>

@@ -28,7 +28,7 @@ SOURCES=$(wildcard ./*/*.c ./*/*.cpp)
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
 
-$(TARGET):$(OBJS) $(myLib) main.o
+$(TARGET):$(OBJS) $(myLib) main.o depend
 	@echo $(OBJS)
 	$(CXX) -o $(TARGET) $(INCLUDE_FLAGS) ${OTHER_FLAGS} $(OTHER_CPP_FLAGS) $(OBJS) $(myLib) main.o
 
@@ -44,6 +44,7 @@ release:clean makefile
 	make debug_var=0
 
 clean:
+	-rm depend
 	-rm $(TARGET)
 	-rm $(OBJS)
 
@@ -51,4 +52,5 @@ clean:
 
 depend:$(HEADERS) $(SOURCES)
 	@echo "=================== now gen depend =============="
+	-rm depend
 	-@sh $(depend_generator) "$(CPPFLAGS)" 2>&1 > /dev/null

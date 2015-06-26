@@ -85,10 +85,10 @@ void GrammarAnalyzer::turnOnCppMode(bool turnOn)
 
 void GrammarAnalyzer::doAnalyze()
 {
-	expendMarco();
+	expendMacro();
 }
 
-void GrammarAnalyzer::expendMarco()
+void GrammarAnalyzer::expendMacro()
 {
 	
 }
