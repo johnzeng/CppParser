@@ -54,21 +54,21 @@ bool DefineManager::isDefined(const string& srcDefine)
 	{
 		return false;
 	}
-	if (mSrcLexMap.end() == mSrcLexMap.find(srcDefine))
+	if (mSrcLexMap.end() != mSrcLexMap.find(srcDefine))
 	{
-		return false;
+		return true;
 	}
 	DefineManager* globalInstance = DefineManager::getGlobalInstance();
 	if(this != globalInstance && NULL != globalInstance)
 	{
 		//this is not global instance
 		bool ret = globalInstance->isDefined(srcDefine);
-		if (false == ret)
+		if (true == ret)
 		{
 			return ret;
 		}
 	}
-	return true;
+	return false;
 }
 
 int DefineManager::addDefineMap(const string& src, const LexRecordList& recList)

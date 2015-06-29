@@ -20,6 +20,8 @@ namespace JZErrorCode
 		errMissingSeperator = 12,
 		errFuncLikeMacroParamError = 13,
 		errVarParamAtWrongPose = 14,
+		errExpectAnotherSeperator = 15,
+		errUnexpectSeperator = 16,
 	};
 };
 

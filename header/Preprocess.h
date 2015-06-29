@@ -66,7 +66,7 @@ private:
 	int handleDefine(const LexicalRecord* recordPtr);
 
 private:
-	void getMacroParams(vector<LexRecordList>& ret);
+	int32 getMacroParams(vector<LexRecordList>& ret);
 
 private:
 	//follow the private member variables

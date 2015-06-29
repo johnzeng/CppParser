@@ -54,6 +54,8 @@ int Preprocess::handleSharpDefine()
 	}
 
 	keyWord = recordList[i]->word;
+	i++;
+
 	LexRecordList list;
 	while(i < recordList.size())
 	{
@@ -149,12 +151,13 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 	//find out the deine record list
 	//match the current func
 	//then you can find out the define
-	
+	JZFUNC_BEGIN_LOG();	
 	if (NULL == record)
 	{
 		return errUnknow;
 	}
 
+	JZWRITE_DEBUG("now handle define : %s",record->word.c_str() );
 	auto defineLex = mDefinemanager.findDefineMap(record->word);
 	if (NULL == defineLex)
 	{
@@ -207,16 +210,17 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 			if (")" == curWord)
 			{
 				//reach next ")", formal param end
-				if (paramPos == 0)
+				if (paramPos == 0 && true == expectParam)
 				{
 					break;
 				}
-				else if (true == expectParam)
+				else if (false == expectParam)
 				{
 					break;
 				}
 				else
 				{
+					JZWRITE_ERROR("miss ing seperator");
 					return errMissingSeperator;	
 				}
 			}
@@ -264,19 +268,120 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 				return errVarParamAtWrongPose;
 			}
 		}
-
-		auto nextRecord = getNextRecordAndSkipEmptyRecord();
-		if (NULL == nextRecord)
+		JZWRITE_DEBUG("now get marco actural param list");	
+		int32 errNo = getMacroParams(actualParamList);
+		if (errNoError != errNo)
 		{
-			JZWRITE_ERROR("marc func ,missing seperator '('");
-			return errMissingSeperator;
+			return errNo;
 		}
 	}
-	
+	JZFUNC_END_LOG();	
 	return errNoError;
 }
 
-void Preprocess::getMacroParams(vector<LexRecordList>& ret)
+int32 Preprocess::getMacroParams(vector<LexRecordList>& ret)
 {
-	
+	JZFUNC_BEGIN_LOG();
+	stack<string> symbolStack;
+
+	//init symbol stack
+	const LexicalRecord* record = getNextRecordAndSkipEmptyRecord();
+	if (NULL == record)
+	{
+		JZWRITE_ERROR("function like macro didn't follow with anything");
+		return errMissingSeperator;
+	}
+	if ("(" != record->word)
+	{
+		JZWRITE_ERROR("function like macro didn't follow with \"(\"");
+		return errMissingSeperator;
+	}
+	symbolStack.push(record->word);
+
+	//now read the symbol
+	LexRecordList curParams;
+	while (!symbolStack.empty())
+	{
+		auto nextRecord = getNextRecordAndSkipEmptyRecord();
+		if (NULL == nextRecord)
+		{
+			return errMissingSeperator;
+		}
+		if ("\"" == nextRecord->word || "'" == nextRecord->word)
+		{
+			/*********************************************************
+				what a happy time... 
+				another special handle about \" and '
+			 ********************************************************/
+		
+			curParams.push_back(*nextRecord);	
+			auto stringRecord = getNextRecordAndSkipEmptyRecord();
+			if (NULL == stringRecord)
+			{
+				JZWRITE_ERROR("no string follow the \"");
+				return errMissingSeperator;
+			}
+
+			auto anotherComa = getNextRecordAndSkipEmptyRecord();
+			if (NULL == anotherComa)
+			{
+				return errExpectAnotherSeperator;
+			}
+			if (nextRecord->word != anotherComa->word)
+			{
+				return errExpectAnotherSeperator;
+			}
+			curParams.push_back(*stringRecord);
+			curParams.push_back(*anotherComa);
+			continue;
+		}
+
+		if ("(" == nextRecord->word || "[" == nextRecord->word)
+		{
+			symbolStack.push(nextRecord->word);
+		}
+		else if (")" == nextRecord->word)
+		{
+			if (symbolStack.top() == "(")
+			{
+				symbolStack.pop();
+			}
+			else
+			{
+				JZWRITE_ERROR("unexpected ')'");	
+				return errUnexpectSeperator;
+			}
+		}
+		else if ("]" == nextRecord->word)
+		{
+			if (symbolStack.top() == "[")
+			{
+				symbolStack.pop();
+			}
+			else
+			{
+				JZWRITE_ERROR("unexpected ']'" );
+			}
+		}
+
+		if (symbolStack.empty())
+		{
+			if (curParams.size() > 0)
+			{
+				ret.push_back(curParams);
+			}
+			break;
+		}
+
+		if ("," == nextRecord->word && 1 == symbolStack.size())
+		{
+			ret.push_back(curParams);
+			curParams.clear();
+			continue;
+		}
+		curParams.push_back(*nextRecord);
+		
+	}
+	JZFUNC_END_LOG();
+	return errNoError;
 }
