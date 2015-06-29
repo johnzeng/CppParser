@@ -43,12 +43,18 @@ lib:
 release:clean makefile
 	make debug_var=0
 
+.PHONY:count,clean
+
 clean:
 	-rm depend
 	-rm $(TARGET)
 	-rm $(OBJS)
 
 -include depend
+
+count:
+	wc -l $(HEADERS) $(SOURCES)
+
 
 depend:$(HEADERS) $(SOURCES)
 	@echo "=================== now gen depend =============="
