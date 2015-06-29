@@ -22,6 +22,7 @@ namespace JZErrorCode
 		errVarParamAtWrongPose = 14,
 		errExpectAnotherSeperator = 15,
 		errUnexpectSeperator = 16,
+		errParamNumDoseNotMatch = 17,
 	};
 };
 

@@ -157,6 +157,12 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 		return errUnknow;
 	}
 
+	if (mExpendingMacroSet.find(record->word) != mExpendingMacroSet.end())
+	{
+		JZWRITE_ERROR("double expend marco,but I handle it as no error");
+		return errNoError;
+	}
+
 	JZWRITE_DEBUG("now handle define : %s",record->word.c_str() );
 	auto defineLex = mDefinemanager.findDefineMap(record->word);
 	if (NULL == defineLex)
@@ -220,7 +226,7 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 				}
 				else
 				{
-					JZWRITE_ERROR("miss ing seperator");
+				JZWRITE_ERROR("miss ing seperator");
 					return errMissingSeperator;	
 				}
 			}
@@ -273,6 +279,29 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 		if (errNoError != errNo)
 		{
 			return errNo;
+		}
+#ifdef DEBUG
+		else
+		{
+			auto actualParmIt = actualParamList.begin();
+			for(; actualParmIt != actualParamList.end(); actualParmIt++)
+			{
+				auto recordListIt = actualParmIt->begin();
+				for(; recordListIt != actualParmIt->end(); recordListIt++)
+				{
+					JZWRITE_DEBUG("parm:%s",recordListIt->word.c_str());
+				}
+				JZWRITE_DEBUG("a param end");
+			}		
+		}
+#endif
+		if (false == isVariableParam)
+		{
+			if (actualParamList.size() != formalParamMap.size())
+			{
+				JZWRITE_ERROR("actual param num doesn't match formal param map size");
+				return errParamNumDoseNotMatch;
+			}
 		}
 	}
 	JZFUNC_END_LOG();	
