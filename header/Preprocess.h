@@ -56,6 +56,9 @@ private:
 //handle #include
 	int handleSharpInclude();
 
+//handle sharp 
+	int handleSharpPragma();
+
 //handle line comment
 	int handleLineComment();
 

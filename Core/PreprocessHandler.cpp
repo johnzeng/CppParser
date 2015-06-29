@@ -24,6 +24,11 @@ int Preprocess::handleSharp()
 		JZFUNC_END_LOG();
 		return handleSharpInclude();
 	}
+	else if(COMPILE_CODE_PRAGMA == record->word)
+	{
+		JZFUNC_END_LOG();
+		return handleSharpPragma();	
+	}
 	else
 	{
 		//no key word is found!
@@ -226,7 +231,8 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 				}
 				else
 				{
-				JZWRITE_ERROR("miss ing seperator");
+					JZWRITE_ERROR("miss ing seperator");
+					JZFUNC_END_LOG();
 					return errMissingSeperator;	
 				}
 			}
@@ -239,6 +245,7 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 							))
 				{
 					JZWRITE_ERROR("function-like macro expect ')'before other seperator join");
+					JZFUNC_END_LOG();
 					return errMissingSeperator;
 				}
 				JZWRITE_DEBUG("push back a new param : %s", curWord.c_str());
@@ -262,6 +269,7 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 			else
 			{
 				JZWRITE_ERROR("unexpect input!");
+				JZFUNC_END_LOG();
 				return errFuncLikeMacroParamError;
 			}
 		}
@@ -271,6 +279,7 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 			if (formalParamMap[C_KEY_WORD_VAR_LENGTH_PARAM] != formalParamMap.size() - 1)
 			{
 				JZWRITE_ERROR("var param should be the last param");
+				JZFUNC_END_LOG();
 				return errVarParamAtWrongPose;
 			}
 		}
@@ -278,6 +287,7 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 		int32 errNo = getMacroParams(actualParamList);
 		if (errNoError != errNo)
 		{
+			JZFUNC_END_LOG();
 			return errNo;
 		}
 #ifdef DEBUG
@@ -300,11 +310,58 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 			if (actualParamList.size() != formalParamMap.size())
 			{
 				JZWRITE_ERROR("actual param num doesn't match formal param map size");
+				JZFUNC_END_LOG();
 				return errParamNumDoseNotMatch;
 			}
 		}
+
+		JZWRITE_DEBUG("finally !!! you can replace the param now!");
+		LexRecordList exchangeLexiRecord;
+		LexicalAnalyzer *analyzer = new LexicalAnalyzer();
+		for(int i = paramIndex + 1; i < (*defineLex).size() ; i++)
+		{
+			LexicalRecord curRecord = (*defineLex)[i];
+
+			//fuck the string...
+			if ("\"" == curRecord.word)
+			{
+				if (i+2 >= (*defineLex).size())
+				{
+					JZWRITE_ERROR("no matching \" is found");
+					return errMissingSeperator;
+				}
+				if ((*defineLex)[i+2].word != "\"")
+				{
+					JZWRITE_ERROR("no matching \" is found");
+					return errMissingSeperator;
+				}
+				exchangeLexiRecord.push_back(curRecord);
+				exchangeLexiRecord.push_back((*defineLex)[i+1]);
+				exchangeLexiRecord.push_back((*defineLex)[i+2]);
+			}
+			//fuck the char..
+			else if("'" == curRecord.word)
+			{
+				if (i+2 >= (*defineLex).size())
+				{
+					JZWRITE_ERROR("no matching ' is found");
+					return errMissingSeperator;
+				}
+				if ((*defineLex)[i+2].word != "'")
+				{
+					JZWRITE_ERROR("no matching ' is found");
+					return errMissingSeperator;
+				}
+				exchangeLexiRecord.push_back(curRecord);
+				exchangeLexiRecord.push_back((*defineLex)[i+1]);
+				exchangeLexiRecord.push_back((*defineLex)[i+2]);
+			}
+			//begin exchange,but how should I handle with # and ##
+			
+		}
+
 	}
-	JZFUNC_END_LOG();	
+	JZFUNC_END_LOG();
 	return errNoError;
 }
 
@@ -412,5 +469,13 @@ int32 Preprocess::getMacroParams(vector<LexRecordList>& ret)
 		
 	}
 	JZFUNC_END_LOG();
+	return errNoError;
+}
+
+int Preprocess::handleSharpPragma()
+{
+	//not so sure about how to handle it yet,just wanna make a log first
+	JZFUNC_BEGIN_LOG();
+
 	return errNoError;
 }

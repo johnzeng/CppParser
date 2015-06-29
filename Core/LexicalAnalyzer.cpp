@@ -8,6 +8,7 @@ using namespace std;
 
 LexicalAnalyzer::LexicalAnalyzer()
 {
+	mCodePath = "";
 }
 
 LexicalAnalyzer::~LexicalAnalyzer()
@@ -16,7 +17,6 @@ LexicalAnalyzer::~LexicalAnalyzer()
 
 void LexicalAnalyzer::init()
 {
-	mCodePath = "";
 }
 
 void LexicalAnalyzer::setSourceCodeDir(string path)

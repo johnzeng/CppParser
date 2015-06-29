@@ -58,6 +58,7 @@ public:
 	virtual ~LexicalAnalyzer ();
 
 	void init();
+
 	void setSourceCodeDir(string path);
 
 	void doAnalyze();
