@@ -338,6 +338,7 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 				exchangeLexiRecord.push_back(curRecord);
 				exchangeLexiRecord.push_back((*defineLex)[i+1]);
 				exchangeLexiRecord.push_back((*defineLex)[i+2]);
+				i+=2;
 			}
 			//fuck the char..
 			else if("'" == curRecord.word)
@@ -355,8 +356,85 @@ int Preprocess::handleDefine(const LexicalRecord* record)
 				exchangeLexiRecord.push_back(curRecord);
 				exchangeLexiRecord.push_back((*defineLex)[i+1]);
 				exchangeLexiRecord.push_back((*defineLex)[i+2]);
+				i+=2;
 			}
-			//begin exchange,but how should I handle with # and ##
+			else if ("#" == curRecord.word)
+			{
+				if (i+1 < (*defineLex).size())
+				{
+					curRecord.word = "\"";
+					exchangeLexiRecord.push_back(curRecord);
+					auto parmIt = formalParamMap.find((*defineLex)[i+1].word);
+					if (formalParamMap.end() == parmIt)
+					{
+						JZWRITE_ERROR("undefine parm: %s",(*defineLex)[i+1].word.c_str());
+						return errParamUndefine;
+					}
+					int paramIndex = parmIt->second;
+					string toPushString = "";
+					LexRecordList list = expectParam[paramIndex];
+					auto actualListIt = list.begin();
+					for(; actualListIt != list.end(); actualListIt++)
+					{
+						toPushString += actualListIt->word;
+					}
+					curRecord.word = toPushString;
+					exchangeLexiRecord.push_back(curRecord);
+					curRecord.word = "\"";
+					exchangeLexiRecord.push_back(curRecord);
+					i++;	
+				}
+				else
+				{
+					JZWRITE_ERROR("# following nothing");
+					return errSharpFollowNothing;
+				}
+
+			}
+			else if ("##" == curRecord.word)
+			{
+				if (i+1 < (*defineLex).size())
+				{
+					//check var args at first
+					if (C_MACRO_WORD___VA_ARGS__ == (*defineLex)[i+1].word)
+					{
+						if (true == isVariableParam && actualParamList.size() + 1 == formalParamMap.size() )
+						{
+							//so actual param don't have var args
+							if ("," == exchangeLexiRecord.back().word)
+							{
+								exchangeLexiRecord.pop_back();
+							}
+						}
+						else if(true == isVariableParam)
+						{
+							for(int varIndex = formalParamMap.size() - 1; varIndex < actualParamList.size() ; varIndex++ )
+							{
+								LexRecordList curList = actualParamList[varIndex];
+								auto curListIt = curList.begin();
+								for(; curListIt != curList.end(); curListIt++)
+								{
+									exchangeLexiRecord.push_back(*curListIt);
+								}
+								if (varIndex != actualParamList.size() -1 )
+								{
+									curRecord.word = ",";
+								}
+								exchangeLexiRecord.push_back(curRecord);
+							}
+						}
+					}
+					else
+					{
+						//not following var_args,so this is a combing
+					}
+				}
+				else
+				{
+					JZWRITE_ERROR("## following nothing");
+					return errSharpFollowNothing;
+				}
+			}
 			
 		}
 
