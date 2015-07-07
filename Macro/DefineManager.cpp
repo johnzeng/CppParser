@@ -27,64 +27,47 @@ void DefineManager::init()
 	//
 }
 
-int DefineManager::addDefineMap(const string& src, const string& define)
-{
-	if (true == isDefined(src))
-	{
-		JZWRITE_ERROR("double define macro, now rewrite it");
-	}
-
-//	mSrcLexMap[src] = define;
-	LexRecordList list;
-	if ("" != define)
-	{
-		LexicalRecord record;
-		record.word = define;
-		list.push_back(record);
-	}
-
-	this->addDefineMap(src, list);
-
-	return JZErrorCode::errNoError;
-}
-
-bool DefineManager::isDefined(const string& srcDefine)
+DefineManager::DefineManagerReturnCode DefineManager::isDefined(const string& srcDefine)
 {
 	if (mCanceledDefine.end() != mCanceledDefine.find(srcDefine))
 	{
-		return false;
+		return eNotDefined;
 	}
 	if (mSrcLexMap.end() != mSrcLexMap.find(srcDefine))
 	{
-		return true;
+		return eDefined;
 	}
 	DefineManager* globalInstance = DefineManager::getGlobalInstance();
 	if(this != globalInstance && NULL != globalInstance)
 	{
 		//this is not global instance
-		bool ret = globalInstance->isDefined(srcDefine);
-		if (true == ret)
+		DefineManagerReturnCode ret = globalInstance->isDefined(srcDefine);
+		if (eDefined == ret)
 		{
 			return ret;
 		}
 	}
-	return false;
+	return eNotDefined ;
 }
 
-int DefineManager::addDefineMap(const string& src, const LexRecordList& recList)
+DefineManager::DefineManagerReturnCode DefineManager::addDefineMap(const string& src, const DefineRec& rec)
 {
-	if(true == isDefined(src))
+	if(eDefined == isDefined(src))
 	{
-		return JZErrorCode::errDoubleDefineMacro;
+		return eDoubleDefineMacro;
 	}
-	mSrcLexMap[src] = recList;
+	if (rec.key != src)
+	{
+		return eKeyDiffFormSrc;
+	}
+	mSrcLexMap[src] = rec;
 
-	return JZErrorCode::errNoError;
+	return eNoError;
 }
 
-const vector<LexicalRecord>* DefineManager::findDefineMap(const string& srcDefine)
+const DefineRec* DefineManager::findDefineMap(const string& srcDefine)
 {
-	if (false == isDefined(srcDefine))
+	if (eNotDefined == isDefined(srcDefine))
 	{
 		return NULL;
 	}

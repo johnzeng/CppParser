@@ -38,12 +38,14 @@ void globalInitAtBegin()
 	auto defineMapIt = userDefineMap.begin();
 	for(; defineMapIt != userDefineMap.end() ; defineMapIt++ )
 	{
-		int32 err = DefineManager::getGlobalInstance()->addDefineMap(defineMapIt->first, defineMapIt->second);
-		if (err != JZErrorCode::errNoError)
-		{
-			JZWRITE_ERROR("double define : %s", defineMapIt->first.c_str());
-			return ;
-		}
+//		I need more info about how to add this
+//
+//		auto err = DefineManager::getGlobalInstance()->addDefineMap(defineMapIt->first, defineMapIt->second);
+//		if (err != DefineManager::eNoError)
+//		{
+//			JZWRITE_ERROR("double define : %s", defineMapIt->first.c_str());
+//			return ;
+//		}
 	}
 }
 
