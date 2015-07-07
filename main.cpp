@@ -4,11 +4,9 @@
 #include "JZFileUtil.h"
 #include <unistd.h>
 #include "CmdInputFactor.h"
-#include "LexicalAnalyzer.h"
 #include "IncludeHandler.h"
 #include "DefineManager.h"
 #include "ErrorCode.h"
-#include "Preprocess.h"
 
 void globalInitAtBegin()
 {
@@ -61,14 +59,5 @@ int main(int argc, char* argv[])
 	string toCompileFile = "";
 	while((toCompileFile = CmdInputFactor::getInstance()->getNextFile() ) != "")
 	{
-		//do lexical analyze at first
-		LexicalAnalyzer* analyzer = new LexicalAnalyzer();
-		analyzer->setSourceCodeDir(toCompileFile);
-		analyzer->doAnalyze();
-		//add it into collector, so you will not do it again
-		AnalyzerCollector::getInstance()->addAnalyzer(toCompileFile, analyzer)	;
-		Preprocess preprocessor;
-		preprocessor.init(analyzer);		
-		preprocessor.analyze();
 	}
 }
