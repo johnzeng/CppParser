@@ -55,12 +55,36 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +1 ~/SimpleCompletor/header/Lex.h
-badd +1 ~/SimpleCompletor/header/DefineManager.h
-badd +53 ~/SimpleCompletor/Macro/DefineManager.cpp
+badd +25 ~/SimpleCompletor/header/DefineManager.h
+badd +65 ~/SimpleCompletor/Macro/DefineManager.cpp
 badd +1 ~/Downloads/gcc-4.8.3/gcc/main.c
-badd +0 ~/SimpleCompletor/main.cpp
-silent! argdel *
-edit ~/SimpleCompletor/main.cpp
+badd +42 ~/SimpleCompletor/main.cpp
+badd +41 ./Core/Lex.cpp
+badd +1 ./Factor/CmdInputFactor.cpp
+badd +1 ./Factor/CommandLineFactorMngr.cpp
+badd +1 ./Factor/FactorHandler.cpp
+badd +1 ./Macro/IncludeHandler.cpp
+badd +1 ./doc/FactorReq.txt
+badd +1 ./doc/GramaReq.txt
+badd +1 ./doc/KeyWordReq.txt
+badd +1 ./doc/LaxicalReq.txt
+badd +1 ./doc/ParamReq.txt
+badd +1 ./Core/Lex.o
+badd +1 ./Factor/CmdInputFactor.o
+badd +1 ./Factor/CommandLineFactorMngr.o
+badd +1 ./Factor/FactorHandler.o
+badd +437 ./Macro/DefineManager.o
+badd +1 ./Macro/IncludeHandler.o
+badd +1 ./header/CmdInputFactor.h
+badd +1 ./header/CommandLineFactorMngr.h
+badd +1 ./header/ErrorCode.h
+badd +1 ./header/IncludeHandler.h
+badd +1 ./header/KeyWordDefine.h
+badd +6 ./header/Preprocess.h
+badd +0 *Define*
+badd +57 ~/mylib/CMDUtil/JZCmdParamHandler.cpp
+args ~/SimpleCompletor/Macro/DefineManager.cpp ./Macro/DefineManager.o ~/SimpleCompletor/header/DefineManager.h
+edit ~/SimpleCompletor/header/Lex.h
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -73,6 +97,8 @@ set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 78 + 78) / 156)
 exe 'vert 2resize ' . ((&columns * 77 + 78) / 156)
 argglobal
+3argu
+edit ~/SimpleCompletor/header/Lex.h
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -168,15 +194,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 42 - ((15 * winheight(0) + 18) / 37)
+let s:l = 50 - ((19 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-42
-normal! 01l
+50
+normal! 023l
 wincmd w
 argglobal
-edit ~/SimpleCompletor/header/DefineManager.h
+edit ./Core/Lex.cpp
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -272,13 +298,14 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 25 - ((23 * winheight(0) + 18) / 37)
+let s:l = 164 - ((18 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-25
-normal! 0
+164
+normal! 02l
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 78 + 78) / 156)
 exe 'vert 2resize ' . ((&columns * 77 + 78) / 156)
 tabnext 1

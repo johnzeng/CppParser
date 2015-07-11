@@ -31,43 +31,43 @@ DefineManager::DefineManagerReturnCode DefineManager::isDefined(const string& sr
 {
 	if (mCanceledDefine.end() != mCanceledDefine.find(srcDefine))
 	{
-		return eNotDefined;
+		return eDefMgrNotDefined;
 	}
 	if (mSrcLexMap.end() != mSrcLexMap.find(srcDefine))
 	{
-		return eDefined;
+		return eDefMgrDefined;
 	}
 	DefineManager* globalInstance = DefineManager::getGlobalInstance();
 	if(this != globalInstance && NULL != globalInstance)
 	{
 		//this is not global instance
 		DefineManagerReturnCode ret = globalInstance->isDefined(srcDefine);
-		if (eDefined == ret)
+		if (eDefMgrDefined == ret)
 		{
 			return ret;
 		}
 	}
-	return eNotDefined ;
+	return eDefMgrNotDefined ;
 }
 
 DefineManager::DefineManagerReturnCode DefineManager::addDefineMap(const string& src, const DefineRec& rec)
 {
-	if(eDefined == isDefined(src))
+	if(eDefMgrDefined == isDefined(src))
 	{
-		return eDoubleDefineMacro;
+		return eDefMgrDoubleDefineMacro;
 	}
 	if (rec.key != src)
 	{
-		return eKeyDiffFormSrc;
+		return eDefMgrKeyDiffFromSrc;
 	}
 	mSrcLexMap[src] = rec;
 
-	return eNoError;
+	return eDefMgrNoError;
 }
 
 const DefineRec* DefineManager::findDefineMap(const string& srcDefine)
 {
-	if (eNotDefined == isDefined(srcDefine))
+	if (eDefMgrNotDefined == isDefined(srcDefine))
 	{
 		return NULL;
 	}

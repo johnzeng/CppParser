@@ -27,13 +27,13 @@ class DefineManager {
 public:
 	enum DefineManagerReturnCode
 	{
-		eNotDefined = 0,
-		eDefined = 1,
-		eDoubleDefineMacro = 2,
-		eKeyDiffFormSrc = 3,
+		eDefMgrNotDefined = 0,
+		eDefMgrDefined = 1,
+		eDefMgrDoubleDefineMacro = 2,
+		eDefMgrKeyDiffFromSrc = 3,
 
 		//put this at last
-		eNoError 
+		eDefMgrNoError 
 	};
 
 	DefineManager ();

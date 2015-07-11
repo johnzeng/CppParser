@@ -61,5 +61,7 @@ int main(int argc, char* argv[])
 	string toCompileFile = "";
 	while((toCompileFile = CmdInputFactor::getInstance()->getNextFile() ) != "")
 	{
+		Lex lex;
+		lex.analyzeAFile(toCompileFile);
 	}
 }
