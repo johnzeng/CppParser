@@ -1,7 +1,7 @@
 #include "Lex.h"
 #include "JZFileUtil.h"
 #include "JZLogger.h"
-
+#include "JZMacroFunc.h"
 /*********************************************************
 	Lex begin here 
  ********************************************************/
@@ -115,6 +115,7 @@ uint32 Lex::consumeChar(char *ret)
 	FileReaderRecord &record = mReaderStack.top();
 	if (record.bufferSize == record.curIndex)
 	{
+		JZSAFE_DELETE(mReaderStack.top().buffer);
 		mReaderStack.pop();
 		return eLexReachFileEnd;
 	}
