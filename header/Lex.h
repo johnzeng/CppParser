@@ -16,7 +16,15 @@ struct LexRec
 	string word;
 	int line;
 	string file;
+	uint32 type;
 } ;
+
+enum LexRecordType
+{
+	eLexRecTypeNormal,
+	eLexRecTypeConstChar,
+	eLexRecTypeString,
+};
 
 struct FileReaderRecord
 {
@@ -34,20 +42,46 @@ class Lex {
 public:
 	enum LexReturnNum
 	{
+		eLexUnknowError = -1,
 		eLexNoError = 0,
 		eLexReachFileEnd = 1,	
 		eLexReaderStackEmpty = 2,
+		eLexSharpFollowedNothing = 3,
+		eLexWordNotMatch = 4,
+		eLexAlreadyLastWord = 5,
 	};
 	Lex ();
 	virtual ~Lex ();
 	void analyzeAFile(const string& fileName);
 
+	void printLexRec();
+
 private:
 	//helper method
-	uint32 consumeChar(char *ret);
 	void doLex();
-	void saveWord(const string& input);
+	void saveWord(const string& input,uint32 recordType = eLexRecTypeNormal);
 	void writeError(uint32 err);
+
+
+	//consumor fun
+	uint32 consumeChar(char *ret);
+	uint32 readChar(char* ret);		//don't move cur index ptr
+	uint32 consumeCharUntilReach(const char inputEnder, string *ret);
+	uint32 tryToMatchWord(const string& word);
+	uint32 undoConsume();
+
+public:
+	//handler function
+	uint32 handleSingleQuotation();
+	uint32 handleDoubleQuotation();
+	uint32 handleSharp();
+	uint32 handleSlant();
+
+	uint32 handleCommentLine();
+	uint32 handleCommentBlock();
+	uint32 handleSharpDefine();
+	uint32 handleSharpIf();
+	uint32 handleSharpInclude();
 
 private:
 	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
@@ -59,6 +93,8 @@ namespace LexUtil {
 	bool isInterpunction(const char input);
 	bool isLineEnder(const char input);
 	bool isEmptyInput(const char input);
+	bool isBackSlant(const char input);
+	bool isEmptyInput(const string& input);
 } /* LexUtil */
 
 typedef uint32 (Lex::*LexPatternHandler)();

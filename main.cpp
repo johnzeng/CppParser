@@ -63,5 +63,6 @@ int main(int argc, char* argv[])
 	{
 		Lex lex;
 		lex.analyzeAFile(toCompileFile);
+		lex.printLexRec();
 	}
 }

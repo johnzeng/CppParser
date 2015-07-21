@@ -96,13 +96,48 @@ void Lex::writeError(uint32 err)
 	}
 }
 
-void Lex::saveWord(const string& input)
+void Lex::saveWord(const string& input, uint32 recordType)
 {
+	if (true == LexUtil::isEmptyInput(input))
+	{
+		//don't add empty input
+		return;
+	}
 	LexRec rec;
 	rec.word = input;
 	rec.line = mReaderStack.top().curLineNum;
 	rec.file = mReaderStack.top().fileName;
+	rec.type = recordType;
 	mLexRecList.push_back(rec);
+}
+
+void Lex::printLexRec()
+{
+	auto it = mLexRecList.begin();
+	for(; it != mLexRecList.end(); it++)
+	{
+		JZWRITE_DEBUG("word:%s",it->word.c_str());
+	}
+}
+
+uint32 Lex::undoConsume()
+{
+	if (mReaderStack.empty())
+	{
+		return eLexReaderStackEmpty;
+	}
+	FileReaderRecord &record = mReaderStack.top();
+	if (record.curIndex <= 0)
+	{
+		return eLexAlreadyLastWord;
+	}
+	record.curIndex--;
+	char curChar = record.buffer[record.curIndex];
+	if(true == LexUtil::isLineEnder(curChar))
+	{
+		record.curLineNum --;	
+	}
+	return eLexNoError;
 }
 
 uint32 Lex::consumeChar(char *ret)
@@ -130,7 +165,303 @@ uint32 Lex::consumeChar(char *ret)
 	return eLexNoError;
 }
 
+/*********************************************************
+	when handling ' and ", I simply ignore the \ problem
+    I just find the next quotation,so some error will not
+	happen in my compilor	
+ ********************************************************/
 
+uint32 Lex::handleSingleQuotation()
+{
+	JZFUNC_BEGIN_LOG();
+
+	//when you enter this func,you have already get a ',so
+	string toSave = "'";
+	uint32 toSaveLen = 0;
+	do
+	{
+		string retStr = "";
+		uint32 retErr = eLexNoError;
+		
+		retErr = consumeCharUntilReach('\'',&retStr);
+		if (eLexNoError != retErr)
+		{
+			JZFUNC_END_LOG();
+			return retErr;
+		}
+		JZWRITE_DEBUG("ret str is : %s",retStr.c_str());
+		toSave += retStr;
+		toSaveLen = toSave.size();
+	}while(toSaveLen > 2 && true == LexUtil::isBackSlant(toSave[toSaveLen - 2]));
+
+//	handle const char input
+//	...
+	saveWord(toSave, eLexRecTypeConstChar);
+
+	JZFUNC_END_LOG();
+	return eLexNoError;
+}
+
+uint32 Lex::handleDoubleQuotation()
+{
+	JZFUNC_BEGIN_LOG();
+
+	//when you enter this func,you have already get a ",so init a " here
+	string toSave = "\"";
+	uint32 toSaveLen = 0;
+	do
+	{
+		string retStr = "";
+		uint32 retErr = eLexNoError;
+		retErr = consumeCharUntilReach('"',&retStr);
+		if (eLexNoError != retErr)
+		{
+			JZFUNC_END_LOG();
+			return retErr;
+		}
+		toSave += retStr;
+		toSaveLen = toSave.size();
+	}while(toSaveLen > 2 && true == LexUtil::isBackSlant(toSave[toSaveLen - 2]));
+
+//	handle const char input
+//	...
+	saveWord(toSave, eLexRecTypeConstChar);
+
+	JZFUNC_END_LOG();
+	return eLexNoError;
+	return 0;
+}
+
+uint32 Lex::readChar(char *ret)
+{
+	*ret = 0;
+	if (mReaderStack.empty())
+	{
+		return eLexReaderStackEmpty;
+	}
+	FileReaderRecord &record = mReaderStack.top();
+	if (record.bufferSize == record.curIndex)
+	{
+		return eLexReachFileEnd;
+	}
+
+	*ret = record.buffer[record.curIndex];
+
+	return eLexNoError;
+
+}
+uint32 Lex::handleSlant()
+{
+	JZFUNC_BEGIN_LOG();
+	char nextChar = 0;
+	uint32 ret = eLexNoError;
+	ret = readChar(&nextChar);
+	switch(nextChar)
+	{
+		case '/':
+		{
+			ret = readChar(&nextChar);
+			return handleCommentLine();	
+		}
+		case '*':
+		{
+			ret = readChar(&nextChar);
+			return handleCommentBlock();	
+		}
+		default:
+		{
+			//maybe this means divide
+			break;	
+		}
+	}
+
+	JZFUNC_END_LOG();
+	return eLexNoError;
+}
+
+uint32 Lex::handleCommentLine()
+{
+	JZFUNC_BEGIN_LOG();
+	char nextChar = 0;
+	uint32 ret = eLexNoError;
+	bool backSlantBeforeLineSeperator = false;
+
+	while ((ret = consumeChar(&nextChar)) == eLexNoError)
+	{
+		if (false == LexUtil::isEmptyInput(nextChar) && true == backSlantBeforeLineSeperator)
+		{
+			backSlantBeforeLineSeperator = false;
+			continue;
+		}
+		if ('\\' == nextChar)
+		{
+			backSlantBeforeLineSeperator = true;
+			continue;
+			
+		}
+		if (true == LexUtil::isLineEnder(nextChar))
+		{
+			if (true == backSlantBeforeLineSeperator)
+			{
+
+				JZWRITE_DEBUG("line ended with back slant");
+				continue;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	JZFUNC_END_LOG();
+	return ret;
+}
+
+uint32 Lex::handleCommentBlock()
+{
+	JZFUNC_BEGIN_LOG();
+	uint32 ret = eLexNoError;
+	string retStr = "";
+	char retChar = 0;
+
+	do
+	{
+		ret = consumeCharUntilReach('*', &retStr);
+		if (eLexNoError == ret)
+		{
+			ret = readChar(&retChar);
+		}
+		else
+		{
+			return ret;
+		}
+	}while(ret == eLexNoError && retChar != '/');
+
+	JZFUNC_END_LOG();
+	return ret;
+}
+
+uint32 Lex::handleSharp()
+{
+	//hard proble now begin!
+	
+	//read empty input
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	while ((ret = consumeChar(&nextChar)) == eLexNoError)
+	{
+		if (false == LexUtil::isEmptyInput(nextChar))
+		{
+			break;
+		}
+		if (true == LexUtil::isLineEnder(nextChar))
+		{
+			return eLexSharpFollowedNothing;
+		}
+
+		//else continue;
+	}
+	
+	switch(nextChar)
+	{
+		case 'd':
+		{
+			//define ,but d is read,so efine
+			if (eLexNoError == tryToMatchWord("efine"))
+			{
+				return handleSharpDefine();
+			}
+			break;
+		}
+		case 'i':
+		{
+			if (eLexNoError == tryToMatchWord("f"))
+			{
+				//#if
+				return handleSharpIf();
+			}
+			else if(eLexNoError == tryToMatchWord("nclude"))
+			{
+				//#include
+				return handleSharpInclude();	
+			}
+			break;	
+		}
+		default:
+		{
+			break;	
+		}
+	}
+	return eLexNoError;
+}
+
+uint32 Lex::handleSharpDefine()
+{
+	return eLexNoError;
+}
+
+uint32 Lex::handleSharpIf()
+{
+	return eLexNoError;
+}
+
+uint32 Lex::handleSharpInclude()
+{
+	return eLexNoError;
+}
+
+uint32 Lex::tryToMatchWord(const string& word)
+{
+	if ("" == word)
+	{
+		return eLexNoError;
+	}
+	if (mReaderStack.empty())
+	{
+		return eLexReaderStackEmpty;
+	}
+	FileReaderRecord &record = mReaderStack.top();
+	if (record.bufferSize <= record.curIndex + word.size())
+	{
+		JZSAFE_DELETE(mReaderStack.top().buffer);
+		mReaderStack.pop();
+		return eLexReachFileEnd;
+	}
+
+	string subStrWord = "";
+	for(int i  = 0 ; i < word.size() ; i ++)
+	{
+		subStrWord += record.buffer[record.curIndex + i];	
+	}
+	if (subStrWord == word)
+	{
+		record.curIndex += word.size();
+		return eLexNoError;
+	}
+
+	return eLexWordNotMatch;
+	
+}
+
+uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret)
+{
+	if (NULL == ret)
+	{
+		return eLexUnknowError;
+	}
+	*ret = "";
+	char nextInput;
+	uint32 readRet = eLexNoError;
+	while ((readRet = consumeChar(&nextInput)) == eLexNoError)
+	{
+		*ret += nextInput;
+		if (nextInput == inputEnder)
+		{
+			break;
+		}
+	}
+	return readRet;
+}
 /*********************************************************
 	Lex end here
 	now begin the LexUtil   	
@@ -148,6 +479,10 @@ bool LexUtil::isInterpunction(const char input)
 		return true;
 	}
 
+	if (true == isBackSlant(input))
+	{
+		return true;
+	}
 	switch(input)
 	{
 		case '|':
@@ -203,6 +538,7 @@ bool LexUtil::isEmptyInput(const char input)
 	switch(input)
 	{
 		case '\t':
+		case '\n':
 		case ' ':
 			return true;
 		default:
@@ -210,6 +546,29 @@ bool LexUtil::isEmptyInput(const char input)
 			return false;
 		}
 	}
+}
+
+bool  LexUtil::isBackSlant(const char input)
+{
+	if ('\\' == input)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+bool LexUtil::isEmptyInput(const string& input)
+{
+	int len = input.size();
+	for (int i = 0; i < len; i++) {
+		if (false == isEmptyInput(input[i]))
+		{
+			return false;
+		}
+	}
+	return true;	
 }
 
 /*********************************************************
@@ -241,7 +600,10 @@ void LexPatternTable::init()
 	/*********************************************************
 		init pattern map here 
 	 ********************************************************/
-	
+	mPatternHandlerMap['\''] = &Lex::handleSingleQuotation;
+	mPatternHandlerMap['"'] = &Lex::handleDoubleQuotation;
+	mPatternHandlerMap['#'] = &Lex::handleSharp;
+	mPatternHandlerMap['/'] = &Lex::handleSlant;
 }
 
 LexPatternHandler LexPatternTable::getPattern(const char input)
