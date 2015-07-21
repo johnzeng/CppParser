@@ -16,8 +16,8 @@ struct DefineRec
 	string key;
 	bool isFuncLikeMacro;
 	bool isVarArgs;
-	LexRecList defineList;		//if it is an empty macro,this will be empty
-	LexRecList formalParam;			//use when this is a funclike macro
+	string defineStr;		//if it is an empty macro,this will be empty
+	LexRecList formalParam;		//use when this is a funclike macro
 } ;
 
 typedef map<string ,DefineRec> DefineRecMap;

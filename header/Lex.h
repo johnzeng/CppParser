@@ -32,7 +32,7 @@ struct FileReaderRecord
 	int bufferSize;		//should not be change after init
 	int curIndex;
 	int curLineNum;
-	string fileName;
+	string fileName;	//if this is a define ,file name will be key
 
 } ;
 typedef vector<LexRec> LexRecList;
@@ -49,6 +49,12 @@ public:
 		eLexSharpFollowedNothing = 3,
 		eLexWordNotMatch = 4,
 		eLexAlreadyLastWord = 5,
+		eLexSharpDefineFollowedNothing = 6,
+	};
+	enum LexInput
+	{
+		eLexSkipEmptyInput,
+		eLexDontSkipEmptyInput,	
 	};
 	Lex ();
 	virtual ~Lex ();
@@ -59,6 +65,7 @@ public:
 private:
 	//helper method
 	void doLex();
+	uint32 consumeWord(string &retStr,char &retSeperator,LexInput skipEmptyInput = eLexSkipEmptyInput);
 	void saveWord(const string& input,uint32 recordType = eLexRecTypeNormal);
 	void writeError(uint32 err);
 
@@ -95,6 +102,7 @@ namespace LexUtil {
 	bool isEmptyInput(const char input);
 	bool isBackSlant(const char input);
 	bool isEmptyInput(const string& input);
+	bool isEndWithBackSlant(const string& input);
 } /* LexUtil */
 
 typedef uint32 (Lex::*LexPatternHandler)();

@@ -1,4 +1,5 @@
 #include "Lex.h"
+#include "DefineManager.h"
 #include "JZFileUtil.h"
 #include "JZLogger.h"
 #include "JZMacroFunc.h"
@@ -10,11 +11,12 @@
 
 Lex::Lex()
 {
+	mDefMgr = new DefineManager();
 }
 
 Lex::~Lex()
 {
-
+	JZSAFE_DELETE(mDefMgr);
 }
 
 void Lex::analyzeAFile(const string& fileName)
@@ -35,35 +37,29 @@ void Lex::analyzeAFile(const string& fileName)
 
 void Lex::doLex()
 {
-	char input = 0;
 	uint32 ret;
-	string curWord = "";
-	while (eLexNoError == (ret = consumeChar(&input)))
+	char seperator;
+	string word;
+	while(eLexNoError == (consumeWord(word, seperator)))
 	{
-		LexPatternHandler handler = LexPtnTbl->getPattern(input);
+		if ("" != word)
+		{
+			saveWord(word);
+		}
+		LexPatternHandler handler = LexPtnTbl->getPattern(seperator);
 		if (NULL == handler)
 		{
 			//no handler is registered,means this is a normal input
-			if (false == LexUtil::isInterpunction(input))
+			if (true == LexUtil::isEmptyInput(seperator))
 			{
-				curWord += input;
+				continue;
 			}
-			else
-			{
-				saveWord(curWord);
-				if (false == LexUtil::isEmptyInput(input))
-				{
-					curWord = "";
-					curWord += input;
-					saveWord(curWord);
-				}
-				curWord = "";
-			}
+			string toSaveSeperator = "";
+			toSaveSeperator += seperator;
+			saveWord(toSaveSeperator);
 		}
 		else
 		{
-			saveWord(curWord);
-			curWord = "";
 			uint32 err = eLexNoError;
 			err = (this->*handler)();
 			if (err != eLexNoError)
@@ -73,6 +69,34 @@ void Lex::doLex()
 			}
 		}
 	}
+}
+
+uint32 Lex::consumeWord(string &retStr,char &retSeperator,LexInput skipEmptyInput)
+{
+	char input = 0;
+	uint32 ret;
+	string curWord = "";
+	while (eLexNoError == (ret = consumeChar(&input)))
+	{
+		if (false == LexUtil::isInterpunction(input))
+		{
+			curWord += input;
+		}
+		else
+		{
+			if (eLexSkipEmptyInput == skipEmptyInput && 
+				true == LexUtil::isEmptyInput(input) &&
+			   	"" == curWord)
+			{
+				continue;
+			}
+			retStr = curWord;
+			retSeperator = input;
+			return eLexNoError;
+		}
+			
+	}
+	return ret;
 }
 
 void Lex::writeError(uint32 err)
@@ -116,7 +140,7 @@ void Lex::printLexRec()
 	auto it = mLexRecList.begin();
 	for(; it != mLexRecList.end(); it++)
 	{
-		JZWRITE_DEBUG("word:%s",it->word.c_str());
+		JZWRITE_DEBUG("line:%d,word:%s",it->line, it->word.c_str());
 	}
 }
 
@@ -261,16 +285,20 @@ uint32 Lex::handleSlant()
 		case '/':
 		{
 			ret = readChar(&nextChar);
+			JZFUNC_END_LOG();
 			return handleCommentLine();	
 		}
 		case '*':
 		{
 			ret = readChar(&nextChar);
+			JZFUNC_END_LOG();
 			return handleCommentBlock();	
 		}
 		default:
 		{
 			//maybe this means divide
+			string toSave = "/";
+			saveWord(toSave);
 			break;	
 		}
 	}
@@ -335,7 +363,13 @@ uint32 Lex::handleCommentBlock()
 		{
 			return ret;
 		}
-	}while(ret == eLexNoError && retChar != '/');
+		if (retChar == '/')
+		{
+			char slant;
+			consumeChar(&slant);
+			break;
+		}
+	}while(ret == eLexNoError);
 
 	JZFUNC_END_LOG();
 	return ret;
@@ -343,6 +377,7 @@ uint32 Lex::handleCommentBlock()
 
 uint32 Lex::handleSharp()
 {
+	JZFUNC_BEGIN_LOG();
 	//hard proble now begin!
 	
 	//read empty input
@@ -397,7 +432,55 @@ uint32 Lex::handleSharp()
 
 uint32 Lex::handleSharpDefine()
 {
-	return eLexNoError;
+	JZFUNC_BEGIN_LOG();
+
+	/*********************************************************
+		now handle define! 
+	 ********************************************************/
+	
+	uint32 ret = eLexNoError;
+	char seperator = 0;
+	string key = "";
+
+	ret = consumeWord(key, seperator);
+	if (eLexNoError != ret)
+	{
+		return ret;
+	}
+
+	DefineRec defineRec;
+	defineRec.key = key;
+	if ('(' == seperator)
+	{
+		defineRec.isFuncLikeMacro = true;
+		//read format parm
+	}
+	else
+	{
+		defineRec.isVarArgs = false;
+		defineRec.isFuncLikeMacro =false;
+	}
+
+	string defWord = "";
+	do
+	{
+		string retStr = "";
+		uint32 retErr = eLexNoError;
+		
+		retErr = consumeCharUntilReach('\n',&retStr);
+		if (eLexNoError != retErr)
+		{
+			JZFUNC_END_LOG();
+			return retErr;
+		}
+		defWord += retStr;
+	}while(true == LexUtil::isEndWithBackSlant(defWord));
+
+
+	defineRec.defineStr = defWord;
+	mDefMgr->addDefineMap(key, defineRec);	
+	JZFUNC_END_LOG();
+	return ret;
 }
 
 uint32 Lex::handleSharpIf()
@@ -507,7 +590,9 @@ bool LexUtil::isInterpunction(const char input)
 		case '}':
 		case '<':
 		case '>':
+		case '#':
 		case '\t':
+		case '\n':
 		case ';':
 		case ':':
 		{
@@ -569,6 +654,24 @@ bool LexUtil::isEmptyInput(const string& input)
 		}
 	}
 	return true;	
+}
+
+bool LexUtil::isEndWithBackSlant(const string& input)
+{
+	bool ret = true;
+	for(int32 i = input.size() - 1 ; i >= 0 ; i--)
+	{
+		if (input[i] == '\\')
+		{
+			break;
+		}
+		else if(false == isEmptyInput(input[i]))
+		{
+			ret =false;
+			break;
+		}
+	}
+	return ret;
 }
 
 /*********************************************************

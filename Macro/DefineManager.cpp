@@ -61,7 +61,7 @@ DefineManager::DefineManagerReturnCode DefineManager::addDefineMap(const string&
 		return eDefMgrKeyDiffFromSrc;
 	}
 	mSrcLexMap[src] = rec;
-
+	JZWRITE_DEBUG("add define:[key:%s,value:%s]",src.c_str(),rec.defineStr.c_str());
 	return eDefMgrNoError;
 }
 
