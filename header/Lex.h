@@ -24,6 +24,8 @@ enum LexRecordType
 	eLexRecTypeNormal,
 	eLexRecTypeConstChar,
 	eLexRecTypeString,
+	eLexRecTypeFuncLikeMacroParam,
+	eLexRecTypeFuncLikeMacroVarParam,
 };
 
 struct FileReaderRecord
@@ -50,6 +52,8 @@ public:
 		eLexWordNotMatch = 4,
 		eLexAlreadyLastWord = 5,
 		eLexSharpDefineFollowedNothing = 6,
+		eLexUnexpectedSeperator = 7,
+		eLexValParamNotLast = 8,
 	};
 	enum LexInput
 	{
@@ -67,6 +71,7 @@ private:
 	void doLex();
 	uint32 consumeWord(string &retStr,char &retSeperator,LexInput skipEmptyInput = eLexSkipEmptyInput);
 	void saveWord(const string& input,uint32 recordType = eLexRecTypeNormal);
+	void saveWordTo(const string& input, LexRecList& list,uint32 recordType = eLexRecTypeNormal);	
 	void writeError(uint32 err);
 
 

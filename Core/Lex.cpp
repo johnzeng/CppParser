@@ -120,7 +120,7 @@ void Lex::writeError(uint32 err)
 	}
 }
 
-void Lex::saveWord(const string& input, uint32 recordType)
+void Lex::saveWordTo(const string& input,LexRecList& list, uint32 recordType)
 {
 	if (true == LexUtil::isEmptyInput(input))
 	{
@@ -132,7 +132,12 @@ void Lex::saveWord(const string& input, uint32 recordType)
 	rec.line = mReaderStack.top().curLineNum;
 	rec.file = mReaderStack.top().fileName;
 	rec.type = recordType;
-	mLexRecList.push_back(rec);
+	list.push_back(rec);
+}
+
+void Lex::saveWord(const string& input, uint32 recordType)
+{
+	saveWordTo(input,mLexRecList, recordType);
 }
 
 void Lex::printLexRec()
@@ -454,6 +459,46 @@ uint32 Lex::handleSharpDefine()
 	{
 		defineRec.isFuncLikeMacro = true;
 		//read format parm
+		string param;
+		char seperator;
+		uint32 paramRet;
+		while(eLexNoError == (paramRet = consumeWord(param,seperator)))
+		{
+			if (param != "" && (seperator == ')' || seperator == ','))
+			{
+				if (defineRec.formalParam.size() > 0 &&
+				    defineRec.formalParam.back().type == eLexRecTypeFuncLikeMacroVarParam )
+				{
+					//should not save more param
+					return eLexValParamNotLast;
+				}
+				saveWordTo(param ,defineRec.formalParam, eLexRecTypeFuncLikeMacroParam);
+			}
+			if (seperator == '.')
+			{
+				if (eLexNoError == tryToMatchWord(".."))
+				{
+					defineRec.isVarArgs = true;
+					if ("" != param)
+					{
+						saveWordTo(param,defineRec.formalParam,eLexRecTypeFuncLikeMacroVarParam);
+					}
+				}
+				else
+				{
+					return eLexUnexpectedSeperator;			
+				}
+			}
+			if (seperator == ')')
+			{
+				//reach end
+				break;
+			}
+			if (seperator != ',')
+			{
+				return eLexUnexpectedSeperator;			
+			}
+		}
 	}
 	else
 	{

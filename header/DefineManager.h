@@ -41,7 +41,7 @@ public:
 	static DefineManager* getGlobalInstance();
 	void init();
 
-	//if not defined ,retrun NULL
+	//if not defined ,return NULL
 	const DefineRec* findDefineMap(const string& srcDefine);
 
 	DefineManagerReturnCode isDefined(const string& src);
