@@ -101,6 +101,7 @@ uint32 Lex::consumeWord(string &retStr,char &retSeperator,LexInput skipEmptyInpu
 
 void Lex::writeError(uint32 err)
 {
+	JZWRITE_DEBUG("err id : %d",err);
 	switch(err)
 	{
 		case eLexReachFileEnd:
@@ -466,10 +467,12 @@ uint32 Lex::handleSharpDefine()
 		{
 			if (param != "" && (seperator == ')' || seperator == ','))
 			{
+				JZWRITE_DEBUG("save a param :%s",param.c_str());
 				if (defineRec.formalParam.size() > 0 &&
 				    defineRec.formalParam.back().type == eLexRecTypeFuncLikeMacroVarParam )
 				{
 					//should not save more param
+					JZWRITE_DEBUG("val param end with not val param:%s",param.c_str());
 					return eLexValParamNotLast;
 				}
 				saveWordTo(param ,defineRec.formalParam, eLexRecTypeFuncLikeMacroParam);
@@ -486,8 +489,10 @@ uint32 Lex::handleSharpDefine()
 				}
 				else
 				{
-					return eLexUnexpectedSeperator;			
+					JZWRITE_DEBUG("reach here");
+					return eLexUnexpectedSeperator;
 				}
+				continue;
 			}
 			if (seperator == ')')
 			{
@@ -496,6 +501,7 @@ uint32 Lex::handleSharpDefine()
 			}
 			if (seperator != ',')
 			{
+				JZWRITE_DEBUG("reach here,seperator is : %c",seperator);
 				return eLexUnexpectedSeperator;			
 			}
 		}
@@ -521,6 +527,10 @@ uint32 Lex::handleSharpDefine()
 		defWord += retStr;
 	}while(true == LexUtil::isEndWithBackSlant(defWord));
 
+	if (defWord.back() == '\n')
+	{
+		defWord = defWord.substr(0,defWord.size() - 1);
+	}
 
 	defineRec.defineStr = defWord;
 	mDefMgr->addDefineMap(key, defineRec);	
@@ -540,12 +550,15 @@ uint32 Lex::handleSharpInclude()
 
 uint32 Lex::tryToMatchWord(const string& word)
 {
+	JZFUNC_BEGIN_LOG();
 	if ("" == word)
 	{
+		JZFUNC_END_LOG();
 		return eLexNoError;
 	}
 	if (mReaderStack.empty())
 	{
+		JZFUNC_END_LOG();
 		return eLexReaderStackEmpty;
 	}
 	FileReaderRecord &record = mReaderStack.top();
@@ -553,6 +566,7 @@ uint32 Lex::tryToMatchWord(const string& word)
 	{
 		JZSAFE_DELETE(mReaderStack.top().buffer);
 		mReaderStack.pop();
+		JZFUNC_END_LOG();
 		return eLexReachFileEnd;
 	}
 
@@ -564,9 +578,11 @@ uint32 Lex::tryToMatchWord(const string& word)
 	if (subStrWord == word)
 	{
 		record.curIndex += word.size();
+		JZFUNC_END_LOG();
 		return eLexNoError;
 	}
 
+	JZFUNC_END_LOG();
 	return eLexWordNotMatch;
 	
 }
@@ -703,16 +719,16 @@ bool LexUtil::isEmptyInput(const string& input)
 
 bool LexUtil::isEndWithBackSlant(const string& input)
 {
-	bool ret = true;
+	bool ret = false;
 	for(int32 i = input.size() - 1 ; i >= 0 ; i--)
 	{
 		if (input[i] == '\\')
 		{
+			ret = true;
 			break;
 		}
 		else if(false == isEmptyInput(input[i]))
 		{
-			ret =false;
 			break;
 		}
 	}
