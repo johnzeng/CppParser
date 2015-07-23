@@ -59,6 +59,8 @@ public:
 	{
 		eLexSkipEmptyInput,
 		eLexDontSkipEmptyInput,	
+		eLexInOneLine,
+		eLexInMulLine,
 	};
 	Lex ();
 	virtual ~Lex ();
@@ -69,18 +71,19 @@ public:
 private:
 	//helper method
 	void doLex();
-	uint32 consumeWord(string &retStr,char &retSeperator,LexInput skipEmptyInput = eLexSkipEmptyInput);
 	void saveWord(const string& input,uint32 recordType = eLexRecTypeNormal);
 	void saveWordTo(const string& input, LexRecList& list,uint32 recordType = eLexRecTypeNormal);	
+
 	void writeError(uint32 err);
 
 
 	//consumor fun
 	uint32 consumeChar(char *ret);
 	uint32 readChar(char* ret);		//don't move cur index ptr
-	uint32 consumeCharUntilReach(const char inputEnder, string *ret);
+	uint32 consumeCharUntilReach(const char inputEnder, string *ret, LexInput inOneLine = eLexInMulLine);
 	uint32 tryToMatchWord(const string& word);
 	uint32 undoConsume();
+	uint32 consumeWord(string &retStr,char &retSeperator,LexInput skipEmptyInput = eLexSkipEmptyInput);
 
 public:
 	//handler function

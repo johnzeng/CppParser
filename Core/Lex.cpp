@@ -575,7 +575,12 @@ uint32 Lex::handleSharpInclude()
 		return ret;
 	}
 	string toIncludeFile = toMatch.substr(0,toMatch.size() - 1); 
-	toIncludeFile = LexUtil::eatLREmptyInput(toIncludeFile);
+
+//	my test show that clang compiler do not eat empty input..
+//	maybe some people will name their file with empty end? I doublt it,
+//	but I stick to the clang compiler, so I just skip this one here
+
+//	toIncludeFile = LexUtil::eatLREmptyInput(toIncludeFile);
 	JZWRITE_DEBUG("to include file is :[%s]", toIncludeFile.c_str());
 
 	string fullPath = IncludeHandler::getInstance()->getFullPathForIncludeFile(toIncludeFile);
@@ -630,7 +635,7 @@ uint32 Lex::tryToMatchWord(const string& word)
 	
 }
 
-uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret)
+uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput inOneLine)
 {
 	if (NULL == ret)
 	{
@@ -642,6 +647,13 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret)
 	while ((readRet = consumeChar(&nextInput)) == eLexNoError)
 	{
 		*ret += nextInput;
+		if (true == LexUtil::isLineEnder(nextInput))
+		{
+			if (eLexInOneLine == inOneLine)
+			{
+				break;
+			}
+		}
 		if (nextInput == inputEnder)
 		{
 			break;
