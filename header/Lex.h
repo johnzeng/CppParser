@@ -108,6 +108,8 @@ namespace LexUtil {
 	bool isBackSlant(const char input);
 	bool isEmptyInput(const string& input);
 	bool isEndWithBackSlant(const string& input);
+	char seperatorMatcher(const char input);
+	string eatLREmptyInput(const string &toBeEatan);
 } /* LexUtil */
 
 typedef uint32 (Lex::*LexPatternHandler)();

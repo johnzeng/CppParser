@@ -54,12 +54,12 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +44 ~/SimpleCompletor/header/Lex.h
-badd +36 ~/SimpleCompletor/header/DefineManager.h
-badd +22 ~/SimpleCompletor/Macro/DefineManager.cpp
+badd +112 ~/SimpleCompletor/header/Lex.h
+badd +20 ~/SimpleCompletor/header/DefineManager.h
+badd +14 ~/SimpleCompletor/Macro/DefineManager.cpp
 badd +1 ~/Downloads/gcc-4.8.3/gcc/main.c
-badd +42 ~/SimpleCompletor/main.cpp
-badd +504 ./Core/Lex.cpp
+badd +21 ~/SimpleCompletor/main.cpp
+badd +784 ./Core/Lex.cpp
 badd +1 ./Factor/CmdInputFactor.cpp
 badd +1 ./Factor/CommandLineFactorMngr.cpp
 badd +1 ./Factor/FactorHandler.cpp
@@ -83,8 +83,10 @@ badd +1 ./header/KeyWordDefine.h
 badd +6 ./header/Preprocess.h
 badd +1 *Define*
 badd +57 ~/mylib/CMDUtil/JZCmdParamHandler.cpp
+badd +14 ~/mylib/header/StringUtil.h
+badd +360 ~/mylib/StringUtil/StringUtil.cpp
 args ~/SimpleCompletor/Macro/DefineManager.cpp ./Macro/DefineManager.o ~/SimpleCompletor/header/DefineManager.h
-edit ~/SimpleCompletor/header/DefineManager.h
+edit ./header/IncludeHandler.h
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -94,10 +96,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 78) / 156)
-exe 'vert 2resize ' . ((&columns * 76 + 78) / 156)
+exe 'vert 1resize ' . ((&columns * 80 + 78) / 156)
+exe 'vert 2resize ' . ((&columns * 75 + 78) / 156)
 argglobal
 3argu
+edit ./header/IncludeHandler.h
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -193,15 +196,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 20 - ((11 * winheight(0) + 18) / 37)
+let s:l = 30 - ((20 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-20
-normal! 05l
+30
+normal! 040l
 wincmd w
 argglobal
-edit ~/SimpleCompletor/Macro/DefineManager.cpp
+edit ./Core/Lex.cpp
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -297,16 +300,16 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 67 - ((27 * winheight(0) + 18) / 37)
+let s:l = 38 - ((32 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-67
-normal! 060l
+38
+normal! 053l
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 78) / 156)
-exe 'vert 2resize ' . ((&columns * 76 + 78) / 156)
+exe 'vert 1resize ' . ((&columns * 80 + 78) / 156)
+exe 'vert 2resize ' . ((&columns * 75 + 78) / 156)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

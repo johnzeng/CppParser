@@ -3,6 +3,7 @@
 #include "JZFileUtil.h"
 #include "JZLogger.h"
 #include "JZMacroFunc.h"
+#include "IncludeHandler.h"
 /*********************************************************
 	Lex begin here 
  ********************************************************/
@@ -21,6 +22,7 @@ Lex::~Lex()
 
 void Lex::analyzeAFile(const string& fileName)
 {
+	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
 
@@ -33,6 +35,7 @@ void Lex::analyzeAFile(const string& fileName)
 
 	mReaderStack.push(fileRecord);
 	doLex();
+	JZWRITE_DEBUG("analyze file %s end", fileName.c_str());
 }
 
 void Lex::doLex()
@@ -545,6 +548,46 @@ uint32 Lex::handleSharpIf()
 
 uint32 Lex::handleSharpInclude()
 {
+	uint32 ret = eLexNoError;
+	string word;
+	char seperator;
+	ret = this->consumeWord(word,seperator);
+	if (ret != eLexNoError)
+	{
+		return ret;
+	}
+	if (false == LexUtil::isEmptyInput(word))
+	{
+		JZWRITE_DEBUG("include follow with not empty input");
+		return eLexUnknowError;
+	}
+	if (seperator != '<' && seperator != '"')
+	{
+		JZWRITE_DEBUG("include follow with error seperator");
+		return eLexUnexpectedSeperator;
+	}
+
+	string toMatch = "";
+	ret = consumeCharUntilReach(LexUtil::seperatorMatcher(seperator),&toMatch);
+	if (ret  != eLexNoError)
+	{
+		JZWRITE_DEBUG("can not match the seperator in #include for:%c", seperator);
+		return ret;
+	}
+	string toIncludeFile = toMatch.substr(0,toMatch.size() - 1); 
+	toIncludeFile = LexUtil::eatLREmptyInput(toIncludeFile);
+	JZWRITE_DEBUG("to include file is :[%s]", toIncludeFile.c_str());
+
+	string fullPath = IncludeHandler::getInstance()->getFullPathForIncludeFile(toIncludeFile);
+
+	if (fullPath != "")
+	{
+		this->analyzeAFile(fullPath);
+	}
+	else
+	{
+		JZWRITE_DEBUG("no such file");	
+	}
 	return eLexNoError;
 }
 
@@ -731,6 +774,63 @@ bool LexUtil::isEndWithBackSlant(const string& input)
 		{
 			break;
 		}
+	}
+	return ret;
+}
+
+char LexUtil::seperatorMatcher(const char input)
+{
+	char ret = 0;
+	switch(input)
+	{
+		case '"':
+			ret = '"';
+			break;
+		case '\'':
+			ret = '\'';
+			break;
+		case '<':
+			ret = '>';
+			break;
+		case '(':
+			ret = ')';
+			break;
+		case '{':
+			ret = '}';
+			break;
+		default:
+		{
+			JZWRITE_DEBUG("not registed input : %c",input);	
+			break;
+		}
+	}
+	return ret;
+}
+
+string LexUtil::eatLREmptyInput(const string& toBeEatan)
+{
+	string ret = "";
+	int leftEmptyNum = 0;
+	int rightEmptyNum = 0;
+	for(int i = 0; i < toBeEatan.size(); i++)
+	{
+		if (false == isEmptyInput(toBeEatan[i]))
+		{
+			break;
+		}
+		leftEmptyNum++;
+	}
+	for(int i = toBeEatan.size() - 1; i >= 0; i-- )
+	{
+		if (false == isEmptyInput(toBeEatan[i]))
+		{
+			break;
+		}
+		rightEmptyNum++;	
+	}
+	for(int i  = leftEmptyNum ; i + rightEmptyNum < toBeEatan.size() ; i++)
+	{
+		ret += toBeEatan[i];	
 	}
 	return ret;
 }
