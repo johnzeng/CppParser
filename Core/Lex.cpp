@@ -479,8 +479,34 @@ uint32 Lex::handleSharpIfdef()
 	bool isDef = (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word));
 	JZWRITE_DEBUG("word:%s,is define :%d",word.c_str(), isDef);
 
+	pushPrecompileStreamControlWord("#ifdef", isDef);
+	
 	JZFUNC_END_LOG();
 	return eLexNoError;
+}
+
+void Lex::pushPrecompileStreamControlWord(const string& word,bool isSucces)
+{
+	PrecompileSelector ps = 
+	{
+		.mark = word,
+		.isSuccess = isSuccess; 	
+	};
+	//handle about word
+	if ("#if" == word)
+	{
+		///
+	}
+	else if ("#ifdef" == word)
+	{
+		//
+	}
+	else
+	{
+		JZWRITE_DEBUG("unregister macro word:[%s]",word.c_str());
+		return ;	
+	}
+	mPSStack.push(ps);
 }
 
 uint32 Lex::handleSharpDefine()

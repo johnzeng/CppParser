@@ -66,6 +66,8 @@ private:
 			LexInput skipEmptyInput = eLexSkipEmptyInput,
 		   	LexInput inOneLine = eLexInMulLine);
 
+	// isSuccess is useless when word == "#else"
+	void pushPrecompileStreamControlWord(const string& word, bool isSuccess);
 public:
 	//handler function
 	uint32 handleSingleQuotation();
