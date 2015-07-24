@@ -4,40 +4,10 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include "LexData.h"
 #include "JZCommonDefine.h"
+#include "DefineManager.h"
 using namespace std;
-
-//pre define
-class DefineManager;
-
-//struct define
-struct LexRec
-{
-	string word;
-	int line;
-	string file;
-	uint32 type;
-} ;
-
-enum LexRecordType
-{
-	eLexRecTypeNormal,
-	eLexRecTypeConstChar,
-	eLexRecTypeString,
-	eLexRecTypeFuncLikeMacroParam,
-	eLexRecTypeFuncLikeMacroVarParam,
-};
-
-struct FileReaderRecord
-{
-	const char* buffer;
-	int bufferSize;		//should not be change after init
-	int curIndex;
-	int curLineNum;
-	string fileName;	//if this is a define ,file name will be key
-
-} ;
-typedef vector<LexRec> LexRecList;
 
 //class define
 class Lex {
@@ -54,6 +24,7 @@ public:
 		eLexSharpDefineFollowedNothing = 6,
 		eLexUnexpectedSeperator = 7,
 		eLexValParamNotLast = 8,
+		eLexSharpIfdefFollowedWithNothing = 9,
 	};
 	enum LexInput
 	{
@@ -80,10 +51,20 @@ private:
 	//consumor fun
 	uint32 consumeChar(char *ret);
 	uint32 readChar(char* ret);		//don't move cur index ptr
-	uint32 consumeCharUntilReach(const char inputEnder, string *ret, LexInput inOneLine = eLexInMulLine);
+	uint32 consumeCharUntilReach(
+			const char inputEnder, string *ret,
+		   	LexInput inOneLine = eLexInMulLine);
+
+	//alarm: this func don't care about seperator,so if you need to check seperator,check it by yourself
 	uint32 tryToMatchWord(const string& word);
+
+	//alarm: this only useful for a word,in a file.
+	//if that file is poped,this func can do nothing on it
 	uint32 undoConsume();
-	uint32 consumeWord(string &retStr,char &retSeperator,LexInput skipEmptyInput = eLexSkipEmptyInput);
+	uint32 consumeWord(
+			string &retStr,char &retSeperator,
+			LexInput skipEmptyInput = eLexSkipEmptyInput,
+		   	LexInput inOneLine = eLexInMulLine);
 
 public:
 	//handler function
@@ -96,12 +77,15 @@ public:
 	uint32 handleCommentBlock();
 	uint32 handleSharpDefine();
 	uint32 handleSharpIf();
+	uint32 handleSharpIfdef();
 	uint32 handleSharpInclude();
 
 private:
+
 	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
+	stack<PrecompileSelector> mPSStack;
 	LexRecList mLexRecList;
-	DefineManager* mDefMgr;
+	DefineManager mDefMgr;
 };
 
 namespace LexUtil {
@@ -131,6 +115,5 @@ private:
 	map<char,LexPatternHandler> mPatternHandlerMap;
 };
 #define LexPtnTbl LexPatternTable::getInstance()
-
 
 #endif /* end of include guard: LEX_H */

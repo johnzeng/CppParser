@@ -2,6 +2,8 @@
 #   define   he( a, b,c...) // \    
 	printf("helloworld");
 
+#ifdef he
+
 //hello \
 	this is a test
 /* test comment ****/

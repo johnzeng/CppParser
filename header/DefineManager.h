@@ -2,7 +2,7 @@
 #define DEFINEMANAGER_H
 
 #include "JZCommonDefine.h"
-#include "Lex.h"
+#include "LexData.h"
 
 using namespace std;
 
@@ -38,6 +38,7 @@ public:
 
 	DefineManager ();
 	virtual ~DefineManager ();
+
 	static DefineManager* getGlobalInstance();
 	void init();
 

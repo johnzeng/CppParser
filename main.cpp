@@ -7,6 +7,7 @@
 #include "IncludeHandler.h"
 #include "DefineManager.h"
 #include "ErrorCode.h"
+#include "Lex.h"
 
 void globalInitAtBegin()
 {

@@ -8,16 +8,12 @@
 	Lex begin here 
  ********************************************************/
 
-
-
 Lex::Lex()
 {
-	mDefMgr = new DefineManager();
 }
 
 Lex::~Lex()
 {
-	JZSAFE_DELETE(mDefMgr);
 }
 
 void Lex::analyzeAFile(const string& fileName)
@@ -26,13 +22,15 @@ void Lex::analyzeAFile(const string& fileName)
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
 
-	FileReaderRecord fileRecord;
-	fileRecord.buffer = (const char*)buff;
-	fileRecord.bufferSize = bufSize;
-	fileRecord.curIndex = 0;
-	fileRecord.fileName = fileName;
-	fileRecord.curLineNum = 1;
-
+	FileReaderRecord fileRecord = 
+	{
+		.buffer = (const char*)buff,
+		.bufferSize = bufSize,
+		.curIndex = 0,
+		.fileName = fileName,
+		.curLineNum = 1,
+		.recordType = eFileTypeFile,
+	};
 	mReaderStack.push(fileRecord);
 	doLex();
 	JZWRITE_DEBUG("analyze file %s end", fileName.c_str());
@@ -74,31 +72,40 @@ void Lex::doLex()
 	}
 }
 
-uint32 Lex::consumeWord(string &retStr,char &retSeperator,LexInput skipEmptyInput)
+uint32 Lex::consumeWord(
+		string &retStr,char &retSeperator,
+		LexInput skipEmptyInput,
+		LexInput inOneLine)
 {
-	char input = 0;
+	JZFUNC_BEGIN_LOG();
 	uint32 ret;
-	string curWord = "";
-	while (eLexNoError == (ret = consumeChar(&input)))
+	retStr = "";
+	retSeperator = 0;
+	while (eLexNoError == (ret = consumeChar(&retSeperator)))
 	{
-		if (false == LexUtil::isInterpunction(input))
+		if (false == LexUtil::isInterpunction(retSeperator))
 		{
-			curWord += input;
+			retStr += retSeperator;
 		}
 		else
 		{
+			if (eLexInOneLine == inOneLine &&
+				true == LexUtil::isLineEnder(retSeperator) &&
+				false == LexUtil::isEndWithBackSlant(retStr))
+			{
+				return eLexNoError;
+			}
 			if (eLexSkipEmptyInput == skipEmptyInput && 
-				true == LexUtil::isEmptyInput(input) &&
-			   	"" == curWord)
+				true == LexUtil::isEmptyInput(retSeperator) &&
+			   	"" == retStr)
 			{
 				continue;
 			}
-			retStr = curWord;
-			retSeperator = input;
+			JZFUNC_END_LOG();
 			return eLexNoError;
 		}
-			
 	}
+	JZFUNC_END_LOG();
 	return ret;
 }
 
@@ -131,11 +138,13 @@ void Lex::saveWordTo(const string& input,LexRecList& list, uint32 recordType)
 		//don't add empty input
 		return;
 	}
-	LexRec rec;
-	rec.word = input;
-	rec.line = mReaderStack.top().curLineNum;
-	rec.file = mReaderStack.top().fileName;
-	rec.type = recordType;
+	LexRec rec = 
+	{
+		.word = input,
+		.line = mReaderStack.top().curLineNum,
+		.file = mReaderStack.top().fileName,
+		.type = recordType,
+	};
 	list.push_back(rec);
 }
 
@@ -419,7 +428,15 @@ uint32 Lex::handleSharp()
 		}
 		case 'i':
 		{
-			if (eLexNoError == tryToMatchWord("f"))
+			//since tryToMatchWord don't care about seperator,
+			//so match ifdef before if,
+			//otherwise it can not match ifdef
+			if (eLexNoError == tryToMatchWord("fdef"))
+			{
+				//#ifdef
+				return handleSharpIfdef();
+			}
+			else if (eLexNoError == tryToMatchWord("f"))
 			{
 				//#if
 				return handleSharpIf();
@@ -436,6 +453,33 @@ uint32 Lex::handleSharp()
 			break;	
 		}
 	}
+	return eLexNoError;
+}
+
+uint32 Lex::handleSharpIfdef()
+{
+	JZFUNC_BEGIN_LOG();
+	uint32 ret;
+	char seperator;
+	string word;
+	ret = consumeWord(word,seperator,eLexSkipEmptyInput, eLexInOneLine);
+	if (eLexNoError != ret)
+	{
+		JZFUNC_END_LOG();
+		return ret;
+	}
+	JZWRITE_DEBUG("word is :[%s]",word.c_str());
+	//check if word is defined
+	if (true == LexUtil::isEmptyInput(word))
+	{
+		JZFUNC_END_LOG();
+		return eLexSharpIfdefFollowedWithNothing;
+	}
+	
+	bool isDef = (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word));
+	JZWRITE_DEBUG("word:%s,is define :%d",word.c_str(), isDef);
+
+	JZFUNC_END_LOG();
 	return eLexNoError;
 }
 
@@ -536,13 +580,14 @@ uint32 Lex::handleSharpDefine()
 	}
 
 	defineRec.defineStr = defWord;
-	mDefMgr->addDefineMap(key, defineRec);	
+	mDefMgr.addDefineMap(key, defineRec);	
 	JZFUNC_END_LOG();
 	return ret;
 }
 
 uint32 Lex::handleSharpIf()
 {
+	//so this is really a big problem...
 	return eLexNoError;
 }
 
