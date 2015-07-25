@@ -4,6 +4,7 @@
 #include "JZLogger.h"
 #include "JZMacroFunc.h"
 #include "IncludeHandler.h"
+#include <stdlib.h>
 /*********************************************************
 	Lex begin here 
  ********************************************************/
@@ -23,9 +24,12 @@ void Lex::analyzeAFile(const string& fileName)
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
 
+	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
+
+	JZSAFE_DELETE(buff);
 	FileReaderRecord fileRecord = 
 	{
-		.buffer = (const char*)buff,
+		.buffer = buffWithOutBackSlant,
 		.bufferSize = bufSize,
 		.curIndex = 0,
 		.fileName = fileName,
@@ -92,8 +96,7 @@ uint32 Lex::consumeWord(
 		{
 			if (
 				eLexInOneLine == inOneLine &&
-				true == LexUtil::isLineEnder(retSeperator) &&
-				false == LexUtil::isEndWithBackSlant(retStr)
+				true == LexUtil::isLineEnder(retSeperator)
 				)
 			{
 				return eLexNoError;
@@ -741,19 +744,14 @@ uint32 Lex::handleSharpDefine()
 	}
 
 	string defWord = "";
-	do
+	uint32 retErr = eLexNoError;
+	
+	retErr = consumeCharUntilReach('\n',&defWord);
+	if (eLexNoError != retErr)
 	{
-		string retStr = "";
-		uint32 retErr = eLexNoError;
-		
-		retErr = consumeCharUntilReach('\n',&retStr);
-		if (eLexNoError != retErr)
-		{
-			JZFUNC_END_LOG();
-			return retErr;
-		}
-		defWord += retStr;
-	}while(true == LexUtil::isEndWithBackSlant(defWord));
+		JZFUNC_END_LOG();
+		return retErr;
+	}
 
 	if (defWord.back() == '\n')
 	{
@@ -875,8 +873,7 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput i
 		*ret += nextInput;
 		if (
 			eLexInOneLine == inOneLine &&
-			true == LexUtil::isLineEnder(nextInput) &&
-		   	false == LexUtil::isEndWithBackSlant(*ret) &&
+			true == LexUtil::isLineEnder(nextInput)
 			)
 		{
 			break;
@@ -1043,6 +1040,43 @@ char LexUtil::seperatorMatcher(const char input)
 			break;
 		}
 	}
+	return ret;
+}
+
+char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize)
+{
+	JZFUNC_BEGIN_LOG();
+	char *ret = (char*)malloc((*bufSize)*sizeof(char));
+	uint64 j = 0;
+	memset(ret,0,(*bufSize) * sizeof(char));
+
+	JZWRITE_DEBUG("buff size is :%lld",*bufSize);
+	for(uint64 i = 0 ; i < (*bufSize); i++)
+	{
+		if (false == isBackSlant(input[i]))
+		{
+			ret[j++] = input[i];	
+			continue;
+		}
+		//check next not empty input
+		int k = i + 1;
+		bool endWithBackSlant = true;
+		while(k < (*bufSize) && false == isLineEnder(input[k]))
+		{
+			if (false == isEmptyInput(input[k]))
+			{
+				endWithBackSlant = false;
+				break;
+			}
+			k++;
+		};
+		if (true == endWithBackSlant)
+		{
+			i = k;
+		}
+	}
+	*bufSize = j;
+	JZFUNC_END_LOG();
 	return ret;
 }
 

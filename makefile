@@ -36,7 +36,7 @@ $(myLib):
 	cd $(mylib_PATH) && make
 
 test:$(TARGET)
-	./$(TARGET) testcpp
+	./$(TARGET) test.cpp
 
 lib:
 	cd $(mylib_PATH) && make

@@ -107,6 +107,7 @@ private:
 };
 
 namespace LexUtil {
+	char* eraseLineSeperator(const char* input,uint64 *bufSize);
 	bool isInterpunction(const char input);
 	bool isLineEnder(const char input);
 	bool isEmptyInput(const char input);
