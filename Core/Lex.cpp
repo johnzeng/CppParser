@@ -8,7 +8,8 @@
 	Lex begin here 
  ********************************************************/
 
-Lex::Lex()
+Lex::Lex():
+	mStreamOffTag(0)
 {
 }
 
@@ -133,6 +134,11 @@ void Lex::writeError(uint32 err)
 
 void Lex::saveWordTo(const string& input,LexRecList& list, uint32 recordType)
 {
+	if (false == isLastStreamUseful())
+	{
+		//yeah! this stream is not useful!
+		return;
+	}
 	if (true == LexUtil::isEmptyInput(input))
 	{
 		//don't add empty input
@@ -448,12 +454,59 @@ uint32 Lex::handleSharp()
 			}
 			break;	
 		}
+		case 'e':
+		{
+			if (eLexNoError == tryToMatchWord("ndif"))
+			{
+				return handleSharpEndIf();
+			}
+			else if(eLexNoError == tryToMatchWord("lse"))
+			{
+				return handleSharpElse();
+			}
+		}
 		default:
 		{
 			break;	
 		}
 	}
-	return eLexNoError;
+	return eLexUnknowMacro;
+}
+
+uint32 Lex::handleSharpElse()
+{
+	string word = "";
+	char seperator;
+	uint32 ret = consumeWord(
+			word,seperator,eLexSkipEmptyInput,eLexInOneLine);
+	if (eLexNoError != ret)
+	{
+		return ret;
+	}
+	if (false ==  LexUtil::isEmptyInput(word))
+	{
+		return eLexSharpElseFollowWithOtherThing;
+	}
+	return pushPrecompileStreamControlWord(eLexPSELSE);
+
+}
+
+uint32 Lex::handleSharpEndIf()
+{
+	string word = "";
+	char seperator;
+	uint32 ret = consumeWord(
+			word,seperator,eLexSkipEmptyInput,eLexInOneLine);
+	if (eLexNoError != ret)
+	{
+		return ret;
+	}
+	if (false ==  LexUtil::isEmptyInput(word))
+	{
+		return eLexSharpEndIfFollowWithOtherThing;
+	}
+	return pushPrecompileStreamControlWord(eLexPSENDIF);
+
 }
 
 uint32 Lex::handleSharpIfdef()
@@ -479,34 +532,134 @@ uint32 Lex::handleSharpIfdef()
 	bool isDef = (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word));
 	JZWRITE_DEBUG("word:%s,is define :%d",word.c_str(), isDef);
 
-	pushPrecompileStreamControlWord("#ifdef", isDef);
+	ret = pushPrecompileStreamControlWord(eLexPSIFDEF, isDef);
 	
+	JZFUNC_END_LOG();
+	return ret ;
+}
+
+uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
+{
+	JZFUNC_BEGIN_LOG();
+	PrecompileSelector ps = 
+	{
+		.mark = mark,
+		.isSuccess = isSuccess,
+		.tag = mPSStack.size() + 1,
+	};
+
+	//set begin tag
+	switch(mark)
+	{
+		case eLexPSIF:
+		case eLexPSIFNDEF:
+		case eLexPSIFDEF:
+			ps.beginTag = ps.tag;
+			break;
+		default:
+		{
+			if (0 == mPSStack.size())
+			{
+				return eLexUnmatchMacro;
+			}
+			ps.beginTag = mPSStack.back().beginTag;
+		}
+	};
+
+	//check if this stream is really success
+	switch(mark)
+	{
+		case eLexPSIF:
+		case eLexPSIFNDEF:
+		case eLexPSIFDEF:
+			//do nothing
+			break;
+		case eLexPSELSE:
+		case eLexPSELIF:
+		{
+			if (false == ps.isSuccess)
+			{
+				break;
+			}
+			for(int i = ps.beginTag - 1; i < mPSStack.size(); i++)
+			{
+				if (true == mPSStack[i].isSuccess)
+				{
+					ps.isSuccess =false;
+					break;
+				}
+			}
+			uint32 offStream = getCompileStream();
+			if (0 != offStream)
+			{
+				if (ps.beginTag == mPSStack[offStream - 1].beginTag)
+				{
+					turnOnCompileStream();
+				}
+			}
+			break;
+		}
+		case eLexPSENDIF:
+		{
+			uint32 offStream = getCompileStream();
+			if (0 != offStream)
+			{
+				if (ps.beginTag == mPSStack[offStream - 1].beginTag)
+				{
+					turnOnCompileStream();
+				}
+			}
+			while (false == mPSStack.empty() && ps.beginTag == mPSStack.back().beginTag)
+			{
+				mPSStack.pop_back();
+			}
+			return eLexNoError;
+		}
+		default:
+		{
+			JZWRITE_DEBUG("unregister mark:%d", mark);	
+			return eLexUnknowMacro;
+		}
+	}
+
+	if (true == isLastStreamUseful() && false == ps.isSuccess)
+	{
+		turnOffCompileStream(ps.tag);
+	}
+
+	mPSStack.push_back(ps);
 	JZFUNC_END_LOG();
 	return eLexNoError;
 }
 
-void Lex::pushPrecompileStreamControlWord(const string& word,bool isSucces)
+void Lex::turnOnCompileStream()
 {
-	PrecompileSelector ps = 
+	mStreamOffTag = 0;
+}
+
+uint32 Lex::getCompileStream()
+{
+	return mStreamOffTag;
+}
+
+void Lex::turnOffCompileStream(uint32 tag)
+{
+	mStreamOffTag = tag;
+}
+
+bool Lex::isLastMarcoSuccess()
+{
+	if (true == mPSStack.empty())
 	{
-		.mark = word,
-		.isSuccess = isSuccess; 	
-	};
-	//handle about word
-	if ("#if" == word)
-	{
-		///
+		//if stack is empty ,always return true;
+		return true;
 	}
-	else if ("#ifdef" == word)
-	{
-		//
-	}
-	else
-	{
-		JZWRITE_DEBUG("unregister macro word:[%s]",word.c_str());
-		return ;	
-	}
-	mPSStack.push(ps);
+	return mPSStack.back().isSuccess;
+}
+
+bool Lex::isLastStreamUseful()
+{
+	return (mStreamOffTag == 0) && isLastMarcoSuccess();
 }
 
 uint32 Lex::handleSharpDefine()

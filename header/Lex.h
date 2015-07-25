@@ -14,7 +14,6 @@ class Lex {
 public:
 	enum LexReturnNum
 	{
-		eLexUnknowError = -1,
 		eLexNoError = 0,
 		eLexReachFileEnd = 1,	
 		eLexReaderStackEmpty = 2,
@@ -25,6 +24,14 @@ public:
 		eLexUnexpectedSeperator = 7,
 		eLexValParamNotLast = 8,
 		eLexSharpIfdefFollowedWithNothing = 9,
+		eLexUnmatchMacro = 10,
+		eLexUnknowMacro = 11,
+		eLexSharpEndIfFollowWithOtherThing = 12,
+		eLexSharpElseFollowWithOtherThing = 12,
+
+
+		//unknow should be last
+		eLexUnknowError ,
 	};
 	enum LexInput
 	{
@@ -66,8 +73,14 @@ private:
 			LexInput skipEmptyInput = eLexSkipEmptyInput,
 		   	LexInput inOneLine = eLexInMulLine);
 
-	// isSuccess is useless when word == "#else"
-	void pushPrecompileStreamControlWord(const string& word, bool isSuccess);
+	// isSuccess is useless when word == "#else" or word == "#endif"
+	uint32 pushPrecompileStreamControlWord(uint32 word, bool isSuccess = true);
+	bool isLastStreamUseful();
+	bool isLastMarcoSuccess();
+	void turnOffCompileStream(uint32 tag);
+	void turnOnCompileStream();
+	uint32 getCompileStream();
+
 public:
 	//handler function
 	uint32 handleSingleQuotation();
@@ -81,11 +94,14 @@ public:
 	uint32 handleSharpIf();
 	uint32 handleSharpIfdef();
 	uint32 handleSharpInclude();
+	uint32 handleSharpEndIf();
+	uint32 handleSharpElse();
 
 private:
-
+	
+	uint32 mStreamOffTag;
 	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
-	stack<PrecompileSelector> mPSStack;
+	vector<PrecompileSelector> mPSStack;
 	LexRecList mLexRecList;
 	DefineManager mDefMgr;
 };

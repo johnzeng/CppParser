@@ -3,7 +3,10 @@
 	printf("helloworld");
 
 #ifdef he
+#else
+int test();
 
+#endif
 //hello \
 	this is a test
 /* test comment ****/

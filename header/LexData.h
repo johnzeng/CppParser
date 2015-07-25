@@ -16,10 +16,22 @@ struct LexRec
 	uint32 defId;
 } ;
 
+enum PSMark
+{
+	eLexPSIF,
+	eLexPSIFDEF,
+	eLexPSIFNDEF,
+	eLexPSELIF,
+	eLexPSELSE,
+	eLexPSENDIF,
+};
+
 struct PrecompileSelector
 {
-	string mark;	//like #if,#else,#elif,#endif,and so on
+	uint32 mark;	//like #if,#else,#elif,#endif,and so on
 	bool isSuccess;	//if true, the words will be save
+	unsigned long tag;
+	uint32 beginTag;
 };
 
 enum LexRecordType
