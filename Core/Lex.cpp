@@ -90,9 +90,11 @@ uint32 Lex::consumeWord(
 		}
 		else
 		{
-			if (eLexInOneLine == inOneLine &&
+			if (
+				eLexInOneLine == inOneLine &&
 				true == LexUtil::isLineEnder(retSeperator) &&
-				false == LexUtil::isEndWithBackSlant(retStr))
+				false == LexUtil::isEndWithBackSlant(retStr)
+				)
 			{
 				return eLexNoError;
 			}
@@ -871,12 +873,13 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput i
 	while ((readRet = consumeChar(&nextInput)) == eLexNoError)
 	{
 		*ret += nextInput;
-		if (true == LexUtil::isLineEnder(nextInput))
+		if (
+			eLexInOneLine == inOneLine &&
+			true == LexUtil::isLineEnder(nextInput) &&
+		   	false == LexUtil::isEndWithBackSlant(*ret) &&
+			)
 		{
-			if (eLexInOneLine == inOneLine)
-			{
-				break;
-			}
+			break;
 		}
 		if (nextInput == inputEnder)
 		{
