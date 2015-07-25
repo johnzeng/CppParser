@@ -27,7 +27,7 @@ public:
 		eLexUnmatchMacro = 10,
 		eLexUnknowMacro = 11,
 		eLexSharpEndIfFollowWithOtherThing = 12,
-		eLexSharpElseFollowWithOtherThing = 12,
+		eLexSharpElseFollowWithOtherThing = 13,
 
 
 		//unknow should be last
