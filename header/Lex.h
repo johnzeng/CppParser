@@ -111,11 +111,14 @@ public:
 	//macro handler
 	uint32 handleSharpDefine();
 	uint32 handleSharpIf();
+	uint32 handleSharpElif();
 	uint32 handleSharpIfdef();
 	uint32 handleSharpInclude();
 	uint32 handleSharpEndIf();
 	uint32 handleSharpElse();
 	uint32 handleSharpPragma();
+
+	uint32 checkMacro(bool *isSuccess);
 
 private:
 	

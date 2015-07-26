@@ -1013,9 +1013,8 @@ uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
 	return eLexNoError;	
 }
 
-uint32 Lex::handleSharpIf()
+uint32 Lex::checkMacro(bool *isSuccess)
 {
-	//so this is really a big problem...
 	string logicStr = "";
 	uint32 retErr = eLexNoError;
 	
@@ -1063,10 +1062,31 @@ uint32 Lex::handleSharpIf()
 		JZWRITE_DEBUG("word:[%s]",list[i].word.c_str());	
 	}
 #endif
-	bool isSuccess = false;
-	uint32 ret = isMacroSuccess(list, &isSuccess);
+	if (NULL == isSuccess)
+	{
+		//no ptr, this is a comsume input
+		return eLexNoError;
+	}
+	uint32 ret = isMacroSuccess(list, isSuccess);
+	return ret;
 
-	if (eLexNoError != ret)
+}
+uint32 Lex::handleSharpElif()
+{
+	bool isSuccess = false;
+	uint32 ret = checkMacro(&isSuccess);
+	if (ret != eLexNoError)
+	{
+		return ret;
+	}
+	return pushPrecompileStreamControlWord(eLexPSELIF, isSuccess);
+}
+
+uint32 Lex::handleSharpIf()
+{
+	bool isSuccess = false;
+	uint32 ret = checkMacro(&isSuccess);
+	if (ret != eLexNoError)
 	{
 		return ret;
 	}
