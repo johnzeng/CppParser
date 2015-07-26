@@ -7,7 +7,7 @@ int test();
 
 #endif
 
-#if defined(he)
+#if defined(he) | | 1
 	int test2();
 #endif
 //hello \

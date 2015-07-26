@@ -86,11 +86,25 @@ private:
 
 public:
 	//handler function
-	uint32 handleSingleQuotation();
-	uint32 handleDoubleQuotation();
-	uint32 handleSharp();
-	uint32 handleSlant();
+	uint32 handleSingleQuotation();  		//"
+	uint32 handleDoubleQuotation();			//'
+	uint32 handleSharp();					//#
+	uint32 handleSlant();					// /
+	uint32 handleBar();						//|
+	uint32 handleLeftSharpBracket();		//<
+	uint32 handleRightSharpBracket();		//>
+	uint32 handlePoint();					//.
+	uint32 handleAnd();						//&
+	uint32 handleEqual();					//=
+	uint32 handleStart();					//*
+	uint32 handleExclamation();				//!
+	uint32 handlePlus();					//+
+	uint32 handleMinus();					//-
+	uint32 handleUpponSharp();				//^
+	uint32 handleWave();					//~
 
+	//slant can be a big handler...
+	uint32 handleDivideSlant();
 	uint32 handleCommentLine();
 	uint32 handleCommentBlock();
 
@@ -101,6 +115,7 @@ public:
 	uint32 handleSharpInclude();
 	uint32 handleSharpEndIf();
 	uint32 handleSharpElse();
+	uint32 handleSharpPragma();
 
 private:
 	

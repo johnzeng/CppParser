@@ -296,6 +296,256 @@ uint32 Lex::readChar(char *ret)
 	return eLexNoError;
 
 }
+
+
+uint32 Lex::handleBar()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "|";
+	if (
+		'=' == nextChar ||
+		'|' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleLeftSharpBracket()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "<";
+	if (
+		'=' == nextChar ||
+		'<' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	//if any error happen,return now
+	if (ret != eLexNoError)
+	{
+		return ret;
+	}
+
+	if (0 == toSave.compare("<<") )
+	{
+		//toSave == "<<"
+		char nextChar = 0;
+		ret = readChar(&nextChar);
+		if ('=' == nextChar)
+		{
+			toSave += nextChar;
+		}
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleRightSharpBracket()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = ">";
+	if (
+		'=' == nextChar ||
+		'>' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	//if any error happen,return now
+	if (ret != eLexNoError)
+	{
+		return ret;
+	}
+
+	if (0 == toSave.compare(">>") )
+	{
+		//toSave == ">>"
+		nextChar = 0;
+		ret = readChar(&nextChar);
+		if ('=' == nextChar)
+		{
+			consumeChar(&nextChar);
+			toSave += nextChar;
+		}
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handlePoint()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = ".";
+	if ('.' == nextChar)
+	{
+		nextChar = 0;
+		ret = readChar(&nextChar);
+		if ('.' == nextChar)
+		{
+			//consume two char:".."
+			consumeChar(&nextChar);
+			consumeChar(&nextChar);
+			toSave = "...";
+		}
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleAnd()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "&";
+	if (
+		'=' == nextChar ||
+		'&' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleEqual()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "=";
+	if ('=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleMinus()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "-";
+	if (
+		'-' == nextChar||
+		'=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleWave()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "~";
+	if ('=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleUpponSharp()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "^";
+	if ('=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handlePlus()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "+";
+	if (
+		'+' == nextChar||
+		'=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleStart()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "*";
+	if ('=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleExclamation()
+{
+	//handle "!"
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "!";
+	if ('=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
+uint32 Lex::handleDivideSlant()
+{
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "&";
+	if ('=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	saveWord(toSave);
+	return ret;
+}
+
 uint32 Lex::handleSlant()
 {
 	JZFUNC_BEGIN_LOG();
@@ -319,13 +569,17 @@ uint32 Lex::handleSlant()
 		default:
 		{
 			//maybe this means divide
-			string toSave = "/";
-			saveWord(toSave);
-			break;	
+			JZFUNC_END_LOG();
+			return handleDivideSlant();
 		}
 	}
 
 	JZFUNC_END_LOG();
+	return eLexNoError;
+}
+
+uint32 Lex::handleSharpPragma()
+{
 	return eLexNoError;
 }
 
@@ -400,11 +654,20 @@ uint32 Lex::handleCommentBlock()
 uint32 Lex::handleSharp()
 {
 	JZFUNC_BEGIN_LOG();
-	//hard proble now begin!
-	
-	//read empty input
+
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
+//try if this is double sharp: ##
+	ret = readChar(&nextChar);
+	if (nextChar == '#')
+	{
+		consumeChar(&nextChar);
+		saveWord("##");
+		JZFUNC_END_LOG();
+		return eLexNoError;
+	}
+
+
 	string word = "";
 
 	ret = consumeWord(word, nextChar, eLexSkipEmptyInput, eLexInOneLine);
@@ -426,8 +689,8 @@ uint32 Lex::handleSharp()
 	LexPatternHandler handler = LexPtnTbl->getMacroPattern(word);
 	if (NULL == handler)
 	{
-		JZFUNC_END_LOG();
-		return eLexUnknowMacro;
+		JZWRITE_DEBUG("no handler ,maybe this is a sharp input");
+		saveWord("#");
 	}
 	else
 	{
@@ -795,11 +1058,10 @@ uint32 Lex::handleSharpIf()
 	}
 	JZWRITE_DEBUG("pop fin");
 #ifdef DEBUG
-//	printLexRec();
-//	for(int i = 0 ; i < list.size() ; i++)
-//	{
-//		JZWRITE_DEBUG("word:[%s]",list[i].word.c_str());	
-//	}
+	for(int i = 0 ; i < list.size() ; i++)
+	{
+		JZWRITE_DEBUG("word:[%s]",list[i].word.c_str());	
+	}
 #endif
 	bool isSuccess = false;
 	uint32 ret = isMacroSuccess(list, &isSuccess);
@@ -1188,6 +1450,18 @@ void LexPatternTable::init()
 	mPatternHandlerMap['"']  = &Lex::handleDoubleQuotation;
 	mPatternHandlerMap['#']  = &Lex::handleSharp;
 	mPatternHandlerMap['/']  = &Lex::handleSlant;
+	mPatternHandlerMap['|']  = &Lex::handleBar;
+	mPatternHandlerMap['.']  = &Lex::handlePoint;
+	mPatternHandlerMap['<']  = &Lex::handleLeftSharpBracket;
+	mPatternHandlerMap['>']  = &Lex::handleRightSharpBracket;
+	mPatternHandlerMap['&']  = &Lex::handleAnd;
+	mPatternHandlerMap['=']  = &Lex::handleEqual;
+	mPatternHandlerMap['*']  = &Lex::handleStart;
+	mPatternHandlerMap['!']  = &Lex::handleExclamation;
+	mPatternHandlerMap['+']  = &Lex::handlePlus;
+	mPatternHandlerMap['-']  = &Lex::handleMinus;
+	mPatternHandlerMap['^']  = &Lex::handleUpponSharp;
+	mPatternHandlerMap['~']  = &Lex::handleWave;
 
 	/*********************************************************
 		init marco pattern map here 
@@ -1199,7 +1473,7 @@ void LexPatternTable::init()
 	mMacroPatternHandlerMap["endif"]   = &Lex::handleSharpEndIf;	
 	mMacroPatternHandlerMap["define"]  = &Lex::handleSharpDefine;	
 	mMacroPatternHandlerMap["include"] = &Lex::handleSharpInclude;	
-	
+	mMacroPatternHandlerMap["pragma"]  = &Lex::handleSharpPragma;
 }
 
 LexPatternHandler LexPatternTable::getMacroPattern(const string& input)

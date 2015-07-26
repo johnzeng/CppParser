@@ -39,14 +39,19 @@ void globalInitAtBegin()
 	auto defineMapIt = userDefineMap.begin();
 	for(; defineMapIt != userDefineMap.end() ; defineMapIt++ )
 	{
-//		I need more info about how to add this
-//
-//		auto err = DefineManager::getGlobalInstance()->addDefineMap(defineMapIt->first, defineMapIt->second);
-//		if (err != DefineManager::eNoError)
-//		{
-//			JZWRITE_ERROR("double define : %s", defineMapIt->first.c_str());
-//			return ;
-//		}
+		DefineRec rec = 
+		{
+			.key = defineMapIt->first,
+			.isFuncLikeMacro = false,
+			.isVarArgs = false,
+			.defineStr = defineMapIt->second,
+		};
+		auto err = DefineManager::getGlobalInstance()->addDefineMap(defineMapIt->first, rec);
+		if (err != DefineManager::eDefMgrNoError)
+		{
+			JZWRITE_ERROR("double define : %s", defineMapIt->first.c_str());
+			return ;
+		}
 	}
 }
 
