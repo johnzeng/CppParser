@@ -14,6 +14,7 @@ struct LexRec
 	string file;
 	uint32 type;
 	uint32 defId;
+	uint32 fileType;
 } ;
 
 enum PSMark
@@ -41,12 +42,14 @@ enum LexRecordType
 	eLexRecTypeString,
 	eLexRecTypeFuncLikeMacroParam,
 	eLexRecTypeFuncLikeMacroVarParam,
+	eLexRecTypeMacro,
 };
 
 enum FileReaderRecordType
 {
 	eFileTypeFile,
 	eFileTypeDefine,
+	eFileTypeMacro,
 };
 
 struct FileReaderRecord
@@ -55,10 +58,12 @@ struct FileReaderRecord
 	uint64 bufferSize;		//should not be change after init
 	int curIndex;
 	int curLineNum;
-	string fileName;	//if this is a define ,file name will be key
+	const string fileName;	//if this is a define ,file name will be key
 	uint32 recordType;
-
+	uint32 mStreamOffTag;
 };
+
+FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
 typedef vector<LexRec> LexRecList;
 

@@ -65,9 +65,10 @@ private:
 	//alarm: this func don't care about seperator,so if you need to check seperator,check it by yourself
 	uint32 tryToMatchWord(const string& word);
 
-	//alarm: this only useful for a word,in a file.
+	//alarm: this only useful for a char,in a file.
 	//if that file is poped,this func can do nothing on it
 	uint32 undoConsume();
+
 	uint32 consumeWord(
 			string &retStr,char &retSeperator,
 			LexInput skipEmptyInput = eLexSkipEmptyInput,
@@ -76,10 +77,12 @@ private:
 	// isSuccess is useless when word == "#else" or word == "#endif"
 	uint32 pushPrecompileStreamControlWord(uint32 word, bool isSuccess = true);
 	bool isLastStreamUseful();
-	bool isLastMarcoSuccess();
+	bool isLastMacroSuccess();
 	void turnOffCompileStream(uint32 tag);
 	void turnOnCompileStream();
 	uint32 getCompileStream();
+
+	uint32 isMacroSuccess(const LexRecList& logic,bool *ret);
 
 public:
 	//handler function
@@ -90,6 +93,8 @@ public:
 
 	uint32 handleCommentLine();
 	uint32 handleCommentBlock();
+
+	//macro handler
 	uint32 handleSharpDefine();
 	uint32 handleSharpIf();
 	uint32 handleSharpIfdef();
@@ -99,7 +104,6 @@ public:
 
 private:
 	
-	uint32 mStreamOffTag;
 	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
 	vector<PrecompileSelector> mPSStack;
 	LexRecList mLexRecList;
@@ -126,12 +130,14 @@ public:
 	virtual ~LexPatternTable ();
 
 	LexPatternHandler getPattern(const char input);
+	LexPatternHandler getMacroPattern(const string& input);
 
 private:
 
 	void init();
 	LexPatternTable ();
 	map<char,LexPatternHandler> mPatternHandlerMap;
+	map<string ,LexPatternHandler> mMacroPatternHandlerMap;
 };
 #define LexPtnTbl LexPatternTable::getInstance()
 

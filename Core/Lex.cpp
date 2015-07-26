@@ -9,8 +9,7 @@
 	Lex begin here 
  ********************************************************/
 
-Lex::Lex():
-	mStreamOffTag(0)
+Lex::Lex()
 {
 }
 
@@ -27,15 +26,8 @@ void Lex::analyzeAFile(const string& fileName)
 	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
 
 	JZSAFE_DELETE(buff);
-	FileReaderRecord fileRecord = 
-	{
-		.buffer = buffWithOutBackSlant,
-		.bufferSize = bufSize,
-		.curIndex = 0,
-		.fileName = fileName,
-		.curLineNum = 1,
-		.recordType = eFileTypeFile,
-	};
+	FileReaderRecord fileRecord = initFileRecord(buffWithOutBackSlant,bufSize,fileName,eFileTypeFile);
+
 	mReaderStack.push(fileRecord);
 	doLex();
 	JZWRITE_DEBUG("analyze file %s end", fileName.c_str());
@@ -155,6 +147,7 @@ void Lex::saveWordTo(const string& input,LexRecList& list, uint32 recordType)
 		.line = mReaderStack.top().curLineNum,
 		.file = mReaderStack.top().fileName,
 		.type = recordType,
+		.fileType = mReaderStack.top().recordType,
 	};
 	list.push_back(rec);
 }
@@ -412,86 +405,63 @@ uint32 Lex::handleSharp()
 	//read empty input
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
-	while ((ret = consumeChar(&nextChar)) == eLexNoError)
-	{
-		if (false == LexUtil::isEmptyInput(nextChar))
-		{
-			break;
-		}
-		if (true == LexUtil::isLineEnder(nextChar))
-		{
-			return eLexSharpFollowedNothing;
-		}
+	string word = "";
 
-		//else continue;
-	}
-	
-	switch(nextChar)
+	ret = consumeWord(word, nextChar, eLexSkipEmptyInput, eLexInOneLine);
+	if (ret != eLexNoError)
 	{
-		case 'd':
+		JZFUNC_END_LOG();
+		return ret;
+	}
+	if (false == LexUtil::isEmptyInput(nextChar))
+	{
+		JZFUNC_END_LOG();
+		return eLexUnknowMacro;
+	}
+
+	//pop the seperator out,in case if the seperator is \n,
+	//I check it in the handles,so don't eat it
+	undoConsume();
+
+	LexPatternHandler handler = LexPtnTbl->getMacroPattern(word);
+	if (NULL == handler)
+	{
+		JZFUNC_END_LOG();
+		return eLexUnknowMacro;
+	}
+	else
+	{
+		uint32 err = eLexNoError;
+		err = (this->*handler)();
+		if (err != eLexNoError)
 		{
-			//define ,but d is read,so efine
-			if (eLexNoError == tryToMatchWord("efine"))
-			{
-				return handleSharpDefine();
-			}
-			break;
-		}
-		case 'i':
-		{
-			//since tryToMatchWord don't care about seperator,
-			//so match ifdef before if,
-			//otherwise it can not match ifdef
-			if (eLexNoError == tryToMatchWord("fdef"))
-			{
-				//#ifdef
-				return handleSharpIfdef();
-			}
-			else if (eLexNoError == tryToMatchWord("f"))
-			{
-				//#if
-				return handleSharpIf();
-			}
-			else if(eLexNoError == tryToMatchWord("nclude"))
-			{
-				//#include
-				return handleSharpInclude();	
-			}
-			break;	
-		}
-		case 'e':
-		{
-			if (eLexNoError == tryToMatchWord("ndif"))
-			{
-				return handleSharpEndIf();
-			}
-			else if(eLexNoError == tryToMatchWord("lse"))
-			{
-				return handleSharpElse();
-			}
-		}
-		default:
-		{
-			break;	
+			JZFUNC_END_LOG();
+			return err;
 		}
 	}
-	return eLexUnknowMacro;
+	JZFUNC_END_LOG();
+	return eLexNoError;
 }
 
 uint32 Lex::handleSharpElse()
 {
+	JZFUNC_BEGIN_LOG();
 	string word = "";
 	char seperator;
 	uint32 ret = consumeWord(
 			word,seperator,eLexSkipEmptyInput,eLexInOneLine);
 	if (eLexNoError != ret)
 	{
+		JZFUNC_END_LOG();
 		return ret;
 	}
 	if (false ==  LexUtil::isEmptyInput(word))
 	{
+		JZWRITE_DEBUG("word is :[%s]",word.c_str());
+		JZFUNC_END_LOG();
 		return eLexSharpElseFollowWithOtherThing;
 	}
+	JZFUNC_END_LOG();
 	return pushPrecompileStreamControlWord(eLexPSELSE);
 
 }
@@ -639,20 +609,30 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 
 void Lex::turnOnCompileStream()
 {
-	mStreamOffTag = 0;
+	if (!mReaderStack.empty())
+	{
+		mReaderStack.top().mStreamOffTag = 0;
+	}
 }
 
 uint32 Lex::getCompileStream()
 {
-	return mStreamOffTag;
+	if (mReaderStack.empty())
+	{
+		return 0;
+	}
+	return mReaderStack.top().mStreamOffTag;
 }
 
 void Lex::turnOffCompileStream(uint32 tag)
 {
-	mStreamOffTag = tag;
+	if (!mReaderStack.empty())
+	{
+		mReaderStack.top().mStreamOffTag = tag;
+	}
 }
 
-bool Lex::isLastMarcoSuccess()
+bool Lex::isLastMacroSuccess()
 {
 	if (true == mPSStack.empty())
 	{
@@ -664,7 +644,7 @@ bool Lex::isLastMarcoSuccess()
 
 bool Lex::isLastStreamUseful()
 {
-	return (mStreamOffTag == 0) && isLastMarcoSuccess();
+	return (getCompileStream() == 0) && isLastMacroSuccess();
 }
 
 uint32 Lex::handleSharpDefine()
@@ -764,10 +744,71 @@ uint32 Lex::handleSharpDefine()
 	return ret;
 }
 
+uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
+{
+	*ret = false;	
+	return eLexNoError;	
+}
+
 uint32 Lex::handleSharpIf()
 {
 	//so this is really a big problem...
-	return eLexNoError;
+	string logicStr = "";
+	uint32 retErr = eLexNoError;
+	
+	retErr = consumeCharUntilReach('\n',&logicStr);
+	if (eLexNoError != retErr)
+	{
+		return retErr;
+	}
+	char* buff = (char*)malloc(logicStr.size());
+	if (NULL == buff)
+	{
+		return eLexUnknowError;
+	}
+	memcpy(buff,logicStr.c_str(), logicStr.size());
+	FileReaderRecord record = initFileRecord(buff,logicStr.size(),"",eFileTypeMacro);
+	mReaderStack.push(record);
+
+	doLex();
+
+	//so I have all words lexed
+	int lastRecPtr = 0;
+	for(int i = mLexRecList.size() - 1; i >= 0; i--)
+	{
+		if (eFileTypeMacro != mLexRecList[i].fileType)
+		{
+			lastRecPtr = i + 1;
+			break;
+		}
+	}
+	JZWRITE_DEBUG("lastPtr is:%d",lastRecPtr);
+
+	LexRecList list;
+	list.resize(mLexRecList.size() - lastRecPtr);
+	JZWRITE_DEBUG("list size :%ld",list.size());
+
+	for(int i = mLexRecList.size() - 1; i >= lastRecPtr; i--)
+	{
+		list[i - lastRecPtr] = mLexRecList[i];
+		mLexRecList.pop_back();
+	}
+	JZWRITE_DEBUG("pop fin");
+#ifdef DEBUG
+//	printLexRec();
+//	for(int i = 0 ; i < list.size() ; i++)
+//	{
+//		JZWRITE_DEBUG("word:[%s]",list[i].word.c_str());	
+//	}
+#endif
+	bool isSuccess = false;
+	uint32 ret = isMacroSuccess(list, &isSuccess);
+
+	if (eLexNoError != ret)
+	{
+		return ret;
+	}
+	return pushPrecompileStreamControlWord(eLexPSIF, isSuccess);
 }
 
 uint32 Lex::handleSharpInclude()
@@ -791,6 +832,11 @@ uint32 Lex::handleSharpInclude()
 		return eLexUnexpectedSeperator;
 	}
 
+	if (false == isLastStreamUseful())
+	{
+		//if stream is off, don't do follow analyze
+		return eLexNoError;
+	}
 	string toMatch = "";
 	ret = consumeCharUntilReach(LexUtil::seperatorMatcher(seperator),&toMatch);
 	if (ret  != eLexNoError)
@@ -811,6 +857,7 @@ uint32 Lex::handleSharpInclude()
 
 	if (fullPath != "")
 	{
+
 		this->analyzeAFile(fullPath);
 	}
 	else
@@ -1138,9 +1185,34 @@ void LexPatternTable::init()
 		init pattern map here 
 	 ********************************************************/
 	mPatternHandlerMap['\''] = &Lex::handleSingleQuotation;
-	mPatternHandlerMap['"'] = &Lex::handleDoubleQuotation;
-	mPatternHandlerMap['#'] = &Lex::handleSharp;
-	mPatternHandlerMap['/'] = &Lex::handleSlant;
+	mPatternHandlerMap['"']  = &Lex::handleDoubleQuotation;
+	mPatternHandlerMap['#']  = &Lex::handleSharp;
+	mPatternHandlerMap['/']  = &Lex::handleSlant;
+
+	/*********************************************************
+		init marco pattern map here 
+	 ********************************************************/
+
+	mMacroPatternHandlerMap["ifdef"]   = &Lex::handleSharpIfdef;	
+	mMacroPatternHandlerMap["else"]    = &Lex::handleSharpElse;	
+	mMacroPatternHandlerMap["if"]      = &Lex::handleSharpIf;	
+	mMacroPatternHandlerMap["endif"]   = &Lex::handleSharpEndIf;	
+	mMacroPatternHandlerMap["define"]  = &Lex::handleSharpDefine;	
+	mMacroPatternHandlerMap["include"] = &Lex::handleSharpInclude;	
+	
+}
+
+LexPatternHandler LexPatternTable::getMacroPattern(const string& input)
+{
+	if (mMacroPatternHandlerMap.find(input) != mMacroPatternHandlerMap.end())
+	{
+		return mMacroPatternHandlerMap[input];
+	}
+	else
+	{
+		return NULL;	
+	}
+
 }
 
 LexPatternHandler LexPatternTable::getPattern(const char input)
@@ -1154,3 +1226,22 @@ LexPatternHandler LexPatternTable::getPattern(const char input)
 		return NULL;	
 	}
 }
+/*********************************************************
+	data init helper func 
+ ********************************************************/
+
+FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType)
+{
+	FileReaderRecord ret = 
+	{
+		.buffer = buff,
+		.bufferSize = size,
+		.curIndex = 0,
+		.curLineNum = 1,
+		.fileName = fileName,
+		.recordType = recordType,
+		.mStreamOffTag = 0,	
+	};
+	return ret;
+}
+

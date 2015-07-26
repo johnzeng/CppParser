@@ -2,9 +2,13 @@
 	printf("helloworld");
 
 #ifdef he
-#else
 int test();
+#else
 
+#endif
+
+#if defined(he)
+	int test2();
 #endif
 //hello \
 	this is a test
