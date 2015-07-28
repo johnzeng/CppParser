@@ -66,5 +66,7 @@ struct FileReaderRecord
 FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
 typedef vector<LexRec> LexRecList;
-
+typedef vector<LexRecList> RealParamList;
+typedef stack<int> BracketMarkStack;
+typedef map<string,int> ParamSiteMap;
 #endif /* end of include guard: LEXDATA_H */

@@ -28,7 +28,8 @@ public:
 		eLexUnknowMacro = 11,
 		eLexSharpEndIfFollowWithOtherThing = 12,
 		eLexSharpElseFollowWithOtherThing = 13,
-
+		eLexWordIsNotDefined = 14,
+		eLexParamAnalyzeOVer = 15,	//this is not an error
 
 		//unknow should be last
 		eLexUnknowError ,
@@ -42,13 +43,14 @@ public:
 	};
 	Lex ();
 	virtual ~Lex ();
-	void analyzeAFile(const string& fileName);
+	uint32 analyzeAFile(const string& fileName);
 
 	void printLexRec();
 
 private:
 	//helper method
-	void doLex();
+
+	uint32 doLex();
 	void saveWord(const string& input,uint32 recordType = eLexRecTypeNormal);
 	void saveWordTo(const string& input, LexRecList& list,uint32 recordType = eLexRecTypeNormal);	
 
@@ -86,6 +88,11 @@ private:
 	bool isMacroExpending(const string& input);
 	bool isOnceFile(const string& input);
 
+	void turnOnFuncLikeMacroMode();
+	void turnOffFuncLikeMacroMode();
+	void pushDefParam(const DefineRec *rec, ParamSiteMap *indexMap);
+	void popDefParam();
+	bool isFuncLikeMacroMode();
 public:
 	//handler function
 	uint32 handleSingleQuotation();  		//"
@@ -104,6 +111,9 @@ public:
 	uint32 handleMinus();					//-
 	uint32 handleUpponSharp();				//^
 	uint32 handleWave();					//~
+	uint32 handleLeftBracket();				//(
+	uint32 handleRightBracket();			//)
+	uint32 handleComma();					//,
 
 	//slant can be a big handler...
 	uint32 handleDivideSlant();
@@ -120,12 +130,21 @@ public:
 	uint32 handleSharpElse();
 	uint32 handleSharpPragma();
 
+	//if seperator is '(',and word is a func like macro,then seperator will change to ' '
+	uint32 handleDefinedWord(const string& word,char &seperator);
+	uint32 handleIsDefined(string& ret);
 	uint32 checkMacro(bool *isSuccess);
 
 private:
+	stack<bool> mFuncLikeMacroParamAnalyzing;
+	stack<BracketMarkStack> mBracketMarkStack;
+	stack<RealParamList> mRealParamListStack;
+	stack<const DefineRec*> mDefinePtrStack;
+	stack<ParamSiteMap*> mParamSiteMap;
+
 	StringSet mPreprocessedFile;
 	StringSet mOnceFileSet;
-	stack<StringSet> mPreprocessingMacro;
+	StringSet mPreprocessingMacroSet;
 
 	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
 	vector<PrecompileSelector> mPSStack;

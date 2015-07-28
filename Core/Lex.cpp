@@ -17,23 +17,24 @@ Lex::~Lex()
 {
 }
 
-void Lex::analyzeAFile(const string& fileName)
+uint32 Lex::analyzeAFile(const string& fileName)
 {
 	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
-
 	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
 
 	JZSAFE_DELETE(buff);
 	FileReaderRecord fileRecord = initFileRecord(buffWithOutBackSlant,bufSize,fileName,eFileTypeFile);
 
 	mReaderStack.push(fileRecord);
-	doLex();
+	mPreprocessedFile.insert(fileName);
+	uint32 ret = doLex();
 	JZWRITE_DEBUG("analyze file %s end", fileName.c_str());
+	return ret;
 }
 
-void Lex::doLex()
+uint32 Lex::doLex()
 {
 	uint32 ret;
 	char seperator;
@@ -42,7 +43,30 @@ void Lex::doLex()
 	{
 		if ("" != word)
 		{
-			saveWord(word);
+			if (mReaderStack.top().recordType== eFileTypeMacro &&
+				"defined" == word)
+			{
+				uint32 err = handleIsDefined(word);
+				if (err != eLexNoError)
+				{
+					writeError(err);
+					return err;
+				}
+				saveWord(word);
+			}
+			else if (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
+			{
+				uint32 err = handleDefinedWord(word,seperator);
+				if (err != eLexNoError)
+				{
+					writeError(err);
+					return err;
+				}
+			}
+			else
+			{
+				saveWord(word);
+			}
 		}
 		LexPatternHandler handler = LexPtnTbl->getPattern(seperator);
 		if (NULL == handler)
@@ -63,10 +87,11 @@ void Lex::doLex()
 			if (err != eLexNoError)
 			{
 				writeError(err);
-				return;
+				return err;
 			}
 		}
 	}
+	return eLexNoError;
 }
 
 uint32 Lex::consumeWord(
@@ -105,6 +130,92 @@ uint32 Lex::consumeWord(
 	}
 	JZFUNC_END_LOG();
 	return ret;
+}
+
+uint32 Lex::handleDefinedWord(const string& word,char &seperator)
+{
+	JZFUNC_BEGIN_LOG();
+	auto defRec = mDefMgr.findDefineMap(word);
+	ParamSiteMap indexMap;
+	pushDefParam(defRec, &indexMap);
+	if (NULL == defRec)
+	{
+		JZFUNC_END_LOG();
+		return eLexWordIsNotDefined;
+	}
+	if (true == defRec->isFuncLikeMacro)
+	{
+		if (false == LexUtil::isEmptyInput(seperator) && '(' != seperator)
+		{
+			return eLexUnexpectedSeperator;
+		}
+		//read real param
+		turnOnFuncLikeMacroMode();
+
+		if ('(' == seperator)
+		{
+			//already consumed
+			handleLeftBracket();
+			seperator = ' ';
+		}
+
+		uint32 ret = doLex();
+		turnOffFuncLikeMacroMode();
+		JZWRITE_DEBUG("now add param list");
+		//untile here, param list is all get
+		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
+		{
+			JZFUNC_END_LOG();
+			return ret;
+		}
+		for(int i = 0; i < defRec->formalParam.size() ; i++ )
+		{
+			string word = defRec->formalParam[i].word;	
+			indexMap[word] = i;
+		}
+		JZWRITE_DEBUG("now print param list");
+#ifdef DEBUG
+		for(int i = 0 ; i < mRealParamListStack.top().size(); i++)
+		{
+			for(int j = 0 ; j < mRealParamListStack.top().at(i).size() ;j ++)
+			{
+				JZWRITE_DEBUG("i is :%d,j is %d,word is :[%s]",i,j,mRealParamListStack.top()[i][j].word.c_str());	
+			}
+		}
+#endif
+	}
+
+	//not func like ,just expend it
+	char* buff = (char*)malloc(defRec->defineStr.size());
+	FileReaderRecord rec = initFileRecord(buff,defRec->defineStr.size(), word,eFileTypeDefine);
+	mReaderStack.push(rec);
+	uint32 ret = doLex();
+	popDefParam();
+
+	if (ret != eLexNoError && ret != eLexReachFileEnd)
+	{
+		//error happen 
+		JZFUNC_END_LOG();
+		return ret;
+	}
+	JZFUNC_END_LOG();
+	return eLexNoError;	
+	
+}
+void Lex::pushDefParam(const DefineRec *rec, ParamSiteMap *indexMap)
+{
+	RealParamList list;
+	mRealParamListStack.push(list);
+	mDefinePtrStack.push(rec);
+	mParamSiteMap.push(indexMap);
+}
+
+void Lex::popDefParam()
+{
+	mRealParamListStack.pop();
+	mDefinePtrStack.pop();
+	mParamSiteMap.pop();
+
 }
 
 void Lex::writeError(uint32 err)
@@ -348,6 +459,39 @@ uint32 Lex::handleLeftSharpBracket()
 	return ret;
 }
 
+uint32 Lex::handleComma()
+{
+	if (true == isFuncLikeMacroMode())
+	{
+		if (mBracketMarkStack.empty())
+		{
+			return eLexUnknowError;
+		}
+		JZWRITE_DEBUG("now handle comma, brack stack size:%ld",mBracketMarkStack.top().size());
+		if (1 == mBracketMarkStack.top().size())
+		{
+			JZWRITE_DEBUG("save a Param ");
+			//save it!
+			uint32 beginMark = mBracketMarkStack.top().top();
+			LexRecList list;
+			list.resize(mLexRecList.size() - beginMark);
+			for(int i = mLexRecList.size() - 1 ; i >= beginMark; i--)
+			{
+				list[i - beginMark] = mLexRecList[i];
+				mLexRecList.pop_back();
+			}
+			if (mRealParamListStack.empty())
+			{
+				return eLexUnknowError;
+			}
+			mRealParamListStack.top().push_back(list);
+			return eLexNoError;
+		}
+	}
+	saveWord(",");
+	return eLexNoError;
+}
+
 uint32 Lex::handleRightSharpBracket()
 {
 	uint32 ret = eLexNoError;
@@ -380,6 +524,78 @@ uint32 Lex::handleRightSharpBracket()
 	}
 	saveWord(toSave);
 	return ret;
+}
+
+uint32 Lex::handleLeftBracket()
+{
+	JZFUNC_BEGIN_LOG();
+	if (true == isFuncLikeMacroMode())
+	{
+		//now it is analyzing macro like func,do something
+		JZWRITE_DEBUG("now push a mark");
+		if (mBracketMarkStack.empty())
+		{
+			return eLexUnknowError;
+		}
+		uint32 mark = mLexRecList.size();
+		mBracketMarkStack.top().push(mark);
+		JZWRITE_DEBUG("push over");
+		if (1 == mBracketMarkStack.top().size())
+		{
+			JZWRITE_DEBUG("first bracket,don't save");
+			return eLexNoError;
+		}
+	}
+	saveWord("(");
+	JZFUNC_END_LOG();
+	return eLexNoError;
+}
+
+uint32 Lex::handleRightBracket()
+{
+	JZFUNC_BEGIN_LOG();
+	if (true == isFuncLikeMacroMode())
+	{
+		JZWRITE_DEBUG("now pop a mark");
+		if (mBracketMarkStack.empty())
+		{
+			return eLexUnknowError;
+		}
+		if (mBracketMarkStack.top().empty())
+		{
+			return eLexUnknowError;
+		}
+		if (1 == mBracketMarkStack.top().size())
+		{
+			JZWRITE_DEBUG("save a Param ");
+			//save it!
+			uint32 beginMark = mBracketMarkStack.top().top();
+			LexRecList list;
+			list.resize(mLexRecList.size() - beginMark);
+			for(int i = mLexRecList.size() - 1 ; i >= beginMark; i--)
+			{
+				list[i - beginMark] = mLexRecList[i];
+				mLexRecList.pop_back();
+			}
+			if (mRealParamListStack.empty())
+			{
+				return eLexUnknowError;
+			}
+			if (list.size() > 0)
+			{
+				mRealParamListStack.top().push_back(list);
+			}
+		}
+		mBracketMarkStack.top().pop();
+		if (mBracketMarkStack.top().empty())
+		{
+			return eLexParamAnalyzeOVer;
+		}
+
+	}
+	saveWord(")");
+	JZFUNC_END_LOG();
+	return eLexNoError;
 }
 
 uint32 Lex::handlePoint()
@@ -585,6 +801,8 @@ uint32 Lex::handleSharpPragma()
 	string word;
 	char seperator;
 	ret = consumeWord(word,seperator,eLexSkipEmptyInput,eLexInOneLine);
+	//there is other more word to handle,but I just care about once
+	//if more key word is to handle,I will make a func ptr map table
 	if (word == "once")
 	{
 		mOnceFileSet.insert(mReaderStack.top().fileName);
@@ -789,6 +1007,11 @@ uint32 Lex::handleSharpIfdef()
 	return ret ;
 }
 
+uint32 Lex::handleIsDefined(string& ret)
+{
+	return eLexNoError;
+}
+
 uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 {
 	JZFUNC_BEGIN_LOG();
@@ -811,6 +1034,7 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 		{
 			if (0 == mPSStack.size())
 			{
+				JZWRITE_DEBUG("mark is :%d",mark);
 				return eLexUnmatchMacro;
 			}
 			ps.beginTag = mPSStack.back().beginTag;
@@ -1045,19 +1269,13 @@ uint32 Lex::checkMacro(bool *isSuccess)
 	FileReaderRecord record = initFileRecord(buff,logicStr.size(),"",eFileTypeMacro);
 	mReaderStack.push(record);
 
-	doLex();
-
-	//so I have all words lexed
-	int lastRecPtr = 0;
-	for(int i = mLexRecList.size() - 1; i >= 0; i--)
+	//pop until reach last
+	int lastRecPtr = mLexRecList.size();
+	uint32 lexret = doLex();
+	if (lexret != eLexNoError && lexret != eLexReachFileEnd)
 	{
-		if (eFileTypeMacro != mLexRecList[i].fileType)
-		{
-			lastRecPtr = i + 1;
-			break;
-		}
+		return lexret;
 	}
-	JZWRITE_DEBUG("lastPtr is:%d",lastRecPtr);
 
 	LexRecList list;
 	list.resize(mLexRecList.size() - lastRecPtr);
@@ -1152,8 +1370,11 @@ uint32 Lex::handleSharpInclude()
 
 	if (fullPath != "")
 	{
-
-		this->analyzeAFile(fullPath);
+		uint32 analyzeRet = this->analyzeAFile(fullPath);
+		if (analyzeRet != eLexNoError && analyzeRet != eLexReachFileEnd)
+		{
+			return analyzeRet;
+		}
 	}
 	else
 	{
@@ -1230,12 +1451,7 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput i
 
 bool Lex::isMacroExpending(const string& input)
 {
-	if (mPreprocessingMacro.empty())
-	{
-		return false;
-	}
-	auto topSet = mPreprocessingMacro.top();
-	if (topSet.find(input) == topSet.end())
+	if (mPreprocessingMacroSet.find(input) == mPreprocessingMacroSet.end())
 	{
 		return false;
 	}
@@ -1253,6 +1469,29 @@ bool Lex::isOnceFile(const string& input)
 		return false;
 	}
 }
+
+void Lex::turnOnFuncLikeMacroMode()
+{
+	BracketMarkStack bracketStack;
+	
+	mFuncLikeMacroParamAnalyzing.push(true);
+	mBracketMarkStack.push(bracketStack);
+}
+
+void Lex::turnOffFuncLikeMacroMode()
+{
+	if (false == mFuncLikeMacroParamAnalyzing.empty())
+	{
+		mFuncLikeMacroParamAnalyzing.pop();
+		mBracketMarkStack.pop();
+	}
+}
+
+bool Lex::isFuncLikeMacroMode()
+{
+	return !mFuncLikeMacroParamAnalyzing.empty() && !mBracketMarkStack.empty();
+}
+
 /*********************************************************
 	Lex end here
 	now begin the LexUtil   	
@@ -1523,6 +1762,9 @@ void LexPatternTable::init()
 	mPatternHandlerMap['-']  = &Lex::handleMinus;
 	mPatternHandlerMap['^']  = &Lex::handleUpponSharp;
 	mPatternHandlerMap['~']  = &Lex::handleWave;
+	mPatternHandlerMap['(']  = &Lex::handleLeftBracket;
+	mPatternHandlerMap[')']  = &Lex::handleRightBracket;
+	mPatternHandlerMap[',']  = &Lex::handleComma;
 
 	/*********************************************************
 		init marco pattern map here 
