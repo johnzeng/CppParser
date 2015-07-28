@@ -83,6 +83,8 @@ private:
 	uint32 getCompileStream();
 
 	uint32 isMacroSuccess(const LexRecList& logic,bool *ret);
+	bool isMacroExpending(const string& input);
+	bool isOnceFile(const string& input);
 
 public:
 	//handler function
@@ -121,7 +123,10 @@ public:
 	uint32 checkMacro(bool *isSuccess);
 
 private:
-	
+	StringSet mPreprocessedFile;
+	StringSet mOnceFileSet;
+	stack<StringSet> mPreprocessingMacro;
+
 	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
 	vector<PrecompileSelector> mPSStack;
 	LexRecList mLexRecList;

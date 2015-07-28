@@ -443,8 +443,9 @@ uint32 Lex::handleMinus()
 	ret = readChar(&nextChar);
 	string toSave = "-";
 	if (
-		'-' == nextChar||
-		'=' == nextChar)
+		'-' == nextChar||	//--
+		'>' == nextChar||	//->
+		'=' == nextChar)	//-=
 	{
 		consumeChar(&nextChar);
 		toSave += nextChar;
@@ -580,7 +581,19 @@ uint32 Lex::handleSlant()
 
 uint32 Lex::handleSharpPragma()
 {
-	return eLexNoError;
+	uint32 ret = eLexNoError;
+	string word;
+	char seperator;
+	ret = consumeWord(word,seperator,eLexSkipEmptyInput,eLexInOneLine);
+	if (word == "once")
+	{
+		mOnceFileSet.insert(mReaderStack.top().fileName);
+	}
+	if (false == LexUtil::isLineEnder(seperator))
+	{
+		ret = consumeCharUntilReach('\n',&word);
+	}
+	return ret ;
 }
 
 uint32 Lex::handleCommentLine()
@@ -1214,6 +1227,32 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput i
 	}
 	return readRet;
 }
+
+bool Lex::isMacroExpending(const string& input)
+{
+	if (mPreprocessingMacro.empty())
+	{
+		return false;
+	}
+	auto topSet = mPreprocessingMacro.top();
+	if (topSet.find(input) == topSet.end())
+	{
+		return false;
+	}
+	return true;
+}
+
+bool Lex::isOnceFile(const string& input)
+{
+	if (mOnceFileSet.find(input) == mOnceFileSet.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 /*********************************************************
 	Lex end here
 	now begin the LexUtil   	
@@ -1238,6 +1277,7 @@ bool LexUtil::isInterpunction(const char input)
 	switch(input)
 	{
 		case '|':
+		case '^':
 		case '=':
 		case '+':
 		case '/':
@@ -1250,6 +1290,7 @@ bool LexUtil::isInterpunction(const char input)
 		case ',':
 		case '.':
 		case '!':
+		case '?':
 		case '&':
 		case '(':
 		case ')':
