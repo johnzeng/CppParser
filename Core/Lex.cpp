@@ -46,7 +46,7 @@ uint32 Lex::doLex()
 			if (mReaderStack.top().recordType== eFileTypeMacro &&
 				"defined" == word)
 			{
-				uint32 err = handleIsDefined(word);
+				uint32 err = handleIsDefined(word, seperator);
 				if (err != eLexNoError)
 				{
 					writeError(err);
@@ -116,7 +116,8 @@ uint32 Lex::consumeWord(
 				true == LexUtil::isLineEnder(retSeperator)
 				)
 			{
-				return eLexNoError;
+				JZFUNC_END_LOG();
+				return eLexReachLineEnd;
 			}
 			if (eLexSkipEmptyInput == skipEmptyInput && 
 				true == LexUtil::isEmptyInput(retSeperator) &&
@@ -399,6 +400,7 @@ uint32 Lex::readChar(char *ret)
 	FileReaderRecord &record = mReaderStack.top();
 	if (record.bufferSize == record.curIndex)
 	{
+		JZFUNC_END_LOG();
 		return eLexReachFileEnd;
 	}
 
@@ -902,10 +904,18 @@ uint32 Lex::handleSharp()
 	string word = "";
 
 	ret = consumeWord(word, nextChar, eLexSkipEmptyInput, eLexInOneLine);
+	//in this situation, reach line end means error
 	if (ret != eLexNoError)
 	{
-		JZFUNC_END_LOG();
-		return ret;
+		if (ret == eLexReachLineEnd && false == LexUtil::isEmptyInput(word))
+		{
+			JZWRITE_DEBUG("simply reach line end");	
+		}
+		else
+		{
+			JZFUNC_END_LOG();
+			return ret;
+		}
 	}
 	if (false == LexUtil::isEmptyInput(nextChar))
 	{
@@ -944,7 +954,7 @@ uint32 Lex::handleSharpElse()
 	char seperator;
 	uint32 ret = consumeWord(
 			word,seperator,eLexSkipEmptyInput,eLexInOneLine);
-	if (eLexNoError != ret)
+	if (eLexNoError != ret && ret != eLexReachLineEnd)
 	{
 		JZFUNC_END_LOG();
 		return ret;
@@ -962,20 +972,52 @@ uint32 Lex::handleSharpElse()
 
 uint32 Lex::handleSharpEndIf()
 {
+	JZFUNC_BEGIN_LOG();
 	string word = "";
 	char seperator;
 	uint32 ret = consumeWord(
 			word,seperator,eLexSkipEmptyInput,eLexInOneLine);
-	if (eLexNoError != ret)
+	if (eLexNoError != ret && ret != eLexReachLineEnd)
 	{
+		JZFUNC_END_LOG();
 		return ret;
 	}
 	if (false ==  LexUtil::isEmptyInput(word))
 	{
+		JZFUNC_END_LOG();
 		return eLexSharpEndIfFollowWithOtherThing;
 	}
+	JZFUNC_END_LOG();
 	return pushPrecompileStreamControlWord(eLexPSENDIF);
 
+}
+uint32 Lex::handleSharpIfndef()
+{
+	JZFUNC_BEGIN_LOG();
+	uint32 ret;
+	char seperator;
+	string word;
+	ret = consumeWord(word,seperator,eLexSkipEmptyInput, eLexInOneLine);
+	if (eLexNoError != ret)
+	{
+		JZFUNC_END_LOG();
+		return ret;
+	}
+	JZWRITE_DEBUG("word is :[%s]",word.c_str());
+	//check if word is defined
+	if (true == LexUtil::isEmptyInput(word))
+	{
+		JZFUNC_END_LOG();
+		return eLexSharpIfdefFollowedWithNothing;
+	}
+	
+	bool isDef = (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word));
+	JZWRITE_DEBUG("word:%s,is define :%d",word.c_str(), isDef);
+
+	ret = pushPrecompileStreamControlWord(eLexPSIFNDEF, !isDef);
+	
+	JZFUNC_END_LOG();
+	return ret ;
 }
 
 uint32 Lex::handleSharpIfdef()
@@ -1007,9 +1049,53 @@ uint32 Lex::handleSharpIfdef()
 	return ret ;
 }
 
-uint32 Lex::handleIsDefined(string& ret)
+uint32 Lex::handleIsDefined(string& ret, char &seperator)
 {
-	return eLexNoError;
+	JZFUNC_BEGIN_LOG();
+	string word;
+	uint32 errRet;
+	if (seperator != '(' && false == LexUtil::isEmptyInput(seperator))
+	{
+		JZFUNC_END_LOG();
+		return eLexUnexpectedSeperator;
+	}
+	if (seperator != '(')
+	{
+		errRet = consumeCharUntilReach('(',&word,eLexInOneLine);
+		if (errRet != eLexNoError)
+		{
+			JZFUNC_END_LOG();
+			return errRet;
+		}
+	}
+	else
+	{
+		seperator = ' ';	
+	}
+	char nextChar;
+	errRet = consumeWord(word, nextChar, eLexSkipEmptyInput, eLexInOneLine);
+	if (errRet != eLexNoError)
+	{
+		JZFUNC_END_LOG();
+		return errRet;
+	}
+	if (nextChar != ')')
+	{
+		JZFUNC_END_LOG();
+		return eLexUnexpectedSeperator;
+	}
+
+	if (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
+	{
+		ret = "1";
+	}
+	else
+	{
+		ret = "0";	
+	}
+	JZWRITE_DEBUG("ret word is :%s",ret.c_str());
+	JZFUNC_END_LOG();
+	return errRet;
 }
 
 uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
@@ -1244,12 +1330,6 @@ uint32 Lex::handleSharpDefine()
 	return ret;
 }
 
-uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
-{
-	*ret = false;	
-	return eLexNoError;	
-}
-
 uint32 Lex::checkMacro(bool *isSuccess)
 {
 	string logicStr = "";
@@ -1439,7 +1519,7 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput i
 			true == LexUtil::isLineEnder(nextInput)
 			)
 		{
-			break;
+			return eLexReachLineEnd;
 		}
 		if (nextInput == inputEnder)
 		{
@@ -1771,6 +1851,7 @@ void LexPatternTable::init()
 	 ********************************************************/
 
 	mMacroPatternHandlerMap["ifdef"]   = &Lex::handleSharpIfdef;	
+	mMacroPatternHandlerMap["ifndef"]   = &Lex::handleSharpIfndef;	
 	mMacroPatternHandlerMap["else"]    = &Lex::handleSharpElse;	
 	mMacroPatternHandlerMap["if"]      = &Lex::handleSharpIf;	
 	mMacroPatternHandlerMap["endif"]   = &Lex::handleSharpEndIf;	

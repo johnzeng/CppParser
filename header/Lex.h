@@ -30,6 +30,7 @@ public:
 		eLexSharpElseFollowWithOtherThing = 13,
 		eLexWordIsNotDefined = 14,
 		eLexParamAnalyzeOVer = 15,	//this is not an error
+		eLexReachLineEnd = 16,
 
 		//unknow should be last
 		eLexUnknowError ,
@@ -125,6 +126,7 @@ public:
 	uint32 handleSharpIf();
 	uint32 handleSharpElif();
 	uint32 handleSharpIfdef();
+	uint32 handleSharpIfndef();
 	uint32 handleSharpInclude();
 	uint32 handleSharpEndIf();
 	uint32 handleSharpElse();
@@ -132,7 +134,7 @@ public:
 
 	//if seperator is '(',and word is a func like macro,then seperator will change to ' '
 	uint32 handleDefinedWord(const string& word,char &seperator);
-	uint32 handleIsDefined(string& ret);
+	uint32 handleIsDefined(string& ret,char &seperator);
 	uint32 checkMacro(bool *isSuccess);
 
 private:

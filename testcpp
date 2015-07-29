@@ -1,8 +1,10 @@
 #   define   he( a, b,c...) // \    
 	printf("helloworld");
 
-
-
+#if defined(he)
+int test();
+#endif
+int test1();
 //hello \
 	this is a test
 /* test comment ****/
@@ -12,6 +14,5 @@ int main()
 	char c = 'c';
 	string s = " hello \
 				abce";
-	he(he(2,3,4),b,c,d);
 	return 0;
 }
