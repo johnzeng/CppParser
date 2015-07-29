@@ -43,19 +43,25 @@ uint32 Lex::doLex()
 	{
 		if ("" != word)
 		{
-			if (mReaderStack.top().recordType== eFileTypeMacro &&
+			if (mReaderStack.top().recordType == eFileTypeMacro &&
 				"defined" == word)
 			{
+				//this is defined in #if or #elif
+				uint32 beginIndex = getLastIndex() - word.size() - 1;
+				uint32 endIndex = getLastIndex() - 1;
 				uint32 err = handleIsDefined(word, seperator);
 				if (err != eLexNoError)
 				{
 					writeError(err);
 					return err;
 				}
-				saveWord(word);
+				saveWord(word,beginIndex, endIndex);
 			}
-			else if (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
+			else if (
+					false == isFuncLikeMacroMode() &&
+				   	DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
 			{
+				//don't expend when it is FuncLikeMacroMode
 				uint32 err = handleDefinedWord(word,seperator);
 				if (err != eLexNoError)
 				{
@@ -63,9 +69,17 @@ uint32 Lex::doLex()
 					return err;
 				}
 			}
+			else if(!mParamSiteMap.empty() && mParamSiteMap.top()->find(word) != mParamSiteMap.top()->end())
+			{
+				//now this is a param
+				
+			}
 			else
 			{
-				saveWord(word);
+				//normal word
+				uint32 beginIndex = getLastIndex() - word.size();
+				uint32 endIndex = getLastIndex() - 1;
+				saveWord(word,beginIndex, endIndex);
 			}
 		}
 		LexPatternHandler handler = LexPtnTbl->getPattern(seperator);
@@ -78,7 +92,9 @@ uint32 Lex::doLex()
 			}
 			string toSaveSeperator = "";
 			toSaveSeperator += seperator;
-			saveWord(toSaveSeperator);
+			uint32 beginIndex = getLastIndex() - 1;
+			uint32 endIndex = getLastIndex() - 1;
+			saveWord(toSaveSeperator,beginIndex, endIndex);
 		}
 		else
 		{
@@ -133,6 +149,7 @@ uint32 Lex::consumeWord(
 	return ret;
 }
 
+
 uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 {
 	JZFUNC_BEGIN_LOG();
@@ -178,10 +195,7 @@ uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 #ifdef DEBUG
 		for(int i = 0 ; i < mRealParamListStack.top().size(); i++)
 		{
-			for(int j = 0 ; j < mRealParamListStack.top().at(i).size() ;j ++)
-			{
-				JZWRITE_DEBUG("i is :%d,j is %d,word is :[%s]",i,j,mRealParamListStack.top()[i][j].word.c_str());	
-			}
+			JZWRITE_DEBUG("i is %d,word is :[%s]",i,mRealParamListStack.top()[i].c_str());	
 		}
 #endif
 	}
@@ -241,8 +255,12 @@ void Lex::writeError(uint32 err)
 	}
 }
 
-void Lex::saveWordTo(const string& input,LexRecList& list, uint32 recordType)
+void Lex::saveWordTo(
+		const string& input,LexRecList& list,
+		uint32 beginIndex,uint32 endIndex,
+	   	uint32 recordType)
 {
+	//if this is a word, you must already consume a seperator
 	if (false == isLastStreamUseful())
 	{
 		//yeah! this stream is not useful!
@@ -260,13 +278,20 @@ void Lex::saveWordTo(const string& input,LexRecList& list, uint32 recordType)
 		.file = mReaderStack.top().fileName,
 		.type = recordType,
 		.fileType = mReaderStack.top().recordType,
+		.endIndex = endIndex,
+		.beginIndex = beginIndex,
 	};
+//	JZWRITE_DEBUG("input is :[%s],begin:%d,end:%d",input.c_str(),beginIndex,endIndex);
 	list.push_back(rec);
 }
 
-void Lex::saveWord(const string& input, uint32 recordType)
+void Lex::saveWord(
+		const string& input,
+		uint32 beiginIndex,
+	   	uint32 endIndex,
+	   	uint32 recordType)
 {
-	saveWordTo(input,mLexRecList, recordType);
+	saveWordTo(input,mLexRecList, beiginIndex, endIndex, recordType);
 }
 
 void Lex::printLexRec()
@@ -323,6 +348,15 @@ uint32 Lex::consumeChar(char *ret)
 	return eLexNoError;
 }
 
+uint32 Lex::getLastIndex()
+{
+	if (!mReaderStack.empty())
+	{
+		return mReaderStack.top().curIndex - 1;
+	}
+	JZWRITE_ERROR("try to get index when empty");
+	return 0;
+}
 /*********************************************************
 	when handling ' and ", I simply ignore the \ problem
     I just find the next quotation,so some error will not
@@ -334,6 +368,7 @@ uint32 Lex::handleSingleQuotation()
 	JZFUNC_BEGIN_LOG();
 
 	//when you enter this func,you have already get a ',so
+	uint32 beginIndex = getLastIndex();
 	string toSave = "'";
 	uint32 toSaveLen = 0;
 	do
@@ -354,7 +389,8 @@ uint32 Lex::handleSingleQuotation()
 
 //	handle const char input
 //	...
-	saveWord(toSave, eLexRecTypeConstChar);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex, endIndex ,  eLexRecTypeConstChar);
 
 	JZFUNC_END_LOG();
 	return eLexNoError;
@@ -363,7 +399,7 @@ uint32 Lex::handleSingleQuotation()
 uint32 Lex::handleDoubleQuotation()
 {
 	JZFUNC_BEGIN_LOG();
-
+	uint32 beginIndex = getLastIndex();
 	//when you enter this func,you have already get a ",so init a " here
 	string toSave = "\"";
 	uint32 toSaveLen = 0;
@@ -383,7 +419,8 @@ uint32 Lex::handleDoubleQuotation()
 
 //	handle const char input
 //	...
-	saveWord(toSave, eLexRecTypeConstChar);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex, endIndex, eLexRecTypeConstChar);
 
 	JZFUNC_END_LOG();
 	return eLexNoError;
@@ -413,6 +450,7 @@ uint32 Lex::readChar(char *ret)
 
 uint32 Lex::handleBar()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -424,12 +462,14 @@ uint32 Lex::handleBar()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex, endIndex);
 	return ret;
 }
 
 uint32 Lex::handleLeftSharpBracket()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -457,12 +497,14 @@ uint32 Lex::handleLeftSharpBracket()
 			toSave += nextChar;
 		}
 	}
-	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex, endIndex);
 	return ret;
 }
 
 uint32 Lex::handleComma()
 {
+	uint32 commaBeginIndex = getLastIndex();
 	if (true == isFuncLikeMacroMode())
 	{
 		if (mBracketMarkStack.empty())
@@ -475,27 +517,31 @@ uint32 Lex::handleComma()
 			JZWRITE_DEBUG("save a Param ");
 			//save it!
 			uint32 beginMark = mBracketMarkStack.top().top();
-			LexRecList list;
-			list.resize(mLexRecList.size() - beginMark);
-			for(int i = mLexRecList.size() - 1 ; i >= beginMark; i--)
+			string param;
+			int endIndex = mLexRecList.back().endIndex;
+			int beginIndex = mLexRecList[beginMark].beginIndex;
+			JZWRITE_DEBUG("begin is :%d,end is :%d", beginIndex, endIndex);
+			for(int i = beginIndex ; i <= endIndex ; i++)
 			{
-				list[i - beginMark] = mLexRecList[i];
+				param += mReaderStack.top().buffer[i];	
+			}
+			while(mLexRecList.size() > beginMark)
+			{
 				mLexRecList.pop_back();
 			}
-			if (mRealParamListStack.empty())
-			{
-				return eLexUnknowError;
-			}
-			mRealParamListStack.top().push_back(list);
+			mRealParamListStack.top().push_back(param);
 			return eLexNoError;
 		}
 	}
-	saveWord(",");
+	
+	uint32 commaEndIndex = getLastIndex();
+	saveWord(",",commaBeginIndex,commaEndIndex);
 	return eLexNoError;
 }
 
 uint32 Lex::handleRightSharpBracket()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -524,12 +570,14 @@ uint32 Lex::handleRightSharpBracket()
 			toSave += nextChar;
 		}
 	}
-	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave, beginIndex, endIndex);
 	return ret;
 }
 
 uint32 Lex::handleLeftBracket()
 {
+	uint32 beginIndex = getLastIndex();
 	JZFUNC_BEGIN_LOG();
 	if (true == isFuncLikeMacroMode())
 	{
@@ -548,13 +596,15 @@ uint32 Lex::handleLeftBracket()
 			return eLexNoError;
 		}
 	}
-	saveWord("(");
+	uint32 endIndex = getLastIndex();
+	saveWord("(",beginIndex,endIndex);
 	JZFUNC_END_LOG();
 	return eLexNoError;
 }
 
 uint32 Lex::handleRightBracket()
 {
+	uint32 bracketBeginIndex = getLastIndex();
 	JZFUNC_BEGIN_LOG();
 	if (true == isFuncLikeMacroMode())
 	{
@@ -572,21 +622,19 @@ uint32 Lex::handleRightBracket()
 			JZWRITE_DEBUG("save a Param ");
 			//save it!
 			uint32 beginMark = mBracketMarkStack.top().top();
-			LexRecList list;
-			list.resize(mLexRecList.size() - beginMark);
-			for(int i = mLexRecList.size() - 1 ; i >= beginMark; i--)
+			string param;
+			int beginIndex = mLexRecList[beginMark].beginIndex;
+			int endIndex = mLexRecList.back().endIndex;
+			JZWRITE_DEBUG("begin is :%d,end is :%d", beginIndex, endIndex);
+			for(int i = beginIndex ; i <= endIndex ; i++)
 			{
-				list[i - beginMark] = mLexRecList[i];
+				param += mReaderStack.top().buffer[i];
+			}
+			while(mLexRecList.size() > beginMark)
+			{
 				mLexRecList.pop_back();
 			}
-			if (mRealParamListStack.empty())
-			{
-				return eLexUnknowError;
-			}
-			if (list.size() > 0)
-			{
-				mRealParamListStack.top().push_back(list);
-			}
+			mRealParamListStack.top().push_back(param);
 		}
 		mBracketMarkStack.top().pop();
 		if (mBracketMarkStack.top().empty())
@@ -595,13 +643,15 @@ uint32 Lex::handleRightBracket()
 		}
 
 	}
-	saveWord(")");
+	uint32 bracketEndIndex = getLastIndex();
+	saveWord(")", bracketBeginIndex, bracketEndIndex);
 	JZFUNC_END_LOG();
 	return eLexNoError;
 }
 
 uint32 Lex::handlePoint()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -617,13 +667,19 @@ uint32 Lex::handlePoint()
 			consumeChar(&nextChar);
 			toSave = "...";
 		}
+	}else if ('*' == nextChar)
+	{
+		//.*
+		toSave += nextChar;
 	}
-	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
 uint32 Lex::handleAnd()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -635,12 +691,14 @@ uint32 Lex::handleAnd()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
 uint32 Lex::handleEqual()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -650,12 +708,14 @@ uint32 Lex::handleEqual()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
 uint32 Lex::handleMinus()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -668,12 +728,22 @@ uint32 Lex::handleMinus()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+	if ("->" == toSave)
+	{
+		ret = readChar(&nextChar);
+		if ('*' == nextChar) //->*
+		{
+			toSave += nextChar;
+		}
+	}
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
 uint32 Lex::handleWave()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -683,12 +753,15 @@ uint32 Lex::handleWave()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
+//	saveWord(toSave);
 	return ret;
 }
 
 uint32 Lex::handleUpponSharp()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -698,12 +771,35 @@ uint32 Lex::handleUpponSharp()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+//	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
+uint32 Lex::handleMod()
+{
+	uint32 beginIndex = getLastIndex();
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = "%";
+	if ('=' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+//	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
+	return ret;
+
+}
+
+
 uint32 Lex::handlePlus()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -715,12 +811,15 @@ uint32 Lex::handlePlus()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+//	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
 uint32 Lex::handleStart()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -730,13 +829,16 @@ uint32 Lex::handleStart()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+//	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
 uint32 Lex::handleExclamation()
 {
 	//handle "!"
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -746,12 +848,15 @@ uint32 Lex::handleExclamation()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+//	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
 uint32 Lex::handleDivideSlant()
 {
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
@@ -761,12 +866,15 @@ uint32 Lex::handleDivideSlant()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	saveWord(toSave);
+//	saveWord(toSave);
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
 	return ret;
 }
 
 uint32 Lex::handleSlant()
 {
+	uint32 beginIndex = getLastIndex();
 	JZFUNC_BEGIN_LOG();
 	char nextChar = 0;
 	uint32 ret = eLexNoError;
@@ -799,6 +907,7 @@ uint32 Lex::handleSlant()
 
 uint32 Lex::handleSharpPragma()
 {
+	JZFUNC_BEGIN_LOG();
 	uint32 ret = eLexNoError;
 	string word;
 	char seperator;
@@ -813,6 +922,7 @@ uint32 Lex::handleSharpPragma()
 	{
 		ret = consumeCharUntilReach('\n',&word);
 	}
+	JZFUNC_END_LOG();
 	return ret ;
 }
 
@@ -887,7 +997,7 @@ uint32 Lex::handleCommentBlock()
 uint32 Lex::handleSharp()
 {
 	JZFUNC_BEGIN_LOG();
-
+	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 //try if this is double sharp: ##
@@ -895,7 +1005,9 @@ uint32 Lex::handleSharp()
 	if (nextChar == '#')
 	{
 		consumeChar(&nextChar);
-		saveWord("##");
+//		saveWord("##");
+		uint32 endIndex = getLastIndex();
+		saveWord("##",beginIndex,endIndex);
 		JZFUNC_END_LOG();
 		return eLexNoError;
 	}
@@ -931,7 +1043,8 @@ uint32 Lex::handleSharp()
 	if (NULL == handler)
 	{
 		JZWRITE_DEBUG("no handler ,maybe this is a sharp input");
-		saveWord("#");
+		uint32 endIndex = getLastIndex();
+		saveWord("#", beginIndex, endIndex);
 	}
 	else
 	{
@@ -1272,7 +1385,9 @@ uint32 Lex::handleSharpDefine()
 					JZWRITE_DEBUG("val param end with not val param:%s",param.c_str());
 					return eLexValParamNotLast;
 				}
-				saveWordTo(param ,defineRec.formalParam, eLexRecTypeFuncLikeMacroParam);
+				uint32 endIndex = getLastIndex() - 1;
+				uint32 beginIndex = getLastIndex() - 1 - param.size();
+				saveWordTo(param ,defineRec.formalParam,beginIndex,endIndex, eLexRecTypeFuncLikeMacroParam);
 			}
 			if (seperator == '.')
 			{
@@ -1281,7 +1396,9 @@ uint32 Lex::handleSharpDefine()
 					defineRec.isVarArgs = true;
 					if ("" != param)
 					{
-						saveWordTo(param,defineRec.formalParam,eLexRecTypeFuncLikeMacroVarParam);
+						uint32 endIndex = getLastIndex() - 1;
+						uint32 beginIndex = getLastIndex() - 1 - param.size();
+						saveWordTo(param,defineRec.formalParam,beginIndex,endIndex,eLexRecTypeFuncLikeMacroVarParam);
 					}
 				}
 				else
@@ -1384,17 +1501,21 @@ uint32 Lex::checkMacro(bool *isSuccess)
 }
 uint32 Lex::handleSharpElif()
 {
+	JZFUNC_BEGIN_LOG();
 	bool isSuccess = false;
 	uint32 ret = checkMacro(&isSuccess);
 	if (ret != eLexNoError)
 	{
+		JZFUNC_END_LOG();
 		return ret;
 	}
+	JZFUNC_END_LOG();
 	return pushPrecompileStreamControlWord(eLexPSELIF, isSuccess);
 }
 
 uint32 Lex::handleSharpIf()
 {
+	JZFUNC_BEGIN_LOG();
 	bool isSuccess = false;
 	uint32 ret = checkMacro(&isSuccess);
 	if (ret != eLexNoError)
@@ -1406,6 +1527,7 @@ uint32 Lex::handleSharpIf()
 
 uint32 Lex::handleSharpInclude()
 {
+	JZFUNC_BEGIN_LOG();
 	uint32 ret = eLexNoError;
 	string word;
 	char seperator;
@@ -1460,6 +1582,7 @@ uint32 Lex::handleSharpInclude()
 	{
 		JZWRITE_DEBUG("no such file");	
 	}
+	JZFUNC_END_LOG();
 	return eLexNoError;
 }
 
@@ -1596,6 +1719,7 @@ bool LexUtil::isInterpunction(const char input)
 	switch(input)
 	{
 		case '|':
+		case '%':
 		case '^':
 		case '=':
 		case '+':
@@ -1845,6 +1969,7 @@ void LexPatternTable::init()
 	mPatternHandlerMap['(']  = &Lex::handleLeftBracket;
 	mPatternHandlerMap[')']  = &Lex::handleRightBracket;
 	mPatternHandlerMap[',']  = &Lex::handleComma;
+	mPatternHandlerMap['%']  = &Lex::handleMod;
 
 	/*********************************************************
 		init marco pattern map here 

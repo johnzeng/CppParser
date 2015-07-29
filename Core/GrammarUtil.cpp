@@ -25,6 +25,7 @@ void GrammarUtil::init()
 	mPreprocessOperatorSet.insert("-");
 	mPreprocessOperatorSet.insert("*");
 	mPreprocessOperatorSet.insert("/");
+	mPreprocessOperatorSet.insert("%");
 	mPreprocessOperatorSet.insert("|");
 	mPreprocessOperatorSet.insert("||");
 	mPreprocessOperatorSet.insert("&");
@@ -49,6 +50,7 @@ void GrammarUtil::init()
 	mOperatorSet.insert("+=");
 	mOperatorSet.insert("--");
 	mOperatorSet.insert("-=");
+	mOperatorSet.insert("%=");
 	mOperatorSet.insert("->");
 	mOperatorSet.insert("=");
 	mOperatorSet.insert("<<=");

@@ -4,6 +4,36 @@
 #include "JZCommonDefine.h"
 using namespace std;
 
+struct OperatorType
+{
+	int priority;
+	int mark;
+	string symbol;
+};
+
+enum OperatorMark
+{
+	//priority 1
+	eOpLeftBracket,			//(
+	eOpRightBracket,		//)
+
+	//priority 2
+	eOpLogicalNegation,		//!
+	eOpBitwiseComplement,	//~
+	eOpUnaryMinus,			//- (like -1)
+	eOpUnaryPlus,			//+ (like +1)
+
+	//priority 3
+	//not useful yet
+	
+	//priority 4
+	eOpMultiplication,		//*
+	eOpDivide,				// /
+	eOpMoludus,				//%
+
+	eOpComparisonEqualTo,	//==
+};
+
 class GrammarUtil {
 public:
 	GrammarUtil ();

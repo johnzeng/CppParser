@@ -52,11 +52,13 @@ private:
 	//helper method
 
 	uint32 doLex();
-	void saveWord(const string& input,uint32 recordType = eLexRecTypeNormal);
-	void saveWordTo(const string& input, LexRecList& list,uint32 recordType = eLexRecTypeNormal);	
+	void saveWord(const string& input,uint32 beginIndex, uint32 endIndex,uint32 recordType = eLexRecTypeNormal);
+	void saveWordTo(const string& input, LexRecList& list,uint32 beginIndex, uint32 endIndex, uint32 recordType = eLexRecTypeNormal);	
 
 	void writeError(uint32 err);
 
+
+	uint32 getLastIndex();
 
 	//consumor fun
 	uint32 consumeChar(char *ret);
@@ -115,6 +117,7 @@ public:
 	uint32 handleLeftBracket();				//(
 	uint32 handleRightBracket();			//)
 	uint32 handleComma();					//,
+	uint32 handleMod();						//%
 
 	//slant can be a big handler...
 	uint32 handleDivideSlant();

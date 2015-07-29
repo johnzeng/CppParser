@@ -11,4 +11,3 @@ uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
 	return eLexNoError;	
 }
 
-
