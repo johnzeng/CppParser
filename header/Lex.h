@@ -155,6 +155,7 @@ private:
 	void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
 	void popReaderRecord();
+	uint32 expendMacro(const DefineRec* def,const RealParamList& paramList, string& ret);
 private:
 	RealParamList mRealParamList;
 	StringSet mPreprocessedFile;

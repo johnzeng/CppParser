@@ -1,6 +1,7 @@
 #include "DefineManager.h"
 #include "ErrorCode.h"
 #include "JZLogger.h"
+#include "Lex.h"
 
 DefineManager::DefineManager()
 {
@@ -101,3 +102,4 @@ const DefineRec* DefineManager::findDefineMap(const string& srcDefine)
 	}
 	return NULL;
 }
+

@@ -1,8 +1,8 @@
 #define HELLO he
-#define he(a,b,...) printf("a,b",a  ## b,##__VA_ARGS__);
+#define he(a,b,...) printf("a,b",HELLO##a,a  ## b,#a,#__VA_ARGS__,##__VA_ARGS__);
 
 int main()
 {
-	he(HELLO, HELLO);
+	he(a, HELLO,c);
 	return 0;
 }

@@ -71,20 +71,6 @@ uint32 Lex::doLex()
 					return err;
 				}
 			}
-			else if(
-					false == isFuncLikeMacroMode() &&
-					-1 != getParamIndex(word)
-				   )
-			{
-				//now this is a param
-				JZWRITE_DEBUG("now expend word:%s",word.c_str());
-				uint32 err = expendMacroParam(word);
-				if (err != eLexNoError)
-				{
-					JZFUNC_END_LOG();
-					return err;
-				}
-			}
 			else
 			{
 				//normal word
@@ -123,18 +109,157 @@ uint32 Lex::doLex()
 	return ret ;
 }
 
-int Lex::getParamIndex(const string& word)
+uint32 Lex::expendMacro(const DefineRec* def,const RealParamList& paramList, string &ret)
 {
-	if (NULL == mReaderStack.top().mParamSiteMap)
+	JZFUNC_BEGIN_LOG();
+	ret = "";
+	if (NULL == def)
 	{
-		return -1;
+		JZFUNC_END_LOG();
+		return eLexUnknowError; 
 	}
-	auto it = mReaderStack.top().mParamSiteMap->find(word);
-	if (it == mReaderStack.top().mParamSiteMap->end())
+
+	RealParamList list;
+	list.resize(def->formalParam.size(), "");
+	for(int i = 0 ; i < def->formalParam.size() && i < paramList.size() ; i++)
 	{
-		return -1;
+		list[i] = paramList[i];	
 	}
-	return it->second; 
+	if (true == def->isVarArgs)
+	{
+		//this is var func like def
+		string varStr = "";
+		for(int i = def->formalParam.size() ;  i < paramList.size() ; i++)
+		{
+			varStr += ",";
+			varStr += paramList[i];
+		}
+		list.back() += varStr;
+		JZWRITE_DEBUG("var str is :[%s]",list.back().c_str());
+	}
+	string word = "";
+	stack<string> symStack;
+	bool singleSharp = false;
+	bool doubleSharp = false;
+
+	for(int i = 0 ; i < def->defineStr.size() ; i++)
+	{
+		char curChar = def->defineStr[i];
+		if(true == LexUtil::isInterpunction(curChar))
+		{
+			if (def->paramMap.find(word) != def->paramMap.end())
+			{
+				//this is a param,save other thing then word
+				int index = def->paramMap.find(word)->second;
+				if (list.size() <= index)
+				{
+					JZWRITE_DEBUG("unmatch param size");
+					JZFUNC_END_LOG();
+					return eLexFuncLikeMacroParamTooLess; 
+				}
+				string paramStr = list[index];
+				//normal param
+				if (true == singleSharp)
+				{
+					ret += "\"";
+					ret += paramStr;
+					ret += "\"";
+				}
+				else if(true == doubleSharp)
+				{
+					if (def->isVarArgs == true && index == def->formalParam.size() - 1)
+					{
+						//var param
+						if (true == LexUtil::isEmptyInput(paramStr))
+						{
+							if(',' == ret.back())
+							{
+								ret.pop_back();	
+							}
+						}
+					}
+					ret += paramStr;
+				}
+				else
+				{
+					ret += paramStr;	
+				}
+				singleSharp = false;
+				doubleSharp = false;
+			}
+			else if(true == doubleSharp && true == LexUtil::isEmptyInput(word))
+			{
+				//do nothing
+				JZWRITE_DEBUG("skip empty input");
+			}
+			else
+			{
+				ret += word;	
+				singleSharp = false;
+				doubleSharp = false;
+			}
+			word = "";
+			if ('\'' == curChar || '"' == curChar)
+			{
+				//read char or string
+				do
+				{
+					ret += def->defineStr[i];
+					i++;
+				}while(def->defineStr.size() > i && def->defineStr[i] != curChar && def->defineStr[i - 1] != '\\');
+				ret += def->defineStr[i];
+			}
+			else if('#' == curChar)
+			{
+				//assume sharp come
+				if (singleSharp || doubleSharp)
+				{
+					JZWRITE_DEBUG("unexpect sharp!");
+					return eLexUnexpectedSeperator; 
+				}
+				singleSharp = true;
+				if (def->defineStr.size() > i+1)
+				{
+					if ('#' == def->defineStr[i+1])
+					{
+						i++;
+						//this is double sharp!
+						JZWRITE_DEBUG("double sharp");
+						doubleSharp = true;
+						singleSharp = false;
+						while(ret.size() > 0 && true == LexUtil::isEmptyInput(ret.back()))
+						{
+							JZWRITE_DEBUG("pop empty input");
+							ret.pop_back();	
+						}
+					}
+				}
+			}
+			else
+			{
+				if (true == doubleSharp )
+				{
+					if (true == LexUtil::isEmptyInput(curChar))
+					{
+						//don't save
+						continue;
+					}
+					else
+					{
+						JZWRITE_DEBUG("unexpect seperator");
+						return eLexUnexpectedSeperator;
+					}
+				}
+				ret += curChar;
+			}
+		}
+		else
+		{
+			word += curChar;	
+		}
+	}
+	JZWRITE_DEBUG("ret is :[%s]",ret.c_str());
+	return eLexNoError;
 }
 
 uint32 Lex::consumeWord(
@@ -174,20 +299,6 @@ uint32 Lex::consumeWord(
 	}
 	JZFUNC_END_LOG();
 	return ret;
-}
-
-const string* Lex::getRealParam(const string& word)
-{
-	int paramSite = getParamIndex(word);
-	if (-1 == paramSite)
-	{
-		return NULL;
-	}
-	if (mReaderStack.top().mRealParamList.size() <= paramSite)
-	{
-		return NULL;
-	}
-	return &(mReaderStack.top().mRealParamList[paramSite]);
 }
 
 uint32 Lex::handleDefinedWord(const string& word,char &seperator)
@@ -234,7 +345,7 @@ uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 		//param number check
 		if (true == defRec->isVarArgs)
 		{
-			if (defRec->paramMap.size() - 1 >= mRealParamList.size())
+			if (defRec->paramMap.size() - 1 > mRealParamList.size())
 			{
 				JZWRITE_DEBUG("var func like marco param not enough");
 				return eLexFuncLikeMacroParamTooLess;
@@ -252,9 +363,17 @@ uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 	}
 
 	//not func like ,just expend it
-	char* buff = (char*)malloc(defRec->defineStr.size());
-	strncpy(buff, defRec->defineStr.c_str(), defRec->defineStr.size());
-	pushReaderRecord(buff,defRec->defineStr.size(),word,eFileTypeMacroParam,&mRealParamList,defRec,&(defRec->paramMap));
+	//use defineManager to expend it
+	string expendStr = "";
+	uint32 expendErr = expendMacro(defRec, mRealParamList, expendStr);
+	if (eLexNoError != expendErr)
+	{
+		JZFUNC_END_LOG();
+		return expendErr;
+	}
+	char* buff = (char*)malloc(expendStr.size());
+	strncpy(buff, expendStr.c_str(), expendStr.size());
+	pushReaderRecord(buff,expendStr.size(),word,eFileTypeMacroParam);
 	mRealParamList.clear();
 	uint32 ret = doLex();
 
@@ -267,14 +386,12 @@ uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 	popReaderRecord();
 	JZFUNC_END_LOG();
 	return eLexNoError;	
-	
 }
-void Lex::pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType, const RealParamList* paramList  ,const DefineRec* defRec  , const ParamSiteMap* paramSiteMap  )
+void Lex::pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType  )
 {
 	FileReaderRecord rec = 
 		initFileRecord(
-				buff,size, fileName,recordType,
-				paramList,defRec,paramSiteMap);
+				buff,size, fileName,recordType);
 	mReaderStack.push(rec);
 }
 
@@ -347,11 +464,26 @@ void Lex::saveWord(
 
 void Lex::printLexRec()
 {
+	JZFUNC_BEGIN_LOG();
 	auto it = mLexRecList.begin();
+	string line = "";
+	uint32 curLine = 0;
 	for(; it != mLexRecList.end(); it++)
 	{
-		JZWRITE_DEBUG("line:%d,word:%s",it->line, it->word.c_str());
+		if (it->line == curLine)
+		{
+			line += " ";
+			line += it->word;
+		}
+		else
+		{
+			printf("%s\n",line.c_str());
+			line = it->word;
+			curLine = it->line;
+		}
 	}
+	printf("%s\n",line.c_str());
+	JZFUNC_END_LOG();
 }
 
 uint32 Lex::undoConsume()
@@ -1758,28 +1890,6 @@ bool Lex::isFuncLikeMacroMode()
 	return mReaderStack.top().mFuncLikeMacroParamAnalyzing;
 }
 
-uint32 Lex::expendMacroParam(const string& word)
-{
-	JZFUNC_BEGIN_LOG();
-	auto realParam = getRealParam(word);
-	if (NULL == realParam)
-	{
-		JZFUNC_END_LOG();
-		return eLexUnknowError;
-	}
-	char *buff = (char*) malloc(realParam->size());
-	strncpy(buff,realParam->c_str(),realParam->size());
-	pushReaderRecord(buff,realParam->size(),word,eFileTypeMacroParam);
-	uint32 ret = doLex();
-	popReaderRecord();
-	if (ret == eLexNoError || ret == eLexReachFileEnd)
-	{
-		return eLexNoError;
-	}
-	return ret;
-
-}
-
 /*********************************************************
 	Lex end here
 	now begin the LexUtil   	
@@ -2101,8 +2211,7 @@ LexPatternHandler LexPatternTable::getPattern(const char input)
 
 FileReaderRecord initFileRecord(
 		const char* buff,uint64 size,const string& fileName,
-		uint32 recordType,const RealParamList* paramList,
-		const DefineRec* defRec, const ParamSiteMap* paramSiteMap)
+		uint32 recordType)
 {
 	FileReaderRecord ret = 
 	{
@@ -2113,14 +2222,8 @@ FileReaderRecord initFileRecord(
 		.fileName = fileName,
 		.recordType = recordType,
 		.mStreamOffTag = 0,	
-		.mDefinePtrStack = defRec,
-		.mParamSiteMap = paramSiteMap,
 		.mFuncLikeMacroParamAnalyzing = false,
 	};
-	if (NULL != paramList)
-	{
-		ret.mRealParamList = *paramList;
-	}
 	return ret;
 }
 
