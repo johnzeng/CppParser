@@ -192,6 +192,18 @@ uint32 Lex::expendMacro(const DefineRec* def,const RealParamList& paramList, str
 				//do nothing
 				JZWRITE_DEBUG("skip empty input");
 			}
+			else if(true == singleSharp)
+			{
+				if (true == LexUtil::isEmptyInput(word))
+				{
+					continue;
+				}
+				else
+				{
+					JZWRITE_DEBUG("# not following macor param");
+					return eLexUnexpectedSeperator;	
+				}
+			}
 			else
 			{
 				ret += word;	
@@ -1187,17 +1199,16 @@ uint32 Lex::handleSharp()
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 //try if this is double sharp: ##
-	ret = readChar(&nextChar);
-	if (nextChar == '#')
-	{
-		consumeChar(&nextChar);
+//	ret = readChar(&nextChar);
+//	if (nextChar == '#')
+//	{
+//		consumeChar(&nextChar);
 //		saveWord("##");
-		uint32 endIndex = getLastIndex();
-		saveWord("##",beginIndex,endIndex);
-		JZFUNC_END_LOG();
-		return eLexNoError;
-	}
-
+//		uint32 endIndex = getLastIndex();
+//		saveWord("##",beginIndex,endIndex);
+//		JZFUNC_END_LOG();
+//		return eLexNoError;
+//	}
 
 	string word = "";
 
