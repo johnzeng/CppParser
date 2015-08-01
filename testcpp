@@ -1,7 +1,7 @@
-#define he(a,b) printf("a,b",a,b);
+#define he(a,b,...) printf("a,b",a,b);
 
 int main()
 {
-	he(b, b);
+	he(HELLO, HELLO,c,d,e);
 	return 0;
 }

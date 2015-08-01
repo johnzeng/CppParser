@@ -4,6 +4,7 @@
 #include "JZLogger.h"
 #include "JZMacroFunc.h"
 #include "IncludeHandler.h"
+#include "KeyWordDefine.h"
 #include <stdlib.h>
 /*********************************************************
 	Lex begin here 
@@ -1444,14 +1445,18 @@ uint32 Lex::handleSharpDefine()
 			}
 			if (seperator == '.')
 			{
+				uint32 endIndex = getLastIndex() - 1;
+				uint32 beginIndex = getLastIndex() - 1 - param.size();
 				if (eLexNoError == tryToMatchWord(".."))
 				{
 					defineRec.isVarArgs = true;
 					if ("" != param)
 					{
-						uint32 endIndex = getLastIndex() - 1;
-						uint32 beginIndex = getLastIndex() - 1 - param.size();
 						saveWordTo(param,defineRec.formalParam,beginIndex,endIndex,eLexRecTypeFuncLikeMacroVarParam);
+					}
+					else
+					{
+						saveWordTo(C_MACRO_WORD___VA_ARGS__,defineRec.formalParam,beginIndex,endIndex,eLexRecTypeFuncLikeMacroVarParam);
 					}
 				}
 				else
