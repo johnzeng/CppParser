@@ -6,7 +6,11 @@
 #include <vector>
 using namespace std;
 
+typedef vector<string> RealParamList;
+typedef stack<int> BracketMarkStack;
+typedef map<string,int> ParamSiteMap;
 //struct define
+struct DefineRec;
 struct LexRec
 {
 	string word;
@@ -52,6 +56,7 @@ enum FileReaderRecordType
 	eFileTypeFile,
 	eFileTypeDefine,
 	eFileTypeMacro,
+	eFileTypeMacroParam,
 };
 
 struct FileReaderRecord
@@ -62,13 +67,20 @@ struct FileReaderRecord
 	uint32 curLineNum;
 	const string fileName;	//if this is a define ,file name will be key
 	uint32 recordType;
+
+	//stream tag
 	uint32 mStreamOffTag;
+
+	//func like macor analyzing 
+	bool mFuncLikeMacroParamAnalyzing;
+	BracketMarkStack mBracketMarkStack;
+	RealParamList mRealParamList;
+	const DefineRec *mDefinePtrStack;
+	const ParamSiteMap *mParamSiteMap;
+		
 };
 
-FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType, const RealParamList* paramList = NULL,const DefineRec* defRec = NULL, const ParamSiteMap* paramSiteMap = NULL);
 
 typedef vector<LexRec> LexRecList;
-typedef vector<string> RealParamList;
-typedef stack<int> BracketMarkStack;
-typedef map<string,int> ParamSiteMap;
 #endif /* end of include guard: LEXDATA_H */

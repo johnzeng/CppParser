@@ -61,10 +61,17 @@ DefineManager::DefineManagerReturnCode DefineManager::addDefineMap(const string&
 		return eDefMgrKeyDiffFromSrc;
 	}
 	mSrcLexMap[src] = rec;
+#ifdef DEBUG
 	JZWRITE_DEBUG("add define:[key:%s,value:%s]",src.c_str(),rec.defineStr.c_str());
 	for(int i = 0 ; i < rec.formalParam.size(); i++)
 	{
 		JZWRITE_DEBUG("param : %s", rec.formalParam[i].word.c_str());	
+	}
+#endif
+	for(int i = 0; i < rec.formalParam.size() ; i++ )
+	{
+		string word = rec.formalParam[i].word;	
+		mSrcLexMap[src].paramMap[word] = i;
 	}
 	return eDefMgrNoError;
 }

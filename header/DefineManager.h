@@ -18,6 +18,7 @@ struct DefineRec
 	bool isVarArgs;
 	string defineStr;		//if it is an empty macro,this will be empty
 	LexRecList formalParam;		//use when this is a funclike macro
+	ParamSiteMap paramMap;
 } ;
 
 typedef map<string ,DefineRec> DefineRecMap;

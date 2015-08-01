@@ -31,6 +31,8 @@ public:
 		eLexWordIsNotDefined = 14,
 		eLexParamAnalyzeOVer = 15,	//this is not an error
 		eLexReachLineEnd = 16,
+		eLexFuncLikeMacroParamTooLess = 17,
+		eLexFuncLikeMacroParamTooManay = 18,
 
 		//unknow should be last
 		eLexUnknowError ,
@@ -93,9 +95,17 @@ private:
 
 	void turnOnFuncLikeMacroMode();
 	void turnOffFuncLikeMacroMode();
-	void pushDefParam(const DefineRec *rec, ParamSiteMap *indexMap);
+	void pushDefParam(const DefineRec *rec,const ParamSiteMap *indexMap);
 	void popDefParam();
 	bool isFuncLikeMacroMode();
+	uint32 getBracketMarkStackSize();
+	void pushLeftBracket(uint32 mark);
+	void popLeftBracket();
+	uint32 getBracketBeginMark();
+
+	//return -1 if param not exist
+	int getParamIndex(const string& word);
+
 public:
 	//handler function
 	uint32 handleSingleQuotation();  		//"
@@ -135,18 +145,21 @@ public:
 	uint32 handleSharpElse();
 	uint32 handleSharpPragma();
 
+private:
 	//if seperator is '(',and word is a func like macro,then seperator will change to ' '
 	uint32 handleDefinedWord(const string& word,char &seperator);
 	uint32 handleIsDefined(string& ret,char &seperator);
 	uint32 checkMacro(bool *isSuccess);
+	uint32 expendMacroParam(const string& word);
 
+	//if not param ,return NULL;
+	const string* getRealParam(const string& word);
+
+	void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType, const RealParamList* paramList = NULL,const DefineRec* defRec = NULL, const ParamSiteMap* paramSiteMap = NULL);
+
+	void popReaderRecord();
 private:
-	stack<bool> mFuncLikeMacroParamAnalyzing;
-	stack<BracketMarkStack> mBracketMarkStack;
-	stack<RealParamList> mRealParamListStack;
-	stack<const DefineRec*> mDefinePtrStack;
-	stack<ParamSiteMap*> mParamSiteMap;
-
+	RealParamList mRealParamList;
 	StringSet mPreprocessedFile;
 	StringSet mOnceFileSet;
 	StringSet mPreprocessingMacroSet;

@@ -25,11 +25,10 @@ uint32 Lex::analyzeAFile(const string& fileName)
 	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
 
 	JZSAFE_DELETE(buff);
-	FileReaderRecord fileRecord = initFileRecord(buffWithOutBackSlant,bufSize,fileName,eFileTypeFile);
-
-	mReaderStack.push(fileRecord);
+	pushReaderRecord(buffWithOutBackSlant,bufSize,fileName,eFileTypeFile);
 	mPreprocessedFile.insert(fileName);
 	uint32 ret = doLex();
+	popReaderRecord();
 	JZWRITE_DEBUG("analyze file %s end", fileName.c_str());
 	return ret;
 }
@@ -39,8 +38,10 @@ uint32 Lex::doLex()
 	uint32 ret;
 	char seperator;
 	string word;
-	while(eLexNoError == (consumeWord(word, seperator)))
+	do
 	{
+		ret = consumeWord(word, seperator);
+		JZWRITE_DEBUG("ret is :%d",ret);
 		if ("" != word)
 		{
 			if (mReaderStack.top().recordType == eFileTypeMacro &&
@@ -69,10 +70,19 @@ uint32 Lex::doLex()
 					return err;
 				}
 			}
-			else if(!mParamSiteMap.empty() && mParamSiteMap.top()->find(word) != mParamSiteMap.top()->end())
+			else if(
+					false == isFuncLikeMacroMode() &&
+					-1 != getParamIndex(word)
+				   )
 			{
 				//now this is a param
-				
+				JZWRITE_DEBUG("now expend word:%s",word.c_str());
+				uint32 err = expendMacroParam(word);
+				if (err != eLexNoError)
+				{
+					JZFUNC_END_LOG();
+					return err;
+				}
 			}
 			else
 			{
@@ -106,8 +116,24 @@ uint32 Lex::doLex()
 				return err;
 			}
 		}
+	}while(ret == eLexNoError);
+
+	JZWRITE_DEBUG("ret is :%d",ret);
+	return ret ;
+}
+
+int Lex::getParamIndex(const string& word)
+{
+	if (NULL == mReaderStack.top().mParamSiteMap)
+	{
+		return -1;
 	}
-	return eLexNoError;
+	auto it = mReaderStack.top().mParamSiteMap->find(word);
+	if (it == mReaderStack.top().mParamSiteMap->end())
+	{
+		return -1;
+	}
+	return it->second; 
 }
 
 uint32 Lex::consumeWord(
@@ -149,13 +175,24 @@ uint32 Lex::consumeWord(
 	return ret;
 }
 
+const string* Lex::getRealParam(const string& word)
+{
+	int paramSite = getParamIndex(word);
+	if (-1 == paramSite)
+	{
+		return NULL;
+	}
+	if (mReaderStack.top().mRealParamList.size() <= paramSite)
+	{
+		return NULL;
+	}
+	return &(mReaderStack.top().mRealParamList[paramSite]);
+}
 
 uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 {
 	JZFUNC_BEGIN_LOG();
 	auto defRec = mDefMgr.findDefineMap(word);
-	ParamSiteMap indexMap;
-	pushDefParam(defRec, &indexMap);
 	if (NULL == defRec)
 	{
 		JZFUNC_END_LOG();
@@ -186,26 +223,39 @@ uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 			JZFUNC_END_LOG();
 			return ret;
 		}
-		for(int i = 0; i < defRec->formalParam.size() ; i++ )
-		{
-			string word = defRec->formalParam[i].word;	
-			indexMap[word] = i;
-		}
-		JZWRITE_DEBUG("now print param list");
 #ifdef DEBUG
-		for(int i = 0 ; i < mRealParamListStack.top().size(); i++)
+		JZWRITE_DEBUG("now print param list");
+		for(int i = 0 ; i < mRealParamList.size(); i++)
 		{
-			JZWRITE_DEBUG("i is %d,word is :[%s]",i,mRealParamListStack.top()[i].c_str());	
+			JZWRITE_DEBUG("i is %d,word is :[%s]",i,mRealParamList[i].c_str());	
 		}
 #endif
+		//param number check
+		if (true == defRec->isVarArgs)
+		{
+			if (defRec->paramMap.size() - 1 >= mRealParamList.size())
+			{
+				JZWRITE_DEBUG("var func like marco param not enough");
+				return eLexFuncLikeMacroParamTooLess;
+			}
+		}
+		else
+		{
+			if (defRec->paramMap.size() != mRealParamList.size())
+			{
+				JZWRITE_DEBUG("Func like macro param not right");
+				return defRec->paramMap.size() > mRealParamList.size() ?
+				eLexFuncLikeMacroParamTooLess : eLexFuncLikeMacroParamTooManay;
+			}
+		}
 	}
 
 	//not func like ,just expend it
 	char* buff = (char*)malloc(defRec->defineStr.size());
-	FileReaderRecord rec = initFileRecord(buff,defRec->defineStr.size(), word,eFileTypeDefine);
-	mReaderStack.push(rec);
+	strncpy(buff, defRec->defineStr.c_str(), defRec->defineStr.size());
+	pushReaderRecord(buff,defRec->defineStr.size(),word,eFileTypeMacroParam,&mRealParamList,defRec,&(defRec->paramMap));
+	mRealParamList.clear();
 	uint32 ret = doLex();
-	popDefParam();
 
 	if (ret != eLexNoError && ret != eLexReachFileEnd)
 	{
@@ -213,24 +263,24 @@ uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 		JZFUNC_END_LOG();
 		return ret;
 	}
+	popReaderRecord();
 	JZFUNC_END_LOG();
 	return eLexNoError;	
 	
 }
-void Lex::pushDefParam(const DefineRec *rec, ParamSiteMap *indexMap)
+void Lex::pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType, const RealParamList* paramList  ,const DefineRec* defRec  , const ParamSiteMap* paramSiteMap  )
 {
-	RealParamList list;
-	mRealParamListStack.push(list);
-	mDefinePtrStack.push(rec);
-	mParamSiteMap.push(indexMap);
+	FileReaderRecord rec = 
+		initFileRecord(
+				buff,size, fileName,recordType,
+				paramList,defRec,paramSiteMap);
+	mReaderStack.push(rec);
 }
 
-void Lex::popDefParam()
+void Lex::popReaderRecord()
 {
-	mRealParamListStack.pop();
-	mDefinePtrStack.pop();
-	mParamSiteMap.pop();
-
+	JZSAFE_DELETE(mReaderStack.top().buffer);
+	mReaderStack.pop();
 }
 
 void Lex::writeError(uint32 err)
@@ -333,8 +383,6 @@ uint32 Lex::consumeChar(char *ret)
 	FileReaderRecord &record = mReaderStack.top();
 	if (record.bufferSize == record.curIndex)
 	{
-		JZSAFE_DELETE(mReaderStack.top().buffer);
-		mReaderStack.pop();
 		return eLexReachFileEnd;
 	}
 
@@ -507,16 +555,11 @@ uint32 Lex::handleComma()
 	uint32 commaBeginIndex = getLastIndex();
 	if (true == isFuncLikeMacroMode())
 	{
-		if (mBracketMarkStack.empty())
-		{
-			return eLexUnknowError;
-		}
-		JZWRITE_DEBUG("now handle comma, brack stack size:%ld",mBracketMarkStack.top().size());
-		if (1 == mBracketMarkStack.top().size())
+		if (1 == getBracketMarkStackSize())
 		{
 			JZWRITE_DEBUG("save a Param ");
 			//save it!
-			uint32 beginMark = mBracketMarkStack.top().top();
+			uint32 beginMark = getBracketBeginMark();
 			string param;
 			int endIndex = mLexRecList.back().endIndex;
 			int beginIndex = mLexRecList[beginMark].beginIndex;
@@ -529,7 +572,7 @@ uint32 Lex::handleComma()
 			{
 				mLexRecList.pop_back();
 			}
-			mRealParamListStack.top().push_back(param);
+			mRealParamList.push_back(param);
 			return eLexNoError;
 		}
 	}
@@ -574,6 +617,20 @@ uint32 Lex::handleRightSharpBracket()
 	saveWord(toSave, beginIndex, endIndex);
 	return ret;
 }
+uint32 Lex::getBracketMarkStackSize()
+{
+	return mReaderStack.top().mBracketMarkStack.size();
+}
+
+void Lex::pushLeftBracket(uint32 mark)
+{
+	mReaderStack.top().mBracketMarkStack.push(mark);
+}
+
+void Lex::popLeftBracket()
+{
+	mReaderStack.top().mBracketMarkStack.pop();
+}
 
 uint32 Lex::handleLeftBracket()
 {
@@ -583,14 +640,10 @@ uint32 Lex::handleLeftBracket()
 	{
 		//now it is analyzing macro like func,do something
 		JZWRITE_DEBUG("now push a mark");
-		if (mBracketMarkStack.empty())
-		{
-			return eLexUnknowError;
-		}
 		uint32 mark = mLexRecList.size();
-		mBracketMarkStack.top().push(mark);
+		pushLeftBracket(mark);
 		JZWRITE_DEBUG("push over");
-		if (1 == mBracketMarkStack.top().size())
+		if (1 == getBracketMarkStackSize())
 		{
 			JZWRITE_DEBUG("first bracket,don't save");
 			return eLexNoError;
@@ -601,6 +654,10 @@ uint32 Lex::handleLeftBracket()
 	JZFUNC_END_LOG();
 	return eLexNoError;
 }
+uint32 Lex::getBracketBeginMark()
+{
+	return mReaderStack.top().mBracketMarkStack.top();
+}
 
 uint32 Lex::handleRightBracket()
 {
@@ -609,19 +666,15 @@ uint32 Lex::handleRightBracket()
 	if (true == isFuncLikeMacroMode())
 	{
 		JZWRITE_DEBUG("now pop a mark");
-		if (mBracketMarkStack.empty())
+		if (0 == getBracketMarkStackSize())
 		{
 			return eLexUnknowError;
 		}
-		if (mBracketMarkStack.top().empty())
-		{
-			return eLexUnknowError;
-		}
-		if (1 == mBracketMarkStack.top().size())
+		if (1 == getBracketMarkStackSize())
 		{
 			JZWRITE_DEBUG("save a Param ");
 			//save it!
-			uint32 beginMark = mBracketMarkStack.top().top();
+			uint32 beginMark = getBracketBeginMark(); 
 			string param;
 			int beginIndex = mLexRecList[beginMark].beginIndex;
 			int endIndex = mLexRecList.back().endIndex;
@@ -634,10 +687,10 @@ uint32 Lex::handleRightBracket()
 			{
 				mLexRecList.pop_back();
 			}
-			mRealParamListStack.top().push_back(param);
+			mRealParamList.push_back(param);
 		}
-		mBracketMarkStack.top().pop();
-		if (mBracketMarkStack.top().empty())
+		popLeftBracket();
+		if (0 == getBracketMarkStackSize())
 		{
 			return eLexParamAnalyzeOVer;
 		}
@@ -1463,8 +1516,7 @@ uint32 Lex::checkMacro(bool *isSuccess)
 		return eLexUnknowError;
 	}
 	memcpy(buff,logicStr.c_str(), logicStr.size());
-	FileReaderRecord record = initFileRecord(buff,logicStr.size(),"",eFileTypeMacro);
-	mReaderStack.push(record);
+	pushReaderRecord(buff,logicStr.size(),"",eFileTypeMacro);
 
 	//pop until reach last
 	int lastRecPtr = mLexRecList.size();
@@ -1473,6 +1525,7 @@ uint32 Lex::checkMacro(bool *isSuccess)
 	{
 		return lexret;
 	}
+	popReaderRecord();
 
 	LexRecList list;
 	list.resize(mLexRecList.size() - lastRecPtr);
@@ -1675,24 +1728,51 @@ bool Lex::isOnceFile(const string& input)
 
 void Lex::turnOnFuncLikeMacroMode()
 {
-	BracketMarkStack bracketStack;
-	
-	mFuncLikeMacroParamAnalyzing.push(true);
-	mBracketMarkStack.push(bracketStack);
+	if (mReaderStack.empty())
+	{
+		return;
+	}
+	mReaderStack.top().mFuncLikeMacroParamAnalyzing = true;
 }
 
 void Lex::turnOffFuncLikeMacroMode()
 {
-	if (false == mFuncLikeMacroParamAnalyzing.empty())
+	if (mReaderStack.empty())
 	{
-		mFuncLikeMacroParamAnalyzing.pop();
-		mBracketMarkStack.pop();
+		return;
 	}
+	mReaderStack.top().mFuncLikeMacroParamAnalyzing = false;
 }
 
 bool Lex::isFuncLikeMacroMode()
 {
-	return !mFuncLikeMacroParamAnalyzing.empty() && !mBracketMarkStack.empty();
+	if (mReaderStack.empty())
+	{
+		return false;
+	}
+	return mReaderStack.top().mFuncLikeMacroParamAnalyzing;
+}
+
+uint32 Lex::expendMacroParam(const string& word)
+{
+	JZFUNC_BEGIN_LOG();
+	auto realParam = getRealParam(word);
+	if (NULL == realParam)
+	{
+		JZFUNC_END_LOG();
+		return eLexUnknowError;
+	}
+	char *buff = (char*) malloc(realParam->size());
+	strncpy(buff,realParam->c_str(),realParam->size());
+	pushReaderRecord(buff,realParam->size(),word,eFileTypeMacroParam);
+	uint32 ret = doLex();
+	popReaderRecord();
+	if (ret == eLexNoError || ret == eLexReachFileEnd)
+	{
+		return eLexNoError;
+	}
+	return ret;
+
 }
 
 /*********************************************************
@@ -1778,6 +1858,7 @@ bool LexUtil::isEmptyInput(const char input)
 		case '\t':
 		case '\n':
 		case ' ':
+		case 0:
 			return true;
 		default:
 		{
@@ -2013,7 +2094,10 @@ LexPatternHandler LexPatternTable::getPattern(const char input)
 	data init helper func 
  ********************************************************/
 
-FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType)
+FileReaderRecord initFileRecord(
+		const char* buff,uint64 size,const string& fileName,
+		uint32 recordType,const RealParamList* paramList,
+		const DefineRec* defRec, const ParamSiteMap* paramSiteMap)
 {
 	FileReaderRecord ret = 
 	{
@@ -2024,7 +2108,14 @@ FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileN
 		.fileName = fileName,
 		.recordType = recordType,
 		.mStreamOffTag = 0,	
+		.mDefinePtrStack = defRec,
+		.mParamSiteMap = paramSiteMap,
+		.mFuncLikeMacroParamAnalyzing = false,
 	};
+	if (NULL != paramList)
+	{
+		ret.mRealParamList = *paramList;
+	}
 	return ret;
 }
 
