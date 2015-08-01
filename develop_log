@@ -1,4 +1,9 @@
 2015/08/01
+Log2:	主意，define的链接符##会比宏定义优先处理也就是说下面的定义：
+#define HELLO te
+#define hell() HELLO ## st
+则，hell()会展开为HELLOst，而不是test。
+
 Log1:	__VA_ARGS__宏只在可变参数名没有给定的情况下可以使用。例如：
 		File: macro_test.cpp
 		#include <stdio.h>

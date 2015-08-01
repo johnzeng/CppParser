@@ -103,9 +103,6 @@ private:
 	void popLeftBracket();
 	uint32 getBracketBeginMark();
 
-	//return -1 if param not exist
-	int getParamIndex(const string& word);
-
 public:
 	//handler function
 	uint32 handleSingleQuotation();  		//"
@@ -155,7 +152,7 @@ private:
 	//if not param ,return NULL;
 	const string* getRealParam(const string& word);
 
-	void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType, const RealParamList* paramList = NULL,const DefineRec* defRec = NULL, const ParamSiteMap* paramSiteMap = NULL);
+	void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
 	void popReaderRecord();
 private:

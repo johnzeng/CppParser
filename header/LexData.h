@@ -74,13 +74,10 @@ struct FileReaderRecord
 	//func like macor analyzing 
 	bool mFuncLikeMacroParamAnalyzing;
 	BracketMarkStack mBracketMarkStack;
-	RealParamList mRealParamList;
-	const DefineRec *mDefinePtrStack;
-	const ParamSiteMap *mParamSiteMap;
 		
 };
 
-FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType, const RealParamList* paramList = NULL,const DefineRec* defRec = NULL, const ParamSiteMap* paramSiteMap = NULL);
+FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
 typedef vector<LexRec> LexRecList;
 #endif /* end of include guard: LEXDATA_H */

@@ -23,6 +23,7 @@ struct DefineRec
 
 typedef map<string ,DefineRec> DefineRecMap;
 
+const string expendMacro(const DefineRec* def,const RealParamList& paramList);
 
 class DefineManager {
 public:
