@@ -1,8 +1,10 @@
-#define HELLO he
-#define he(a,b,...) printf("a,b",HELLO##a,a  ## b,#a,#__VA_ARGS__,##__VA_ARGS__);
+#define he 1
+#if 1 && defined(he) && he
+void test1();
+#endif
 
 int main()
 {
-	he(a, HELLO,c);
+	he(a,b,c);
 	return 0;
 }

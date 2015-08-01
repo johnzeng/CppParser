@@ -267,8 +267,13 @@ uint32 Lex::expendMacro(const DefineRec* def,const RealParamList& paramList, str
 		}
 		else
 		{
-			word += curChar;	
+			word += curChar;
 		}
+	}
+	if (word != "")
+	{
+		//not end with interpunction;
+		ret += word;
 	}
 	JZWRITE_DEBUG("ret is :[%s]",ret.c_str());
 	return eLexNoError;
