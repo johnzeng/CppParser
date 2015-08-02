@@ -1,5 +1,7 @@
 2015/08/01
-Log2:	主意，define的链接符##会比宏定义优先处理也就是说下面的定义：
+Log3:	目前完成了大部分预编译工作了，还要做一个宏布尔运算器，计算#if,#elif的值,最后一点工作了，剩下就是测试了
+
+Log2:	注意，define的链接符##会比宏定义优先处理也就是说下面的定义：
 #define HELLO te
 #define hell() HELLO ## st
 则，hell()会展开为HELLOst，而不是test。

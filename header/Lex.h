@@ -125,6 +125,7 @@ public:
 	uint32 handleRightBracket();			//)
 	uint32 handleComma();					//,
 	uint32 handleMod();						//%
+	uint32 handleColon();					//:
 
 	//slant can be a big handler...
 	uint32 handleDivideSlant();

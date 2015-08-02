@@ -980,6 +980,24 @@ uint32 Lex::handleUpponSharp()
 	return ret;
 }
 
+uint32 Lex::handleColon()
+{
+	uint32 beginIndex = getLastIndex();
+	uint32 ret = eLexNoError;
+	char nextChar = 0;
+	ret = readChar(&nextChar);
+	string toSave = ":";
+	if (':' == nextChar)
+	{
+		consumeChar(&nextChar);
+		toSave += nextChar;
+	}
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex,endIndex);
+	return ret;
+
+}
+
 uint32 Lex::handleMod()
 {
 	uint32 beginIndex = getLastIndex();
@@ -2182,6 +2200,7 @@ void LexPatternTable::init()
 	mPatternHandlerMap[')']  = &Lex::handleRightBracket;
 	mPatternHandlerMap[',']  = &Lex::handleComma;
 	mPatternHandlerMap['%']  = &Lex::handleMod;
+	mPatternHandlerMap[':']  = &Lex::handleColon;
 
 	/*********************************************************
 		init marco pattern map here 

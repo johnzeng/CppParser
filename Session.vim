@@ -59,7 +59,7 @@ badd +5 ~/SimpleCompletor/header/DefineManager.h
 badd +14 ~/SimpleCompletor/Macro/DefineManager.cpp
 badd +1 ~/Downloads/gcc-4.8.3/gcc/main.c
 badd +21 ~/SimpleCompletor/main.cpp
-badd +121 ./Core/Lex.cpp
+badd +275 ./Core/Lex.cpp
 badd +1 ./Factor/CmdInputFactor.cpp
 badd +1 ./Factor/CommandLineFactorMngr.cpp
 badd +1 ./Factor/FactorHandler.cpp
@@ -85,7 +85,8 @@ badd +1 *Define*
 badd +57 ~/mylib/CMDUtil/JZCmdParamHandler.cpp
 badd +14 ~/mylib/header/StringUtil.h
 badd +360 ~/mylib/StringUtil/StringUtil.cpp
-badd +17 ~/SimpleCompletor/header/LexData.h
+badd +1 ~/SimpleCompletor/header/LexData.h
+badd +0 ~/SimpleCompletor/Macro/MacroCheck.cpp
 args ~/SimpleCompletor/Macro/DefineManager.cpp ./Macro/DefineManager.o ~/SimpleCompletor/header/DefineManager.h
 edit ~/SimpleCompletor/header/LexData.h
 set splitbelow splitright
@@ -101,11 +102,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 18 + 19) / 39)
-exe 'vert 1resize ' . ((&columns * 80 + 78) / 156)
-exe '2resize ' . ((&lines * 18 + 19) / 39)
-exe 'vert 2resize ' . ((&columns * 80 + 78) / 156)
-exe 'vert 3resize ' . ((&columns * 75 + 78) / 156)
+exe '1resize ' . ((&lines * 18 + 19) / 38)
+exe 'vert 1resize ' . ((&columns * 81 + 79) / 158)
+exe '2resize ' . ((&lines * 17 + 19) / 38)
+exe 'vert 2resize ' . ((&columns * 81 + 79) / 158)
+exe 'vert 3resize ' . ((&columns * 76 + 79) / 158)
 argglobal
 3argu
 edit ~/SimpleCompletor/header/LexData.h
@@ -204,12 +205,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 66 - ((16 * winheight(0) + 9) / 18)
+let s:l = 66 - ((0 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 66
-normal! 019l
+normal! 016l
 wincmd w
 argglobal
 3argu
@@ -309,15 +310,15 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 79 - ((4 * winheight(0) + 9) / 18)
+let s:l = 79 - ((0 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 79
-normal! 021l
+normal! 019l
 wincmd w
 argglobal
-edit ./Core/Lex.cpp
+edit ~/SimpleCompletor/Macro/MacroCheck.cpp
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -413,19 +414,19 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1205 - ((21 * winheight(0) + 18) / 37)
+let s:l = 1 - ((0 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1205
-normal! 070l
+1
+normal! 0
 wincmd w
 3wincmd w
-exe '1resize ' . ((&lines * 18 + 19) / 39)
-exe 'vert 1resize ' . ((&columns * 80 + 78) / 156)
-exe '2resize ' . ((&lines * 18 + 19) / 39)
-exe 'vert 2resize ' . ((&columns * 80 + 78) / 156)
-exe 'vert 3resize ' . ((&columns * 75 + 78) / 156)
+exe '1resize ' . ((&lines * 18 + 19) / 38)
+exe 'vert 1resize ' . ((&columns * 81 + 79) / 158)
+exe '2resize ' . ((&lines * 17 + 19) / 38)
+exe 'vert 2resize ' . ((&columns * 81 + 79) / 158)
+exe 'vert 3resize ' . ((&columns * 76 + 79) / 158)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
