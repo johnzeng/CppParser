@@ -1,5 +1,5 @@
 #define he 1
-#if 1 && defined(he) && he
+#if (!1 && defined(he) && he)
 void test1();
 #endif
 

@@ -54,12 +54,12 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +21 ~/SimpleCompletor/header/Lex.h
+badd +128 ~/SimpleCompletor/header/Lex.h
 badd +5 ~/SimpleCompletor/header/DefineManager.h
 badd +14 ~/SimpleCompletor/Macro/DefineManager.cpp
 badd +1 ~/Downloads/gcc-4.8.3/gcc/main.c
 badd +21 ~/SimpleCompletor/main.cpp
-badd +275 ./Core/Lex.cpp
+badd +978 ./Core/Lex.cpp
 badd +1 ./Factor/CmdInputFactor.cpp
 badd +1 ./Factor/CommandLineFactorMngr.cpp
 badd +1 ./Factor/FactorHandler.cpp
@@ -85,31 +85,26 @@ badd +1 *Define*
 badd +57 ~/mylib/CMDUtil/JZCmdParamHandler.cpp
 badd +14 ~/mylib/header/StringUtil.h
 badd +360 ~/mylib/StringUtil/StringUtil.cpp
-badd +1 ~/SimpleCompletor/header/LexData.h
-badd +0 ~/SimpleCompletor/Macro/MacroCheck.cpp
+badd +66 ~/SimpleCompletor/header/LexData.h
+badd +6 ~/SimpleCompletor/Macro/MacroCheck.cpp
+badd +70 ~/SimpleCompletor/header/GrammarUtil.h
+badd +174 ~/SimpleCompletor/Core/GrammarUtil.cpp
 args ~/SimpleCompletor/Macro/DefineManager.cpp ./Macro/DefineManager.o ~/SimpleCompletor/header/DefineManager.h
-edit ~/SimpleCompletor/header/LexData.h
+edit ~/SimpleCompletor/header/GrammarUtil.h
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
 1wincmd h
-wincmd _ | wincmd |
-split
-1wincmd k
-wincmd w
 wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 18 + 19) / 38)
 exe 'vert 1resize ' . ((&columns * 81 + 79) / 158)
-exe '2resize ' . ((&lines * 17 + 19) / 38)
-exe 'vert 2resize ' . ((&columns * 81 + 79) / 158)
-exe 'vert 3resize ' . ((&columns * 76 + 79) / 158)
+exe 'vert 2resize ' . ((&columns * 76 + 79) / 158)
 argglobal
 3argu
-edit ~/SimpleCompletor/header/LexData.h
+edit ~/SimpleCompletor/header/GrammarUtil.h
 setlocal noautoindent
 setlocal nobinary
 setlocal bufhidden=
@@ -205,117 +200,12 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 66 - ((0 * winheight(0) + 9) / 18)
+let s:l = 91 - ((34 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-66
-normal! 016l
-wincmd w
-argglobal
-3argu
-edit ~/SimpleCompletor/header/Lex.h
-setlocal noautoindent
-setlocal nobinary
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal cindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=
-setlocal cinwords=if,else,while,do,for,switch
-setlocal colorcolumn=
-setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
-setlocal commentstring=/*%s*/
-setlocal complete=.,w,b,u,t,i
-setlocal completefunc=
-setlocal nocopyindent
-setlocal cryptmethod=
-setlocal nocursorbind
-setlocal nocursorcolumn
-setlocal nocursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=
-setlocal noexpandtab
-if &filetype != 'cpp'
-setlocal filetype=cpp
-endif
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
-setlocal foldmethod=manual
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=croql
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=0
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-setlocal nolinebreak
-setlocal nolisp
-setlocal nolist
-setlocal makeprg=
-setlocal matchpairs=(:),{:},[:]
-setlocal modeline
-setlocal modifiable
-setlocal nrformats=octal,hex
-set number
-setlocal number
-setlocal numberwidth=4
-setlocal omnifunc=ccomplete#Complete
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-setlocal norelativenumber
-setlocal noscrollbind
-setlocal shiftwidth=4
-setlocal noshortname
-setlocal nosmartindent
-setlocal softtabstop=0
-setlocal nospell
-setlocal spellcapcheck=
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=
-setlocal suffixesadd=
-setlocal swapfile
-setlocal synmaxcol=3000
-if &syntax != 'cpp'
-setlocal syntax=cpp
-endif
-setlocal tabstop=4
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal noundofile
-setlocal nowinfixheight
-setlocal nowinfixwidth
-setlocal wrap
-setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 79 - ((0 * winheight(0) + 8) / 17)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-79
-normal! 019l
+91
+normal! 06l
 wincmd w
 argglobal
 edit ~/SimpleCompletor/Macro/MacroCheck.cpp
@@ -414,19 +304,16 @@ setlocal nowinfixwidth
 setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 18) / 36)
+let s:l = 6 - ((5 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+6
 normal! 0
 wincmd w
-3wincmd w
-exe '1resize ' . ((&lines * 18 + 19) / 38)
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 81 + 79) / 158)
-exe '2resize ' . ((&lines * 17 + 19) / 38)
-exe 'vert 2resize ' . ((&columns * 81 + 79) / 158)
-exe 'vert 3resize ' . ((&columns * 76 + 79) / 158)
+exe 'vert 2resize ' . ((&columns * 76 + 79) / 158)
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
