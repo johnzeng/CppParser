@@ -23,10 +23,14 @@ enum OperatorMark
 {
 	//priority -1
 	ePriorityLargest = -1 ,
+
 	eOpNotOp = 0,			//
+
+	//brackets
+	ePriorityLeftBracket,
+	eOpLeftBracket ,		//(
+
 	ePriority1 ,
-	eOpLeftBracket = 1,		//(
-	eOpRightBracket,		//)
 
 	//priority 2
 	ePriority2 ,
@@ -78,10 +82,14 @@ enum OperatorMark
 	//priority 12
 	ePriority12 ,
 	eOpLogicalOr,				//||
-	//priority 13
-	ePriority13 ,
+
+	ePrioritySelect,
 	eOpTernaryConditionalAsk,		//? in ?:
 	eOpTernaryConditionalSelect,	//: in ?:
+
+
+	ePriorityRightBracket ,
+	eOpRightBracket,		//)
 
 	//priority 999
 	ePriorityLowest ,

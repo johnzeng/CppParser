@@ -35,15 +35,19 @@ $(TARGET):$(OBJS) $(myLib) main.o depend
 $(myLib):
 	cd $(mylib_PATH) && make
 
-test:$(TARGET)
+test:
 	./$(TARGET) testcpp
+
+testM:
+	./$(TARGET) TestSet/macro_test_1|grep top
+	
 
 lib:
 	cd $(mylib_PATH) && make
 release:clean makefile
 	make debug_var=0
 
-.PHONY:count,clean
+.PHONY:count,clean,test,macro
 
 clean:
 	-rm depend

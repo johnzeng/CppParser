@@ -26,8 +26,6 @@ void GrammarUtil::init()
 		operator only useful in preprocess 
 	 ********************************************************/
 	
-	insertOperatorToPreprocessOpSet("(",ePriority1,eOpLeftBracket,0,Right2Left);
-	insertOperatorToPreprocessOpSet(")",ePriority1,eOpRightBracket,1);
 
 	insertOperatorToPreprocessOpSet("!",ePriority2,eOpLogicalNegation,1,Right2Left);
 	insertOperatorToPreprocessOpSet("~",ePriority2,eOpBitwiseComplement,1,Right2Left);
@@ -63,11 +61,13 @@ void GrammarUtil::init()
 
 	insertOperatorToPreprocessOpSet("||",ePriority12,eOpLogicalOr,2);
 
+	insertOperatorToPreprocessOpSet("?",ePrioritySelect,eOpTernaryConditionalAsk,0,Right2Left);
+	insertOperatorToPreprocessOpSet(":",ePrioritySelect,eOpTernaryConditionalSelect,3,Right2Left);
 
-	insertOperatorToPreprocessOpSet("?",ePriority13,eOpTernaryConditionalAsk,0,Right2Left);
-	insertOperatorToPreprocessOpSet(":",ePriority13,eOpTernaryConditionalSelect,3,Right2Left);
+	insertOperatorToPreprocessOpSet("(",ePriorityLeftBracket,eOpLeftBracket,0,Right2Left);
+	insertOperatorToPreprocessOpSet(")",ePriorityRightBracket,eOpRightBracket,1);
 
-	insertOperatorToPreprocessOpSet(BASE_OPERATOR,ePriorityLowest,eOpLowestOperator,0);
+	insertOperatorToPreprocessOpSet(BASE_OPERATOR,ePriorityLowest,eOpLowestOperator,0,Right2Left);
 	/*********************************************************
 		operator useful not only in preprocess 
 	 ********************************************************/
@@ -186,7 +186,7 @@ bool GrammarUtil::isConstNumber(const string& input)
 {
 	for (int i = 0; i < input.size(); i++) 
 	{
-		if (input[i] > '0' && input[i] < '9')
+		if (input[i] >= '0' && input[i] <= '9')
 		{
 			continue;
 		}
