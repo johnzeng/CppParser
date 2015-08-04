@@ -20,6 +20,7 @@ Lex::~Lex()
 
 uint32 Lex::analyzeAFile(const string& fileName)
 {
+	JZFUNC_BEGIN_LOG();
 	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
@@ -34,17 +35,20 @@ uint32 Lex::analyzeAFile(const string& fileName)
 	uint32 ret = doLex();
 	popReaderRecord();
 	JZWRITE_DEBUG("analyze file %s end", fileName.c_str());
+	JZFUNC_END_LOG();
 	return ret;
 }
 
 uint32 Lex::doLex()
 {
+	JZFUNC_BEGIN_LOG();
 	uint32 ret;
 	string word;
 	do
 	{
 		ret = consumeWord(word);
 		JZWRITE_DEBUG("read word:%s",word.c_str());
+
 		if ("" == word)
 		{
 			return ret;
@@ -70,13 +74,15 @@ uint32 Lex::doLex()
 				if (err != eLexNoError)
 				{
 					writeError(err);
+					JZFUNC_END_LOG();
 					return err;
 				}
 			}
 			continue;
 		}
+		JZWRITE_DEBUG("is macro:%d,is Stream useful %d",eFileTypeFile == mReaderStack.top().recordType,isLastStreamUseful());
 		//not interpunction
-		if (mReaderStack.top().recordType == eFileTypeMacro && isLastStreamUseful() &&
+		if (isLastStreamUseful() &&
 			"defined" == word)
 		{
 			//this is defined in #if or #elif
@@ -86,6 +92,7 @@ uint32 Lex::doLex()
 			if (err != eLexNoError)
 			{
 				writeError(err);
+				JZFUNC_END_LOG();
 				return err;
 			}
 			JZWRITE_DEBUG("save a is defined word");
@@ -127,6 +134,7 @@ uint32 Lex::expendMacro(const DefineRec* def,const RealParamList& paramList, str
 		return eLexUnknowError; 
 	}
 
+	JZWRITE_DEBUG("now expend macor:%s,str is :%s",def->key.c_str(),def->defineStr.c_str());
 	RealParamList list;
 	list.resize(def->formalParam.size(), "");
 	for(int i = 0 ; i < def->formalParam.size() && i < paramList.size() ; i++)
@@ -1492,6 +1500,7 @@ uint32 Lex::handleIsDefined(string& ret)
 	{
 		ret = "0";	
 	}
+	JZWRITE_DEBUG("cur file is :%s",mReaderStack.top().fileName.c_str());
 	JZWRITE_DEBUG("check word:%s",word.c_str());
 	//consume until another )
 	errRet = consumeCharUntilReach(')',&word,eLexInOneLine);
@@ -1836,8 +1845,8 @@ uint32 Lex::checkMacro(bool *isSuccess)
 		list[i - lastRecPtr] = mLexRecList[i];
 		mLexRecList.pop_back();
 	}
-	JZWRITE_DEBUG("pop fin");
 #ifdef DEBUG
+	JZWRITE_DEBUG("top file is :%s",mReaderStack.top().fileName.c_str());
 	for(int i = 0 ; i < list.size() ; i++)
 	{
 		JZWRITE_DEBUG("word:[%s]",list[i].word.c_str());	

@@ -36,6 +36,7 @@ $(myLib):
 	cd $(mylib_PATH) && make
 
 test:$(TARGET)
+	-@rm log
 	./$(TARGET) testcpp
 
 testm:$(TARGET)

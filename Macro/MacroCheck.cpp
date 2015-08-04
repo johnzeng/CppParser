@@ -366,6 +366,7 @@ static uint32 setMacroCheckData(string& word,MacroCheckData& data)
 	}
 	else
 	{
+		data.mark = eOpNotOp;
 		data.priority = 0;
 		data.type = eMacroCheckDataNumber;
 		data.number = StringUtil::str2int64(word);		

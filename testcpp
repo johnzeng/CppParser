@@ -1,11 +1,11 @@
-#include <stdio.h>
-#define he 1
-#if 1<2 ? (1>2 ? 1 : 4):6
-void test1();
+#include <stdlib.h>
+#if 0
+void test1
+#elif 1
+void test2
 #endif
 
 int main()
 {
-	he(a,b,c);
 	return 0;
 }
