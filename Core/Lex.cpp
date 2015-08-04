@@ -24,9 +24,12 @@ uint32 Lex::analyzeAFile(const string& fileName)
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
 	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
-
 	JZSAFE_DELETE(buff);
-	pushReaderRecord(buffWithOutBackSlant,bufSize,fileName,eFileTypeFile);
+
+	const char* buffWithOutComment = LexUtil::eraseComment(buffWithOutBackSlant,&bufSize);
+	JZSAFE_DELETE(buffWithOutBackSlant);
+
+	pushReaderRecord(buffWithOutComment,bufSize,fileName,eFileTypeFile);
 	mPreprocessedFile.insert(fileName);
 	uint32 ret = doLex();
 	popReaderRecord();
@@ -37,72 +40,77 @@ uint32 Lex::analyzeAFile(const string& fileName)
 uint32 Lex::doLex()
 {
 	uint32 ret;
-	char seperator;
 	string word;
 	do
 	{
-		ret = consumeWord(word, seperator);
+		ret = consumeWord(word);
 		JZWRITE_DEBUG("ret is :%d",ret);
-		if ("" != word)
+		if ("" == word)
 		{
-			if (mReaderStack.top().recordType == eFileTypeMacro &&
-				"defined" == word)
+			return ret;
+		}
+		if (true == LexUtil::isInterpunction(word[0]))
+		{
+			LexPatternHandler handler = LexPtnTbl->getPattern(word[0]);
+			if (NULL == handler)
 			{
-				//this is defined in #if or #elif
-				uint32 beginIndex = getLastIndex() - word.size() - 1;
+				//no handler is registered,means this is a normal input
+				if (true == LexUtil::isEmptyInput(word[0]))
+				{
+					continue;
+				}
+				uint32 beginIndex = getLastIndex() - 1;
 				uint32 endIndex = getLastIndex() - 1;
-				uint32 err = handleIsDefined(word, seperator);
-				if (err != eLexNoError)
-				{
-					writeError(err);
-					return err;
-				}
 				saveWord(word,beginIndex, endIndex);
-			}
-			else if (
-					false == isFuncLikeMacroMode() &&
-				   	DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
-			{
-				//don't expend when it is FuncLikeMacroMode
-				uint32 err = handleDefinedWord(word,seperator);
-				if (err != eLexNoError)
-				{
-					writeError(err);
-					return err;
-				}
 			}
 			else
 			{
-				//normal word
-				uint32 beginIndex = getLastIndex() - word.size();
-				uint32 endIndex = getLastIndex() - 1;
-				saveWord(word,beginIndex, endIndex);
+				uint32 err = eLexNoError;
+				err = (this->*handler)();
+				if (err != eLexNoError)
+				{
+					writeError(err);
+					return err;
+				}
 			}
+			continue;
 		}
-		LexPatternHandler handler = LexPtnTbl->getPattern(seperator);
-		if (NULL == handler)
+		//not interpunction
+		if (mReaderStack.top().recordType == eFileTypeMacro &&
+			"defined" == word)
 		{
-			//no handler is registered,means this is a normal input
-			if (true == LexUtil::isEmptyInput(seperator))
-			{
-				continue;
-			}
-			string toSaveSeperator = "";
-			toSaveSeperator += seperator;
-			uint32 beginIndex = getLastIndex() - 1;
+			//this is defined in #if or #elif
+			uint32 beginIndex = getLastIndex() - word.size() - 1;
 			uint32 endIndex = getLastIndex() - 1;
-			saveWord(toSaveSeperator,beginIndex, endIndex);
+			uint32 err = handleIsDefined(word);
+			if (err != eLexNoError)
+			{
+				writeError(err);
+				return err;
+			}
+			JZWRITE_DEBUG("save a is defined word");
+			saveWord(word,beginIndex, endIndex);
 		}
-		else
+		else if (
+				false == isFuncLikeMacroMode() &&
+				DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
 		{
-			uint32 err = eLexNoError;
-			err = (this->*handler)();
+			//don't expend when it is FuncLikeMacroMode
+			uint32 err = handleDefinedWord(word);
 			if (err != eLexNoError)
 			{
 				writeError(err);
 				return err;
 			}
 		}
+		else
+		{
+			//normal word
+			uint32 beginIndex = getLastIndex() - word.size();
+			uint32 endIndex = getLastIndex() - 1;
+			saveWord(word,beginIndex, endIndex);
+		}
+		
 	}while(ret == eLexNoError);
 
 	JZWRITE_DEBUG("ret is :%d",ret);
@@ -280,45 +288,60 @@ uint32 Lex::expendMacro(const DefineRec* def,const RealParamList& paramList, str
 }
 
 uint32 Lex::consumeWord(
-		string &retStr,char &retSeperator,
+		string &retStr,
 		LexInput skipEmptyInput,
 		LexInput inOneLine)
 {
 	JZFUNC_BEGIN_LOG();
 	uint32 ret;
+	char nextChar;
 	retStr = "";
-	retSeperator = 0;
-	while (eLexNoError == (ret = consumeChar(&retSeperator)))
+	while (eLexNoError == (ret = readChar(&nextChar)))
 	{
-		if (false == LexUtil::isInterpunction(retSeperator))
+		if (
+			eLexInOneLine == inOneLine &&
+			true == LexUtil::isLineEnder(nextChar)
+			)
 		{
-			retStr += retSeperator;
+			JZFUNC_END_LOG();
+			return eLexReachLineEnd;
+		}
+		if (eLexSkipEmptyInput == skipEmptyInput && 
+			true == LexUtil::isEmptyInput(nextChar) &&
+			LexUtil::isEmptyInput(retStr))
+		{
+			//skip empty input
+			consumeChar(&nextChar);
+			continue;
+		}
+		if (false == LexUtil::isInterpunction(nextChar))
+		{
+			//no interpunction
+			consumeChar(&nextChar);
+			retStr += nextChar;
+		}
+		else if(LexUtil::isEmptyInput(retStr))
+		{
+			consumeChar(&nextChar);
+			retStr += nextChar;	
+			JZFUNC_END_LOG();
+			return ret;
 		}
 		else
 		{
-			if (
-				eLexInOneLine == inOneLine &&
-				true == LexUtil::isLineEnder(retSeperator)
-				)
-			{
-				JZFUNC_END_LOG();
-				return eLexReachLineEnd;
-			}
-			if (eLexSkipEmptyInput == skipEmptyInput && 
-				true == LexUtil::isEmptyInput(retSeperator) &&
-			   	"" == retStr)
-			{
-				continue;
-			}
-			JZFUNC_END_LOG();
-			return eLexNoError;
+			break;
 		}
+	}
+	if (true == LexUtil::isEmptyInput(retStr) && ret == eLexReachFileEnd)
+	{
+		//so it can pop file record 
+		consumeChar(&nextChar);
 	}
 	JZFUNC_END_LOG();
 	return ret;
 }
 
-uint32 Lex::handleDefinedWord(const string& word,char &seperator)
+uint32 Lex::handleDefinedWord(const string& word)
 {
 	JZFUNC_BEGIN_LOG();
 	auto defRec = mDefMgr.findDefineMap(word);
@@ -329,29 +352,27 @@ uint32 Lex::handleDefinedWord(const string& word,char &seperator)
 	}
 	if (true == defRec->isFuncLikeMacro)
 	{
-		if (false == LexUtil::isEmptyInput(seperator) && '(' != seperator)
+		string matchWord;
+		uint32 errRet = consumeCharUntilReach('(',&matchWord);
+		if (errRet != eLexNoError)
 		{
+			JZFUNC_END_LOG();
 			return eLexUnexpectedSeperator;
 		}
 		//read real param
 		turnOnFuncLikeMacroMode();
 
-		if ('(' == seperator)
-		{
-			//already consumed
-			handleLeftBracket();
-			seperator = ' ';
-		}
-
 		uint32 ret = doLex();
 		turnOffFuncLikeMacroMode();
-		JZWRITE_DEBUG("now add param list");
 		//untile here, param list is all get
 		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
 		{
+			popErrorSite();
 			JZFUNC_END_LOG();
 			return ret;
 		}
+
+		JZWRITE_DEBUG("now add param list");
 #ifdef DEBUG
 		JZWRITE_DEBUG("now print param list");
 		for(int i = 0 ; i < mRealParamList.size(); i++)
@@ -418,21 +439,35 @@ void Lex::popReaderRecord()
 	mReaderStack.pop();
 }
 
+#define ERROR_CASE(caseid) case caseid:{JZWRITE_DEBUG(#caseid);break;}
 void Lex::writeError(uint32 err)
 {
 	JZWRITE_DEBUG("err id : %d",err);
 	switch(err)
 	{
-		case eLexReachFileEnd:
-		{
-			JZWRITE_DEBUG("reach file end");
-			break;	
-		}
-		case eLexReaderStackEmpty:
-		{
-			JZWRITE_DEBUG("stack end");
-			break;	
-		}
+		ERROR_CASE(eLexNoError)
+		ERROR_CASE(eLexReachFileEnd)	
+		ERROR_CASE(eLexReaderStackEmpty)
+		ERROR_CASE(eLexSharpFollowedNothing)
+		ERROR_CASE(eLexWordNotMatch)
+		ERROR_CASE(eLexAlreadyLastWord)
+		ERROR_CASE(eLexSharpDefineFollowedNothing)
+		ERROR_CASE(eLexUnexpectedSeperator)
+		ERROR_CASE(eLexValParamNotLast)
+		ERROR_CASE(eLexSharpIfdefFollowedWithNothing)
+		ERROR_CASE(eLexUnmatchMacro)
+		ERROR_CASE(eLexUnknowMacro)
+		ERROR_CASE(eLexSharpEndIfFollowWithOtherThing)
+		ERROR_CASE(eLexSharpElseFollowWithOtherThing)
+		ERROR_CASE(eLexWordIsNotDefined)
+		ERROR_CASE(eLexParamAnalyzeOVer)	//this is not an error
+		ERROR_CASE(eLexReachLineEnd)
+		ERROR_CASE(eLexFuncLikeMacroParamTooLess)
+		ERROR_CASE(eLexFuncLikeMacroParamTooManay)
+
+		//unknow should be last
+		ERROR_CASE(eLexUnknowError) 
+
 		default:
 		{
 			break;	
@@ -449,6 +484,7 @@ void Lex::saveWordTo(
 	if (false == isLastStreamUseful())
 	{
 		//yeah! this stream is not useful!
+		JZWRITE_DEBUG("stream is off");
 		return;
 	}
 	if (true == LexUtil::isEmptyInput(input))
@@ -1131,18 +1167,14 @@ uint32 Lex::handleSharpPragma()
 	JZFUNC_BEGIN_LOG();
 	uint32 ret = eLexNoError;
 	string word;
-	char seperator;
-	ret = consumeWord(word,seperator,eLexSkipEmptyInput,eLexInOneLine);
+	ret = consumeWord(word,eLexSkipEmptyInput,eLexInOneLine);
 	//there is other more word to handle,but I just care about once
 	//if more key word is to handle,I will make a func ptr map table
 	if (word == "once")
 	{
 		mOnceFileSet.insert(mReaderStack.top().fileName);
 	}
-	if (false == LexUtil::isLineEnder(seperator))
-	{
-		ret = consumeCharUntilReach('\n',&word);
-	}
+	ret = consumeCharUntilReach('\n',&word);
 	JZFUNC_END_LOG();
 	return ret ;
 }
@@ -1220,22 +1252,9 @@ uint32 Lex::handleSharp()
 	JZFUNC_BEGIN_LOG();
 	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
-	char nextChar = 0;
-//try if this is double sharp: ##
-//	ret = readChar(&nextChar);
-//	if (nextChar == '#')
-//	{
-//		consumeChar(&nextChar);
-//		saveWord("##");
-//		uint32 endIndex = getLastIndex();
-//		saveWord("##",beginIndex,endIndex);
-//		JZFUNC_END_LOG();
-//		return eLexNoError;
-//	}
-
 	string word = "";
 
-	ret = consumeWord(word, nextChar, eLexSkipEmptyInput, eLexInOneLine);
+	ret = consumeWord(word, eLexSkipEmptyInput, eLexInOneLine);
 	//in this situation, reach line end means error
 	if (ret != eLexNoError)
 	{
@@ -1249,16 +1268,24 @@ uint32 Lex::handleSharp()
 			return ret;
 		}
 	}
-	if (false == LexUtil::isEmptyInput(nextChar))
+	if (false == isLastStreamUseful())
 	{
-		JZFUNC_END_LOG();
-		return eLexUnknowMacro;
+		//when compile stream is off,only handle these macro
+		if (
+			word != "if" &&
+			word != "ifdef" &&
+			word != "ifndef" &&
+			word != "endif" &&
+			word != "elif" &&
+			word != "else" 
+			)
+		{
+			JZFUNC_END_LOG();
+			return eLexNoError;
+		}
+		
 	}
-
-	//pop the seperator out,in case if the seperator is \n,
-	//I check it in the handles,so don't eat it
-	undoConsume();
-
+	JZWRITE_DEBUG("handle word:%s",word.c_str());	
 	LexPatternHandler handler = LexPtnTbl->getMacroPattern(word);
 	if (NULL == handler)
 	{
@@ -1284,9 +1311,8 @@ uint32 Lex::handleSharpElse()
 {
 	JZFUNC_BEGIN_LOG();
 	string word = "";
-	char seperator;
 	uint32 ret = consumeWord(
-			word,seperator,eLexSkipEmptyInput,eLexInOneLine);
+			word,eLexSkipEmptyInput,eLexInOneLine);
 	if (eLexNoError != ret && ret != eLexReachLineEnd)
 	{
 		JZFUNC_END_LOG();
@@ -1307,9 +1333,8 @@ uint32 Lex::handleSharpEndIf()
 {
 	JZFUNC_BEGIN_LOG();
 	string word = "";
-	char seperator;
 	uint32 ret = consumeWord(
-			word,seperator,eLexSkipEmptyInput,eLexInOneLine);
+			word,eLexSkipEmptyInput,eLexInOneLine);
 	if (eLexNoError != ret && ret != eLexReachLineEnd)
 	{
 		JZFUNC_END_LOG();
@@ -1318,6 +1343,7 @@ uint32 Lex::handleSharpEndIf()
 	if (false ==  LexUtil::isEmptyInput(word))
 	{
 		JZFUNC_END_LOG();
+		JZWRITE_DEBUG("word is :%s",word.c_str());
 		return eLexSharpEndIfFollowWithOtherThing;
 	}
 	JZFUNC_END_LOG();
@@ -1328,10 +1354,9 @@ uint32 Lex::handleSharpIfndef()
 {
 	JZFUNC_BEGIN_LOG();
 	uint32 ret;
-	char seperator;
 	string word;
-	ret = consumeWord(word,seperator,eLexSkipEmptyInput, eLexInOneLine);
-	if (eLexNoError != ret)
+	ret = consumeWord(word,eLexSkipEmptyInput, eLexInOneLine);
+	if (eLexNoError != ret && eLexReachLineEnd != ret)
 	{
 		JZFUNC_END_LOG();
 		return ret;
@@ -1357,10 +1382,9 @@ uint32 Lex::handleSharpIfdef()
 {
 	JZFUNC_BEGIN_LOG();
 	uint32 ret;
-	char seperator;
 	string word;
-	ret = consumeWord(word,seperator,eLexSkipEmptyInput, eLexInOneLine);
-	if (eLexNoError != ret)
+	ret = consumeWord(word,eLexSkipEmptyInput, eLexInOneLine);
+	if (eLexNoError != ret && eLexReachLineEnd != ret)
 	{
 		JZFUNC_END_LOG();
 		return ret;
@@ -1382,42 +1406,52 @@ uint32 Lex::handleSharpIfdef()
 	return ret ;
 }
 
-uint32 Lex::handleIsDefined(string& ret, char &seperator)
+void Lex::popErrorSite()
+{
+	string curLineChar = "";
+	uint32 lastEnderIndex = 0;
+	uint32 curIndex = (int)mReaderStack.top().curIndex;
+	if ('\n' == mReaderStack.top().buffer[curIndex])
+	{
+		curIndex --;
+	}
+	for(int i = curIndex; i >=0 ; i --)
+	{
+		if ('\n' == mReaderStack.top().buffer[i])
+		{
+			break;
+		}
+		lastEnderIndex = i;
+	}
+	for(uint64 i = lastEnderIndex; i < mReaderStack.top().bufferSize; i++)
+	{
+		if (mReaderStack.top().buffer[i] == '\n')
+		{
+			break;
+		}
+		curLineChar += mReaderStack.top().buffer[i];	
+	}
+	JZWRITE_DEBUG("FileName:%s,curIndex:%d,curLineChar:[%s]",mReaderStack.top().fileName.c_str(),mReaderStack.top().curIndex,curLineChar.c_str());
+}
+uint32 Lex::handleIsDefined(string& ret)
 {
 	JZFUNC_BEGIN_LOG();
 	string word;
 	uint32 errRet;
-	if (seperator != '(' && false == LexUtil::isEmptyInput(seperator))
-	{
-		JZFUNC_END_LOG();
-		return eLexUnexpectedSeperator;
-	}
-	if (seperator != '(')
-	{
-		errRet = consumeCharUntilReach('(',&word,eLexInOneLine);
-		if (errRet != eLexNoError)
-		{
-			JZFUNC_END_LOG();
-			return errRet;
-		}
-	}
-	else
-	{
-		seperator = ' ';	
-	}
-	char nextChar;
-	errRet = consumeWord(word, nextChar, eLexSkipEmptyInput, eLexInOneLine);
+	errRet = consumeCharUntilReach('(',&word,eLexInOneLine);
 	if (errRet != eLexNoError)
 	{
 		JZFUNC_END_LOG();
 		return errRet;
 	}
-	if (nextChar != ')')
+	errRet = consumeWord(word, eLexSkipEmptyInput, eLexInOneLine);
+	if (errRet != eLexNoError && errRet != eLexReachLineEnd)
 	{
 		JZFUNC_END_LOG();
-		return eLexUnexpectedSeperator;
+		return errRet;
 	}
 
+	//check
 	if (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
 	{
 		ret = "1";
@@ -1425,6 +1459,15 @@ uint32 Lex::handleIsDefined(string& ret, char &seperator)
 	else
 	{
 		ret = "0";	
+	}
+	JZWRITE_DEBUG("check word:%s",word.c_str());
+	//consume until another )
+	errRet = consumeCharUntilReach(')',&word,eLexInOneLine);
+	if ((errRet != eLexNoError && errRet != eLexReachLineEnd)|| true == LexUtil::isEmptyInput(word))
+	{
+		popErrorSite();
+		JZFUNC_END_LOG();
+		return eLexUnexpectedSeperator;
 	}
 	JZWRITE_DEBUG("ret word is :%s",ret.c_str());
 	JZFUNC_END_LOG();
@@ -1438,7 +1481,7 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 	{
 		.mark = mark,
 		.isSuccess = isSuccess,
-		.tag = mPSStack.size() + 1,
+		.tag = getTopPSStack().size() + 1,
 	};
 
 	//set begin tag
@@ -1451,12 +1494,12 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 			break;
 		default:
 		{
-			if (0 == mPSStack.size())
+			if (0 == getTopPSStack().size())
 			{
 				JZWRITE_DEBUG("mark is :%d",mark);
 				return eLexUnmatchMacro;
 			}
-			ps.beginTag = mPSStack.back().beginTag;
+			ps.beginTag = getTopPSStack().back().beginTag;
 		}
 	};
 
@@ -1475,9 +1518,9 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 			{
 				break;
 			}
-			for(int i = ps.beginTag - 1; i < mPSStack.size(); i++)
+			for(int i = ps.beginTag - 1; i < getTopPSStack().size(); i++)
 			{
-				if (true == mPSStack[i].isSuccess)
+				if (true == getTopPSStack()[i].isSuccess)
 				{
 					ps.isSuccess =false;
 					break;
@@ -1486,7 +1529,7 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 			uint32 offStream = getCompileStream();
 			if (0 != offStream)
 			{
-				if (ps.beginTag == mPSStack[offStream - 1].beginTag)
+				if (ps.beginTag == getTopPSStack()[offStream - 1].beginTag)
 				{
 					turnOnCompileStream();
 				}
@@ -1498,14 +1541,14 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 			uint32 offStream = getCompileStream();
 			if (0 != offStream)
 			{
-				if (ps.beginTag == mPSStack[offStream - 1].beginTag)
+				if (ps.beginTag == getTopPSStack()[offStream - 1].beginTag)
 				{
 					turnOnCompileStream();
 				}
 			}
-			while (false == mPSStack.empty() && ps.beginTag == mPSStack.back().beginTag)
+			while (false == getTopPSStack().empty() && ps.beginTag == getTopPSStack().back().beginTag)
 			{
-				mPSStack.pop_back();
+				getTopPSStack().pop_back();
 			}
 			return eLexNoError;
 		}
@@ -1521,7 +1564,7 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 		turnOffCompileStream(ps.tag);
 	}
 
-	mPSStack.push_back(ps);
+	getTopPSStack().push_back(ps);
 	JZFUNC_END_LOG();
 	return eLexNoError;
 }
@@ -1550,15 +1593,19 @@ void Lex::turnOffCompileStream(uint32 tag)
 		mReaderStack.top().mStreamOffTag = tag;
 	}
 }
+vector<PrecompileSelector>& Lex::getTopPSStack()
+{
+	return mReaderStack.top().mPSStack;
+}
 
 bool Lex::isLastMacroSuccess()
 {
-	if (true == mPSStack.empty())
+	if (true == getTopPSStack().empty())
 	{
 		//if stack is empty ,always return true;
 		return true;
 	}
-	return mPSStack.back().isSuccess;
+	return getTopPSStack().back().isSuccess;
 }
 
 bool Lex::isLastStreamUseful()
@@ -1578,7 +1625,7 @@ uint32 Lex::handleSharpDefine()
 	char seperator = 0;
 	string key = "";
 
-	ret = consumeWord(key, seperator);
+	ret = consumeWord(key);
 	if (eLexNoError != ret)
 	{
 		return ret;
@@ -1586,6 +1633,7 @@ uint32 Lex::handleSharpDefine()
 
 	DefineRec defineRec;
 	defineRec.key = key;
+	ret = consumeChar(&seperator);
 	if ('(' == seperator)
 	{
 		defineRec.isFuncLikeMacro = true;
@@ -1593,13 +1641,56 @@ uint32 Lex::handleSharpDefine()
 		string param;
 		char seperator;
 		uint32 paramRet;
-		while(eLexNoError == (paramRet = consumeWord(param,seperator)))
+		bool isParam = true;
+		while(eLexNoError == (paramRet = consumeWord(param,eLexSkipEmptyInput,eLexInOneLine)))
 		{
-			if (param != "" && (seperator == ')' || seperator == ','))
+			if (param == "")
 			{
+				JZWRITE_DEBUG("read param should not reach empty");
+				return eLexUnexpectedSeperator;
+			}
+			JZWRITE_DEBUG("param is :%s",param.c_str());
+			if (param[0] != ')' && param[0] != ',')
+			{
+				if ('.' != param[0] && true == LexUtil::isInterpunction(param[0]))
+				{
+					JZFUNC_END_LOG();
+					return eLexUnexpectedSeperator;
+				}
+				if (seperator == '.')
+				{
+					uint32 endIndex = getLastIndex() - 1;
+					uint32 beginIndex = getLastIndex() - 1 - param.size();
+					if (eLexNoError == tryToMatchWord(".."))
+					{
+						defineRec.isVarArgs = true;
+						if (false == isParam)
+						{
+							defineRec.formalParam.back().type = eLexRecTypeFuncLikeMacroVarParam;
+						}
+						else
+						{
+							saveWordTo(C_MACRO_WORD___VA_ARGS__,defineRec.formalParam,beginIndex,endIndex,eLexRecTypeFuncLikeMacroVarParam);
+						}
+						isParam = false;
+					}
+					else
+					{
+						JZWRITE_DEBUG("reach here");
+						return eLexUnexpectedSeperator;
+					}
+					continue;
+				}
+				if (false == isParam)
+				{
+					JZFUNC_END_LOG();
+					popErrorSite();
+					return eLexUnexpectedSeperator;
+				}
+				isParam = false;
 				JZWRITE_DEBUG("save a param :%s",param.c_str());
 				if (defineRec.formalParam.size() > 0 &&
-				    defineRec.formalParam.back().type == eLexRecTypeFuncLikeMacroVarParam )
+					defineRec.formalParam.back().type == eLexRecTypeFuncLikeMacroVarParam )
 				{
 					//should not save more param
 					JZWRITE_DEBUG("val param end with not val param:%s",param.c_str());
@@ -1608,39 +1699,35 @@ uint32 Lex::handleSharpDefine()
 				uint32 endIndex = getLastIndex() - 1;
 				uint32 beginIndex = getLastIndex() - 1 - param.size();
 				saveWordTo(param ,defineRec.formalParam,beginIndex,endIndex, eLexRecTypeFuncLikeMacroParam);
+				
 			}
-			if (seperator == '.')
+			else if (param[0]== ')')
 			{
-				uint32 endIndex = getLastIndex() - 1;
-				uint32 beginIndex = getLastIndex() - 1 - param.size();
-				if (eLexNoError == tryToMatchWord(".."))
+				//reach end
+				if (false == isParam)
 				{
-					defineRec.isVarArgs = true;
-					if ("" != param)
-					{
-						saveWordTo(param,defineRec.formalParam,beginIndex,endIndex,eLexRecTypeFuncLikeMacroVarParam);
-					}
-					else
-					{
-						saveWordTo(C_MACRO_WORD___VA_ARGS__,defineRec.formalParam,beginIndex,endIndex,eLexRecTypeFuncLikeMacroVarParam);
-					}
+					break;
+				}
+				else if(defineRec.formalParam.size() == 0)
+				{
+					break;	
 				}
 				else
 				{
-					JZWRITE_DEBUG("reach here");
-					return eLexUnexpectedSeperator;
+					JZFUNC_END_LOG();
+					return eLexUnexpectedSeperator;	
 				}
-				continue;
 			}
-			if (seperator == ')')
+			else if (param[0] != ',')
 			{
-				//reach end
-				break;
+				JZWRITE_DEBUG("reach here,word is : %s",param.c_str());
+				popErrorSite();
+				return eLexUnexpectedSeperator;	
 			}
-			if (seperator != ',')
+			else
 			{
-				JZWRITE_DEBUG("reach here,seperator is : %c",seperator);
-				return eLexUnexpectedSeperator;			
+				
+				isParam = true;
 			}
 		}
 	}
@@ -1673,12 +1760,14 @@ uint32 Lex::handleSharpDefine()
 
 uint32 Lex::checkMacro(bool *isSuccess)
 {
+	JZFUNC_BEGIN_LOG();
 	string logicStr = "";
 	uint32 retErr = eLexNoError;
 	
 	retErr = consumeCharUntilReach('\n',&logicStr);
 	if (eLexNoError != retErr)
 	{
+		JZFUNC_END_LOG();
 		return retErr;
 	}
 	char* buff = (char*)malloc(logicStr.size());
@@ -1687,6 +1776,7 @@ uint32 Lex::checkMacro(bool *isSuccess)
 		return eLexUnknowError;
 	}
 	memcpy(buff,logicStr.c_str(), logicStr.size());
+	JZWRITE_DEBUG("analyze buff :%s",logicStr.c_str());
 	pushReaderRecord(buff,logicStr.size(),"",eFileTypeMacro);
 
 	//pop until reach last
@@ -1719,7 +1809,16 @@ uint32 Lex::checkMacro(bool *isSuccess)
 		//no ptr, this is a comsume input
 		return eLexNoError;
 	}
-	uint32 ret = isMacroSuccess(list, isSuccess);
+	uint32  ret = eLexNoError;
+	if (false == isLastStreamUseful())
+	{
+		*isSuccess = false;
+	}
+	else
+	{
+	
+		ret = isMacroSuccess(list, isSuccess);
+	}
 	return ret;
 
 }
@@ -1744,9 +1843,13 @@ uint32 Lex::handleSharpIf()
 	uint32 ret = checkMacro(&isSuccess);
 	if (ret != eLexNoError)
 	{
+		JZFUNC_END_LOG();
+		popErrorSite();
 		return ret;
 	}
-	return pushPrecompileStreamControlWord(eLexPSIF, isSuccess);
+	ret = pushPrecompileStreamControlWord(eLexPSIF, isSuccess);
+	JZFUNC_END_LOG();
+	return ret;
 }
 
 uint32 Lex::handleSharpInclude()
@@ -1754,33 +1857,27 @@ uint32 Lex::handleSharpInclude()
 	JZFUNC_BEGIN_LOG();
 	uint32 ret = eLexNoError;
 	string word;
-	char seperator;
-	ret = this->consumeWord(word,seperator);
+	ret = this->consumeWord(word,eLexSkipEmptyInput, eLexInOneLine);
 	if (ret != eLexNoError)
 	{
 		return ret;
 	}
-	if (false == LexUtil::isEmptyInput(word))
+	if (true == LexUtil::isEmptyInput(word))
 	{
 		JZWRITE_DEBUG("include follow with not empty input");
 		return eLexUnknowError;
 	}
-	if (seperator != '<' && seperator != '"')
+	if (word[0]!= '<' && word[0]!= '"')
 	{
 		JZWRITE_DEBUG("include follow with error seperator");
 		return eLexUnexpectedSeperator;
 	}
 
-	if (false == isLastStreamUseful())
-	{
-		//if stream is off, don't do follow analyze
-		return eLexNoError;
-	}
 	string toMatch = "";
-	ret = consumeCharUntilReach(LexUtil::seperatorMatcher(seperator),&toMatch);
+	ret = consumeCharUntilReach(LexUtil::seperatorMatcher(word[0]),&toMatch);
 	if (ret  != eLexNoError)
 	{
-		JZWRITE_DEBUG("can not match the seperator in #include for:%c", seperator);
+		JZWRITE_DEBUG("can not match the seperator in #include for:%c", word[0]);
 		return ret;
 	}
 	string toIncludeFile = toMatch.substr(0,toMatch.size() - 1); 
@@ -2083,6 +2180,105 @@ char LexUtil::seperatorMatcher(const char input)
 			break;
 		}
 	}
+	return ret;
+}
+
+char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
+{
+	JZFUNC_BEGIN_LOG();
+	char *ret = (char*)malloc((*bufSize)*sizeof(char));
+	uint64 j = 0;
+	memset(ret,0,(*bufSize) * sizeof(char));
+	bool isString = false;
+	bool isChar = false;
+	bool lastIsBlant = true;
+	bool isCommentLine = false;
+	bool isCommentBlock = false;
+	for(uint64 i = 0 ; i < (*bufSize); i++)
+	{
+		if (true == isString)
+		{
+			ret[j] = input[i];
+			if (ret[j] == '"' && false == lastIsBlant)
+			{
+				isString = false;
+			}
+			if ('\\' == ret[j])
+			{
+				lastIsBlant = !lastIsBlant;
+			}
+			else
+			{
+				lastIsBlant = false;
+			}
+			j++;
+		}
+		else if(true == isChar)
+		{
+			ret[j] = input[i];
+			if (ret[j] == '\'' && false == lastIsBlant)
+			{
+				isChar= false;
+			}
+			if ('\\' == ret[j])
+			{
+				lastIsBlant = !lastIsBlant;
+			}
+			else
+			{
+				lastIsBlant = false;
+			}
+			j++;
+		
+		}
+		else if(true == isCommentLine)
+		{
+			if (input[i] == '\n')
+			{
+				isCommentLine = false;
+			}
+		}
+		else if(true == isCommentBlock)
+		{
+			if (input[i] == '/' && input[i - 1] == '*')
+			{
+				isCommentBlock = false;
+			}
+		}
+		else
+		{
+			if ('"' == input[i])
+			{
+				isString = true;
+			}
+			else if ('\'' == input[i])
+			{
+				isChar = true;
+			}
+			else if ('/' == input[i])
+			{
+				if (i+1 < *bufSize)
+				{
+					if ('/' == input[i+1] )
+					{
+						isCommentLine = true;
+						i++;
+						continue;
+					}
+					else if('*' == input[i+1])
+					{
+						isCommentBlock = true;
+						i++;
+						continue;
+					}
+				}
+			}
+			ret[j] += input[i];
+			j++;
+		}
+	}
+	*bufSize = j;
+	JZFUNC_END_LOG();
 	return ret;
 }
 

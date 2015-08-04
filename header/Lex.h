@@ -77,7 +77,7 @@ private:
 	uint32 undoConsume();
 
 	uint32 consumeWord(
-			string &retStr,char &retSeperator,
+			string &retStr,
 			LexInput skipEmptyInput = eLexSkipEmptyInput,
 		   	LexInput inOneLine = eLexInMulLine);
 
@@ -103,6 +103,7 @@ private:
 	void popLeftBracket();
 	uint32 getBracketBeginMark();
 
+	void popErrorSite();
 public:
 	//handler function
 	uint32 handleSingleQuotation();  		//"
@@ -145,8 +146,8 @@ public:
 
 private:
 	//if seperator is '(',and word is a func like macro,then seperator will change to ' '
-	uint32 handleDefinedWord(const string& word,char &seperator);
-	uint32 handleIsDefined(string& ret,char &seperator);
+	uint32 handleDefinedWord(const string& word);
+	uint32 handleIsDefined(string& ret);
 	uint32 checkMacro(bool *isSuccess);
 	uint32 expendMacroParam(const string& word);
 
@@ -157,6 +158,8 @@ private:
 
 	void popReaderRecord();
 	uint32 expendMacro(const DefineRec* def,const RealParamList& paramList, string& ret);
+	
+	vector<PrecompileSelector>& getTopPSStack();
 private:
 	RealParamList mRealParamList;
 	StringSet mPreprocessedFile;
@@ -164,12 +167,12 @@ private:
 	StringSet mPreprocessingMacroSet;
 
 	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
-	vector<PrecompileSelector> mPSStack;
 	LexRecList mLexRecList;
 	DefineManager mDefMgr;
 };
 
 namespace LexUtil {
+	char* eraseComment(const char* input, uint64 *bufSize);
 	char* eraseLineSeperator(const char* input,uint64 *bufSize);
 	bool isInterpunction(const char input);
 	bool isLineEnder(const char input);

@@ -35,10 +35,10 @@ $(TARGET):$(OBJS) $(myLib) main.o depend
 $(myLib):
 	cd $(mylib_PATH) && make
 
-test:
+test:$(TARGET)
 	./$(TARGET) testcpp
 
-testM:
+testm:$(TARGET)
 	./$(TARGET) TestSet/macro_test_1|grep top
 	
 

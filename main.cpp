@@ -14,8 +14,8 @@ void globalInitAtBegin()
 	//init logger
 	JZLoggerInit();
 	JZSetLoggerLevel(JZ_LOG_ALL);
-	JZSetLoggerOutPutStatue(1,0);
-//	JZSetLogFileName("log");
+	JZSetLoggerOutPutStatue(1,1);
+	JZSetLogFileName("log");
 
 	//analyze command line addon data from .factor file
 	CommandLineFactorMngr::getInstance()->searchAddonFactorFile();

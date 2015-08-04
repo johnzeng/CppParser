@@ -74,6 +74,7 @@ struct FileReaderRecord
 	//func like macor analyzing 
 	bool mFuncLikeMacroParamAnalyzing;
 	BracketMarkStack mBracketMarkStack;
+	vector<PrecompileSelector> mPSStack;
 		
 };
 
