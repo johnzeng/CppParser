@@ -28,6 +28,15 @@ void DefineManager::init()
 	//
 }
 
+void DefineManager::printAllDefine()
+{
+	auto it = mSrcLexMap.begin();
+	for(; it != mSrcLexMap.end(); it++)
+	{
+		printf("key is :%s,param num :%d def word is:%s\n", it->first.c_str(),it->second.formalParam.size(),it->second.defineStr.c_str());	
+	}
+}
+
 DefineManager::DefineManagerReturnCode DefineManager::isDefined(const string& srcDefine)
 {
 	if (mCanceledDefine.end() != mCanceledDefine.find(srcDefine))

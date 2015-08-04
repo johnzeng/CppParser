@@ -84,6 +84,8 @@ string IncludeHandler::getFullPathForIncludeFile(string fileName)
 			return fullPath;
 		}
 	}
+
+	JZWRITE_DEBUG("can not get full path for %s",fileName.c_str());
 	return "";
 }
 

@@ -143,6 +143,8 @@ public:
 	uint32 handleSharpEndIf();
 	uint32 handleSharpElse();
 	uint32 handleSharpPragma();
+	uint32 handleSharpWarning();
+	uint32 handleSharpError();
 
 private:
 	//if seperator is '(',and word is a func like macro,then seperator will change to ' '

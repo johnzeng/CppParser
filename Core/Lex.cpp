@@ -44,7 +44,7 @@ uint32 Lex::doLex()
 	do
 	{
 		ret = consumeWord(word);
-		JZWRITE_DEBUG("ret is :%d",ret);
+		JZWRITE_DEBUG("read word:%s",word.c_str());
 		if ("" == word)
 		{
 			return ret;
@@ -76,7 +76,7 @@ uint32 Lex::doLex()
 			continue;
 		}
 		//not interpunction
-		if (mReaderStack.top().recordType == eFileTypeMacro &&
+		if (mReaderStack.top().recordType == eFileTypeMacro && isLastStreamUseful() &&
 			"defined" == word)
 		{
 			//this is defined in #if or #elif
@@ -92,7 +92,7 @@ uint32 Lex::doLex()
 			saveWord(word,beginIndex, endIndex);
 		}
 		else if (
-				false == isFuncLikeMacroMode() &&
+				false == isFuncLikeMacroMode() && true == isLastStreamUseful() &&
 				DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
 		{
 			//don't expend when it is FuncLikeMacroMode
@@ -209,6 +209,8 @@ uint32 Lex::expendMacro(const DefineRec* def,const RealParamList& paramList, str
 				else
 				{
 					JZWRITE_DEBUG("# not following macor param");
+					JZWRITE_DEBUG("def str is :%s",def->defineStr.c_str());
+					popErrorSite();
 					return eLexUnexpectedSeperator;	
 				}
 			}
@@ -350,6 +352,7 @@ uint32 Lex::handleDefinedWord(const string& word)
 		JZFUNC_END_LOG();
 		return eLexWordIsNotDefined;
 	}
+	JZWRITE_DEBUG("now expending macro:%s",word.c_str());
 	if (true == defRec->isFuncLikeMacro)
 	{
 		string matchWord;
@@ -361,8 +364,9 @@ uint32 Lex::handleDefinedWord(const string& word)
 		}
 		//read real param
 		turnOnFuncLikeMacroMode();
-
+		handleLeftBracket();
 		uint32 ret = doLex();
+		JZWRITE_DEBUG("do lex end");
 		turnOffFuncLikeMacroMode();
 		//untile here, param list is all get
 		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
@@ -518,9 +522,12 @@ void Lex::saveWord(
 void Lex::printLexRec()
 {
 	JZFUNC_BEGIN_LOG();
+	JZWRITE_DEBUG("print defnie");
+	mDefMgr.printAllDefine();
 	auto it = mLexRecList.begin();
 	string line = "";
 	uint32 curLine = 0;
+	JZWRITE_DEBUG("now print lex");
 	for(; it != mLexRecList.end(); it++)
 	{
 		if (it->line == curLine)
@@ -854,6 +861,7 @@ uint32 Lex::handleRightBracket()
 		JZWRITE_DEBUG("now pop a mark");
 		if (0 == getBracketMarkStackSize())
 		{
+			JZFUNC_END_LOG();
 			return eLexUnknowError;
 		}
 		if (1 == getBracketMarkStackSize())
@@ -878,6 +886,7 @@ uint32 Lex::handleRightBracket()
 		popLeftBracket();
 		if (0 == getBracketMarkStackSize())
 		{
+			JZFUNC_END_LOG();
 			return eLexParamAnalyzeOVer;
 		}
 
@@ -1292,6 +1301,10 @@ uint32 Lex::handleSharp()
 		JZWRITE_DEBUG("no handler ,maybe this is a sharp input");
 		uint32 endIndex = getLastIndex();
 		saveWord("#", beginIndex, endIndex);
+		JZWRITE_DEBUG("unknow macor:%s",word.c_str());
+		popErrorSite();
+		JZFUNC_END_LOG();
+		return eLexUnknowError;
 	}
 	else
 	{
@@ -1322,6 +1335,7 @@ uint32 Lex::handleSharpElse()
 	{
 		JZWRITE_DEBUG("word is :[%s]",word.c_str());
 		JZFUNC_END_LOG();
+		popErrorSite();
 		return eLexSharpElseFollowWithOtherThing;
 	}
 	JZFUNC_END_LOG();
@@ -1349,6 +1363,24 @@ uint32 Lex::handleSharpEndIf()
 	JZFUNC_END_LOG();
 	return pushPrecompileStreamControlWord(eLexPSENDIF);
 
+}
+
+uint32 Lex::handleSharpWarning()
+{
+	string word;
+	uint32 errRet;
+	errRet = consumeCharUntilReach('\n',&word);
+	JZWRITE_DEBUG("Warning:%s",word.c_str());
+	return errRet;
+}
+uint32 Lex::handleSharpError()
+{
+	string word;
+	uint32 errRet;
+	errRet = consumeCharUntilReach('\n',&word);
+	JZWRITE_DEBUG("Error:%s",word.c_str());
+	return errRet;
+	
 }
 uint32 Lex::handleSharpIfndef()
 {
@@ -1739,18 +1771,25 @@ uint32 Lex::handleSharpDefine()
 
 	string defWord = "";
 	uint32 retErr = eLexNoError;
-	
-	retErr = consumeCharUntilReach('\n',&defWord);
-	if (eLexNoError != retErr)
+	if (seperator == '\n')
 	{
-		JZFUNC_END_LOG();
-		return retErr;
+		defWord = "";
+	}
+	else
+	{
+		retErr = consumeCharUntilReach('\n',&defWord);
+		
+		if (eLexNoError != retErr)
+		{
+			JZFUNC_END_LOG();
+			return retErr;
+		}
+		if (defWord.back() == '\n')
+		{
+			defWord = defWord.substr(0,defWord.size() - 1);
+		}
 	}
 
-	if (defWord.back() == '\n')
-	{
-		defWord = defWord.substr(0,defWord.size() - 1);
-	}
 
 	defineRec.defineStr = defWord;
 	mDefMgr.addDefineMap(key, defineRec);	
@@ -1948,6 +1987,7 @@ uint32 Lex::tryToMatchWord(const string& word)
 
 uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput inOneLine)
 {
+	JZFUNC_BEGIN_LOG();
 	if (NULL == ret)
 	{
 		return eLexUnknowError;
@@ -1975,6 +2015,7 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput i
 
 bool Lex::isMacroExpending(const string& input)
 {
+	JZFUNC_BEGIN_LOG();
 	if (mPreprocessingMacroSet.find(input) == mPreprocessingMacroSet.end())
 	{
 		return false;
@@ -1984,6 +2025,7 @@ bool Lex::isMacroExpending(const string& input)
 
 bool Lex::isOnceFile(const string& input)
 {
+	JZFUNC_BEGIN_LOG();
 	if (mOnceFileSet.find(input) == mOnceFileSet.end())
 	{
 		return true;
@@ -1996,6 +2038,7 @@ bool Lex::isOnceFile(const string& input)
 
 void Lex::turnOnFuncLikeMacroMode()
 {
+	JZFUNC_BEGIN_LOG();
 	if (mReaderStack.empty())
 	{
 		return;
@@ -2005,6 +2048,7 @@ void Lex::turnOnFuncLikeMacroMode()
 
 void Lex::turnOffFuncLikeMacroMode()
 {
+	JZFUNC_BEGIN_LOG();
 	if (mReaderStack.empty())
 	{
 		return;
@@ -2018,7 +2062,12 @@ bool Lex::isFuncLikeMacroMode()
 	{
 		return false;
 	}
-	return mReaderStack.top().mFuncLikeMacroParamAnalyzing;
+	bool ret = mReaderStack.top().mFuncLikeMacroParamAnalyzing;
+	if (ret)
+	{
+		JZWRITE_DEBUG("func like mode");
+	}
+	return ret;
 }
 
 /*********************************************************
@@ -2236,6 +2285,8 @@ char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
 			if (input[i] == '\n')
 			{
 				isCommentLine = false;
+				ret[j] = '\n';
+				j++;
 			}
 		}
 		else if(true == isCommentBlock)
@@ -2410,6 +2461,9 @@ void LexPatternTable::init()
 	mMacroPatternHandlerMap["define"]  = &Lex::handleSharpDefine;	
 	mMacroPatternHandlerMap["include"] = &Lex::handleSharpInclude;	
 	mMacroPatternHandlerMap["pragma"]  = &Lex::handleSharpPragma;
+	mMacroPatternHandlerMap["warning"]  = &Lex::handleSharpWarning;
+	mMacroPatternHandlerMap["error"]  = &Lex::handleSharpError;
+	mMacroPatternHandlerMap["elif"]  = &Lex::handleSharpElif;
 }
 
 LexPatternHandler LexPatternTable::getMacroPattern(const string& input)
