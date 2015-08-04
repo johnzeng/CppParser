@@ -1858,7 +1858,7 @@ uint32 Lex::checkMacro(bool *isSuccess)
 		return eLexNoError;
 	}
 	uint32  ret = eLexNoError;
-	if (false == isLastStreamUseful())
+	if (false == isLastStreamUseful() && 0 == getCompileStream())
 	{
 		*isSuccess = false;
 	}
