@@ -37,8 +37,8 @@ struct PrecompileSelector
 {
 	uint32 mark;	//like #if,#else,#elif,#endif,and so on
 	bool isSuccess;	//if true, the words will be save
-	unsigned long tag;
-	uint32 beginTag;
+	unsigned long tag;	//mark its index
+	uint32 beginTag;	//mark its beginer index 
 };
 
 enum LexRecordType

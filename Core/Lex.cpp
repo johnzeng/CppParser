@@ -1587,8 +1587,15 @@ uint32 Lex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 					turnOnCompileStream();
 				}
 			}
+			uint32 curMark = eLexPSENDIF;
 			while (false == getTopPSStack().empty() && ps.beginTag == getTopPSStack().back().beginTag)
 			{
+				if (false == LexUtil::canPopCompileStream(curMark,getTopPSStack().back().mark))
+				{
+					JZFUNC_END_LOG();
+					return eLexCanNotPushPrecompileStream;
+				}
+				curMark = getTopPSStack().back().mark;
 				getTopPSStack().pop_back();
 			}
 			return eLexNoError;
@@ -1806,7 +1813,7 @@ uint32 Lex::handleSharpDefine()
 	return ret;
 }
 
-uint32 Lex::checkMacro(bool *isSuccess)
+uint32 Lex::checkMacro(bool *isSuccess,uint32 checkMark)
 {
 	JZFUNC_BEGIN_LOG();
 	string logicStr = "";
@@ -1846,7 +1853,7 @@ uint32 Lex::checkMacro(bool *isSuccess)
 		mLexRecList.pop_back();
 	}
 #ifdef DEBUG
-	JZWRITE_DEBUG("top file is :%s",mReaderStack.top().fileName.c_str());
+	JZWRITE_DEBUG("top file is :%s,now print to check macro",mReaderStack.top().fileName.c_str());
 	for(int i = 0 ; i < list.size() ; i++)
 	{
 		JZWRITE_DEBUG("word:[%s]",list[i].word.c_str());	
@@ -1855,17 +1862,18 @@ uint32 Lex::checkMacro(bool *isSuccess)
 	if (NULL == isSuccess)
 	{
 		//no ptr, this is a comsume input
+		JZFUNC_END_LOG();
 		return eLexNoError;
 	}
 	uint32  ret = eLexNoError;
-	if (false == isLastStreamUseful() && 0 == getCompileStream())
+	if(true == isLastStreamUseful() ||
+			(checkMark == eLexPSELIF && getTopPSStack().back().beginTag == getCompileStream()) )
 	{
-		*isSuccess = false;
+		ret = isMacroSuccess(list, isSuccess);
 	}
 	else
 	{
-	
-		ret = isMacroSuccess(list, isSuccess);
+		*isSuccess = false;
 	}
 	return ret;
 
@@ -1874,7 +1882,7 @@ uint32 Lex::handleSharpElif()
 {
 	JZFUNC_BEGIN_LOG();
 	bool isSuccess = false;
-	uint32 ret = checkMacro(&isSuccess);
+	uint32 ret = checkMacro(&isSuccess, eLexPSELIF);
 	if (ret != eLexNoError)
 	{
 		JZFUNC_END_LOG();
@@ -1888,7 +1896,7 @@ uint32 Lex::handleSharpIf()
 {
 	JZFUNC_BEGIN_LOG();
 	bool isSuccess = false;
-	uint32 ret = checkMacro(&isSuccess);
+	uint32 ret = checkMacro(&isSuccess, eLexPSIF);
 	if (ret != eLexNoError)
 	{
 		JZFUNC_END_LOG();
@@ -2407,6 +2415,39 @@ string LexUtil::eatLREmptyInput(const string& toBeEatan)
 	return ret;
 }
 
+bool LexUtil::canPopCompileStream(uint32 curMark,uint32 toPopMark)
+{
+	switch(curMark)
+	{
+		case eLexPSENDIF:
+			if (eLexPSENDIF == toPopMark)
+			{
+				return false;
+			}
+			return true;
+		case eLexPSELSE:
+		case eLexPSELIF:
+			if (eLexPSENDIF == toPopMark || eLexPSELSE == toPopMark)
+			{
+				return false;
+			}
+			return true;
+			if (eLexPSENDIF == toPopMark || eLexPSELSE == toPopMark)
+			{
+				return false;
+			}
+			return true;
+		case eLexPSIF:
+		case eLexPSIFDEF:
+		case eLexPSIFNDEF:
+			return false;
+		default:
+		{
+			break;	
+		}
+	}
+	return false;
+}
 /*********************************************************
 	LexUtil End here, now begin the lex pattern table 
  ********************************************************/

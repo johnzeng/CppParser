@@ -33,7 +33,7 @@ public:
 		eLexReachLineEnd = 16,
 		eLexFuncLikeMacroParamTooLess = 17,
 		eLexFuncLikeMacroParamTooManay = 18,
-
+		eLexCanNotPushPrecompileStream = 19,
 		//unknow should be last
 		eLexUnknowError ,
 	};
@@ -150,7 +150,7 @@ private:
 	//if seperator is '(',and word is a func like macro,then seperator will change to ' '
 	uint32 handleDefinedWord(const string& word);
 	uint32 handleIsDefined(string& ret);
-	uint32 checkMacro(bool *isSuccess);
+	uint32 checkMacro(bool *isSuccess,uint32 checkMark);
 	uint32 expendMacroParam(const string& word);
 
 	//if not param ,return NULL;
@@ -183,6 +183,7 @@ namespace LexUtil {
 	bool isEmptyInput(const string& input);
 	bool isEndWithBackSlant(const string& input);
 	char seperatorMatcher(const char input);
+	bool canPopCompileStream(uint32 curMark,uint32 toPopMark);
 	string eatLREmptyInput(const string &toBeEatan);
 } /* LexUtil */
 
