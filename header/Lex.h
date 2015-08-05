@@ -34,6 +34,7 @@ public:
 		eLexFuncLikeMacroParamTooLess = 17,
 		eLexFuncLikeMacroParamTooManay = 18,
 		eLexCanNotPushPrecompileStream = 19,
+		eLexMacroIsAlreadyExpending = 20,
 		//unknow should be last
 		eLexUnknowError ,
 	};
@@ -184,6 +185,7 @@ namespace LexUtil {
 	bool isEndWithBackSlant(const string& input);
 	char seperatorMatcher(const char input);
 	bool canPopCompileStream(uint32 curMark,uint32 toPopMark);
+	bool ignoreMacroWhenStreamIsOff(const string& word);
 	string eatLREmptyInput(const string &toBeEatan);
 } /* LexUtil */
 

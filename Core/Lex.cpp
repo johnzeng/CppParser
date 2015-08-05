@@ -21,6 +21,10 @@ Lex::~Lex()
 uint32 Lex::analyzeAFile(const string& fileName)
 {
 	JZFUNC_BEGIN_LOG();
+	if (true == isOnceFile(fileName))
+	{
+		return eLexNoError;
+	}
 	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
@@ -31,10 +35,9 @@ uint32 Lex::analyzeAFile(const string& fileName)
 	JZSAFE_DELETE(buffWithOutBackSlant);
 
 	pushReaderRecord(buffWithOutComment,bufSize,fileName,eFileTypeFile);
-	mPreprocessedFile.insert(fileName);
 	uint32 ret = doLex();
 	popReaderRecord();
-	JZWRITE_DEBUG("analyze file %s end", fileName.c_str());
+	JZWRITE_DEBUG("analyze file end");
 	JZFUNC_END_LOG();
 	return ret;
 }
@@ -99,8 +102,10 @@ uint32 Lex::doLex()
 			saveWord(word,beginIndex, endIndex);
 		}
 		else if (
-				false == isFuncLikeMacroMode() && true == isLastStreamUseful() &&
-				DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
+				false == isFuncLikeMacroMode() &&
+			   	true == isLastStreamUseful() &&
+				DefineManager::eDefMgrDefined == mDefMgr.isDefined(word) &&
+				false == isMacroExpending(word))
 		{
 			//don't expend when it is FuncLikeMacroMode
 			uint32 err = handleDefinedWord(word);
@@ -360,6 +365,11 @@ uint32 Lex::handleDefinedWord(const string& word)
 		JZFUNC_END_LOG();
 		return eLexWordIsNotDefined;
 	}
+	if (true == isMacroExpending(word))
+	{
+		JZFUNC_END_LOG();
+		return eLexMacroIsAlreadyExpending;
+	}
 	JZWRITE_DEBUG("now expending macro:%s",word.c_str());
 	if (true == defRec->isFuncLikeMacro)
 	{
@@ -421,6 +431,7 @@ uint32 Lex::handleDefinedWord(const string& word)
 		JZFUNC_END_LOG();
 		return expendErr;
 	}
+	
 	char* buff = (char*)malloc(expendStr.size());
 	strncpy(buff, expendStr.c_str(), expendStr.size());
 	pushReaderRecord(buff,expendStr.size(),word,eFileTypeMacroParam);
@@ -443,11 +454,36 @@ void Lex::pushReaderRecord(const char* buff,uint64 size,const string& fileName,u
 		initFileRecord(
 				buff,size, fileName,recordType);
 	mReaderStack.push(rec);
+	switch(recordType)
+	{
+		case eFileTypeMacroParam:
+			mPreprocessingMacroSet.insert(fileName);
+			break;
+		case eFileTypeFile:
+			mPreprocessedFile.insert(fileName);
+		default:
+		{
+			break;	
+		}
+	}
 }
 
 void Lex::popReaderRecord()
 {
 	JZSAFE_DELETE(mReaderStack.top().buffer);
+	switch(mReaderStack.top().recordType)
+	{
+		case eFileTypeMacroParam:
+			{
+				auto toEraseIt = mPreprocessingMacroSet.find(mReaderStack.top().fileName);
+				mPreprocessingMacroSet.erase(toEraseIt);
+			}
+			break;
+		default:
+		{
+			break;	
+		}
+	}
 	mReaderStack.pop();
 }
 
@@ -1187,6 +1223,7 @@ uint32 Lex::handleSharpPragma()
 	ret = consumeWord(word,eLexSkipEmptyInput,eLexInOneLine);
 	//there is other more word to handle,but I just care about once
 	//if more key word is to handle,I will make a func ptr map table
+	
 	if (word == "once")
 	{
 		mOnceFileSet.insert(mReaderStack.top().fileName);
@@ -1288,14 +1325,7 @@ uint32 Lex::handleSharp()
 	if (false == isLastStreamUseful())
 	{
 		//when compile stream is off,only handle these macro
-		if (
-			word != "if" &&
-			word != "ifdef" &&
-			word != "ifndef" &&
-			word != "endif" &&
-			word != "elif" &&
-			word != "else" 
-			)
+		if(true == LexUtil::ignoreMacroWhenStreamIsOff(word))	
 		{
 			JZFUNC_END_LOG();
 			return eLexNoError;
@@ -1800,10 +1830,6 @@ uint32 Lex::handleSharpDefine()
 			JZFUNC_END_LOG();
 			return retErr;
 		}
-		if (defWord.back() == '\n')
-		{
-			defWord = defWord.substr(0,defWord.size() - 1);
-		}
 	}
 
 
@@ -2012,9 +2038,8 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput i
 	*ret = "";
 	char nextInput;
 	uint32 readRet = eLexNoError;
-	while ((readRet = consumeChar(&nextInput)) == eLexNoError)
+	while ((readRet = readChar(&nextInput)) == eLexNoError)
 	{
-		*ret += nextInput;
 		if (
 			eLexInOneLine == inOneLine &&
 			true == LexUtil::isLineEnder(nextInput)
@@ -2022,6 +2047,8 @@ uint32 Lex::consumeCharUntilReach(const char inputEnder, string *ret, LexInput i
 		{
 			return eLexReachLineEnd;
 		}
+		*ret += nextInput;
+		consumeChar(&nextInput);
 		if (nextInput == inputEnder)
 		{
 			break;
@@ -2045,11 +2072,11 @@ bool Lex::isOnceFile(const string& input)
 	JZFUNC_BEGIN_LOG();
 	if (mOnceFileSet.find(input) == mOnceFileSet.end())
 	{
-		return true;
+		return false;
 	}
 	else
 	{
-		return false;
+		return true;
 	}
 }
 
@@ -2445,6 +2472,21 @@ bool LexUtil::canPopCompileStream(uint32 curMark,uint32 toPopMark)
 		{
 			break;	
 		}
+	}
+	return false;
+}
+bool LexUtil::ignoreMacroWhenStreamIsOff(const string& word)
+{
+	if (
+		word != "if" &&
+		word != "ifdef" &&
+		word != "ifndef" &&
+		word != "endif" &&
+		word != "elif" &&
+		word != "else" 
+		)
+	{
+		return true;	
 	}
 	return false;
 }
