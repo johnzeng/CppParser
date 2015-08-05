@@ -587,6 +587,8 @@ void Lex::printLexRec()
 		}
 	}
 	printf("%s\n",line.c_str());
+
+	JZWRITE_DEBUG("Final define num:%u,lex num:%lu",mDefMgr.getDefineNum(),mLexRecList.size());
 	JZFUNC_END_LOG();
 }
 

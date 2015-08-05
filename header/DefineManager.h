@@ -52,6 +52,7 @@ public:
 	DefineManagerReturnCode addDefineMap(const string& src, const DefineRec& rec);
 
 	void printAllDefine();
+	uint32 getDefineNum();
 private:
 	DefineRecMap mSrcLexMap;
 	StringSet mCanceledDefine;
