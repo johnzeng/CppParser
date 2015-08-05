@@ -658,21 +658,34 @@ uint32 Lex::handleSingleQuotation()
 	uint32 beginIndex = getLastIndex();
 	string toSave = "'";
 	uint32 toSaveLen = 0;
+	bool isConvertBackSlant = false;
 	do
 	{
 		string retStr = "";
 		uint32 retErr = eLexNoError;
 		
-		retErr = consumeCharUntilReach('\'',&retStr);
+		retErr = consumeCharUntilReach('\'',&retStr,eLexInOneLine);
 		if (eLexNoError != retErr)
 		{
 			JZFUNC_END_LOG();
 			return retErr;
 		}
 		JZWRITE_DEBUG("ret str is : %s",retStr.c_str());
+		for(int i = 0 ; i < retStr.size() ; i++)
+		{
+			if (true == LexUtil::isBackSlant(retStr[i]))
+			{
+				isConvertBackSlant = !isConvertBackSlant;
+			}
+			else
+			{
+				isConvertBackSlant = false;	
+			}
+		
+		}
 		toSave += retStr;
 		toSaveLen = toSave.size();
-	}while(toSaveLen > 2 && true == LexUtil::isBackSlant(toSave[toSaveLen - 2]));
+	}while(true == isConvertBackSlant);
 
 //	handle const char input
 //	...
@@ -690,19 +703,32 @@ uint32 Lex::handleDoubleQuotation()
 	//when you enter this func,you have already get a ",so init a " here
 	string toSave = "\"";
 	uint32 toSaveLen = 0;
+	bool isConvertBackSlant = false;
 	do
 	{
 		string retStr = "";
 		uint32 retErr = eLexNoError;
-		retErr = consumeCharUntilReach('"',&retStr);
+		retErr = consumeCharUntilReach('"',&retStr,eLexInOneLine);
 		if (eLexNoError != retErr)
 		{
 			JZFUNC_END_LOG();
 			return retErr;
 		}
+		for(int i = 0 ; i < retStr.size() ; i++)
+		{
+			if (true == LexUtil::isBackSlant(retStr[i]))
+			{
+				isConvertBackSlant = !isConvertBackSlant;
+			}
+			else
+			{
+				isConvertBackSlant = false;	
+			}
+		
+		}
 		toSave += retStr;
 		toSaveLen = toSave.size();
-	}while(toSaveLen > 2 && true == LexUtil::isBackSlant(toSave[toSaveLen - 2]));
+	}while(true == isConvertBackSlant);
 
 //	handle const char input
 //	...
@@ -2384,6 +2410,7 @@ char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize)
 	JZFUNC_BEGIN_LOG();
 	char *ret = (char*)malloc((*bufSize)*sizeof(char));
 	uint64 j = 0;
+	bool isConverBackSlant = false;
 	memset(ret,0,(*bufSize) * sizeof(char));
 
 	JZWRITE_DEBUG("buff size is :%lld",*bufSize);
@@ -2391,10 +2418,17 @@ char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize)
 	{
 		if (false == isBackSlant(input[i]))
 		{
-			ret[j++] = input[i];	
+			ret[j++] = input[i];
+			isConverBackSlant = false;
 			continue;
 		}
 		//check next not empty input
+		isConverBackSlant = !isConverBackSlant;
+		if (false == isConverBackSlant)
+		{
+			ret[j++] = '\\';	
+			continue;
+		}
 		int k = i + 1;
 		bool endWithBackSlant = true;
 		while(k < (*bufSize) && false == isLineEnder(input[k]))
@@ -2409,6 +2443,10 @@ char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize)
 		if (true == endWithBackSlant)
 		{
 			i = k;
+		}
+		else
+		{
+			ret[j++] = '\\';	
 		}
 	}
 	*bufSize = j;

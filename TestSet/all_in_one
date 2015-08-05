@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+//comment test here \
+	test line 2
+
+
+/***********************
+  comment block test here
+   ************************/
+
+#define hell_world "HelloWORDL"
+
+int main()
+{
+	int char* testchar = "test input here // \
+		\\"hell_world;
+	printf(testchar);
+}

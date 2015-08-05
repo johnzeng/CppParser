@@ -39,6 +39,10 @@ test:$(TARGET)
 	-@rm log
 	./$(TARGET) testcpp
 
+testa:$(TARGET)
+	-@rm log
+	./$(TARGET) TestSet/all_in_one
+
 testm:$(TARGET)
 	./$(TARGET) TestSet/macro_test_1|grep top
 	
