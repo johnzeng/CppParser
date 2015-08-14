@@ -66,8 +66,8 @@ uint32 Lex::doLex()
 				{
 					continue;
 				}
-				uint32 beginIndex = getLastIndex() - 1;
-				uint32 endIndex = getLastIndex() - 1;
+				uint32 beginIndex = getLastIndex();
+				uint32 endIndex = getLastIndex();
 				saveWord(word,beginIndex, endIndex);
 			}
 			else
@@ -89,8 +89,8 @@ uint32 Lex::doLex()
 			"defined" == word)
 		{
 			//this is defined in #if or #elif
-			uint32 beginIndex = getLastIndex() - word.size() - 1;
-			uint32 endIndex = getLastIndex() - 1;
+			uint32 beginIndex = getLastIndex() + 1 - word.size() ;
+			uint32 endIndex = getLastIndex();
 			uint32 err = handleIsDefined(word);
 			if (err != eLexNoError)
 			{
@@ -118,8 +118,8 @@ uint32 Lex::doLex()
 		else
 		{
 			//normal word
-			uint32 beginIndex = getLastIndex() - word.size();
-			uint32 endIndex = getLastIndex() - 1;
+			uint32 beginIndex = getLastIndex() + 1 - word.size();
+			uint32 endIndex = getLastIndex();
 			saveWord(word,beginIndex, endIndex);
 		}
 		
@@ -487,10 +487,9 @@ void Lex::popReaderRecord()
 	mReaderStack.pop();
 }
 
-#define ERROR_CASE(caseid) case caseid:{JZWRITE_DEBUG(#caseid);break;}
+#define ERROR_CASE(caseid) case caseid:{JZWRITE_DEBUG("error id %d,"#caseid,caseid);break;}
 void Lex::writeError(uint32 err)
 {
-	JZWRITE_DEBUG("err id : %d",err);
 	switch(err)
 	{
 		ERROR_CASE(eLexNoError)

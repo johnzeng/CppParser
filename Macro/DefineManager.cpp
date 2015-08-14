@@ -38,7 +38,11 @@ void DefineManager::printAllDefine()
 	auto it = mSrcLexMap.begin();
 	for(; it != mSrcLexMap.end(); it++)
 	{
-		printf("key is :%s,param num :%lu def word is:%s\n", it->first.c_str(),it->second.formalParam.size(),it->second.defineStr.c_str());	
+		printf("key is :%s,is func like :%s,param num :%lu def word is:%s\n", 
+				it->first.c_str(),
+				it->second.isFuncLikeMacro ? "true" : "false",
+				it->second.formalParam.size(),
+				it->second.defineStr.c_str());	
 	}
 }
 
