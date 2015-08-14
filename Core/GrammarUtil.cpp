@@ -171,6 +171,24 @@ bool GrammarUtil::isOperator(const string& input)
 	return false;
 }
 
+uint64 GrammarUtil::str2Uint64(const string& input)
+{
+	return str2Num<uint64>(input);
+}
+
+int64 GrammarUtil::str2int64(const string& input)
+{
+	return str2Num<int64>(input);
+}
+uint32 GrammarUtil::str2Uint32(const string& input)
+{
+	return str2Num<uint32>(input);
+}
+int GrammarUtil::str2int32(const string& input)
+{
+	return str2Num<int>(input);
+}
+
 bool GrammarUtil::isPreprocessOperator(const string& input)
 {
 	auto it = mPreprocessOperatorSet.find(input);
@@ -182,8 +200,38 @@ bool GrammarUtil::isPreprocessOperator(const string& input)
 	return false;
 }
 
+int GrammarUtil::getNum(const char input)
+{
+	if (input >= '0' && input <= '9')
+	{
+		return input - '0';
+	}
+	if (input >= 'A' && input <= 'F')
+	{
+		return input - 'A' + 9;
+	}
+	if (input >= 'a' && input <= 'f')
+	{
+		return input - 'a' + 9;
+	}
+	return 0;
+}
+
 bool GrammarUtil::isConstNumber(const string& input)
 {
+	return isDeci(input) || isHex(input) || isOcto(input);
+}
+
+bool GrammarUtil::isDeci(const string& input)
+{
+	if (input.size() == 0)
+	{
+		return false;
+	}
+	if (input.size() >1 && input[0] == '0')
+	{
+		return false;
+	}
 	for (int i = 0; i < input.size(); i++) 
 	{
 		if (input[i] >= '0' && input[i] <= '9')
@@ -196,4 +244,91 @@ bool GrammarUtil::isConstNumber(const string& input)
 		}
 	}
 	return true;
+}
+
+bool GrammarUtil::isHex(const string& input)
+{
+	if (input.size() < 3)
+	{
+		return false;
+	}
+	if (input[0] != '0' || input[1] != 'x')
+	{
+		return true;
+	}
+	for (int i = 2; i < input.size(); i++) 
+	{
+		if (input[i] >= '0' && input[i] <= '9')
+		{
+			continue;
+		}
+		else if(input[i] >='A' && input[i] <= 'F')
+		{
+			continue;	
+		}
+		else if(input[i] >='a' && input[i] <= 'f')
+		{
+			continue;	
+		}
+		else
+		{
+			return false;	
+		}
+	}
+	return true;
+}
+
+bool GrammarUtil::isOcto(const string& input)
+{
+	if (input.size() < 2)
+	{
+		return false;
+	}
+	if (input[0] != '0')
+	{
+		return true;
+	}
+	for (int i = 2; i < input.size(); i++) 
+	{
+		if (input[i] >= '0' && input[i] <= '9')
+		{
+			continue;
+		}
+		else
+		{
+			return false;	
+		}
+	}
+	return true;
+}
+template <typename type> type GrammarUtil::str2Num(const string& input)
+{
+	type ret = 0;
+	type dim = 0;	
+	int i = 0;
+	if (true == isOcto(input))
+	{
+		dim = 10;
+	}
+	else if (true == isHex(input))
+	{
+		dim = 16;
+		i = 2;
+	}
+	else if (true == isOcto(input))
+	{
+		dim = 8;
+		i = 1;
+	}
+	if (dim == 0)
+	{
+		return 0;
+	}
+	for (; i < input.size(); i++) 
+	{
+		ret *= (type)dim;
+		ret += (type)getNum(input[i]);
+	}
+	return ret;
+	
 }

@@ -369,7 +369,7 @@ static uint32 setMacroCheckData(string& word,MacroCheckData& data)
 		data.mark = eOpNotOp;
 		data.priority = 0;
 		data.type = eMacroCheckDataNumber;
-		data.number = StringUtil::str2int64(word);		
+		data.number = GrmUtilPtr->str2int64(word);		
 	}
 	return Lex::eLexNoError;
 }

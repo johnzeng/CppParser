@@ -4,6 +4,10 @@
 #include "JZCommonDefine.h"
 using namespace std;
 
+#define BASE_OPERATOR "#######"
+#define STAND_WORD_PREFIX "#"
+#define GrmUtilPtr GrammarUtil::getInstance()
+
 struct OperatorType
 {
 	int associativity;
@@ -95,9 +99,6 @@ enum OperatorMark
 	ePriorityLowest ,
 	eOpLowestOperator,	//####
 };
-#define BASE_OPERATOR "#######"
-#define STAND_WORD_PREFIX "#"
-#define GrmUtilPtr GrammarUtil::getInstance()
 class GrammarUtil {
 public:
 	
@@ -123,6 +124,12 @@ public:
 	bool isDoulbeMeanWord(const string& input);
 
 	string src2StandWord(const string& input);
+
+	uint64 str2Uint64(const string& input);
+	int64 str2int64(const string& input);
+	uint32 str2Uint32(const string& input);
+	int str2int32(const string& input);
+
 private:
 
 	//init func
@@ -132,6 +139,12 @@ private:
 	void insertOperatorToOpSet(const string& op,uint32 priority, uint32 mark,int opNum,int associativity = Left2Right);
 	void insertOperatorTo(OpTypeMap& insertSet, const string& op,uint32 priority, uint32 mark,int opNum,int associativity = Left2Right);
 
+	bool isHex(const string& input);
+	bool isOcto(const string& input);
+	bool isDeci(const string& input);
+	int getNum(const char input);
+
+	template <typename type> type str2Num(const string& input);
 private:
 
 	OpTypeMap mOperatorSet;
