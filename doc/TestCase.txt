@@ -1,0 +1,23 @@
+1、简单测试用例
+	1）#define测试
+	2）#if #endif 测试
+	3）#if #else #endif测试
+		1> #if 为真
+		2> #if 为假
+	4）#if #elif #else #endif测试
+		1> #if 为真
+			1] #elif为真
+			2] #elif为假
+		2> #if 为假
+			1] #elif为真
+			2] #elif为假
+	5)define替换测试
+		1>define 空
+		2>define 关键字
+		3>define 关键字函数
+2、迭代测试用例
+	1）宏定义迭代替换
+		1>宏函数迭代替换
+		2>宏函数与宏关键字迭代替换
+		3>变长宏函数测试
+		4>变长宏函数与宏关键字替换
