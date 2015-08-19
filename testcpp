@@ -1,21 +1,11 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-#if 0
- #if defined(hello)
-	test 1
- #elif 1
-	void test2
- #if 1
-	void test4
- #endif
-	test 3
-#endif
-#endif
-
+#define __STRING(x) #x
+#define __DARWIN_SUF_UNIX03
+#define __DARWIN_ALIAS(sym)		__asm("_" __STRING(sym) __DARWIN_SUF_UNIX03)
 #define he Hello
 int main()
 {
-	he
 	return 0;
 }
