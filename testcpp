@@ -7,5 +7,6 @@
 #define he Hello
 int main()
 {
+	float testFlaot = 2.034;
 	return 0;
 }
