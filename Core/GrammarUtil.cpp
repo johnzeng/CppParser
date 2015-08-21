@@ -1,5 +1,6 @@
 #include "GrammarUtil.h"
 #include "JZLogger.h"
+#include "Lex.h"
 
 GrammarUtil::GrammarUtil()
 {
@@ -222,6 +223,29 @@ bool GrammarUtil::isConstNumber(const string& input)
 	return isDeci(input) || isHex(input) || isOcto(input);
 }
 
+bool GrammarUtil::isFloatNumber(const string& input)
+{
+	int pointNum;
+	for(int i = 0 ; i < input.size() ; i++)
+	{
+		if (LexUtil::isConstNumberChar(input[i]))
+		{
+			continue;
+		}
+		if ('.' == input[i])
+		{
+			pointNum++;
+			if (pointNum > 1)
+			{
+				return false;
+			}
+			continue;
+		}
+		return false;
+	}
+	return true;
+}
+
 bool GrammarUtil::isDeci(const string& input)
 {
 	if (input.size() == 0)
@@ -234,7 +258,7 @@ bool GrammarUtil::isDeci(const string& input)
 	}
 	for (int i = 0; i < input.size(); i++) 
 	{
-		if (input[i] >= '0' && input[i] <= '9')
+		if (true == LexUtil::isConstNumberChar(input[i]))
 		{
 			continue;
 		}
@@ -258,7 +282,7 @@ bool GrammarUtil::isHex(const string& input)
 	}
 	for (int i = 2; i < input.size(); i++) 
 	{
-		if (input[i] >= '0' && input[i] <= '9')
+		if (true == LexUtil::isConstNumberChar(input[i]))
 		{
 			continue;
 		}
@@ -290,7 +314,8 @@ bool GrammarUtil::isOcto(const string& input)
 	}
 	for (int i = 2; i < input.size(); i++) 
 	{
-		if (input[i] >= '0' && input[i] <= '9')
+		//for octo,you can use only 0 to 7
+		if (input[i] >= '0' && input[i] <= '7')
 		{
 			continue;
 		}
@@ -301,12 +326,23 @@ bool GrammarUtil::isOcto(const string& input)
 	}
 	return true;
 }
+
+float GrammarUtil::str2float(const string& input)
+{
+	return str2Num<float>(input);
+}
+
+double GrammarUtil::str2double(const string& input)
+{
+	return str2Num<double>(input);
+}
+
 template <typename type> type GrammarUtil::str2Num(const string& input)
 {
 	type ret = 0;
 	type dim = 0;	
 	int i = 0;
-	if (true == isOcto(input))
+	if (true == isOcto(input) || true == isFloatNumber(input))
 	{
 		dim = 10;
 	}

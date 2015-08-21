@@ -311,6 +311,7 @@ uint32 Lex::consumeWord(
 	uint32 ret;
 	char nextChar;
 	retStr = "";
+	LexUtil::pointIsSeperator(true);
 	while (eLexNoError == (ret = readChar(&nextChar)))
 	{
 		if (
@@ -331,8 +332,12 @@ uint32 Lex::consumeWord(
 		}
 		if (false == LexUtil::isInterpunction(nextChar))
 		{
-			//no interpunction
+			//not interpunction
 			consumeChar(&nextChar);
+			if (retStr.size() == 0 && true == LexUtil::isConstNumberChar(nextChar))
+			{
+				LexUtil::pointIsSeperator(false);
+			}
 			retStr += nextChar;
 		}
 		else if(LexUtil::isEmptyInput(retStr))
@@ -2162,6 +2167,11 @@ bool LexUtil::isInterpunction(const char input)
 	{
 		return true;
 	}
+
+	if ('.' == input)
+	{
+		return sPointIsSeperator;
+	}
 	switch(input)
 	{
 		case '|':
@@ -2177,7 +2187,6 @@ bool LexUtil::isInterpunction(const char input)
 		case '"':
 		case ' ':
 		case ',':
-		case '.':
 		case '!':
 		case '?':
 		case '&':
@@ -2529,6 +2538,21 @@ bool LexUtil::ignoreMacroWhenStreamIsOff(const string& word)
 	}
 	return false;
 }
+
+void LexUtil::pointIsSeperator(bool state)
+{
+	sPointIsSeperator = state;
+}
+
+bool LexUtil::isConstNumberChar(const char input)
+{
+	if ('0' <= input && input <= '9')
+	{
+		return true;
+	}
+	return false;
+}
+
 /*********************************************************
 	LexUtil End here, now begin the lex pattern table 
  ********************************************************/

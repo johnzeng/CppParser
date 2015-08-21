@@ -121,6 +121,8 @@ public:
 
 	bool isConstNumber(const string& input);
 
+	bool isFloatNumber(const string& input);
+
 	bool isDoulbeMeanWord(const string& input);
 
 	string src2StandWord(const string& input);
@@ -130,6 +132,8 @@ public:
 	uint32 str2Uint32(const string& input);
 	int str2int32(const string& input);
 
+	float str2float(const string& input);
+	double str2double(const string& input);
 private:
 
 	//init func
