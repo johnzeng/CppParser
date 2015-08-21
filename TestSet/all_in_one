@@ -13,7 +13,8 @@
 
 int main()
 {
-	int char* testchar = "test input here // \
+	char* testchar = "test input here // \
 		\\"hell_world;
+	float testFolat = 1.01;
 	printf(testchar);
 }
