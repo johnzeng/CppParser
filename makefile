@@ -24,7 +24,7 @@ CPPFLAGS=$(INCLUDE_FLAGS) $(OTHER_CPP_FLAGS) $(OTHER_FLAGS)
 
 TARGET=analyzer
 
-SOURCES=$(wildcard ./*/*.c ./*/*.cpp)
+SOURCES=$(wildcard ./src/*/*.c ./src/*/*.cpp)
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
 
