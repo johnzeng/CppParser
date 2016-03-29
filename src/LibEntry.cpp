@@ -55,7 +55,7 @@ void globalInitAtBegin()
 	}
 }
 
-int main(int argc, char* argv[])
+int libEntry(int argc, char* argv[])
 {
 	//init
 	globalInitAtBegin();

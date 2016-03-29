@@ -21,34 +21,29 @@ OTHER_FLAGS=${RELEASE_FLAG} $(PLATFORM_FLAG)
 
 CFLAGS=$(INCLUDE_FLAGS) $(OTHER_FLAGS) $(OTHER_FLAGS)
 CPPFLAGS=$(INCLUDE_FLAGS) $(OTHER_CPP_FLAGS) $(OTHER_FLAGS)
+TEST_FLAG=-isystem $(mylib_PATH)/test/include $(mylib_PATH)/test/libtest.a
 
-TARGET=analyzer
+TARGET=target/libAnalyzer.a
 
-SOURCES=$(wildcard ./src/*/*.c ./src/*/*.cpp)
+SOURCES=$(wildcard ./src/*.cpp ./src/*/*.c ./src/*/*.cpp)
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
+TEST_SOURCE=$(wildcard ./test/src/*.cpp ./test/src/*/*.c ./test/src/*/*.cpp)
 
-$(TARGET):$(OBJS) $(myLib) main.o depend
+$(TARGET):$(OBJS) $(myLib) depend
 	@echo $(OBJS)
-	$(CXX) -o $(TARGET) $(INCLUDE_FLAGS) ${OTHER_FLAGS} $(OTHER_CPP_FLAGS) $(OBJS) $(myLib) main.o
+	$(AR) -r $(TARGET) $(OBJS) $(myLib)
 
 $(myLib):
 	cd $(mylib_PATH) && make
 
-test:$(TARGET)
-	-@rm log
-	./$(TARGET) testcpp
-
-testa:$(TARGET)
-	-@rm log
-	./$(TARGET) TestSet/all_in_one
-
-testm:$(TARGET)
-	./$(TARGET) TestSet/macro_test_1|grep top
-	
+test:$(TARGET) $(TEST_SOURCE)
+	$(CXX) $(TARGET) $(TEST_SOURCE) $(TEST_FLAG) -o ./target/tester
+	./target/tester
 
 lib:
 	cd $(mylib_PATH) && make
+
 release:clean makefile
 	make debug_var=0
 
