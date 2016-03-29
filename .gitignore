@@ -1,5 +1,6 @@
 *.o
 *.a
 *.swp
+target/
 depend
 tester

@@ -62,5 +62,4 @@ count:
 
 depend:$(HEADERS) $(SOURCES)
 	@echo "=================== now gen depend =============="
-	-rm depend
 	-@sh $(depend_generator) "$(CPPFLAGS)" 2>&1 > /dev/null

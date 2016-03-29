@@ -71,4 +71,5 @@ int libEntry(int argc, char* argv[])
 		lex.analyzeAFile(toCompileFile);
 		lex.printLexRec();
 	}
+  return 0;
 }
