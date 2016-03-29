@@ -21,7 +21,6 @@ CmdInputFactor* CmdInputFactor::getInstance()
 void CmdInputFactor::init()
 {
 	registerNonOptHandler((NonOptHandlerPtr)&CmdInputFactor::nonOptHandler);
-
 }
 
 void CmdInputFactor::nonOptHandler(const string& args)
