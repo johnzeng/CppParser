@@ -23,23 +23,23 @@ public:
 
 	//this func may need to rewrite for windows
 	void searchAddonFactorFile();
-	
-	void setAddonFactorFileDirectory(string path);
 
 	uint32 addonFactorAnalyser();
-
-	uint32 handleBarD(string param);
-	uint32 handleBarI(string param);
 
 	const StringSet& getHeaderFileSearchPath();
 	const DefineMacroMap& getDefineMap();
 
+protected:
+	void setAddonFactorFileDirectory(string path);
+	uint32 handleBarD(string param);
+	uint32 handleBarI(string param);
+
 private:
-	string 			mAddonFactorDefineFile;
-	string			mAddonFactorFileDirectory;
-	StringList		mOriginalFactorList;
-	DefineMacroMap 	mDefMap;
-	StringSet		mHeaderFileSearchPath;
+	string mAddonFactorDefineFile;
+	string mAddonFactorFileDirectory;
+	StringList mOriginalFactorList;
+	DefineMacroMap mDefMap;
+	StringSet mHeaderFileSearchPath;
 };
 
 #endif //__COMMAND_LINE_FACTOR_MNGR_H__

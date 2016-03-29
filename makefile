@@ -32,13 +32,13 @@ TEST_SOURCE=$(wildcard ./test/src/*.cpp ./test/src/*/*.c ./test/src/*/*.cpp)
 
 $(TARGET):$(OBJS) $(myLib) depend
 	@echo $(OBJS)
-	$(AR) -r $(TARGET) $(OBJS) $(myLib)
+	$(AR) -r $(TARGET) $(OBJS) 
 
 $(myLib):
 	cd $(mylib_PATH) && make
 
 test:$(TARGET) $(TEST_SOURCE)
-	$(CXX) $(TARGET) $(TEST_SOURCE) $(TEST_FLAG) -o ./target/tester
+	$(CXX) $(TARGET) $(TEST_SOURCE) $(TEST_FLAG) $(CPPFLAGS) $(myLib) -o ./target/tester
 	./target/tester
 
 lib:
