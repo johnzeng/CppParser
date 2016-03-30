@@ -10,7 +10,7 @@ TEST(LexUtil, eraseLineSeperator){
   ASSERT_STREQ("123456 12345", eraseRet1);
 
   const char* input2 = "\"123456\\ \n 12345\"";
-  uint64 bufSize2 = strlen(input1);
+  uint64 bufSize2 = strlen(input2);
   const char* eraseRet2 = LexUtil::eraseLineSeperator((const char*)input2, &bufSize2);
   ASSERT_STREQ("\"123456 12345\"", eraseRet2);
 }
