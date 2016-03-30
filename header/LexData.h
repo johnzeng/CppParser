@@ -81,4 +81,5 @@ struct FileReaderRecord
 FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
 typedef vector<LexRec> LexRecList;
+
 #endif /* end of include guard: LEXDATA_H */

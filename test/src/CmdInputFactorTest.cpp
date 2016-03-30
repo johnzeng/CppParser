@@ -7,7 +7,7 @@
 TEST(CmdInputFactorTest, GetInputFile){
   CmdInputFactor* item = new CmdInputFactor();
   int argc = 3;
-  char* argv[] = {"tester","./test/TestSet/all_in_one","./test/TestSet/testcpp"};
+  char* argv[3] = {"tester","./test/TestSet/all_in_one","./test/TestSet/testcpp"};
 
   JZWRITE_TEST("the argv 0 is: %s",argv[0]);
   JZWRITE_TEST("the argv 1 is: %s",argv[1]);
