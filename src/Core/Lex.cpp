@@ -2170,6 +2170,7 @@ bool LexUtil::isInterpunction(const char input)
 
 	if ('.' == input)
 	{
+    //double type const!!!
 		return sPointIsSeperator;
 	}
 	switch(input)
@@ -2294,6 +2295,9 @@ char LexUtil::seperatorMatcher(const char input)
 		case '\'':
 			ret = '\'';
 			break;
+		case '[':
+			ret = ']';
+			break;
 		case '<':
 			ret = '>';
 			break;
@@ -2416,10 +2420,14 @@ char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
 char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize)
 {
 	JZFUNC_BEGIN_LOG();
-	char *ret = (char*)malloc((*bufSize)*sizeof(char));
+
+  //Bug log: if we init a char point exactly same as the input, it may have some unset memory
+  //follows the output, and it make dirty output 
+	char *ret = (char*)malloc((*bufSize + 1)*sizeof(char));
+	memset(ret,0,(*bufSize + 1) * sizeof(char));
+
 	uint64 j = 0;
 	bool isConverBackSlant = false;
-	memset(ret,0,(*bufSize) * sizeof(char));
 
 	JZWRITE_DEBUG("buff size is :%lld",*bufSize);
 	for(uint64 i = 0 ; i < (*bufSize); i++)
@@ -2539,6 +2547,7 @@ bool LexUtil::ignoreMacroWhenStreamIsOff(const string& word)
 	return false;
 }
 
+//Ah, I think this is stupid... it make this program unable to be multi process, maybe it will be better for each Lex to have a util, otherwise we will have this problem
 void LexUtil::pointIsSeperator(bool state)
 {
 	sPointIsSeperator = state;

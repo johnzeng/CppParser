@@ -9,10 +9,6 @@ TEST(CmdInputFactorTest, GetInputFile){
   int argc = 3;
   char* argv[3] = {"tester","./test/TestSet/all_in_one","./test/TestSet/testcpp"};
 
-  JZWRITE_TEST("the argv 0 is: %s",argv[0]);
-  JZWRITE_TEST("the argv 1 is: %s",argv[1]);
-  JZWRITE_TEST("the argv 2 is: %s",argv[2]);
-
   item->analyze(argc, argv);
 
   string toCompileFile = item->getNextFile();
