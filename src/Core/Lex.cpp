@@ -39,6 +39,7 @@ uint32 Lex::analyzeAFile(const string& fileName)
 	popReaderRecord();
 	JZWRITE_DEBUG("analyze file end");
 	JZFUNC_END_LOG();
+  JZSAFE_DELETE(buffWithOutComment)
 	return ret;
 }
 
@@ -2319,9 +2320,9 @@ char LexUtil::seperatorMatcher(const char input)
 char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
 {
 	JZFUNC_BEGIN_LOG();
-	char *ret = (char*)malloc((*bufSize)*sizeof(char));
+	char *ret = (char*)malloc((*bufSize + 1)*sizeof(char));
 	uint64 j = 0;
-	memset(ret,0,(*bufSize) * sizeof(char));
+	memset(ret,0,(*bufSize + 1) * sizeof(char));
 	bool isString = false;
 	bool isChar = false;
 	bool lastIsBlant = true;
