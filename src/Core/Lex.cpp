@@ -2667,6 +2667,7 @@ FileReaderRecord initFileRecord(
 		.buffer = buff,
 		.bufferSize = size,
 		.curIndex = 0,
+    //actually the curLineNumber paam is not useful enough now because we erase comment and back slash at the very begining, I am thinking about refator this process but not sure if it's necessary
 		.curLineNum = 1,
 		.fileName = fileName,
 		.recordType = recordType,

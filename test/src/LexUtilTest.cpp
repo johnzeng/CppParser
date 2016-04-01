@@ -37,6 +37,34 @@ TEST(LexUtil, eraseLineSeperator){
   ASSERT_STREQ("//this is a test! this is a test", eraseRet4);
 }
 
+TEST(LexUtil, eraseComment){
+  //erase the comment until the end of line
+  const char* input0 = "this is a test!\n this is a test// this is a comment";
+  uint64 bufSize0 = strlen(input0);
+  const char* eraseRet0 = LexUtil::eraseComment((const char*)input0, &bufSize0);
+  ASSERT_STREQ("this is a test!\n this is a test", eraseRet0);
+
+  const char* input1 = "this is a test!\n this is a test/* this is a comment*/";
+  uint64 bufSize1 = strlen(input1);
+  const char* eraseRet1 = LexUtil::eraseComment((const char*)input1, &bufSize1);
+  ASSERT_STREQ("this is a test!\n this is a test", eraseRet1);
+
+  const char* input2 = "this is a test!\n this is a test// this is a comment\nthis is a new line";
+  uint64 bufSize2 = strlen(input2);
+  const char* eraseRet2 = LexUtil::eraseComment((const char*)input2, &bufSize2);
+  ASSERT_STREQ("this is a test!\n this is a test\nthis is a new line", eraseRet2);
+
+  const char* input3 = "this is a test!\n this /*this is a comment*/is a test";
+  uint64 bufSize3 = strlen(input3);
+  const char* eraseRet3 = LexUtil::eraseComment((const char*)input3, &bufSize3);
+  ASSERT_STREQ("this is a test!\n this is a test", eraseRet3);
+
+  const char* input4 = "this is a test!\n this is a test\n\"//don't erase this comment\"";
+  uint64 bufSize4 = strlen(input4);
+  const char* eraseRet4 = LexUtil::eraseComment((const char*)input4, &bufSize4);
+  ASSERT_STREQ("this is a test!\n this is a test\n\"//don't erase this comment\"", eraseRet4);
+}
+
 TEST(LexUtil, smallTestCase){
   EXPECT_EQ(true, LexUtil::isLineEnder('\n'));
   EXPECT_EQ(false, LexUtil::isLineEnder('\t'));
@@ -82,4 +110,16 @@ TEST(LexUtil, smallTestCase){
   ASSERT_STREQ("", LexUtil::eatLREmptyInput("  \t\n ").c_str());
   ASSERT_STREQ("abce", LexUtil::eatLREmptyInput("abce   ").c_str());
   ASSERT_STREQ("abce", LexUtil::eatLREmptyInput("  abce").c_str());
+
+  EXPECT_EQ(false, LexUtil::ignoreMacroWhenStreamIsOff("if"));
+  EXPECT_EQ(false, LexUtil::ignoreMacroWhenStreamIsOff("ifdef"));
+  EXPECT_EQ(false, LexUtil::ignoreMacroWhenStreamIsOff("ifndef"));
+  EXPECT_EQ(false, LexUtil::ignoreMacroWhenStreamIsOff("endif"));
+  EXPECT_EQ(false, LexUtil::ignoreMacroWhenStreamIsOff("else"));
+  EXPECT_EQ(true, LexUtil::ignoreMacroWhenStreamIsOff("define"));
+  EXPECT_EQ(true, LexUtil::ignoreMacroWhenStreamIsOff("param"));
+  EXPECT_EQ(true, LexUtil::ignoreMacroWhenStreamIsOff("include"));
+  EXPECT_EQ(true, LexUtil::ignoreMacroWhenStreamIsOff("once"));
+  EXPECT_EQ(true, LexUtil::ignoreMacroWhenStreamIsOff("warning"));
+  EXPECT_EQ(true, LexUtil::ignoreMacroWhenStreamIsOff("error"));
 }
