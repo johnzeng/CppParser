@@ -111,7 +111,7 @@ TEST(LexUtil, eraseComment){
 }
 
 TEST(LexUtil, combineLineSeperatorEraserAndCommentEraser){
-  //
+  //should erase the comment if there is a line seperator
   const char* input0 = "this is a test! //\\ \n this is a test";
   uint64 bufSize0 = strlen(input0);
   const char* eraseStepA0 = LexUtil::eraseLineSeperator((const char*)input0, &bufSize0);
