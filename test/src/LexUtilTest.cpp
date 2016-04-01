@@ -2,6 +2,7 @@
 #include "Lex.h"
 #include "JZFileUtil.h"
 #include <string.h>
+#include "JZMacroFunc.h"
 
 TEST(LexUtil, eraseLineSeperator){
   //these cases are a little complex in input because they are full of special charactor.
@@ -35,6 +36,12 @@ TEST(LexUtil, eraseLineSeperator){
   uint64 bufSize4 = strlen(input4);
   const char* eraseRet4 = LexUtil::eraseLineSeperator((const char*)input4, &bufSize4);
   ASSERT_STREQ("//this is a test! this is a test", eraseRet4);
+
+  JZSAFE_DELETE(eraseRet0);
+  JZSAFE_DELETE(eraseRet1);
+  JZSAFE_DELETE(eraseRet2);
+  JZSAFE_DELETE(eraseRet3);
+  JZSAFE_DELETE(eraseRet4);
 }
 
 TEST(LexUtil, eraseComment){
@@ -44,25 +51,58 @@ TEST(LexUtil, eraseComment){
   const char* eraseRet0 = LexUtil::eraseComment((const char*)input0, &bufSize0);
   ASSERT_STREQ("this is a test!\n this is a test", eraseRet0);
 
+  //erase the /*abc*/ comment
   const char* input1 = "this is a test!\n this is a test/* this is a comment*/";
   uint64 bufSize1 = strlen(input1);
   const char* eraseRet1 = LexUtil::eraseComment((const char*)input1, &bufSize1);
   ASSERT_STREQ("this is a test!\n this is a test", eraseRet1);
 
+  //do not erase the \n and next line
   const char* input2 = "this is a test!\n this is a test// this is a comment\nthis is a new line";
   uint64 bufSize2 = strlen(input2);
   const char* eraseRet2 = LexUtil::eraseComment((const char*)input2, &bufSize2);
   ASSERT_STREQ("this is a test!\n this is a test\nthis is a new line", eraseRet2);
 
+  // the /**/ comment should not effect the input
   const char* input3 = "this is a test!\n this /*this is a comment*/is a test";
   uint64 bufSize3 = strlen(input3);
   const char* eraseRet3 = LexUtil::eraseComment((const char*)input3, &bufSize3);
   ASSERT_STREQ("this is a test!\n this is a test", eraseRet3);
 
+  //comment is disabled in string
   const char* input4 = "this is a test!\n this is a test\n\"//don't erase this comment\"";
   uint64 bufSize4 = strlen(input4);
   const char* eraseRet4 = LexUtil::eraseComment((const char*)input4, &bufSize4);
   ASSERT_STREQ("this is a test!\n this is a test\n\"//don't erase this comment\"", eraseRet4);
+
+  //comment is disabled in string
+  const char* input5 = "this is a test!\n this is a test\n\"/*don't erase this comment*/\"";
+  uint64 bufSize5 = strlen(input5);
+  const char* eraseRet5 = LexUtil::eraseComment((const char*)input5, &bufSize5);
+  ASSERT_STREQ("this is a test!\n this is a test\n\"/*don't erase this comment*/\"", eraseRet5);
+
+  //erase the comment with "
+  const char* input6 = "this is a test!\n this is a test// this is a comment//\"this is a comment with \"\"";
+  uint64 bufSize6 = strlen(input6);
+  const char* eraseRet6 = LexUtil::eraseComment((const char*)input6, &bufSize6);
+  ASSERT_STREQ("this is a test!\n this is a test", eraseRet6);
+
+  //erasee the comment with "
+  const char* input7 = "this is a test!\n /*\"this is a comment inside\"*/this is a test// this is a comment";
+  uint64 bufSize7 = strlen(input7);
+  const char* eraseRet7 = LexUtil::eraseComment((const char*)input7, &bufSize7);
+  ASSERT_STREQ("this is a test!\n this is a test", eraseRet7);
+
+  JZSAFE_DELETE(eraseRet0);
+  JZSAFE_DELETE(eraseRet1);
+  JZSAFE_DELETE(eraseRet2);
+  JZSAFE_DELETE(eraseRet3);
+  JZSAFE_DELETE(eraseRet4);
+  JZSAFE_DELETE(eraseRet5);
+  JZSAFE_DELETE(eraseRet6);
+  JZSAFE_DELETE(eraseRet7);
+//  JZSAFE_DELETE(eraseRet8);
+//  JZSAFE_DELETE(eraseRet9);
 }
 
 TEST(LexUtil, smallTestCase){
