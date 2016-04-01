@@ -38,7 +38,9 @@ $(myLib):
 	cd $(mylib_PATH) && make
 
 test:$(TARGET) $(TEST_SOURCE)
+	@echo "==================== build tester ==========================="
 	$(CXX) $(TARGET) $(TEST_SOURCE) $(TEST_FLAG) $(CPPFLAGS) $(myLib) -o ./target/tester
+	@echo "==================== tester build finished ==========================="
 	./target/tester
 
 lib:

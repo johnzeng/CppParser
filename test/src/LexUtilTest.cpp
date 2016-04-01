@@ -62,4 +62,24 @@ TEST(LexUtil, smallTestCase){
   EXPECT_EQ('}', LexUtil::seperatorMatcher('{'));
   EXPECT_EQ(']', LexUtil::seperatorMatcher('['));
   EXPECT_EQ(')', LexUtil::seperatorMatcher('('));
+
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('0'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('1'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('2'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('3'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('4'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('5'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('6'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('7'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('8'));
+  EXPECT_EQ(true, LexUtil::isConstNumberChar('9'));
+  EXPECT_EQ(false, LexUtil::isConstNumberChar('.'));
+  EXPECT_EQ(false, LexUtil::isConstNumberChar('-'));
+  EXPECT_EQ(false, LexUtil::isConstNumberChar('+'));
+  EXPECT_EQ(false, LexUtil::isConstNumberChar('='));
+  
+  ASSERT_STREQ("abce", LexUtil::eatLREmptyInput("  abce   ").c_str());
+  ASSERT_STREQ("", LexUtil::eatLREmptyInput("  \t\n ").c_str());
+  ASSERT_STREQ("abce", LexUtil::eatLREmptyInput("abce   ").c_str());
+  ASSERT_STREQ("abce", LexUtil::eatLREmptyInput("  abce").c_str());
 }
