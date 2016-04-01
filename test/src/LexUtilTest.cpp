@@ -120,6 +120,16 @@ TEST(LexUtil, combineLineSeperatorEraserAndCommentEraser){
 
   JZSAFE_DELETE(eraseStepA0);
   JZSAFE_DELETE(eraseStepB0);
+
+  //should erase the comment if there is a line seperator
+  const char* input1 = "this is a test! /*\\ \n this is a test*/";
+  uint64 bufSize1 = strlen(input1);
+  const char* eraseStepA1 = LexUtil::eraseLineSeperator((const char*)input1, &bufSize1);
+  const char* eraseStepB1 = LexUtil::eraseComment((const char*)eraseStepA1, &bufSize1);
+  ASSERT_STREQ("this is a test! ", eraseStepB1);
+
+  JZSAFE_DELETE(eraseStepA1);
+  JZSAFE_DELETE(eraseStepB1);
 }
 
 TEST(LexUtil, smallTestCase){
