@@ -141,6 +141,8 @@ public:
 
 	bool isConstNumber(const string& input);
 
+	bool isConstIntNumber(const string& input);
+
 	bool isFloatNumber(const string& input);
 
 	bool isDoulbeMeanWord(const string& input);

@@ -319,7 +319,7 @@ uint32 GrammarUtil::setMacroCheckData(string& word,MacroCheckData& data)
 {
 	JZFUNC_BEGIN_LOG();
 	bool isOperator = GrmUtilPtr->isOperator(word);
-	bool isNum = GrmUtilPtr->isConstNumber(word);
+	bool isNum = GrmUtilPtr->isConstIntNumber(word);
 	data.word = word;
 	data.opPtr = NULL;
 

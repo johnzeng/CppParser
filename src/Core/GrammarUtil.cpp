@@ -220,12 +220,17 @@ int GrammarUtil::getNum(const char input)
 
 bool GrammarUtil::isConstNumber(const string& input)
 {
-	return isDeci(input) || isHex(input) || isOcto(input);
+	return isDeci(input) || isHex(input) || isOcto(input) || isFloatNumber(input);
+}
+
+bool GrammarUtil::isConstIntNumber(const string& input)
+{
+	return isDeci(input) || isHex(input) || isOcto(input); 
 }
 
 bool GrammarUtil::isFloatNumber(const string& input)
 {
-	int pointNum;
+	int pointNum = 0;
 	for(int i = 0 ; i < input.size() ; i++)
 	{
 		if (LexUtil::isConstNumberChar(input[i]))
