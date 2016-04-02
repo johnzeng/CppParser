@@ -230,6 +230,10 @@ bool GrammarUtil::isFloatNumber(const string& input)
 	{
 		if (LexUtil::isConstNumberChar(input[i]))
 		{
+      if(0 == i && '0' == input[i])
+      {
+        return false;
+      }
 			continue;
 		}
 		if ('.' == input[i])
@@ -243,7 +247,7 @@ bool GrammarUtil::isFloatNumber(const string& input)
 		}
 		return false;
 	}
-	return true;
+	return pointNum == 1;
 }
 
 bool GrammarUtil::isDeci(const string& input)
@@ -278,7 +282,7 @@ bool GrammarUtil::isHex(const string& input)
 	}
 	if (input[0] != '0' || input[1] != 'x')
 	{
-		return true;
+		return false;
 	}
 	for (int i = 2; i < input.size(); i++) 
 	{
@@ -310,7 +314,7 @@ bool GrammarUtil::isOcto(const string& input)
 	}
 	if (input[0] != '0')
 	{
-		return true;
+		return false;
 	}
 	for (int i = 2; i < input.size(); i++) 
 	{

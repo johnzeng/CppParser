@@ -159,6 +159,13 @@ public:
   int64 singleOperatorNum(int mark, int64 number);
   int64 doubleOperatorNum(int mark,int64 left,int64 right);
 
+	bool isHex(const string& input);
+	bool isOcto(const string& input);
+	bool isDeci(const string& input);
+	int getNum(const char input);
+
+	template <typename type> type str2Num(const string& input);
+
 private:
 
 	//init func
@@ -168,12 +175,6 @@ private:
 	void insertOperatorToOpSet(const string& op,uint32 priority, uint32 mark,int opNum,int associativity = eLeft2Right);
 	void insertOperatorTo(OpTypeMap& insertSet, const string& op,uint32 priority, uint32 mark,int opNum,int associativity = eLeft2Right);
 
-	bool isHex(const string& input);
-	bool isOcto(const string& input);
-	bool isDeci(const string& input);
-	int getNum(const char input);
-
-	template <typename type> type str2Num(const string& input);
 private:
 
 	OpTypeMap mOperatorSet;
