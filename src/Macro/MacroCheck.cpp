@@ -6,26 +6,7 @@
 #include <unistd.h>
 using namespace LexUtil;
 
-enum MacroCheckDataType
-{
-	eMacroCheckDataNumber,
-	eMacroCheckDataOperator,
-};
 
-struct MacroCheckData
-{
-	string word;
-	int32 type;
-	uint32 mark;		//if this is a operator, this will be symbol mar
-	int64 number;		//if this is a number, this will set
-	uint32 priority;	
-	const OperatorType* opPtr;
-};
-
-static uint32 setMacroCheckData(string& word,MacroCheckData& ret);
-static int64 singleOperatorNum(int mark, int64 number);
-static int64 doubleOperatorNum(int mark,int64 left,int64 right);
-typedef stack<MacroCheckData> MacroCheckDataStack;
 
 uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
 {
@@ -91,7 +72,7 @@ uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
 			}
 		}
 		MacroCheckData data;
-		uint32 setRet = setMacroCheckData(word, data);
+		uint32 setRet = GrmUtilPtr->setMacroCheckData(word, data);
 		if (eLexNoError != setRet)
 		{
 			return setRet;
@@ -112,7 +93,7 @@ uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
 			while(!opStack.empty() && opStack.top().priority <= data.priority)
 			{
 				auto topOp = opStack.top();
-				if (data.opPtr->associativity == Right2Left && data.priority == topOp.priority)
+				if (data.opPtr->associativity == eRight2Left && data.priority == topOp.priority)
 				{
 					break;
 				}
@@ -141,7 +122,7 @@ uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
 						{
 							auto topNum = numStack.top();
 							numStack.pop();
-							int64 retNum = singleOperatorNum(topOp.mark,topNum.number);	
+							int64 retNum = GrmUtilPtr->singleOperatorNum(topOp.mark,topNum.number);	
 							topNum.number = retNum;
 							JZWRITE_DEBUG("push back num:%lld",topNum.number);
 							numStack.push(topNum);
@@ -153,7 +134,7 @@ uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
 							numStack.pop();
 							auto secondNum = numStack.top();
 							numStack.pop();
-							int retNum = doubleOperatorNum(topOp.mark, secondNum.number,topNum.number);
+							int retNum = GrmUtilPtr->doubleOperatorNum(topOp.mark, secondNum.number,topNum.number);
 
 							topNum.number = retNum;
 							JZWRITE_DEBUG("push back num:%lld",topNum.number);
@@ -259,7 +240,7 @@ uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
 	return eLexNoError;	
 }
 
-static int64 singleOperatorNum(int mark, int64 number)
+int64 GrammarUtil::singleOperatorNum(int mark, int64 number)
 {
 	switch(mark)
 	{
@@ -282,7 +263,7 @@ static int64 singleOperatorNum(int mark, int64 number)
 
 }
 
-static int64 doubleOperatorNum(int mark,int64 left,int64 right)
+int64 GrammarUtil::doubleOperatorNum(int mark,int64 left,int64 right)
 {
 	switch(mark)
 	{
@@ -334,7 +315,7 @@ static int64 doubleOperatorNum(int mark,int64 left,int64 right)
 	}
 }
 
-static uint32 setMacroCheckData(string& word,MacroCheckData& data)
+uint32 GrammarUtil::setMacroCheckData(string& word,MacroCheckData& data)
 {
 	JZFUNC_BEGIN_LOG();
 	bool isOperator = GrmUtilPtr->isOperator(word);

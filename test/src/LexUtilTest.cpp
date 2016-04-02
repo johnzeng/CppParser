@@ -130,6 +130,7 @@ TEST(LexUtil, combineLineSeperatorEraserAndCommentEraser){
 
   JZSAFE_DELETE(eraseStepA1);
   JZSAFE_DELETE(eraseStepB1);
+
 }
 
 TEST(LexUtil, smallTestCase){

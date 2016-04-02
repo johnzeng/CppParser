@@ -28,10 +28,10 @@ void GrammarUtil::init()
 	 ********************************************************/
 	
 
-	insertOperatorToPreprocessOpSet("!",ePriority2,eOpLogicalNegation,1,Right2Left);
-	insertOperatorToPreprocessOpSet("~",ePriority2,eOpBitwiseComplement,1,Right2Left);
-	insertOperatorToPreprocessOpSet(STAND_WORD_PREFIX"-",ePriority2,eOpUnaryMinus,1,Right2Left);
-	insertOperatorToPreprocessOpSet(STAND_WORD_PREFIX"+",ePriority2,eOpUnaryPlus,1,Right2Left);
+	insertOperatorToPreprocessOpSet("!",ePriority2,eOpLogicalNegation,1,eRight2Left);
+	insertOperatorToPreprocessOpSet("~",ePriority2,eOpBitwiseComplement,1,eRight2Left);
+	insertOperatorToPreprocessOpSet(STAND_WORD_PREFIX"-",ePriority2,eOpUnaryMinus,1,eRight2Left);
+	insertOperatorToPreprocessOpSet(STAND_WORD_PREFIX"+",ePriority2,eOpUnaryPlus,1,eRight2Left);
 
 
 	insertOperatorToPreprocessOpSet("*",ePriority3,eOpMultiplication,2);
@@ -62,13 +62,13 @@ void GrammarUtil::init()
 
 	insertOperatorToPreprocessOpSet("||",ePriority12,eOpLogicalOr,2);
 
-	insertOperatorToPreprocessOpSet("?",ePrioritySelect,eOpTernaryConditionalAsk,0,Right2Left);
-	insertOperatorToPreprocessOpSet(":",ePrioritySelect,eOpTernaryConditionalSelect,3,Right2Left);
+	insertOperatorToPreprocessOpSet("?",ePrioritySelect,eOpTernaryConditionalAsk,0,eRight2Left);
+	insertOperatorToPreprocessOpSet(":",ePrioritySelect,eOpTernaryConditionalSelect,3,eRight2Left);
 
-	insertOperatorToPreprocessOpSet("(",ePriorityLeftBracket,eOpLeftBracket,0,Right2Left);
+	insertOperatorToPreprocessOpSet("(",ePriorityLeftBracket,eOpLeftBracket,0,eRight2Left);
 	insertOperatorToPreprocessOpSet(")",ePriorityRightBracket,eOpRightBracket,1);
 
-	insertOperatorToPreprocessOpSet(BASE_OPERATOR,ePriorityLowest,eOpLowestOperator,0,Right2Left);
+	insertOperatorToPreprocessOpSet(BASE_OPERATOR,ePriorityLowest,eOpLowestOperator,0,eRight2Left);
 	/*********************************************************
 		operator useful not only in preprocess 
 	 ********************************************************/

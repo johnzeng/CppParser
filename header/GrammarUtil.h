@@ -8,6 +8,13 @@ using namespace std;
 #define STAND_WORD_PREFIX "#"
 #define GrmUtilPtr GrammarUtil::getInstance()
 
+
+enum MacroCheckDataType
+{
+	eMacroCheckDataNumber,
+	eMacroCheckDataOperator,
+};
+
 struct OperatorType
 {
 	int associativity;
@@ -16,12 +23,25 @@ struct OperatorType
 	string symbol;
 	int operatorNum;
 };
+
+struct MacroCheckData
+{
+	string word;
+	int32 type;
+	uint32 mark;		//if this is a operator, this will be symbol mar
+	int64 number;		//if this is a number, this will set
+	uint32 priority;	
+	const OperatorType* opPtr;
+};
+
+typedef stack<MacroCheckData> MacroCheckDataStack;
+
 typedef map<string, OperatorType> OpTypeMap;
 typedef map<int, OperatorType> OpTypeMarkMap;
 enum AssociativityType
 {
-	Left2Right,
-	Right2Left,
+	eLeft2Right,
+	eRight2Left,
 };
 enum OperatorMark
 {
@@ -134,14 +154,19 @@ public:
 
 	float str2float(const string& input);
 	double str2double(const string& input);
+  
+  uint32 setMacroCheckData(string& word,MacroCheckData& ret);
+  int64 singleOperatorNum(int mark, int64 number);
+  int64 doubleOperatorNum(int mark,int64 left,int64 right);
+
 private:
 
 	//init func
 	GrammarUtil ();
 	void init();
-	void insertOperatorToPreprocessOpSet(const string& op,uint32 priority, uint32 mark,int opNum,int associativity = Left2Right);
-	void insertOperatorToOpSet(const string& op,uint32 priority, uint32 mark,int opNum,int associativity = Left2Right);
-	void insertOperatorTo(OpTypeMap& insertSet, const string& op,uint32 priority, uint32 mark,int opNum,int associativity = Left2Right);
+	void insertOperatorToPreprocessOpSet(const string& op,uint32 priority, uint32 mark,int opNum,int associativity = eLeft2Right);
+	void insertOperatorToOpSet(const string& op,uint32 priority, uint32 mark,int opNum,int associativity = eLeft2Right);
+	void insertOperatorTo(OpTypeMap& insertSet, const string& op,uint32 priority, uint32 mark,int opNum,int associativity = eLeft2Right);
 
 	bool isHex(const string& input);
 	bool isOcto(const string& input);
@@ -157,4 +182,5 @@ private:
 	OpTypeMarkMap mOpMarkMap;
 	StringSet mKeyWordSet;
 };
+
 #endif /* end of include guard: GRAMAUTIL_H */
