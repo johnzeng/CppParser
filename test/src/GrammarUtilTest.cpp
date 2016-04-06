@@ -89,6 +89,7 @@ TEST(GrammarUtil, numberType){
 
 
 TEST(GrammarUtil, strTrans){
+//  JZSetLoggerLevel(JZ_LOG_ALL);
   EXPECT_EQ(100, GrmUtilPtr->str2int32("100"));
   EXPECT_EQ(1, GrmUtilPtr->str2int32("1"));
   EXPECT_EQ(0, GrmUtilPtr->str2int32("0"));
@@ -97,4 +98,8 @@ TEST(GrammarUtil, strTrans){
   //Actually I think we need to add some exception to this funciton,
   //because we get a chance that this is not a legal input
   EXPECT_EQ(0, GrmUtilPtr->str2int32("-1"));
+
+  EXPECT_EQ(100.01, GrmUtilPtr->str2float("100.01"));
+  EXPECT_EQ(1, GrmUtilPtr->str2float("1"));
+  EXPECT_EQ(0, GrmUtilPtr->str2float("0"));
 }
