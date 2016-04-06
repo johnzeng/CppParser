@@ -99,7 +99,7 @@ TEST(GrammarUtil, strTrans){
   //because we get a chance that this is not a legal input
   EXPECT_EQ(0, GrmUtilPtr->str2int32("-1"));
 
-  EXPECT_EQ(100.01, GrmUtilPtr->str2float("100.01"));
-  EXPECT_EQ(1, GrmUtilPtr->str2float("1"));
+  EXPECT_EQ(0.01, GrmUtilPtr->str2float("0.01"));
+  EXPECT_EQ(1, GrmUtilPtr->str2float("1.0"));
   EXPECT_EQ(0, GrmUtilPtr->str2float("0"));
 }
