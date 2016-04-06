@@ -351,7 +351,8 @@ template <typename type> type GrammarUtil::str2Num(const string& input)
 	type ret = 0;
 	type dim = 0;	
 	int i = 0;
-	if (true == isOcto(input) || true == isFloatNumber(input))
+  JZWRITE_DEBUG("input is : %s" , input.c_str());
+	if (true == isDeci(input) || true == isFloatNumber(input))
 	{
 		dim = 10;
 	}
@@ -365,6 +366,7 @@ template <typename type> type GrammarUtil::str2Num(const string& input)
 		dim = 8;
 		i = 1;
 	}
+  JZWRITE_DEBUG("dim is:%d, i is:%d" , dim, i);
 	if (dim == 0)
 	{
 		return 0;

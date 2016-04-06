@@ -78,4 +78,23 @@ TEST(GrammarUtil, numberType){
   EXPECT_EQ(true, GrmUtilPtr->isConstIntNumber("0123445670"));
   EXPECT_EQ(true, GrmUtilPtr->isConstIntNumber("1234567890"));
   EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("1234567890.000001"));
+//Yes we don't think this is a legal number or double, 
+//we think that '-' should be a separatro, so it should not appear in the number.
+  EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("-1234567890"));
+  EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("-1234567890.000001"));
+
+  EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("abcccccddddddeeefff"));
+  EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("hijklim"));
+}
+
+
+TEST(GrammarUtil, strTrans){
+  EXPECT_EQ(100, GrmUtilPtr->str2int32("100"));
+  EXPECT_EQ(1, GrmUtilPtr->str2int32("1"));
+  EXPECT_EQ(0, GrmUtilPtr->str2int32("0"));
+  
+  //should get 0 because  this is not a legal input
+  //Actually I think we need to add some exception to this funciton,
+  //because we get a chance that this is not a legal input
+  EXPECT_EQ(0, GrmUtilPtr->str2int32("-1"));
 }
