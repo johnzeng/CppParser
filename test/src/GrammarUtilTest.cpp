@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "GrammarUtil.h"
+#include "JZLogger.h"
 
 //TEST(GrammarUtil, initWithoutError){
 //  GrammarUtil::getInstance()->init();
@@ -68,6 +69,7 @@ TEST(GrammarUtil, numberType){
   EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("0123445670"));
   EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("123456780"));
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001"));
+  EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("0.05"));
 
   EXPECT_EQ(true, GrmUtilPtr->isConstNumber("0x1234567890abcdefABCDEF"));
   EXPECT_EQ(true, GrmUtilPtr->isConstNumber("0123445670"));
@@ -85,6 +87,8 @@ TEST(GrammarUtil, numberType){
 
   EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("abcccccddddddeeefff"));
   EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("hijklim"));
+
+
 }
 
 
@@ -99,7 +103,13 @@ TEST(GrammarUtil, strTrans){
   //because we get a chance that this is not a legal input
   EXPECT_EQ(0, GrmUtilPtr->str2int32("-1"));
 
-  EXPECT_EQ(0.01, GrmUtilPtr->str2float("0.01"));
+  EXPECT_EQ(0.5, GrmUtilPtr->str2float("0.5"));
+  EXPECT_EQ(0.51f, GrmUtilPtr->str2float("0.51"));
   EXPECT_EQ(1, GrmUtilPtr->str2float("1.0"));
   EXPECT_EQ(0, GrmUtilPtr->str2float("0"));
+
+  EXPECT_EQ(0.5, GrmUtilPtr->str2double("0.5"));
+  EXPECT_EQ(0.51, GrmUtilPtr->str2double("0.51"));
+  EXPECT_EQ(1, GrmUtilPtr->str2double("1.0"));
+  EXPECT_EQ(0, GrmUtilPtr->str2double("0"));
 }

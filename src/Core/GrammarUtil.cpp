@@ -1,6 +1,7 @@
 #include "GrammarUtil.h"
 #include "JZLogger.h"
 #include "Lex.h"
+#include <stdlib.h>
 
 GrammarUtil::GrammarUtil()
 {
@@ -237,9 +238,16 @@ bool GrammarUtil::isFloatNumber(const string& input)
 		{
       if(0 == i && '0' == input[i])
       {
-        return false;
+        if(1 == input.size())
+        {
+          return true;
+        }
+        if (2 >= input.size() && input[1] != '.')
+        {
+          return false;
+        }
       }
-			continue;
+      continue;
 		}
 		if ('.' == input[i])
 		{
@@ -338,13 +346,25 @@ bool GrammarUtil::isOcto(const string& input)
 
 float GrammarUtil::str2float(const string& input)
 {
-	return str2Num<float>(input);
+  if(false == isFloatNumber(input))
+  {
+    JZWRITE_DEBUG("return because false float number")
+    return 0.0f;
+  }
+  char *endPointer = NULL;
+	return strtof(input.c_str(), &endPointer);
 }
 
 double GrammarUtil::str2double(const string& input)
 {
-	return str2Num<double>(input);
+  if(false == isFloatNumber(input))
+  {
+    return 0.0;
+  }
+  char *endPointer = NULL;
+  return strtod(input.c_str(), &endPointer);
 }
+
 
 template <typename type> type GrammarUtil::str2Num(const string& input)
 {
@@ -352,7 +372,12 @@ template <typename type> type GrammarUtil::str2Num(const string& input)
 	type dim = 0;	
 	int i = 0;
   JZWRITE_DEBUG("input is : %s" , input.c_str());
-	if (true == isDeci(input) || true == isFloatNumber(input))
+  if(true == isFloatNumber(input))
+  {
+    JZWRITE_ERROR("Should not use this function to trans double" );
+    return (type)0;
+  }
+	if (true == isDeci(input))
 	{
 		dim = 10;
 	}
