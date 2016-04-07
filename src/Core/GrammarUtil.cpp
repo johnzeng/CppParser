@@ -210,11 +210,11 @@ int GrammarUtil::getNum(const char input)
 	}
 	if (input >= 'A' && input <= 'F')
 	{
-		return input - 'A' + 9;
+		return input - 'A' + 10;
 	}
 	if (input >= 'a' && input <= 'f')
 	{
-		return input - 'a' + 9;
+		return input - 'a' + 10;
 	}
 	return 0;
 }
