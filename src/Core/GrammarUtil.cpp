@@ -391,7 +391,7 @@ template <typename type> type GrammarUtil::str2Num(const string& input)
 		dim = 8;
 		i = 1;
 	}
-  JZWRITE_DEBUG("dim is:%d, i is:%d" , dim, i);
+//  JZWRITE_DEBUG("dim is:%lld, i is:%d" , dim, i);
 	if (dim == 0)
 	{
 		return 0;
