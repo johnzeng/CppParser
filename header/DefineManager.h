@@ -40,6 +40,8 @@ public:
 	DefineManager ();
 	virtual ~DefineManager ();
 
+  //I don't think it's a good idea to have global instance for these class now.
+
 	static DefineManager* getGlobalInstance();
 	void init();
 

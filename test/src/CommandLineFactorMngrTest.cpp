@@ -6,7 +6,7 @@
 
 using namespace JZErrorCode;
 
-TEST(CmdFactorTest, GetAddonFactor){
+TEST(CommandLineFactorMngr, GetAddonFactor){
   CommandLineFactorMngr* item = new CommandLineFactorMngr();
 
   item->searchAddonFactorFile();
