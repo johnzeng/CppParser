@@ -1,13 +1,3 @@
 #define he 1
-#if 1<2 ? (1>2 ? 1 : 4):6
-void test1();
-#endif
-#if (1<2 ? 1>2 ? 1 : 4: 1==1)?0:5
-void test1();
-#endif
 
-int main()
-{
-	he(a,b,c);
-	return 0;
-}
+main(he);

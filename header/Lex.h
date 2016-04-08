@@ -51,6 +51,8 @@ public:
 
 	void printLexRec();
 
+  LexRecList getRecList();
+
 private:
 	//helper method
 

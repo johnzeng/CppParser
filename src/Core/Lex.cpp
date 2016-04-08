@@ -36,11 +36,16 @@ uint32 Lex::analyzeAFile(const string& fileName)
 
 	pushReaderRecord(buffWithOutComment,bufSize,fileName,eFileTypeFile);
 	uint32 ret = doLex();
+  //buffWithOutComment will be delete in popReaderRecord
 	popReaderRecord();
 	JZWRITE_DEBUG("analyze file end");
 	JZFUNC_END_LOG();
-  JZSAFE_DELETE(buffWithOutComment)
+//  JZSAFE_DELETE(buffWithOutComment)
 	return ret;
+}
+LexRecList Lex::getRecList()
+{
+  return mLexRecList;
 }
 
 uint32 Lex::doLex()
