@@ -69,3 +69,9 @@ TEST(Lex, macroTest){
 	}
 
 }
+
+//TEST(Lex, abce){
+//  char *input =NULL;
+//  input[1] = 'i';
+//  EXPECT_EQ(1,1);
+//}

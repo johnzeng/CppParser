@@ -9,7 +9,7 @@ AR=ar
 debug_var=1
 
 ifeq ($(debug_var),1)
-RELEASE_FLAG=-DDEBUG -g
+RELEASE_FLAG=-DDEBUG -g -fno-pie
 else
 RELEASE_FLAG=-DRELEASE
 endif
