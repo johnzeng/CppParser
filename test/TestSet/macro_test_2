@@ -1,0 +1,6 @@
+#define he() 1
+#define she(a) (a+1)
+//#define they(a, ...) (a(...)0)
+#define every (abce)
+
+main(he(),she(3),they(1,2,3,4), every);

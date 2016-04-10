@@ -12,9 +12,9 @@
 
 void globalInitAtBegin()
 {
-	//init logger
   JZInitStackTrace();
 
+	//init logger
 	JZLoggerInit();
 	JZSetLoggerLevel(JZ_LOG_ALL);
 	JZSetLoggerOutPutStatue(1,1);

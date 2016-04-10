@@ -395,7 +395,7 @@ uint32 Lex::handleDefinedWord(const string& word)
 		turnOnFuncLikeMacroMode();
 		handleLeftBracket();
 		uint32 ret = doLex();
-		JZWRITE_DEBUG("do lex end");
+		JZWRITE_DEBUG("do lex end for handle define word: %s", word.c_str());
 		turnOffFuncLikeMacroMode();
 		//untile here, param list is all get
 		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
@@ -918,11 +918,11 @@ uint32 Lex::handleLeftBracket()
 		uint32 mark = mLexRecList.size();
 		pushLeftBracket(mark);
 		JZWRITE_DEBUG("push over");
-		if (1 == getBracketMarkStackSize())
-		{
-			JZWRITE_DEBUG("first bracket,don't save");
-			return eLexNoError;
-		}
+//		if (1 == getBracketMarkStackSize())
+//		{
+//			JZWRITE_DEBUG("first bracket,don't save");
+//			return eLexNoError;
+//		}
 	}
 	uint32 endIndex = getLastIndex();
 	saveWord("(",beginIndex,endIndex);
@@ -936,8 +936,8 @@ uint32 Lex::getBracketBeginMark()
 
 uint32 Lex::handleRightBracket()
 {
-	uint32 bracketBeginIndex = getLastIndex();
 	JZFUNC_BEGIN_LOG();
+	uint32 bracketBeginIndex = getLastIndex();
 	if (true == isFuncLikeMacroMode())
 	{
 		JZWRITE_DEBUG("now pop a mark");
@@ -952,6 +952,8 @@ uint32 Lex::handleRightBracket()
 			//save it!
 			uint32 beginMark = getBracketBeginMark(); 
 			string param;
+			JZWRITE_DEBUG("beginMark is :%d", beginMark);
+			JZWRITE_DEBUG("beginMark word is %s", mLexRecList[beginMark].word.c_str());
 			int beginIndex = mLexRecList[beginMark].beginIndex;
 			int endIndex = mLexRecList.back().endIndex;
 			JZWRITE_DEBUG("begin is :%d,end is :%d", beginIndex, endIndex);
@@ -963,6 +965,7 @@ uint32 Lex::handleRightBracket()
 			{
 				mLexRecList.pop_back();
 			}
+      JZWRITE_DEBUG("now save a param: %s", param.c_str() );
 			mRealParamList.push_back(param);
 		}
 		popLeftBracket();

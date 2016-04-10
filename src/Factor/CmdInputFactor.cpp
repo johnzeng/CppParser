@@ -39,11 +39,11 @@ string CmdInputFactor::getNextFile()
 	if(mCurIndex < mToCompileFile.size())
 	{
 		ret = mToCompileFile[mCurIndex];
+    mCurIndex++;
 	}
 	else
 	{
 		JZWRITE_DEBUG("no more to compile file");
 	}
-	mCurIndex++;
 	return ret;
 }
