@@ -8,54 +8,12 @@
 #include "DefineManager.h"
 #include "ErrorCode.h"
 #include "Lex.h"
-
-
-#include <signal.h>
-#include <execinfo.h>
-#include <stdlib.h>
- 
-inline void printStackTrace( FILE *out = stderr, unsigned int max_frames = 63 )
-{
-   fprintf(out, "stack trace:\n");
- 
-   // storage array for stack trace address data
-   void* addrlist[max_frames+1];
- 
-   // retrieve current stack addresses
-   uint32 addrlen = backtrace( addrlist, sizeof( addrlist ) / sizeof( void* ));
- 
-   if ( addrlen == 0 ) 
-   {
-      fprintf( out, "  \n" );
-      return;
-   }
- 
-   // create readable strings to each frame.
-   char** symbollist = backtrace_symbols( addrlist, addrlen );
- 
-   // print the stack trace.
-   for ( uint32 i = 0; i < addrlen; i++ )
-      fprintf( out, "%s\n", symbollist[i]);
- 
-   free(symbollist);
-}
-void abortHandler( int signum )
-{
-   printStackTrace();
-   exit( signum );
-}
-void stackTrace()
-{
-  signal( SIGABRT, abortHandler );
-  signal( SIGSEGV, abortHandler );
-  signal( SIGILL,  abortHandler );
-  signal( SIGFPE,  abortHandler );
-}
+#include "JZBackTrace.h"
 
 void globalInitAtBegin()
 {
 	//init logger
-  stackTrace();
+  JZInitStackTrace();
 
 	JZLoggerInit();
 	JZSetLoggerLevel(JZ_LOG_ALL);
