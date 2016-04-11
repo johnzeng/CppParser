@@ -4,57 +4,19 @@
 #include <vector>
 #include <string>
 #include <stack>
-#include "LexData.h"
 #include "JZCommonDefine.h"
 #include "DefineManager.h"
+#include "LexUtil.h"
+#include "LexBase.h"
+
 using namespace std;
 
 //class define
-class Lex {
+class Lex:public LexBase {
+
 public:
-	enum LexReturnNum
-	{
-		eLexNoError = 0,
-		eLexReachFileEnd = 1,	
-		eLexReaderStackEmpty = 2,
-		eLexSharpFollowedNothing = 3,
-		eLexWordNotMatch = 4,
-		eLexAlreadyLastWord = 5,
-		eLexSharpDefineFollowedNothing = 6,
-		eLexUnexpectedSeperator = 7,
-		eLexValParamNotLast = 8,
-		eLexSharpIfdefFollowedWithNothing = 9,
-		eLexUnmatchMacro = 10,
-		eLexUnknowMacro = 11,
-		eLexSharpEndIfFollowWithOtherThing = 12,
-		eLexSharpElseFollowWithOtherThing = 13,
-		eLexWordIsNotDefined = 14,
-		eLexParamAnalyzeOVer = 15,	//this is not an error
-		eLexReachLineEnd = 16,
-		eLexFuncLikeMacroParamTooLess = 17,
-		eLexFuncLikeMacroParamTooManay = 18,
-		eLexCanNotPushPrecompileStream = 19,
-		eLexMacroIsAlreadyExpending = 20,
-		//unknow should be last
-		eLexUnknowError ,
-	};
-	enum LexInput
-	{
-		eLexSkipEmptyInput,
-		eLexDontSkipEmptyInput,	
-		eLexInOneLine,
-		eLexInMulLine,
-	};
-	Lex ();
-	virtual ~Lex ();
-	uint32 analyzeAFile(const string& fileName);
-
-	void printLexRec();
-
-  LexRecList getRecList();
-
+	virtual uint32 analyzeAFile(const string& fileName);
 private:
-	//helper method
 
 	uint32 doLex();
 	void saveWord(const string& input,uint32 beginIndex, uint32 endIndex,uint32 recordType = eLexRecTypeNormal);
@@ -172,26 +134,9 @@ private:
 	StringSet mPreprocessingMacroSet;
 
 	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
-	LexRecList mLexRecList;
 	DefineManager mDefMgr;
 };
 
-namespace LexUtil {
-	char* eraseComment(const char* input, uint64 *bufSize);
-	char* eraseLineSeperator(const char* input,uint64 *bufSize);
-	bool isInterpunction(const char input);
-	bool isLineEnder(const char input);
-	bool isEmptyInput(const char input);
-	bool isBackSlant(const char input);
-	bool isEmptyInput(const string& input);
-	bool isEndWithBackSlant(const string& input);
-	char seperatorMatcher(const char input);
-	bool canPopCompileStream(uint32 curMark,uint32 toPopMark);
-	bool ignoreMacroWhenStreamIsOff(const string& word);
-	bool isConstNumberChar(const char input);
-	string eatLREmptyInput(const string &toBeEatan);
-
-} /* LexUtil */
 
 typedef uint32 (Lex::*LexPatternHandler)();
 

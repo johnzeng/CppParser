@@ -10,14 +10,6 @@
 	Lex begin here 
  ********************************************************/
 
-Lex::Lex()
-{
-}
-
-Lex::~Lex()
-{
-}
-
 uint32 Lex::analyzeAFile(const string& fileName)
 {
 	JZFUNC_BEGIN_LOG();
@@ -42,10 +34,6 @@ uint32 Lex::analyzeAFile(const string& fileName)
 	JZFUNC_END_LOG();
 //  JZSAFE_DELETE(buffWithOutComment)
 	return ret;
-}
-LexRecList Lex::getRecList()
-{
-  return mLexRecList;
 }
 
 uint32 Lex::doLex()
@@ -384,53 +372,53 @@ uint32 Lex::handleDefinedWord(const string& word)
 	if (true == defRec->isFuncLikeMacro)
 	{
     //I will rewrite this part of code. I think we should just read all parameters from file directlly
-//		string matchWord;
-//		uint32 errRet = consumeCharUntilReach('(',&matchWord);
-//		if (errRet != eLexNoError)
-//		{
-//			JZFUNC_END_LOG();
-//			return eLexUnexpectedSeperator;
-//		}
-//		//read real param
-//		turnOnFuncLikeMacroMode();
-//		handleLeftBracket();
-//		uint32 ret = doLex();
-//		JZWRITE_DEBUG("do lex end for handle define word: %s", word.c_str());
-//		turnOffFuncLikeMacroMode();
-//		//untile here, param list is all get
-//		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
-//		{
-//			popErrorSite();
-//			JZFUNC_END_LOG();
-//			return ret;
-//		}
-//
-//		JZWRITE_DEBUG("now add param list");
-//#ifdef DEBUG
-//		JZWRITE_DEBUG("now print param list");
-//		for(int i = 0 ; i < mRealParamList.size(); i++)
-//		{
-//			JZWRITE_DEBUG("i is %d,word is :[%s]",i,mRealParamList[i].c_str());	
-//		}
-//#endif
-//		//param number check
-//		if (true == defRec->isVarArgs)
-//		{
-//			if (defRec->paramMap.size() - 1 > mRealParamList.size())
-//			{
-//				JZWRITE_DEBUG("var func like marco param not enough");
-//				return eLexFuncLikeMacroParamTooLess;
-//			}
-//		}
-//		else
-//		{
-//			if (defRec->paramMap.size() != mRealParamList.size())
-//			{
-//				JZWRITE_DEBUG("Func like macro param not right");
-//				return defRec->paramMap.size() > mRealParamList.size() ?
-//				eLexFuncLikeMacroParamTooLess : eLexFuncLikeMacroParamTooManay;
-//			}
-//		}
+		string matchWord;
+		uint32 errRet = consumeCharUntilReach('(',&matchWord);
+		if (errRet != eLexNoError)
+		{
+			JZFUNC_END_LOG();
+			return eLexUnexpectedSeperator;
+		}
+		//read real param
+		turnOnFuncLikeMacroMode();
+		handleLeftBracket();
+		uint32 ret = doLex();
+		JZWRITE_DEBUG("do lex end for handle define word: %s", word.c_str());
+		turnOffFuncLikeMacroMode();
+		//untile here, param list is all get
+		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
+		{
+			popErrorSite();
+			JZFUNC_END_LOG();
+			return ret;
+		}
+
+		JZWRITE_DEBUG("now add param list");
+#ifdef DEBUG
+		JZWRITE_DEBUG("now print param list");
+		for(int i = 0 ; i < mRealParamList.size(); i++)
+		{
+			JZWRITE_DEBUG("i is %d,word is :[%s]",i,mRealParamList[i].c_str());	
+		}
+#endif
+		//param number check
+		if (true == defRec->isVarArgs)
+		{
+			if (defRec->paramMap.size() - 1 > mRealParamList.size())
+			{
+				JZWRITE_DEBUG("var func like marco param not enough");
+				return eLexFuncLikeMacroParamTooLess;
+			}
+		}
+		else
+		{
+			if (defRec->paramMap.size() != mRealParamList.size())
+			{
+				JZWRITE_DEBUG("Func like macro param not right");
+				return defRec->paramMap.size() > mRealParamList.size() ?
+				eLexFuncLikeMacroParamTooLess : eLexFuncLikeMacroParamTooManay;
+			}
+		}
 	}
 
 	//not func like ,just expend it
@@ -573,34 +561,6 @@ void Lex::saveWord(
 	saveWordTo(input,mLexRecList, beiginIndex, endIndex, recordType);
 }
 
-void Lex::printLexRec()
-{
-	JZFUNC_BEGIN_LOG();
-	JZWRITE_DEBUG("print defnie");
-	mDefMgr.printAllDefine();
-	auto it = mLexRecList.begin();
-	string line = "";
-	uint32 curLine = 0;
-	JZWRITE_DEBUG("now print lex");
-	for(; it != mLexRecList.end(); it++)
-	{
-		if (it->line == curLine)
-		{
-			line += " ";
-			line += it->word;
-		}
-		else
-		{
-			printf("%s\n",line.c_str());
-			line = it->word;
-			curLine = it->line;
-		}
-	}
-	printf("%s\n",line.c_str());
-
-	JZWRITE_DEBUG("Final define num:%u,lex num:%lu",mDefMgr.getDefineNum(),mLexRecList.size());
-	JZFUNC_END_LOG();
-}
 
 uint32 Lex::undoConsume()
 {
@@ -832,22 +792,9 @@ uint32 Lex::handleComma()
 	{
 		if (1 == getBracketMarkStackSize())
 		{
-			JZWRITE_DEBUG("save a Param ");
 			//save it!
-			uint32 beginMark = getBracketBeginMark();
-			string param;
-			int endIndex = mLexRecList.back().endIndex;
-			int beginIndex = mLexRecList[beginMark].beginIndex;
-			JZWRITE_DEBUG("begin is :%d,end is :%d", beginIndex, endIndex);
-			for(int i = beginIndex ; i <= endIndex ; i++)
-			{
-				param += mReaderStack.top().buffer[i];	
-			}
-			while(mLexRecList.size() > beginMark)
-			{
-				mLexRecList.pop_back();
-			}
-			mRealParamList.push_back(param);
+      //the logic is right but the parameter get logic is stupid,
+      //pls follow the comment I made in handleRightBracket, to get the right logic about handling marco parameter
 			return eLexNoError;
 		}
 	}
@@ -948,25 +895,12 @@ uint32 Lex::handleRightBracket()
 		}
 		if (1 == getBracketMarkStackSize())
 		{
-			JZWRITE_DEBUG("save a Param ");
-			//save it!
-			uint32 beginMark = getBracketBeginMark(); 
-			string param;
-			JZWRITE_DEBUG("beginMark is :%d", beginMark);
-			JZWRITE_DEBUG("beginMark word is %s", mLexRecList[beginMark].word.c_str());
-			int beginIndex = mLexRecList[beginMark].beginIndex;
-			int endIndex = mLexRecList.back().endIndex;
-			JZWRITE_DEBUG("begin is :%d,end is :%d", beginIndex, endIndex);
-			for(int i = beginIndex ; i <= endIndex ; i++)
-			{
-				param += mReaderStack.top().buffer[i];
-			}
-			while(mLexRecList.size() > beginMark)
-			{
-				mLexRecList.pop_back();
-			}
-      JZWRITE_DEBUG("now save a param: %s", param.c_str() );
-			mRealParamList.push_back(param);
+      //I think I get the stupid think here now. The logic is ok , but we should not get the parameter from the begin mark,
+      //we should get parameter from a start mark
+      //we will need to do it in this way
+      //1, when the left bracket is pushed, init the left bracket, and init a paramter mark
+      //2, meet a comma ,update the parameter mark
+      //3, meet a right bracket, end the input.
 		}
 		popLeftBracket();
 		if (0 == getBracketMarkStackSize())
@@ -2155,420 +2089,6 @@ bool Lex::isFuncLikeMacroMode()
 	return ret;
 }
 
-/*********************************************************
-	Lex end here
-	now begin the LexUtil   	
- ********************************************************/
-
-bool LexUtil::isInterpunction(const char input)
-{
-	if (true == isLineEnder(input))
-	{
-		return true;
-	}
-
-	if (true == isEmptyInput(input))
-	{
-		return true;
-	}
-
-	if (true == isBackSlant(input))
-	{
-		return true;
-	}
-
-	switch(input)
-	{
-		case '|':
-		case '%':
-		case '^':
-		case '=':
-		case '+':
-		case '/':
-		case '*':
-		case '-':
-		case '~':
-		case '\'':
-		case '"':
-		case ' ':
-		case ',':
-		case '!':
-		case '?':
-		case '&':
-		case '(':
-		case ')':
-		case '[':
-		case ']':
-		case '{':
-		case '}':
-		case '<':
-		case '>':
-		case '#':
-		case '\t':
-		case '\n':
-		case ';':
-		case ':':
-		{
-			return true;
-		}
-		default:
-		{
-			break;	
-		}
-	}
-	return false;
-}
-
-bool LexUtil::isLineEnder(const char input)
-{
-	if ('\n' == input)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool LexUtil::isEmptyInput(const char input)
-{
-	switch(input)
-	{
-		case '\t':
-		case '\n':
-		case ' ':
-		case 0:
-			return true;
-		default:
-		{
-			return false;
-		}
-	}
-}
-
-bool  LexUtil::isBackSlant(const char input)
-{
-	if ('\\' == input)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-bool LexUtil::isEmptyInput(const string& input)
-{
-	int len = input.size();
-	for (int i = 0; i < len; i++) {
-		if (false == isEmptyInput(input[i]))
-		{
-			return false;
-		}
-	}
-	return true;	
-}
-
-bool LexUtil::isEndWithBackSlant(const string& input)
-{
-	bool ret = false;
-	for(int32 i = input.size() - 1 ; i >= 0 ; i--)
-	{
-		if (input[i] == '\\')
-		{
-			ret = true;
-			break;
-		}
-		else if(false == isEmptyInput(input[i]))
-		{
-			break;
-		}
-	}
-	return ret;
-}
-
-char LexUtil::seperatorMatcher(const char input)
-{
-	char ret = 0;
-	switch(input)
-	{
-		case '"':
-			ret = '"';
-			break;
-		case '\'':
-			ret = '\'';
-			break;
-		case '[':
-			ret = ']';
-			break;
-		case '<':
-			ret = '>';
-			break;
-		case '(':
-			ret = ')';
-			break;
-		case '{':
-			ret = '}';
-			break;
-		default:
-		{
-			JZWRITE_DEBUG("not registed input : %c",input);	
-			break;
-		}
-	}
-	return ret;
-}
-
-char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
-{
-	JZFUNC_BEGIN_LOG();
-	char *ret = (char*)malloc((*bufSize + 1)*sizeof(char));
-	uint64 j = 0;
-	memset(ret,0,(*bufSize + 1) * sizeof(char));
-	bool isString = false;
-	bool isChar = false;
-	bool lastIsBlant = true;
-	bool isCommentLine = false;
-	bool isCommentBlock = false;
-	for(uint64 i = 0 ; i < (*bufSize); i++)
-	{
-		if (true == isString)
-		{
-			ret[j] = input[i];
-			if (ret[j] == '"' && false == lastIsBlant)
-			{
-				isString = false;
-			}
-			if ('\\' == ret[j])
-			{
-				lastIsBlant = !lastIsBlant;
-			}
-			else
-			{
-				lastIsBlant = false;
-			}
-			j++;
-		}
-		else if(true == isChar)
-		{
-			ret[j] = input[i];
-			if (ret[j] == '\'' && false == lastIsBlant)
-			{
-				isChar= false;
-			}
-			if ('\\' == ret[j])
-			{
-				lastIsBlant = !lastIsBlant;
-			}
-			else
-			{
-				lastIsBlant = false;
-			}
-			j++;
-		
-		}
-		else if(true == isCommentLine)
-		{
-			if (input[i] == '\n')
-			{
-				isCommentLine = false;
-				ret[j] = '\n';
-				j++;
-			}
-		}
-		else if(true == isCommentBlock)
-		{
-			if (input[i] == '/' && input[i - 1] == '*')
-			{
-				isCommentBlock = false;
-			}
-		}
-		else
-		{
-			if ('"' == input[i])
-			{
-				isString = true;
-			}
-			else if ('\'' == input[i])
-			{
-				isChar = true;
-			}
-			else if ('/' == input[i])
-			{
-				if (i+1 < *bufSize)
-				{
-					if ('/' == input[i+1] )
-					{
-						isCommentLine = true;
-						i++;
-						continue;
-					}
-					else if('*' == input[i+1])
-					{
-						isCommentBlock = true;
-						i++;
-						continue;
-					}
-				}
-			}
-			ret[j] += input[i];
-			j++;
-		}
-	}
-	*bufSize = j;
-	JZFUNC_END_LOG();
-	return ret;
-}
-
-char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize)
-{
-	JZFUNC_BEGIN_LOG();
-
-  //Bug log: if we init a char point exactly same as the input, it may have some unset memory
-  //follows the output, and it make dirty output 
-	char *ret = (char*)malloc((*bufSize + 1)*sizeof(char));
-	memset(ret,0,(*bufSize + 1) * sizeof(char));
-
-	uint64 j = 0;
-	bool isConverBackSlant = false;
-
-	JZWRITE_DEBUG("buff size is :%lld",*bufSize);
-	for(uint64 i = 0 ; i < (*bufSize); i++)
-	{
-		if (false == isBackSlant(input[i]))
-		{
-			ret[j++] = input[i];
-			isConverBackSlant = false;
-			continue;
-		}
-		//check next not empty input
-		isConverBackSlant = !isConverBackSlant;
-		if (false == isConverBackSlant)
-		{
-			ret[j++] = '\\';	
-			continue;
-		}
-		int k = i + 1;
-		bool endWithBackSlant = true;
-		while(k < (*bufSize) && false == isLineEnder(input[k]))
-		{
-			if (false == isEmptyInput(input[k]))
-			{
-				endWithBackSlant = false;
-				break;
-			}
-			k++;
-		};
-		if (true == endWithBackSlant)
-		{
-			i = k;
-		}
-		else
-		{
-			ret[j++] = '\\';	
-		}
-	}
-	*bufSize = j;
-	JZFUNC_END_LOG();
-	return ret;
-}
-
-string LexUtil::eatLREmptyInput(const string& toBeEatan)
-{
-	string ret = "";
-	int leftEmptyNum = 0;
-	int rightEmptyNum = 0;
-	for(int i = 0; i < toBeEatan.size(); i++)
-	{
-		if (false == isEmptyInput(toBeEatan[i]))
-		{
-			break;
-		}
-		leftEmptyNum++;
-	}
-	for(int i = toBeEatan.size() - 1; i >= 0; i-- )
-	{
-		if (false == isEmptyInput(toBeEatan[i]))
-		{
-			break;
-		}
-		rightEmptyNum++;	
-	}
-	for(int i  = leftEmptyNum ; i + rightEmptyNum < toBeEatan.size() ; i++)
-	{
-		ret += toBeEatan[i];	
-	}
-	return ret;
-}
-
-bool LexUtil::canPopCompileStream(uint32 curMark,uint32 toPopMark)
-{
-	switch(curMark)
-	{
-		case eLexPSENDIF:
-			if (eLexPSENDIF == toPopMark)
-			{
-				return false;
-			}
-			return true;
-		case eLexPSELSE:
-		case eLexPSELIF:
-			if (eLexPSENDIF == toPopMark || eLexPSELSE == toPopMark)
-			{
-				return false;
-			}
-			return true;
-			if (eLexPSENDIF == toPopMark || eLexPSELSE == toPopMark)
-			{
-				return false;
-			}
-			return true;
-		case eLexPSIF:
-		case eLexPSIFDEF:
-		case eLexPSIFNDEF:
-			return false;
-		default:
-		{
-			break;	
-		}
-	}
-	return false;
-}
-bool LexUtil::ignoreMacroWhenStreamIsOff(const string& word)
-{
-	if (
-		word != "if" &&
-		word != "ifdef" &&
-		word != "ifndef" &&
-		word != "endif" &&
-		word != "elif" &&
-		word != "else" 
-		)
-	{
-		return true;	
-	}
-	return false;
-}
-
-//Ah, I think this is stupid... it make this program unable to be multi process, maybe it will be better for each Lex to have a util, otherwise we will have this problem
-//void LexUtil::pointIsSeperator(bool state)
-//{
-//	sPointIsSeperator = state;
-//}
-
-bool LexUtil::isConstNumberChar(const char input)
-{
-	if ('0' <= input && input <= '9')
-	{
-		return true;
-	}
-	return false;
-}
-
-/*********************************************************
-	LexUtil End here, now begin the lex pattern table 
- ********************************************************/
 
 LexPatternTable::LexPatternTable()
 {
