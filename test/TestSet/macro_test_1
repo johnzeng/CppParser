@@ -1,3 +1,5 @@
 #define he 1
+#define she 1
 
 main(he);
+hello(she);

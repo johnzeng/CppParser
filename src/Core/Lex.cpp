@@ -317,7 +317,6 @@ uint32 Lex::consumeWord(
 	uint32 ret;
 	char nextChar;
 	retStr = "";
-	LexUtil::pointIsSeperator(true);
 	while (eLexNoError == (ret = readChar(&nextChar)))
 	{
 		if (
@@ -340,10 +339,10 @@ uint32 Lex::consumeWord(
 		{
 			//not interpunction
 			consumeChar(&nextChar);
-			if (retStr.size() == 0 && true == LexUtil::isConstNumberChar(nextChar))
-			{
-				LexUtil::pointIsSeperator(false);
-			}
+//			if (retStr.size() == 0 && true == LexUtil::isConstNumberChar(nextChar))
+//			{
+//				LexUtil::pointIsSeperator(false);
+//			}
 			retStr += nextChar;
 		}
 		else if(LexUtil::isEmptyInput(retStr))
@@ -384,53 +383,54 @@ uint32 Lex::handleDefinedWord(const string& word)
 	JZWRITE_DEBUG("now expending macro:%s",word.c_str());
 	if (true == defRec->isFuncLikeMacro)
 	{
-		string matchWord;
-		uint32 errRet = consumeCharUntilReach('(',&matchWord);
-		if (errRet != eLexNoError)
-		{
-			JZFUNC_END_LOG();
-			return eLexUnexpectedSeperator;
-		}
-		//read real param
-		turnOnFuncLikeMacroMode();
-		handleLeftBracket();
-		uint32 ret = doLex();
-		JZWRITE_DEBUG("do lex end for handle define word: %s", word.c_str());
-		turnOffFuncLikeMacroMode();
-		//untile here, param list is all get
-		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
-		{
-			popErrorSite();
-			JZFUNC_END_LOG();
-			return ret;
-		}
-
-		JZWRITE_DEBUG("now add param list");
-#ifdef DEBUG
-		JZWRITE_DEBUG("now print param list");
-		for(int i = 0 ; i < mRealParamList.size(); i++)
-		{
-			JZWRITE_DEBUG("i is %d,word is :[%s]",i,mRealParamList[i].c_str());	
-		}
-#endif
-		//param number check
-		if (true == defRec->isVarArgs)
-		{
-			if (defRec->paramMap.size() - 1 > mRealParamList.size())
-			{
-				JZWRITE_DEBUG("var func like marco param not enough");
-				return eLexFuncLikeMacroParamTooLess;
-			}
-		}
-		else
-		{
-			if (defRec->paramMap.size() != mRealParamList.size())
-			{
-				JZWRITE_DEBUG("Func like macro param not right");
-				return defRec->paramMap.size() > mRealParamList.size() ?
-				eLexFuncLikeMacroParamTooLess : eLexFuncLikeMacroParamTooManay;
-			}
-		}
+    //I will rewrite this part of code. I think we should just read all parameters from file directlly
+//		string matchWord;
+//		uint32 errRet = consumeCharUntilReach('(',&matchWord);
+//		if (errRet != eLexNoError)
+//		{
+//			JZFUNC_END_LOG();
+//			return eLexUnexpectedSeperator;
+//		}
+//		//read real param
+//		turnOnFuncLikeMacroMode();
+//		handleLeftBracket();
+//		uint32 ret = doLex();
+//		JZWRITE_DEBUG("do lex end for handle define word: %s", word.c_str());
+//		turnOffFuncLikeMacroMode();
+//		//untile here, param list is all get
+//		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
+//		{
+//			popErrorSite();
+//			JZFUNC_END_LOG();
+//			return ret;
+//		}
+//
+//		JZWRITE_DEBUG("now add param list");
+//#ifdef DEBUG
+//		JZWRITE_DEBUG("now print param list");
+//		for(int i = 0 ; i < mRealParamList.size(); i++)
+//		{
+//			JZWRITE_DEBUG("i is %d,word is :[%s]",i,mRealParamList[i].c_str());	
+//		}
+//#endif
+//		//param number check
+//		if (true == defRec->isVarArgs)
+//		{
+//			if (defRec->paramMap.size() - 1 > mRealParamList.size())
+//			{
+//				JZWRITE_DEBUG("var func like marco param not enough");
+//				return eLexFuncLikeMacroParamTooLess;
+//			}
+//		}
+//		else
+//		{
+//			if (defRec->paramMap.size() != mRealParamList.size())
+//			{
+//				JZWRITE_DEBUG("Func like macro param not right");
+//				return defRec->paramMap.size() > mRealParamList.size() ?
+//				eLexFuncLikeMacroParamTooLess : eLexFuncLikeMacroParamTooManay;
+//			}
+//		}
 	}
 
 	//not func like ,just expend it
@@ -2177,11 +2177,6 @@ bool LexUtil::isInterpunction(const char input)
 		return true;
 	}
 
-	if ('.' == input)
-	{
-    //double type const!!!
-		return sPointIsSeperator;
-	}
 	switch(input)
 	{
 		case '|':
@@ -2557,10 +2552,10 @@ bool LexUtil::ignoreMacroWhenStreamIsOff(const string& word)
 }
 
 //Ah, I think this is stupid... it make this program unable to be multi process, maybe it will be better for each Lex to have a util, otherwise we will have this problem
-void LexUtil::pointIsSeperator(bool state)
-{
-	sPointIsSeperator = state;
-}
+//void LexUtil::pointIsSeperator(bool state)
+//{
+//	sPointIsSeperator = state;
+//}
 
 bool LexUtil::isConstNumberChar(const char input)
 {

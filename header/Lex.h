@@ -177,8 +177,6 @@ private:
 };
 
 namespace LexUtil {
-
-	void pointIsSeperator(bool state);
 	char* eraseComment(const char* input, uint64 *bufSize);
 	char* eraseLineSeperator(const char* input,uint64 *bufSize);
 	bool isInterpunction(const char input);
@@ -193,7 +191,6 @@ namespace LexUtil {
 	bool isConstNumberChar(const char input);
 	string eatLREmptyInput(const string &toBeEatan);
 
-	static bool sPointIsSeperator;
 } /* LexUtil */
 
 typedef uint32 (Lex::*LexPatternHandler)();
