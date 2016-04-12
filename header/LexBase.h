@@ -45,7 +45,43 @@ public:
 
   LexRecList getRecList();
 protected:
+	uint32 readChar(char* ret);		//don't move cur index ptr
+
+	//consumor fun
+	uint32 consumeChar(char *ret);
+	uint32 consumeCharUntilReach(
+			const char inputEnder, string *ret,
+		   	LexInput inOneLine = eLexInMulLine);
+
+	//alarm: this func don't care about seperator,so if you need to check seperator,check it by yourself
+	uint32 tryToMatchWord(const string& word);
+
+	//alarm: this only useful for a char,in a file.
+	//if that file is poped,this func can do nothing on it
+	uint32 undoConsume();
+
+	uint32 consumeWord(
+			string &retStr,
+			LexInput skipEmptyInput = eLexSkipEmptyInput,
+		   	LexInput inOneLine = eLexInMulLine);
+
+	void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+
+	void popReaderRecord();
+
+	uint32 getLastIndex();
+
+	void saveWord(const string& input,uint32 beginIndex, uint32 endIndex,uint32 recordType = eLexRecTypeNormal);
+	void saveWordTo(const string& input, LexRecList& list,uint32 beginIndex, uint32 endIndex, uint32 recordType = eLexRecTypeNormal);	
+
+  FileReaderRecord initFileRecord(
+		const char* buff,uint64 size,const string& fileName,
+		uint32 recordType);
+
+protected:
+	StringSet mPreprocessedFile;
 	LexRecList mLexRecList;
+	stack<FileReaderRecord> mReaderStack;	
 };
 
 #endif /* end of include guard: LEXBASE_H */

@@ -19,32 +19,9 @@ public:
 private:
 
 	uint32 doLex();
-	void saveWord(const string& input,uint32 beginIndex, uint32 endIndex,uint32 recordType = eLexRecTypeNormal);
-	void saveWordTo(const string& input, LexRecList& list,uint32 beginIndex, uint32 endIndex, uint32 recordType = eLexRecTypeNormal);	
 
 	void writeError(uint32 err);
 
-
-	uint32 getLastIndex();
-
-	//consumor fun
-	uint32 consumeChar(char *ret);
-	uint32 readChar(char* ret);		//don't move cur index ptr
-	uint32 consumeCharUntilReach(
-			const char inputEnder, string *ret,
-		   	LexInput inOneLine = eLexInMulLine);
-
-	//alarm: this func don't care about seperator,so if you need to check seperator,check it by yourself
-	uint32 tryToMatchWord(const string& word);
-
-	//alarm: this only useful for a char,in a file.
-	//if that file is poped,this func can do nothing on it
-	uint32 undoConsume();
-
-	uint32 consumeWord(
-			string &retStr,
-			LexInput skipEmptyInput = eLexSkipEmptyInput,
-		   	LexInput inOneLine = eLexInMulLine);
 
 	// isSuccess is useless when word == "#else" or word == "#endif"
 	uint32 pushPrecompileStreamControlWord(uint32 word, bool isSuccess = true);
@@ -121,19 +98,14 @@ private:
 	//if not param ,return NULL;
 	const string* getRealParam(const string& word);
 
-	void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
-
-	void popReaderRecord();
 	uint32 expendMacro(const DefineRec* def,const RealParamList& paramList, string& ret);
 	
 	vector<PrecompileSelector>& getTopPSStack();
 private:
 	RealParamList mRealParamList;
-	StringSet mPreprocessedFile;
 	StringSet mOnceFileSet;
 	StringSet mPreprocessingMacroSet;
 
-	stack<FileReaderRecord> mReaderStack;	//no so sure if I need this
 	DefineManager mDefMgr;
 };
 
