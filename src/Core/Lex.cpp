@@ -5,10 +5,15 @@
 #include "JZMacroFunc.h"
 #include "IncludeHandler.h"
 #include "KeyWordDefine.h"
+#include "LexPatternTable.h"
 #include <stdlib.h>
 /*********************************************************
 	Lex begin here 
  ********************************************************/
+Lex::Lex(){
+  LexBase();
+  initPatternHandler();
+}
 
 uint32 Lex::analyzeAFile(const string& fileName)
 {
@@ -52,7 +57,7 @@ uint32 Lex::doLex()
 		}
 		if (true == LexUtil::isInterpunction(word[0]))
 		{
-			LexPatternHandler handler = LexPtnTbl->getPattern(word[0]);
+			LexPatternHandler handler = mPatternTable->getPattern(word[0]);
 			if (NULL == handler)
 			{
 				//no handler is registered,means this is a normal input
@@ -1102,7 +1107,7 @@ uint32 Lex::handleSharp()
 		
 	}
 	JZWRITE_DEBUG("handle word:%s",word.c_str());	
-	LexPatternHandler handler = LexPtnTbl->getMacroPattern(word);
+	LexPatternHandler handler = mPatternTable->getMacroPattern(word);
 	if (NULL == handler)
 	{
 		JZWRITE_DEBUG("no handler ,maybe this is a sharp input");
@@ -1817,93 +1822,49 @@ bool Lex::isFuncLikeMacroMode()
 }
 
 
-LexPatternTable::LexPatternTable()
+void Lex::initPatternHandler()
 {
-	init();
-}
-
-LexPatternTable::~LexPatternTable()
-{
-	mPatternHandlerMap.clear();
-}
-
-LexPatternTable* LexPatternTable::getInstance()
-{
-	static LexPatternTable* instance = NULL;
-	if (NULL == instance)
-	{
-		instance = new LexPatternTable();
-	}
-	return instance;
-}
-
-void LexPatternTable::init()
-{
+  mPatternTable = new LexPatternTable();
 	/*********************************************************
 		init pattern map here 
 	 ********************************************************/
-	mPatternHandlerMap['\''] = &Lex::handleSingleQuotation;
-	mPatternHandlerMap['"']  = &Lex::handleDoubleQuotation;
-	mPatternHandlerMap['#']  = &Lex::handleSharp;
-	mPatternHandlerMap['/']  = &Lex::handleSlant;
-	mPatternHandlerMap['|']  = &Lex::handleBar;
-	mPatternHandlerMap['.']  = &Lex::handlePoint;
-	mPatternHandlerMap['<']  = &Lex::handleLeftSharpBracket;
-	mPatternHandlerMap['>']  = &Lex::handleRightSharpBracket;
-	mPatternHandlerMap['&']  = &Lex::handleAnd;
-	mPatternHandlerMap['=']  = &Lex::handleEqual;
-	mPatternHandlerMap['*']  = &Lex::handleStart;
-	mPatternHandlerMap['!']  = &Lex::handleExclamation;
-	mPatternHandlerMap['+']  = &Lex::handlePlus;
-	mPatternHandlerMap['-']  = &Lex::handleMinus;
-	mPatternHandlerMap['^']  = &Lex::handleUpponSharp;
-	mPatternHandlerMap['~']  = &Lex::handleWave;
-	mPatternHandlerMap['(']  = &Lex::handleLeftBracket;
-	mPatternHandlerMap[')']  = &Lex::handleRightBracket;
-	mPatternHandlerMap[',']  = &Lex::handleComma;
-	mPatternHandlerMap['%']  = &Lex::handleMod;
-	mPatternHandlerMap[':']  = &Lex::handleColon;
+  mPatternTable->insertPattern('\'', (LexPatternHandler)(&Lex::handleSingleQuotation));
+	mPatternTable->insertPattern('\'', (LexPatternHandler)( &Lex::handleSingleQuotation));
+	mPatternTable->insertPattern('"',  (LexPatternHandler)(&Lex::handleDoubleQuotation));
+	mPatternTable->insertPattern('#',  (LexPatternHandler)(&Lex::handleSharp));
+	mPatternTable->insertPattern('/',  (LexPatternHandler)( &Lex::handleSlant));
+	mPatternTable->insertPattern('|',  (LexPatternHandler)( &Lex::handleBar));
+	mPatternTable->insertPattern('.',  (LexPatternHandler)( &Lex::handlePoint));
+	mPatternTable->insertPattern('<',  (LexPatternHandler)( &Lex::handleLeftSharpBracket));
+	mPatternTable->insertPattern('>',  (LexPatternHandler)( &Lex::handleRightSharpBracket));
+	mPatternTable->insertPattern('&',  (LexPatternHandler)( &Lex::handleAnd));
+	mPatternTable->insertPattern('=',  (LexPatternHandler)( &Lex::handleEqual));
+	mPatternTable->insertPattern('*',  (LexPatternHandler)( &Lex::handleStart));
+	mPatternTable->insertPattern('!',  (LexPatternHandler)( &Lex::handleExclamation));
+	mPatternTable->insertPattern('+',  (LexPatternHandler)( &Lex::handlePlus));
+	mPatternTable->insertPattern('-',  (LexPatternHandler)( &Lex::handleMinus));
+	mPatternTable->insertPattern('^',  (LexPatternHandler)( &Lex::handleUpponSharp));
+	mPatternTable->insertPattern('~',  (LexPatternHandler)( &Lex::handleWave));
+	mPatternTable->insertPattern('(',  (LexPatternHandler)( &Lex::handleLeftBracket));
+	mPatternTable->insertPattern(')',  (LexPatternHandler)( &Lex::handleRightBracket));
+	mPatternTable->insertPattern(',',  (LexPatternHandler)( &Lex::handleComma));
+	mPatternTable->insertPattern('%',  (LexPatternHandler)( &Lex::handleMod));
+	mPatternTable->insertPattern(':',  (LexPatternHandler)( &Lex::handleColon));
 
 	/*********************************************************
 		init marco pattern map here 
 	 ********************************************************/
 
-	mMacroPatternHandlerMap["ifdef"]   = &Lex::handleSharpIfdef;	
-	mMacroPatternHandlerMap["ifndef"]   = &Lex::handleSharpIfndef;	
-	mMacroPatternHandlerMap["else"]    = &Lex::handleSharpElse;	
-	mMacroPatternHandlerMap["if"]      = &Lex::handleSharpIf;	
-	mMacroPatternHandlerMap["endif"]   = &Lex::handleSharpEndIf;	
-	mMacroPatternHandlerMap["define"]  = &Lex::handleSharpDefine;	
-	mMacroPatternHandlerMap["include"] = &Lex::handleSharpInclude;	
-	mMacroPatternHandlerMap["pragma"]  = &Lex::handleSharpPragma;
-	mMacroPatternHandlerMap["warning"]  = &Lex::handleSharpWarning;
-	mMacroPatternHandlerMap["error"]  = &Lex::handleSharpError;
-	mMacroPatternHandlerMap["elif"]  = &Lex::handleSharpElif;
+	mPatternTable->insertPattern("ifdef",   (LexPatternHandler)( &Lex::handleSharpIfdef));	
+	mPatternTable->insertPattern("ifndef",   (LexPatternHandler)( &Lex::handleSharpIfndef));	
+	mPatternTable->insertPattern("else",    (LexPatternHandler)( &Lex::handleSharpElse));	
+	mPatternTable->insertPattern("if",      (LexPatternHandler)( &Lex::handleSharpIf));	
+	mPatternTable->insertPattern("endif",   (LexPatternHandler)( &Lex::handleSharpEndIf));	
+	mPatternTable->insertPattern("define",  (LexPatternHandler)( &Lex::handleSharpDefine));	
+	mPatternTable->insertPattern("include", (LexPatternHandler)( &Lex::handleSharpInclude));	
+	mPatternTable->insertPattern("pragma",  (LexPatternHandler)( &Lex::handleSharpPragma));
+	mPatternTable->insertPattern("warning",  (LexPatternHandler)( &Lex::handleSharpWarning));
+	mPatternTable->insertPattern("error",  (LexPatternHandler)( &Lex::handleSharpError));
+	mPatternTable->insertPattern("elif",  (LexPatternHandler)( &Lex::handleSharpElif));
 }
-
-LexPatternHandler LexPatternTable::getMacroPattern(const string& input)
-{
-	if (mMacroPatternHandlerMap.find(input) != mMacroPatternHandlerMap.end())
-	{
-		return mMacroPatternHandlerMap[input];
-	}
-	else
-	{
-		return NULL;	
-	}
-
-}
-
-LexPatternHandler LexPatternTable::getPattern(const char input)
-{
-	if (mPatternHandlerMap.find(input) != mPatternHandlerMap.end())
-	{
-		return mPatternHandlerMap[input];
-	}
-	else
-	{
-		return NULL;	
-	}
-}
-
 

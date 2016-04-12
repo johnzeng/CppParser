@@ -10,18 +10,20 @@
 #include "LexBase.h"
 
 using namespace std;
+class LexPatternTable;
 
 //class define
 class Lex:public LexBase {
 
 public:
 	virtual uint32 analyzeAFile(const string& fileName);
+  Lex();
 private:
 
 	uint32 doLex();
 
 	void writeError(uint32 err);
-
+  void initPatternHandler();
 
 	// isSuccess is useless when word == "#else" or word == "#endif"
 	uint32 pushPrecompileStreamControlWord(uint32 word, bool isSuccess = true);
@@ -102,6 +104,7 @@ private:
 	
 	vector<PrecompileSelector>& getTopPSStack();
 private:
+  LexPatternTable* mPatternTable;
 	RealParamList mRealParamList;
 	StringSet mOnceFileSet;
 	StringSet mPreprocessingMacroSet;
@@ -109,24 +112,5 @@ private:
 	DefineManager mDefMgr;
 };
 
-
-typedef uint32 (Lex::*LexPatternHandler)();
-
-class LexPatternTable {
-public:
-	static LexPatternTable* getInstance();
-	virtual ~LexPatternTable ();
-
-	LexPatternHandler getPattern(const char input);
-	LexPatternHandler getMacroPattern(const string& input);
-
-private:
-
-	void init();
-	LexPatternTable ();
-	map<char,LexPatternHandler> mPatternHandlerMap;
-	map<string ,LexPatternHandler> mMacroPatternHandlerMap;
-};
-#define LexPtnTbl LexPatternTable::getInstance()
 
 #endif /* end of include guard: LEX_H */
