@@ -10,7 +10,6 @@
 #include "LexBase.h"
 
 using namespace std;
-class LexPatternTable;
 
 //class define
 class Lex:public LexBase {
@@ -50,8 +49,6 @@ private:
 	void popErrorSite();
 public:
 	//handler function
-	uint32 handleSingleQuotation();  		//"
-	uint32 handleDoubleQuotation();			//'
 	uint32 handleSharp();					//#
 	uint32 handleSlant();					// /
 	uint32 handleBar();						//|
@@ -71,11 +68,6 @@ public:
 	uint32 handleComma();					//,
 	uint32 handleMod();						//%
 	uint32 handleColon();					//:
-
-	//slant can be a big handler...
-	uint32 handleDivideSlant();
-	uint32 handleCommentLine();
-	uint32 handleCommentBlock();
 
 	//macro handler
 	uint32 handleSharpDefine();
@@ -104,7 +96,6 @@ private:
 	
 	vector<PrecompileSelector>& getTopPSStack();
 private:
-  LexPatternTable* mPatternTable;
 	RealParamList mRealParamList;
 	StringSet mOnceFileSet;
 	StringSet mPreprocessingMacroSet;

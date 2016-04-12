@@ -5,8 +5,8 @@
 #include "JZMacroFunc.h"
 #include "IncludeHandler.h"
 #include "KeyWordDefine.h"
-#include "LexPatternTable.h"
 #include <stdlib.h>
+#include "LexPatternTable.h"
 /*********************************************************
 	Lex begin here 
  ********************************************************/
@@ -440,95 +440,6 @@ void Lex::writeError(uint32 err)
 	happen in my compilor	
  ********************************************************/
 
-uint32 Lex::handleSingleQuotation()
-{
-	JZFUNC_BEGIN_LOG();
-
-	//when you enter this func,you have already get a ',so
-	uint32 beginIndex = getLastIndex();
-	string toSave = "'";
-	uint32 toSaveLen = 0;
-	bool isConvertBackSlant = false;
-	do
-	{
-		string retStr = "";
-		uint32 retErr = eLexNoError;
-		
-		retErr = consumeCharUntilReach('\'',&retStr,eLexInOneLine);
-		if (eLexNoError != retErr)
-		{
-			JZFUNC_END_LOG();
-			return retErr;
-		}
-		JZWRITE_DEBUG("ret str is : %s",retStr.c_str());
-		for(int i = 0 ; i < retStr.size() ; i++)
-		{
-			if (true == LexUtil::isBackSlant(retStr[i]))
-			{
-				isConvertBackSlant = !isConvertBackSlant;
-			}
-			else
-			{
-				isConvertBackSlant = false;	
-			}
-		
-		}
-		toSave += retStr;
-		toSaveLen = toSave.size();
-	}while(true == isConvertBackSlant);
-
-//	handle const char input
-//	...
-	uint32 endIndex = getLastIndex();
-	saveWord(toSave,beginIndex, endIndex ,  eLexRecTypeConstChar);
-
-	JZFUNC_END_LOG();
-	return eLexNoError;
-}
-
-uint32 Lex::handleDoubleQuotation()
-{
-	JZFUNC_BEGIN_LOG();
-	uint32 beginIndex = getLastIndex();
-	//when you enter this func,you have already get a ",so init a " here
-	string toSave = "\"";
-	uint32 toSaveLen = 0;
-	bool isConvertBackSlant = false;
-	do
-	{
-		string retStr = "";
-		uint32 retErr = eLexNoError;
-		retErr = consumeCharUntilReach('"',&retStr,eLexInOneLine);
-		if (eLexNoError != retErr)
-		{
-			JZFUNC_END_LOG();
-			return retErr;
-		}
-		for(int i = 0 ; i < retStr.size() ; i++)
-		{
-			if (true == LexUtil::isBackSlant(retStr[i]))
-			{
-				isConvertBackSlant = !isConvertBackSlant;
-			}
-			else
-			{
-				isConvertBackSlant = false;	
-			}
-		
-		}
-		toSave += retStr;
-		toSaveLen = toSave.size();
-	}while(true == isConvertBackSlant);
-
-//	handle const char input
-//	...
-	uint32 endIndex = getLastIndex();
-	saveWord(toSave,beginIndex, endIndex, eLexRecTypeConstChar);
-
-	JZFUNC_END_LOG();
-	return eLexNoError;
-	return 0;
-}
 
 uint32 Lex::handleBar()
 {
@@ -938,55 +849,21 @@ uint32 Lex::handleExclamation()
 	return ret;
 }
 
-uint32 Lex::handleDivideSlant()
+uint32 Lex::handleSlant()
 {
 	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
-	string toSave = "&";
+	string toSave = "/";
 	if ('=' == nextChar)
 	{
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-//	saveWord(toSave);
 	uint32 endIndex = getLastIndex();
 	saveWord(toSave,beginIndex,endIndex);
 	return ret;
-}
-
-uint32 Lex::handleSlant()
-{
-	uint32 beginIndex = getLastIndex();
-	JZFUNC_BEGIN_LOG();
-	char nextChar = 0;
-	uint32 ret = eLexNoError;
-	ret = readChar(&nextChar);
-	switch(nextChar)
-	{
-		case '/':
-		{
-			ret = readChar(&nextChar);
-			JZFUNC_END_LOG();
-			return handleCommentLine();	
-		}
-		case '*':
-		{
-			ret = readChar(&nextChar);
-			JZFUNC_END_LOG();
-			return handleCommentBlock();	
-		}
-		default:
-		{
-			//maybe this means divide
-			JZFUNC_END_LOG();
-			return handleDivideSlant();
-		}
-	}
-
-	JZFUNC_END_LOG();
-	return eLexNoError;
 }
 
 uint32 Lex::handleSharpPragma()
@@ -1005,74 +882,6 @@ uint32 Lex::handleSharpPragma()
 	ret = consumeCharUntilReach('\n',&word);
 	JZFUNC_END_LOG();
 	return ret ;
-}
-
-uint32 Lex::handleCommentLine()
-{
-	JZFUNC_BEGIN_LOG();
-	char nextChar = 0;
-	uint32 ret = eLexNoError;
-	bool backSlantBeforeLineSeperator = false;
-
-	while ((ret = consumeChar(&nextChar)) == eLexNoError)
-	{
-		if (false == LexUtil::isEmptyInput(nextChar) && true == backSlantBeforeLineSeperator)
-		{
-			backSlantBeforeLineSeperator = false;
-			continue;
-		}
-		if ('\\' == nextChar)
-		{
-			backSlantBeforeLineSeperator = true;
-			continue;
-			
-		}
-		if (true == LexUtil::isLineEnder(nextChar))
-		{
-			if (true == backSlantBeforeLineSeperator)
-			{
-
-				JZWRITE_DEBUG("line ended with back slant");
-				continue;
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	JZFUNC_END_LOG();
-	return ret;
-}
-
-uint32 Lex::handleCommentBlock()
-{
-	JZFUNC_BEGIN_LOG();
-	uint32 ret = eLexNoError;
-	string retStr = "";
-	char retChar = 0;
-
-	do
-	{
-		ret = consumeCharUntilReach('*', &retStr);
-		if (eLexNoError == ret)
-		{
-			ret = readChar(&retChar);
-		}
-		else
-		{
-			return ret;
-		}
-		if (retChar == '/')
-		{
-			char slant;
-			consumeChar(&slant);
-			break;
-		}
-	}while(ret == eLexNoError);
-
-	JZFUNC_END_LOG();
-	return ret;
 }
 
 uint32 Lex::handleSharp()
@@ -1824,47 +1633,43 @@ bool Lex::isFuncLikeMacroMode()
 
 void Lex::initPatternHandler()
 {
-  mPatternTable = new LexPatternTable();
 	/*********************************************************
 		init pattern map here 
 	 ********************************************************/
-  mPatternTable->insertPattern('\'', (LexPatternHandler)(&Lex::handleSingleQuotation));
-	mPatternTable->insertPattern('\'', (LexPatternHandler)( &Lex::handleSingleQuotation));
-	mPatternTable->insertPattern('"',  (LexPatternHandler)(&Lex::handleDoubleQuotation));
 	mPatternTable->insertPattern('#',  (LexPatternHandler)(&Lex::handleSharp));
-	mPatternTable->insertPattern('/',  (LexPatternHandler)( &Lex::handleSlant));
-	mPatternTable->insertPattern('|',  (LexPatternHandler)( &Lex::handleBar));
-	mPatternTable->insertPattern('.',  (LexPatternHandler)( &Lex::handlePoint));
-	mPatternTable->insertPattern('<',  (LexPatternHandler)( &Lex::handleLeftSharpBracket));
-	mPatternTable->insertPattern('>',  (LexPatternHandler)( &Lex::handleRightSharpBracket));
-	mPatternTable->insertPattern('&',  (LexPatternHandler)( &Lex::handleAnd));
-	mPatternTable->insertPattern('=',  (LexPatternHandler)( &Lex::handleEqual));
-	mPatternTable->insertPattern('*',  (LexPatternHandler)( &Lex::handleStart));
-	mPatternTable->insertPattern('!',  (LexPatternHandler)( &Lex::handleExclamation));
-	mPatternTable->insertPattern('+',  (LexPatternHandler)( &Lex::handlePlus));
-	mPatternTable->insertPattern('-',  (LexPatternHandler)( &Lex::handleMinus));
-	mPatternTable->insertPattern('^',  (LexPatternHandler)( &Lex::handleUpponSharp));
-	mPatternTable->insertPattern('~',  (LexPatternHandler)( &Lex::handleWave));
-	mPatternTable->insertPattern('(',  (LexPatternHandler)( &Lex::handleLeftBracket));
-	mPatternTable->insertPattern(')',  (LexPatternHandler)( &Lex::handleRightBracket));
-	mPatternTable->insertPattern(',',  (LexPatternHandler)( &Lex::handleComma));
-	mPatternTable->insertPattern('%',  (LexPatternHandler)( &Lex::handleMod));
-	mPatternTable->insertPattern(':',  (LexPatternHandler)( &Lex::handleColon));
+	mPatternTable->insertPattern('/',  (LexPatternHandler)(&Lex::handleSlant));
+	mPatternTable->insertPattern('|',  (LexPatternHandler)(&Lex::handleBar));
+	mPatternTable->insertPattern('.',  (LexPatternHandler)(&Lex::handlePoint));
+	mPatternTable->insertPattern('<',  (LexPatternHandler)(&Lex::handleLeftSharpBracket));
+	mPatternTable->insertPattern('>',  (LexPatternHandler)(&Lex::handleRightSharpBracket));
+	mPatternTable->insertPattern('&',  (LexPatternHandler)(&Lex::handleAnd));
+	mPatternTable->insertPattern('=',  (LexPatternHandler)(&Lex::handleEqual));
+	mPatternTable->insertPattern('*',  (LexPatternHandler)(&Lex::handleStart));
+	mPatternTable->insertPattern('!',  (LexPatternHandler)(&Lex::handleExclamation));
+	mPatternTable->insertPattern('+',  (LexPatternHandler)(&Lex::handlePlus));
+	mPatternTable->insertPattern('-',  (LexPatternHandler)(&Lex::handleMinus));
+	mPatternTable->insertPattern('^',  (LexPatternHandler)(&Lex::handleUpponSharp));
+	mPatternTable->insertPattern('~',  (LexPatternHandler)(&Lex::handleWave));
+	mPatternTable->insertPattern('(',  (LexPatternHandler)(&Lex::handleLeftBracket));
+	mPatternTable->insertPattern(')',  (LexPatternHandler)(&Lex::handleRightBracket));
+	mPatternTable->insertPattern(',',  (LexPatternHandler)(&Lex::handleComma));
+	mPatternTable->insertPattern('%',  (LexPatternHandler)(&Lex::handleMod));
+	mPatternTable->insertPattern(':',  (LexPatternHandler)(&Lex::handleColon));
 
 	/*********************************************************
 		init marco pattern map here 
 	 ********************************************************/
 
-	mPatternTable->insertPattern("ifdef",   (LexPatternHandler)( &Lex::handleSharpIfdef));	
-	mPatternTable->insertPattern("ifndef",   (LexPatternHandler)( &Lex::handleSharpIfndef));	
-	mPatternTable->insertPattern("else",    (LexPatternHandler)( &Lex::handleSharpElse));	
-	mPatternTable->insertPattern("if",      (LexPatternHandler)( &Lex::handleSharpIf));	
-	mPatternTable->insertPattern("endif",   (LexPatternHandler)( &Lex::handleSharpEndIf));	
-	mPatternTable->insertPattern("define",  (LexPatternHandler)( &Lex::handleSharpDefine));	
-	mPatternTable->insertPattern("include", (LexPatternHandler)( &Lex::handleSharpInclude));	
-	mPatternTable->insertPattern("pragma",  (LexPatternHandler)( &Lex::handleSharpPragma));
-	mPatternTable->insertPattern("warning",  (LexPatternHandler)( &Lex::handleSharpWarning));
-	mPatternTable->insertPattern("error",  (LexPatternHandler)( &Lex::handleSharpError));
-	mPatternTable->insertPattern("elif",  (LexPatternHandler)( &Lex::handleSharpElif));
+	mPatternTable->insertPattern("ifdef",   (LexPatternHandler)(&Lex::handleSharpIfdef));	
+	mPatternTable->insertPattern("ifndef",   (LexPatternHandler)(&Lex::handleSharpIfndef));	
+	mPatternTable->insertPattern("else",    (LexPatternHandler)(&Lex::handleSharpElse));	
+	mPatternTable->insertPattern("if",      (LexPatternHandler)(&Lex::handleSharpIf));	
+	mPatternTable->insertPattern("endif",   (LexPatternHandler)(&Lex::handleSharpEndIf));	
+	mPatternTable->insertPattern("define",  (LexPatternHandler)(&Lex::handleSharpDefine));	
+	mPatternTable->insertPattern("include", (LexPatternHandler)(&Lex::handleSharpInclude));	
+	mPatternTable->insertPattern("pragma",  (LexPatternHandler)(&Lex::handleSharpPragma));
+	mPatternTable->insertPattern("warning",  (LexPatternHandler)(&Lex::handleSharpWarning));
+	mPatternTable->insertPattern("error",  (LexPatternHandler)(&Lex::handleSharpError));
+	mPatternTable->insertPattern("elif",  (LexPatternHandler)(&Lex::handleSharpElif));
 }
 

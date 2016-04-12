@@ -2,6 +2,9 @@
 #define LEXBASE_H
 
 #include "LexData.h"
+
+class LexPatternTable;
+
 class LexBase{
 public:
 	enum LexReturnNum
@@ -44,6 +47,10 @@ public:
 	void printLexRec();
 
   LexRecList getRecList();
+public:
+  // some basic handler
+	uint32 handleSingleQuotation();  		//"
+	uint32 handleDoubleQuotation();			//'
 protected:
 	uint32 readChar(char* ret);		//don't move cur index ptr
 
@@ -79,6 +86,7 @@ protected:
 		uint32 recordType);
 
 protected:
+  LexPatternTable* mPatternTable;
 	StringSet mPreprocessedFile;
 	LexRecList mLexRecList;
 	stack<FileReaderRecord> mReaderStack;	

@@ -2,12 +2,17 @@
 #include "JZLogger.h"
 #include "LexUtil.h"
 #include "JZMacroFunc.h"
+#include "LexPatternTable.h"
 
 LexBase::LexBase()
 {
+  mPatternTable = new LexPatternTable();
+	mPatternTable->insertPattern('\'', &LexBase::handleSingleQuotation);
+	mPatternTable->insertPattern('"',  &LexBase::handleDoubleQuotation);
 }
 LexBase::~LexBase()
 {
+  JZSAFE_DELETE(mPatternTable)
 }
 
 uint32 LexBase::analyzeAFile(const string& fileName)
@@ -347,4 +352,94 @@ FileReaderRecord LexBase::initFileRecord(
 		.mFuncLikeMacroParamAnalyzing = false,
 	};
 	return ret;
+}
+
+uint32 LexBase::handleSingleQuotation()
+{
+	JZFUNC_BEGIN_LOG();
+
+	//when you enter this func,you have already get a ',so
+	uint32 beginIndex = getLastIndex();
+	string toSave = "'";
+	uint32 toSaveLen = 0;
+	bool isConvertBackSlant = false;
+	do
+	{
+		string retStr = "";
+		uint32 retErr = eLexNoError;
+		
+		retErr = consumeCharUntilReach('\'',&retStr,eLexInOneLine);
+		if (eLexNoError != retErr)
+		{
+			JZFUNC_END_LOG();
+			return retErr;
+		}
+		JZWRITE_DEBUG("ret str is : %s",retStr.c_str());
+		for(int i = 0 ; i < retStr.size() ; i++)
+		{
+			if (true == LexUtil::isBackSlant(retStr[i]))
+			{
+				isConvertBackSlant = !isConvertBackSlant;
+			}
+			else
+			{
+				isConvertBackSlant = false;	
+			}
+		
+		}
+		toSave += retStr;
+		toSaveLen = toSave.size();
+	}while(true == isConvertBackSlant);
+
+//	handle const char input
+//	...
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex, endIndex ,  eLexRecTypeConstChar);
+
+	JZFUNC_END_LOG();
+	return eLexNoError;
+}
+
+uint32 LexBase::handleDoubleQuotation()
+{
+	JZFUNC_BEGIN_LOG();
+	uint32 beginIndex = getLastIndex();
+	//when you enter this func,you have already get a ",so init a " here
+	string toSave = "\"";
+	uint32 toSaveLen = 0;
+	bool isConvertBackSlant = false;
+	do
+	{
+		string retStr = "";
+		uint32 retErr = eLexNoError;
+		retErr = consumeCharUntilReach('"',&retStr,eLexInOneLine);
+		if (eLexNoError != retErr)
+		{
+			JZFUNC_END_LOG();
+			return retErr;
+		}
+		for(int i = 0 ; i < retStr.size() ; i++)
+		{
+			if (true == LexUtil::isBackSlant(retStr[i]))
+			{
+				isConvertBackSlant = !isConvertBackSlant;
+			}
+			else
+			{
+				isConvertBackSlant = false;	
+			}
+		
+		}
+		toSave += retStr;
+		toSaveLen = toSave.size();
+	}while(true == isConvertBackSlant);
+
+//	handle const char input
+//	...
+	uint32 endIndex = getLastIndex();
+	saveWord(toSave,beginIndex, endIndex, eLexRecTypeConstChar);
+
+	JZFUNC_END_LOG();
+	return eLexNoError;
+	return 0;
 }
