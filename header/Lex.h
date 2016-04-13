@@ -22,7 +22,6 @@ private:
 	uint32 doLex();
 
 	void writeError(uint32 err);
-  void initPatternHandler();
 
 	// isSuccess is useless when word == "#else" or word == "#endif"
 	uint32 pushPrecompileStreamControlWord(uint32 word, bool isSuccess = true);

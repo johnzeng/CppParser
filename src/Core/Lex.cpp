@@ -7,12 +7,47 @@
 #include "KeyWordDefine.h"
 #include <stdlib.h>
 #include "LexPatternTable.h"
-/*********************************************************
-	Lex begin here 
- ********************************************************/
+
 Lex::Lex(){
   LexBase();
-  initPatternHandler();
+	/*********************************************************
+		init pattern map here 
+	 ********************************************************/
+	mPatternTable->insertPattern('#',  (LexPatternHandler)(&Lex::handleSharp));
+	mPatternTable->insertPattern('/',  (LexPatternHandler)(&Lex::handleSlant));
+	mPatternTable->insertPattern('|',  (LexPatternHandler)(&Lex::handleBar));
+	mPatternTable->insertPattern('.',  (LexPatternHandler)(&Lex::handlePoint));
+	mPatternTable->insertPattern('<',  (LexPatternHandler)(&Lex::handleLeftSharpBracket));
+	mPatternTable->insertPattern('>',  (LexPatternHandler)(&Lex::handleRightSharpBracket));
+	mPatternTable->insertPattern('&',  (LexPatternHandler)(&Lex::handleAnd));
+	mPatternTable->insertPattern('=',  (LexPatternHandler)(&Lex::handleEqual));
+	mPatternTable->insertPattern('*',  (LexPatternHandler)(&Lex::handleStart));
+	mPatternTable->insertPattern('!',  (LexPatternHandler)(&Lex::handleExclamation));
+	mPatternTable->insertPattern('+',  (LexPatternHandler)(&Lex::handlePlus));
+	mPatternTable->insertPattern('-',  (LexPatternHandler)(&Lex::handleMinus));
+	mPatternTable->insertPattern('^',  (LexPatternHandler)(&Lex::handleUpponSharp));
+	mPatternTable->insertPattern('~',  (LexPatternHandler)(&Lex::handleWave));
+	mPatternTable->insertPattern('(',  (LexPatternHandler)(&Lex::handleLeftBracket));
+	mPatternTable->insertPattern(')',  (LexPatternHandler)(&Lex::handleRightBracket));
+	mPatternTable->insertPattern(',',  (LexPatternHandler)(&Lex::handleComma));
+	mPatternTable->insertPattern('%',  (LexPatternHandler)(&Lex::handleMod));
+	mPatternTable->insertPattern(':',  (LexPatternHandler)(&Lex::handleColon));
+
+	/*********************************************************
+		init marco pattern map here 
+	 ********************************************************/
+
+	mPatternTable->insertPattern("ifdef",   (LexPatternHandler)(&Lex::handleSharpIfdef));	
+	mPatternTable->insertPattern("ifndef",   (LexPatternHandler)(&Lex::handleSharpIfndef));	
+	mPatternTable->insertPattern("else",    (LexPatternHandler)(&Lex::handleSharpElse));	
+	mPatternTable->insertPattern("if",      (LexPatternHandler)(&Lex::handleSharpIf));	
+	mPatternTable->insertPattern("endif",   (LexPatternHandler)(&Lex::handleSharpEndIf));	
+	mPatternTable->insertPattern("define",  (LexPatternHandler)(&Lex::handleSharpDefine));	
+	mPatternTable->insertPattern("include", (LexPatternHandler)(&Lex::handleSharpInclude));	
+	mPatternTable->insertPattern("pragma",  (LexPatternHandler)(&Lex::handleSharpPragma));
+	mPatternTable->insertPattern("warning",  (LexPatternHandler)(&Lex::handleSharpWarning));
+	mPatternTable->insertPattern("error",  (LexPatternHandler)(&Lex::handleSharpError));
+	mPatternTable->insertPattern("elif",  (LexPatternHandler)(&Lex::handleSharpElif));
 }
 
 uint32 Lex::analyzeAFile(const string& fileName)
@@ -1629,47 +1664,3 @@ bool Lex::isFuncLikeMacroMode()
 	}
 	return ret;
 }
-
-
-void Lex::initPatternHandler()
-{
-	/*********************************************************
-		init pattern map here 
-	 ********************************************************/
-	mPatternTable->insertPattern('#',  (LexPatternHandler)(&Lex::handleSharp));
-	mPatternTable->insertPattern('/',  (LexPatternHandler)(&Lex::handleSlant));
-	mPatternTable->insertPattern('|',  (LexPatternHandler)(&Lex::handleBar));
-	mPatternTable->insertPattern('.',  (LexPatternHandler)(&Lex::handlePoint));
-	mPatternTable->insertPattern('<',  (LexPatternHandler)(&Lex::handleLeftSharpBracket));
-	mPatternTable->insertPattern('>',  (LexPatternHandler)(&Lex::handleRightSharpBracket));
-	mPatternTable->insertPattern('&',  (LexPatternHandler)(&Lex::handleAnd));
-	mPatternTable->insertPattern('=',  (LexPatternHandler)(&Lex::handleEqual));
-	mPatternTable->insertPattern('*',  (LexPatternHandler)(&Lex::handleStart));
-	mPatternTable->insertPattern('!',  (LexPatternHandler)(&Lex::handleExclamation));
-	mPatternTable->insertPattern('+',  (LexPatternHandler)(&Lex::handlePlus));
-	mPatternTable->insertPattern('-',  (LexPatternHandler)(&Lex::handleMinus));
-	mPatternTable->insertPattern('^',  (LexPatternHandler)(&Lex::handleUpponSharp));
-	mPatternTable->insertPattern('~',  (LexPatternHandler)(&Lex::handleWave));
-	mPatternTable->insertPattern('(',  (LexPatternHandler)(&Lex::handleLeftBracket));
-	mPatternTable->insertPattern(')',  (LexPatternHandler)(&Lex::handleRightBracket));
-	mPatternTable->insertPattern(',',  (LexPatternHandler)(&Lex::handleComma));
-	mPatternTable->insertPattern('%',  (LexPatternHandler)(&Lex::handleMod));
-	mPatternTable->insertPattern(':',  (LexPatternHandler)(&Lex::handleColon));
-
-	/*********************************************************
-		init marco pattern map here 
-	 ********************************************************/
-
-	mPatternTable->insertPattern("ifdef",   (LexPatternHandler)(&Lex::handleSharpIfdef));	
-	mPatternTable->insertPattern("ifndef",   (LexPatternHandler)(&Lex::handleSharpIfndef));	
-	mPatternTable->insertPattern("else",    (LexPatternHandler)(&Lex::handleSharpElse));	
-	mPatternTable->insertPattern("if",      (LexPatternHandler)(&Lex::handleSharpIf));	
-	mPatternTable->insertPattern("endif",   (LexPatternHandler)(&Lex::handleSharpEndIf));	
-	mPatternTable->insertPattern("define",  (LexPatternHandler)(&Lex::handleSharpDefine));	
-	mPatternTable->insertPattern("include", (LexPatternHandler)(&Lex::handleSharpInclude));	
-	mPatternTable->insertPattern("pragma",  (LexPatternHandler)(&Lex::handleSharpPragma));
-	mPatternTable->insertPattern("warning",  (LexPatternHandler)(&Lex::handleSharpWarning));
-	mPatternTable->insertPattern("error",  (LexPatternHandler)(&Lex::handleSharpError));
-	mPatternTable->insertPattern("elif",  (LexPatternHandler)(&Lex::handleSharpElif));
-}
-
