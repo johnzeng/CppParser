@@ -2,8 +2,6 @@ mylib_PATH=./mylib
 depend_generator=$(mylib_PATH)/depend_generator.sh
 myLib=$(mylib_PATH)/mylib.a
 PLATFORM_FLAG=-D_LINUX_
-CC=clang
-CXX=clang++
 AR=ar
 
 debug_var=1
