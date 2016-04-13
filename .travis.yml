@@ -1,8 +1,8 @@
 language: c++
 
 compiler: clang
-install:
-  - sudo apt-get install --allow-unauthenticated -qq clang-3.4
-  - export CXX="clang++-3.4"
+#install:
+#  - sudo apt-get install --allow-unauthenticated -qq clang-3.4
+#  - export CXX="clang++-3.4"
 script: 
   - make

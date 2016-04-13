@@ -230,7 +230,7 @@ uint32 Lex::expendMacro(const DefineRec* def,const RealParamList& paramList, str
 						{
 							if(',' == ret.back())
 							{
-								ret.pop_back();	
+								ret.erase(ret.size() - 1 );	
 							}
 						}
 					}
@@ -300,7 +300,7 @@ uint32 Lex::expendMacro(const DefineRec* def,const RealParamList& paramList, str
 						while(ret.size() > 0 && true == LexUtil::isEmptyInput(ret.back()))
 						{
 							JZWRITE_DEBUG("pop empty input");
-							ret.pop_back();	
+							ret.erase(ret.size() - 1);	
 						}
 					}
 				}
