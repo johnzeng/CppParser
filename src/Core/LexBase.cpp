@@ -15,9 +15,8 @@ LexBase::~LexBase()
   JZSAFE_DELETE(mPatternTable)
 }
 
-uint32 LexBase::analyzeAFile(const string& fileName)
+void LexBase::doLex()
 {
-  return 0;
 }
 
 LexRecList LexBase::getRecList()
@@ -233,12 +232,17 @@ uint32 LexBase::consumeCharUntilReach(const char inputEnder, string *ret, LexInp
 	return readRet;
 }
 
+void LexBase::pushReaderRecord(FileReaderRecord record)
+{
+	mReaderStack.push(record);
+}
+
 void LexBase::pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType  )
 {
 	FileReaderRecord rec = 
 		initFileRecord(
 				buff,size, fileName,recordType);
-	mReaderStack.push(rec);
+  pushReaderRecord(rec);
   //alarm: these part of logic should be in child of lexbase
 //	switch(recordType)
 //	{
@@ -256,7 +260,6 @@ void LexBase::pushReaderRecord(const char* buff,uint64 size,const string& fileNa
 
 void LexBase::popReaderRecord()
 {
-	JZSAFE_DELETE(mReaderStack.top().buffer);
 	switch(mReaderStack.top().recordType)
 	{
   //alarm: these part of logic should be in child of lexbase

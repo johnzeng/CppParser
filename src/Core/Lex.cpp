@@ -71,6 +71,7 @@ uint32 Lex::analyzeAFile(const string& fileName)
 	uint32 ret = doLex();
   //buffWithOutComment will be delete in popReaderRecord
 	popReaderRecord();
+  JZSAFE_DELETE(buffWithOutComment);
 	JZWRITE_DEBUG("analyze file end");
 	JZFUNC_END_LOG();
 //  JZSAFE_DELETE(buffWithOutComment)
@@ -1486,6 +1487,7 @@ uint32 Lex::checkMacro(bool *isSuccess,uint32 checkMark)
 	{
 		return lexret;
 	}
+  JZSAFE_DELETE(buff)
 	popReaderRecord();
 
 	LexRecList list;

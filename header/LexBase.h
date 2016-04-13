@@ -42,7 +42,6 @@ public:
 	};
 	LexBase ();
 	virtual ~LexBase ();
-	virtual uint32 analyzeAFile(const string& fileName);
 
 	void printLexRec();
 
@@ -52,6 +51,9 @@ public:
 	uint32 handleSingleQuotation();  		//"
 	uint32 handleDoubleQuotation();			//'
 protected:
+  void doLex();
+
+  virtual void heartBeat(){};
 	uint32 readChar(char* ret);		//don't move cur index ptr
 
 	//consumor fun
@@ -71,6 +73,8 @@ protected:
 			string &retStr,
 			LexInput skipEmptyInput = eLexSkipEmptyInput,
 		   	LexInput inOneLine = eLexInMulLine);
+
+  void pushReaderRecord(FileReaderRecord record);
 
 	void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
