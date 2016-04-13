@@ -1,4 +1,4 @@
-mylib_PATH=../mylib
+mylib_PATH=./mylib
 depend_generator=$(mylib_PATH)/depend_generator.sh
 myLib=$(mylib_PATH)/mylib.a
 PLATFORM_FLAG=-D_LINUX_
@@ -10,8 +10,10 @@ debug_var=1
 
 ifeq ($(debug_var),1)
 RELEASE_FLAG=-DDEBUG -g -fno-pie
+MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b develop
 else
 RELEASE_FLAG=-DRELEASE
+MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b master
 endif
 
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header
@@ -30,12 +32,18 @@ OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
 TEST_SOURCE=$(wildcard ./test/src/*.cpp ./test/src/*/*.c ./test/src/*/*.cpp)
 
-$(TARGET):$(OBJS) $(myLib) depend
+$(TARGET):$(OBJS) depend $(myLib)
 	@echo $(OBJS)
 	$(AR) -r $(TARGET) $(OBJS) 
 
-$(myLib):
+	
+$(myLib): $(mylib_PATH)
+	@echo "now build mylib"
 	cd $(mylib_PATH) && make
+
+$(mylib_PATH):
+	@echo "now checkout mylib"
+	$(MYLIB_CHECKOUT)
 
 test:$(TARGET) $(TEST_SOURCE)
 	@echo "==================== build tester ==========================="
@@ -52,6 +60,7 @@ release:clean makefile
 .PHONY:count,clean,test,macro
 
 clean:
+	-rm -rf $(mylib_PATH)
 	-rm depend
 	-rm $(TARGET)
 	-rm $(OBJS)
@@ -62,6 +71,6 @@ count:
 	wc -l $(HEADERS) $(SOURCES)
 
 
-depend:$(HEADERS) $(SOURCES)
+depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
 	@echo "=================== now gen depend =============="
 	-@sh $(depend_generator) "$(CPPFLAGS)" 2>&1 > /dev/null
