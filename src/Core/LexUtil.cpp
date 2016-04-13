@@ -1,6 +1,7 @@
 #include "LexUtil.h"
 #include "JZLogger.h"
 #include <stdlib.h>
+#include <string.h>
 
 /*********************************************************
 	Lex end here
