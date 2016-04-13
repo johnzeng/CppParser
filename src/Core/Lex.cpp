@@ -5,6 +5,7 @@
 #include "JZMacroFunc.h"
 #include "IncludeHandler.h"
 #include "KeyWordDefine.h"
+#include <string.h>
 #include <stdlib.h>
 #include "LexPatternTable.h"
 
