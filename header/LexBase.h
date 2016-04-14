@@ -48,13 +48,17 @@ public:
 
 	void printLexRec();
 
+	uint32 analyzeAFile(const string& fileName);
+
   LexRecList getRecList();
 public:
   // some basic handler
 	uint32 handleSingleQuotation();  		//"
 	uint32 handleDoubleQuotation();			//'
 protected:
+
   uint32 doLex();
+
 
 	virtual uint32 heartBeat(string& word );
 

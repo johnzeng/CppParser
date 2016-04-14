@@ -3,6 +3,7 @@
 #include "LexUtil.h"
 #include "JZMacroFunc.h"
 #include "LexPatternTable.h"
+#include "JZFileUtil.h"
 
 LexBase::LexBase()
 {
@@ -15,6 +16,33 @@ LexBase::~LexBase()
   JZSAFE_DELETE(mPatternTable)
 }
 
+uint32 LexBase::analyzeAFile(const string& fileName)
+{
+	JZFUNC_BEGIN_LOG();
+//this should handle in #include 
+//	if (true == isOnceFile(fileName))
+//	{
+//		return eLexNoError;
+//	}
+	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
+	uint64 bufSize;
+	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
+	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
+	JZSAFE_DELETE(buff);
+
+	const char* buffWithOutComment = LexUtil::eraseComment(buffWithOutBackSlant,&bufSize);
+	JZSAFE_DELETE(buffWithOutBackSlant);
+
+	pushReaderRecord(buffWithOutComment,bufSize,fileName,eFileTypeFile);
+	uint32 ret = doLex();
+  //buffWithOutComment will be delete in popReaderRecord
+	popReaderRecord();
+  JZSAFE_DELETE(buffWithOutComment);
+	JZWRITE_DEBUG("analyze file end");
+	JZFUNC_END_LOG();
+//  JZSAFE_DELETE(buffWithOutComment)
+	return ret;
+}
 uint32 LexBase::doLex()
 {
 	JZFUNC_BEGIN_LOG();

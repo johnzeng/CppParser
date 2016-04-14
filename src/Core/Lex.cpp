@@ -1,7 +1,7 @@
 #include "Lex.h"
 #include "DefineManager.h"
-#include "JZFileUtil.h"
 #include "JZLogger.h"
+#include "JZFileUtil.h"
 #include "JZMacroFunc.h"
 #include "IncludeHandler.h"
 #include "KeyWordDefine.h"
@@ -51,32 +51,6 @@ Lex::Lex(){
 	mPatternTable->insertPattern("elif",  (LexPatternHandler)(&Lex::handleSharpElif));
 }
 
-uint32 Lex::analyzeAFile(const string& fileName)
-{
-	JZFUNC_BEGIN_LOG();
-	if (true == isOnceFile(fileName))
-	{
-		return eLexNoError;
-	}
-	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
-	uint64 bufSize;
-	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
-	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
-	JZSAFE_DELETE(buff);
-
-	const char* buffWithOutComment = LexUtil::eraseComment(buffWithOutBackSlant,&bufSize);
-	JZSAFE_DELETE(buffWithOutBackSlant);
-
-	pushReaderRecord(buffWithOutComment,bufSize,fileName,eFileTypeFile);
-	uint32 ret = doLex();
-  //buffWithOutComment will be delete in popReaderRecord
-	popReaderRecord();
-  JZSAFE_DELETE(buffWithOutComment);
-	JZWRITE_DEBUG("analyze file end");
-	JZFUNC_END_LOG();
-//  JZSAFE_DELETE(buffWithOutComment)
-	return ret;
-}
 
 uint32 Lex::heartBeatForNormalWord(string& word)
 {
@@ -1516,6 +1490,11 @@ uint32 Lex::handleSharpInclude()
 
 	if (fullPath != "")
 	{
+    if (true == isOnceFile(fullPath))
+    {
+      return eLexNoError;
+    }
+
 		uint32 analyzeRet = this->analyzeAFile(fullPath);
 		if (analyzeRet != eLexNoError && analyzeRet != eLexReachFileEnd)
 		{

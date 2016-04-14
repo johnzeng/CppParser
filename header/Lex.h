@@ -15,7 +15,6 @@ using namespace std;
 class Lex:public LexBase {
 
 public:
-	virtual uint32 analyzeAFile(const string& fileName);
   Lex();
 private:
 
