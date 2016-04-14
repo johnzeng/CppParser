@@ -15,9 +15,70 @@ LexBase::~LexBase()
   JZSAFE_DELETE(mPatternTable)
 }
 
-void LexBase::doLex()
+uint32 LexBase::doLex()
 {
+	JZFUNC_BEGIN_LOG();
+	uint32 ret = eLexNoError;
+	string word;
+	do
+  {
+    ret = heartBeat(word);
+
+	}while(ret == eLexNoError);
+
+	JZWRITE_DEBUG("ret is :%d",ret);
+	return ret ;
 }
+
+uint32 LexBase::heartBeatForNormalWord(string& word)
+{
+  //normal word
+  uint32 beginIndex = getLastIndex() + 1 - word.size();
+  uint32 endIndex = getLastIndex();
+  saveWord(word,beginIndex, endIndex);
+  return eLexNoError;
+
+}
+uint32 LexBase::heartBeat(string& word)
+{
+  // for lex base, we don't save normal word, we just handle sepeators
+  uint32 ret = consumeWord(word);
+  JZWRITE_DEBUG("read word:%s",word.c_str());
+
+  if ("" == word)
+  {
+    return ret;
+  }
+  if (true == LexUtil::isInterpunction(word[0]))
+  {
+    LexPatternHandler handler = mPatternTable->getPattern(word[0]);
+    if (NULL == handler)
+    {
+      //no handler is registered,means this is a normal input
+      if (true == LexUtil::isEmptyInput(word[0]))
+      {
+        return eLexNoError;
+      }
+      uint32 beginIndex = getLastIndex();
+      uint32 endIndex = getLastIndex();
+      saveWord(word,beginIndex, endIndex);
+    }
+    else
+    {
+      uint32 err = eLexNoError;
+      err = (this->*handler)();
+      if (err != eLexNoError)
+      {
+        writeError(err);
+        JZFUNC_END_LOG();
+        return err;
+      }
+      return ret;
+    }
+  }
+  return heartBeatForNormalWord(word);
+}
+
 
 LexRecList LexBase::getRecList()
 {
@@ -445,4 +506,39 @@ uint32 LexBase::handleDoubleQuotation()
 	JZFUNC_END_LOG();
 	return eLexNoError;
 	return 0;
+}
+
+#define ERROR_CASE(caseid) case caseid:{JZWRITE_DEBUG("error id %d,"#caseid,caseid);break;}
+void LexBase::writeError(uint32 err)
+{
+	switch(err)
+	{
+		ERROR_CASE(eLexNoError)
+		ERROR_CASE(eLexReachFileEnd)	
+		ERROR_CASE(eLexReaderStackEmpty)
+		ERROR_CASE(eLexSharpFollowedNothing)
+		ERROR_CASE(eLexWordNotMatch)
+		ERROR_CASE(eLexAlreadyLastWord)
+		ERROR_CASE(eLexSharpDefineFollowedNothing)
+		ERROR_CASE(eLexUnexpectedSeperator)
+		ERROR_CASE(eLexValParamNotLast)
+		ERROR_CASE(eLexSharpIfdefFollowedWithNothing)
+		ERROR_CASE(eLexUnmatchMacro)
+		ERROR_CASE(eLexUnknowMacro)
+		ERROR_CASE(eLexSharpEndIfFollowWithOtherThing)
+		ERROR_CASE(eLexSharpElseFollowWithOtherThing)
+		ERROR_CASE(eLexWordIsNotDefined)
+		ERROR_CASE(eLexParamAnalyzeOVer)	//this is not an error
+		ERROR_CASE(eLexReachLineEnd)
+		ERROR_CASE(eLexFuncLikeMacroParamTooLess)
+		ERROR_CASE(eLexFuncLikeMacroParamTooManay)
+
+		//unknow should be last
+		ERROR_CASE(eLexUnknowError) 
+
+		default:
+		{
+			break;	
+		}
+	}
 }

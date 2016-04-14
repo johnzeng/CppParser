@@ -78,89 +78,47 @@ uint32 Lex::analyzeAFile(const string& fileName)
 	return ret;
 }
 
-uint32 Lex::doLex()
+uint32 Lex::heartBeatForNormalWord(string& word)
 {
 	JZFUNC_BEGIN_LOG();
-	uint32 ret;
-	string word;
-	do
-	{
-		ret = consumeWord(word);
-		JZWRITE_DEBUG("read word:%s",word.c_str());
+	uint32 ret = eLexNoError;
 
-		if ("" == word)
-		{
-			return ret;
-		}
-		if (true == LexUtil::isInterpunction(word[0]))
-		{
-			LexPatternHandler handler = mPatternTable->getPattern(word[0]);
-			if (NULL == handler)
-			{
-				//no handler is registered,means this is a normal input
-				if (true == LexUtil::isEmptyInput(word[0]))
-				{
-					continue;
-				}
-				uint32 beginIndex = getLastIndex();
-				uint32 endIndex = getLastIndex();
-				saveWord(word,beginIndex, endIndex);
-			}
-			else
-			{
-				uint32 err = eLexNoError;
-				err = (this->*handler)();
-				if (err != eLexNoError)
-				{
-					writeError(err);
-					JZFUNC_END_LOG();
-					return err;
-				}
-			}
-			continue;
-		}
-		JZWRITE_DEBUG("is macro:%d,is Stream useful %d",eFileTypeFile == mReaderStack.top().recordType,isLastStreamUseful());
-		//not interpunction
-		if (isLastStreamUseful() &&
-			"defined" == word)
-		{
-			//this is defined in #if or #elif
-			uint32 beginIndex = getLastIndex() + 1 - word.size() ;
-			uint32 endIndex = getLastIndex();
-			uint32 err = handleIsDefined(word);
-			if (err != eLexNoError)
-			{
-				writeError(err);
-				JZFUNC_END_LOG();
-				return err;
-			}
-			JZWRITE_DEBUG("save a is defined word");
-			saveWord(word,beginIndex, endIndex);
-		}
-		else if (
-				false == isFuncLikeMacroMode() &&
-			   	true == isLastStreamUseful() &&
-				DefineManager::eDefMgrDefined == mDefMgr.isDefined(word) &&
-				false == isMacroExpending(word))
-		{
-			//don't expend when it is FuncLikeMacroMode
-			uint32 err = handleDefinedWord(word);
-			if (err != eLexNoError)
-			{
-				writeError(err);
-				return err;
-			}
-		}
-		else
-		{
-			//normal word
-			uint32 beginIndex = getLastIndex() + 1 - word.size();
-			uint32 endIndex = getLastIndex();
-			saveWord(word,beginIndex, endIndex);
-		}
-		
-	}while(ret == eLexNoError);
-
+  JZWRITE_DEBUG("is macro:%d,is Stream useful %d",eFileTypeFile == mReaderStack.top().recordType,isLastStreamUseful());
+  //not interpunction
+  if (isLastStreamUseful() &&
+    "defined" == word)
+  {
+    //this is defined in #if or #elif
+    uint32 beginIndex = getLastIndex() + 1 - word.size() ;
+    uint32 endIndex = getLastIndex();
+    uint32 err = handleIsDefined(word);
+    if (err != eLexNoError)
+    {
+      writeError(err);
+      JZFUNC_END_LOG();
+      return err;
+    }
+    JZWRITE_DEBUG("save a is defined word");
+    saveWord(word,beginIndex, endIndex);
+  }
+  else if (
+      false == isFuncLikeMacroMode() &&
+        true == isLastStreamUseful() &&
+      DefineManager::eDefMgrDefined == mDefMgr.isDefined(word) &&
+      false == isMacroExpending(word))
+  {
+    //don't expend when it is FuncLikeMacroMode
+    uint32 err = handleDefinedWord(word);
+    if (err != eLexNoError)
+    {
+      writeError(err);
+      return err;
+    }
+  }
+  else 
+  {
+    ret = LexBase::heartBeatForNormalWord(word);
+  }
 	JZWRITE_DEBUG("ret is :%d",ret);
 	return ret ;
 }
@@ -432,44 +390,6 @@ uint32 Lex::handleDefinedWord(const string& word)
 	JZFUNC_END_LOG();
 	return eLexNoError;	
 }
-
-#define ERROR_CASE(caseid) case caseid:{JZWRITE_DEBUG("error id %d,"#caseid,caseid);break;}
-void Lex::writeError(uint32 err)
-{
-	switch(err)
-	{
-		ERROR_CASE(eLexNoError)
-		ERROR_CASE(eLexReachFileEnd)	
-		ERROR_CASE(eLexReaderStackEmpty)
-		ERROR_CASE(eLexSharpFollowedNothing)
-		ERROR_CASE(eLexWordNotMatch)
-		ERROR_CASE(eLexAlreadyLastWord)
-		ERROR_CASE(eLexSharpDefineFollowedNothing)
-		ERROR_CASE(eLexUnexpectedSeperator)
-		ERROR_CASE(eLexValParamNotLast)
-		ERROR_CASE(eLexSharpIfdefFollowedWithNothing)
-		ERROR_CASE(eLexUnmatchMacro)
-		ERROR_CASE(eLexUnknowMacro)
-		ERROR_CASE(eLexSharpEndIfFollowWithOtherThing)
-		ERROR_CASE(eLexSharpElseFollowWithOtherThing)
-		ERROR_CASE(eLexWordIsNotDefined)
-		ERROR_CASE(eLexParamAnalyzeOVer)	//this is not an error
-		ERROR_CASE(eLexReachLineEnd)
-		ERROR_CASE(eLexFuncLikeMacroParamTooLess)
-		ERROR_CASE(eLexFuncLikeMacroParamTooManay)
-
-		//unknow should be last
-		ERROR_CASE(eLexUnknowError) 
-
-		default:
-		{
-			break;	
-		}
-	}
-}
-
-
-
 
 /*********************************************************
 	when handling ' and ", I simply ignore the \ problem

@@ -7,6 +7,7 @@ class LexPatternTable;
 
 class LexBase{
 public:
+  // I am thinking about reorder these codes, Some of them should be legal return
 	enum LexReturnNum
 	{
 		eLexNoError = 0,
@@ -30,6 +31,8 @@ public:
 		eLexFuncLikeMacroParamTooManay = 18,
 		eLexCanNotPushPrecompileStream = 19,
 		eLexMacroIsAlreadyExpending = 20,
+
+    eLexNormalWord = 21,
 		//unknow should be last
 		eLexUnknowError ,
 	};
@@ -51,9 +54,14 @@ public:
 	uint32 handleSingleQuotation();  		//"
 	uint32 handleDoubleQuotation();			//'
 protected:
-  void doLex();
+  uint32 doLex();
 
-  virtual void heartBeat(){};
+	virtual uint32 heartBeat(string& word );
+
+	virtual uint32 heartBeatForNormalWord(string& word );
+
+	void writeError(uint32 err);
+
 	uint32 readChar(char* ret);		//don't move cur index ptr
 
 	//consumor fun
