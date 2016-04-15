@@ -6,7 +6,6 @@
 //this will be a large test, will have lots of test here, I don't sure if we should seperate this into many parts
 
 //this is lib test entryp, I will use this file as entry
-void globalInitAtBegin();
 
 //cover test: comment, basic input
 TEST(LexBase, simpleInput){
@@ -16,11 +15,6 @@ TEST(LexBase, simpleInput){
   strcpy(argv0,"tester");
   strcpy(argv1,"./test/TestSet/simple");
   char* argv[2] = {argv0,argv1};
-
-	//init
-	globalInitAtBegin();
-
-	JZSetLoggerLevel(JZ_LOG_TEST);
 
 	//analyze command line input
 	CmdInputFactor::getInstance()->analyze(argc, argv);
@@ -51,11 +45,6 @@ TEST(LexBase, baseStrTest){
   strcpy(argv1,"./test/TestSet/base_str_test");
   char* argv[2] = {argv0,argv1};
 
-	//init
-	globalInitAtBegin();
-
-	JZSetLoggerLevel(JZ_LOG_TEST);
-
 	//analyze command line input
 	CmdInputFactor::getInstance()->analyze(argc, argv);
 
@@ -69,12 +58,14 @@ TEST(LexBase, baseStrTest){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
 //  lex.printLexRec();
 //	JZSetLoggerLevel(JZ_LOG_TEST);
-  ASSERT_EQ(6, recList.size());
+  ASSERT_EQ(8, recList.size());
   ASSERT_STREQ("main", recList[0].word.c_str());
   ASSERT_STREQ("(", recList[1].word.c_str());
   ASSERT_STREQ("\"hello\"", recList[2].word.c_str());
   ASSERT_STREQ(",", recList[3].word.c_str());
   ASSERT_STREQ("'w'", recList[4].word.c_str());
-  ASSERT_STREQ(")", recList[5].word.c_str());
+  ASSERT_STREQ(",", recList[5].word.c_str());
+  ASSERT_STREQ("\"//ddd\"", recList[6].word.c_str());
+  ASSERT_STREQ(")", recList[7].word.c_str());
 
 }

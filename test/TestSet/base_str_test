@@ -1,1 +1,2 @@
-main("hello",'w')
+//hello
+main("hello",'w',"//ddd")
