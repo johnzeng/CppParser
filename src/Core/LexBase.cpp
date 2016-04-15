@@ -451,23 +451,24 @@ uint32 LexBase::handleSingleQuotation()
 	bool isConvertBackSlant = false;
 	do
 	{
+    isConvertBackSlant = false;
 		string retStr = "";
 		uint32 retErr = eLexNoError;
 		
 		retErr = consumeCharUntilReach('\'',&retStr,eLexInOneLine);
+		JZWRITE_DEBUG("ret str is : %s",retStr.c_str());
 		if (eLexNoError != retErr)
 		{
 			JZFUNC_END_LOG();
 			return retErr;
 		}
-		JZWRITE_DEBUG("ret str is : %s",retStr.c_str());
 		for(int i = 0 ; i < retStr.size() ; i++)
 		{
 			if (true == LexUtil::isBackSlant(retStr[i]))
 			{
 				isConvertBackSlant = !isConvertBackSlant;
 			}
-			else
+			else if(i != retStr.size() - 1)
 			{
 				isConvertBackSlant = false;	
 			}
@@ -496,6 +497,7 @@ uint32 LexBase::handleDoubleQuotation()
 	bool isConvertBackSlant = false;
 	do
 	{
+    isConvertBackSlant = false;
 		string retStr = "";
 		uint32 retErr = eLexNoError;
 		retErr = consumeCharUntilReach('"',&retStr,eLexInOneLine);

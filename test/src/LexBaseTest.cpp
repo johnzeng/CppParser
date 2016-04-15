@@ -26,9 +26,6 @@ TEST(LexBase, simpleInput){
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
 
-//	JZSetLoggerLevel(JZ_LOG_DEBUG);
-//  lex.printLexRec();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
   ASSERT_EQ(3, recList.size());
   ASSERT_STREQ("int", recList[0].word.c_str());
   ASSERT_STREQ("a", recList[1].word.c_str());
@@ -55,10 +52,9 @@ TEST(LexBase, baseStrTest){
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
 
-//	JZSetLoggerLevel(JZ_LOG_DEBUG);
-//  lex.printLexRec();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
-  ASSERT_EQ(10, recList.size());
+  lex.printLexRec();
+	JZSetLoggerLevel(JZ_LOG_TEST);
+  ASSERT_EQ(12, recList.size());
   ASSERT_STREQ("main", recList[0].word.c_str());
   ASSERT_STREQ("(", recList[1].word.c_str());
   ASSERT_STREQ("\"hello\"", recList[2].word.c_str());
@@ -67,7 +63,9 @@ TEST(LexBase, baseStrTest){
   ASSERT_STREQ(",", recList[5].word.c_str());
   ASSERT_STREQ("\"//ddd\"", recList[6].word.c_str());
   ASSERT_STREQ(",", recList[7].word.c_str());
-  ASSERT_STREQ("\"\\\"abcedf    a\"", recList[8].word.c_str());
-  ASSERT_STREQ(")", recList[9].word.c_str());
+  ASSERT_STREQ("\"\\\"abcedf    a\\\"\"", recList[8].word.c_str());
+  ASSERT_STREQ(",", recList[9].word.c_str());
+  ASSERT_STREQ("\'\\\'\'", recList[10].word.c_str());
+  ASSERT_STREQ(")", recList[11].word.c_str());
 
 }
