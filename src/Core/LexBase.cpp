@@ -508,13 +508,16 @@ uint32 LexBase::handleDoubleQuotation()
 		{
 			if (true == LexUtil::isBackSlant(retStr[i]))
 			{
+        //this convert is for end of line
 				isConvertBackSlant = !isConvertBackSlant;
 			}
-			else
+      //consumeCharUntilReach will return something like \" ,
+      //so we need to check this case
+      //Actually we don't have \ at the end of string now.
+			else if(retStr.size() - 1 != i)
 			{
 				isConvertBackSlant = false;	
 			}
-		
 		}
 		toSave += retStr;
 		toSaveLen = toSave.size();

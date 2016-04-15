@@ -58,7 +58,7 @@ TEST(LexBase, baseStrTest){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
 //  lex.printLexRec();
 //	JZSetLoggerLevel(JZ_LOG_TEST);
-  ASSERT_EQ(8, recList.size());
+  ASSERT_EQ(10, recList.size());
   ASSERT_STREQ("main", recList[0].word.c_str());
   ASSERT_STREQ("(", recList[1].word.c_str());
   ASSERT_STREQ("\"hello\"", recList[2].word.c_str());
@@ -66,6 +66,8 @@ TEST(LexBase, baseStrTest){
   ASSERT_STREQ("'w'", recList[4].word.c_str());
   ASSERT_STREQ(",", recList[5].word.c_str());
   ASSERT_STREQ("\"//ddd\"", recList[6].word.c_str());
-  ASSERT_STREQ(")", recList[7].word.c_str());
+  ASSERT_STREQ(",", recList[7].word.c_str());
+  ASSERT_STREQ("\"\\\"abcedf    a\"", recList[8].word.c_str());
+  ASSERT_STREQ(")", recList[9].word.c_str());
 
 }
