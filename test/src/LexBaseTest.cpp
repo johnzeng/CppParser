@@ -32,9 +32,9 @@ TEST(LexBase, simpleInput){
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
 
-	JZSetLoggerLevel(JZ_LOG_DEBUG);
-  lex.printLexRec();
-	JZSetLoggerLevel(JZ_LOG_TEST);
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+//  lex.printLexRec();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
   EXPECT_EQ(3, recList.size());
   ASSERT_STREQ("int", recList[0].word.c_str());
   ASSERT_STREQ("a", recList[1].word.c_str());

@@ -19,11 +19,6 @@ LexBase::~LexBase()
 uint32 LexBase::analyzeAFile(const string& fileName)
 {
 	JZFUNC_BEGIN_LOG();
-//this should handle in #include 
-//	if (true == isOnceFile(fileName))
-//	{
-//		return eLexNoError;
-//	}
 	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
@@ -40,7 +35,6 @@ uint32 LexBase::analyzeAFile(const string& fileName)
   JZSAFE_DELETE(buffWithOutComment);
 	JZWRITE_DEBUG("analyze file end");
 	JZFUNC_END_LOG();
-//  JZSAFE_DELETE(buffWithOutComment)
 	return ret;
 }
 uint32 LexBase::doLex()
@@ -101,8 +95,8 @@ uint32 LexBase::heartBeat(string& word)
         JZFUNC_END_LOG();
         return err;
       }
-      return ret;
     }
+    return ret;
   }
   return heartBeatForNormalWord(word);
 }
