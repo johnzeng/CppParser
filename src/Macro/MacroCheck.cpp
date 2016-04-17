@@ -1,5 +1,5 @@
 #include "LexData.h"
-#include "Lex.h"
+#include "MacroLex.h"
 #include "GrammarUtil.h"
 #include "StringUtil.h"
 #include "JZLogger.h"
@@ -8,7 +8,7 @@ using namespace LexUtil;
 
 
 
-uint32 Lex::isMacroSuccess(const LexRecList& logic, bool* ret)
+uint32 MacroLex::isMacroSuccess(const LexRecList& logic, bool* ret)
 {
 
 	JZFUNC_BEGIN_LOG();
@@ -339,7 +339,7 @@ uint32 GrammarUtil::setMacroCheckData(string& word,MacroCheckData& data)
 		if (NULL == opPtr)
 		{
 			JZFUNC_END_LOG();
-			return Lex::eLexUnknowError;
+			return LexBase::eLexUnknowError;
 		}
 		data.priority = opPtr->priority;
 		data.mark = opPtr->mark;
@@ -352,5 +352,5 @@ uint32 GrammarUtil::setMacroCheckData(string& word,MacroCheckData& data)
 		data.type = eMacroCheckDataNumber;
 		data.number = GrmUtilPtr->str2int64(word);		
 	}
-	return Lex::eLexNoError;
+	return LexBase::eLexNoError;
 }

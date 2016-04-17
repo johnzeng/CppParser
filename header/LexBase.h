@@ -101,6 +101,7 @@ protected:
 		const char* buff,uint64 size,const string& fileName,
 		uint32 recordType);
 
+	void popErrorSite();
 protected:
   LexPatternTable* mPatternTable;
 	StringSet mPreprocessedFile;

@@ -569,3 +569,31 @@ void LexBase::writeError(uint32 err)
 		}
 	}
 }
+
+void LexBase::popErrorSite()
+{
+	string curLineChar = "";
+	uint32 lastEnderIndex = 0;
+	uint32 curIndex = (int)mReaderStack.top().curIndex;
+	if ('\n' == mReaderStack.top().buffer[curIndex])
+	{
+		curIndex --;
+	}
+	for(int i = curIndex; i >=0 ; i --)
+	{
+		if ('\n' == mReaderStack.top().buffer[i])
+		{
+			break;
+		}
+		lastEnderIndex = i;
+	}
+	for(uint64 i = lastEnderIndex; i < mReaderStack.top().bufferSize; i++)
+	{
+		if (mReaderStack.top().buffer[i] == '\n')
+		{
+			break;
+		}
+		curLineChar += mReaderStack.top().buffer[i];	
+	}
+	JZWRITE_DEBUG("FileName:%s,curIndex:%d,curLineChar:[%s]",mReaderStack.top().fileName.c_str(),mReaderStack.top().curIndex,curLineChar.c_str());
+}

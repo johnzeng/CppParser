@@ -52,7 +52,6 @@ TEST(LexBase, baseStrTest){
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
 
-  lex.printLexRec();
 	JZSetLoggerLevel(JZ_LOG_TEST);
   ASSERT_EQ(12, recList.size());
   ASSERT_STREQ("main", recList[0].word.c_str());
