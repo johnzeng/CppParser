@@ -68,7 +68,6 @@ uint32 MacroParamLex::handleComma()
   if (1 == getBracketMarkStackSize())
   {
     pushIntoParamList();
-    return eLexNoError;
   }
 	
 	uint32 commaEndIndex = getLastIndex();
@@ -107,7 +106,7 @@ void MacroParamLex::pushIntoParamList()
   uint32 beginIndex = beginRec.beginIndex;
   uint32 endIndex = getLastIndex();
   string param = "";
-  for(int i = beginIndex; i < endIndex; i++)
+  for(int i = beginIndex + 1; i < endIndex; i++)
   {
     param += mReaderStack.top().buffer[i];
   }

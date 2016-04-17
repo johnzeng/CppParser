@@ -26,6 +26,7 @@ CPPFLAGS=$(INCLUDE_FLAGS) $(OTHER_CPP_FLAGS) $(OTHER_FLAGS)
 TEST_FLAG=-isystem $(mylib_PATH)/test/include $(mylib_PATH)/test/libtest.a
 
 TARGET=target/libAnalyzer.a
+TEST_TARGET=target/tester
 
 SOURCES=$(wildcard ./src/*.cpp ./src/*/*.c ./src/*/*.cpp)
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
@@ -47,9 +48,9 @@ $(mylib_PATH):
 
 test:$(TARGET) $(TEST_SOURCE)
 	@echo "==================== build tester ==========================="
-	$(CXX) $(TARGET) $(TEST_SOURCE) $(TEST_FLAG) $(CPPFLAGS) $(myLib) -o ./target/tester
+	$(CXX) $(TARGET) $(TEST_SOURCE) $(TEST_FLAG) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
 	@echo "==================== tester build finished ==========================="
-	./target/tester
+	./$(TEST_TARGET)
 
 lib:
 	cd $(mylib_PATH) && make
@@ -57,13 +58,16 @@ lib:
 release:clean makefile
 	make debug_var=0
 
+debuger:$(TEST_TARGET)
+	lldb $(TEST_TARGET)
+
 .PHONY:count,clean,test,macro
 
 clean:
-	-rm -rf $(mylib_PATH)
 	-rm depend
 	-rm $(TARGET)
 	-rm $(OBJS)
+	-rm $(TEST_TARGET)
 
 -include depend
 
