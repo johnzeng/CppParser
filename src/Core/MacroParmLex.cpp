@@ -21,16 +21,12 @@ uint32 MacroParamLex::handleRightBracket()
   if (0 == getBracketMarkStackSize())
   {
     JZFUNC_END_LOG();
+    JZWRITE_DEBUG("get right ) when there is no left bracket");
     return eLexUnknowError;
   }
   if (1 == getBracketMarkStackSize())
   {
-    //I think I get the stupid think here now. The logic is ok , but we should not get the parameter from the begin mark,
-    //we should get parameter from a start mark
-    //we will need to do it in this way
-    //1, when the left bracket is pushed, init the left bracket, and init a paramter mark
-    //2, meet a comma ,update the parameter mark
-    //3, meet a right bracket, end the input.
+    pushIntoParamList();
   }
   popLeftBracket();
   if (0 == getBracketMarkStackSize())
@@ -44,28 +40,26 @@ uint32 MacroParamLex::handleRightBracket()
 	JZFUNC_END_LOG();
 	return eLexNoError;
 }
+
 uint32 MacroParamLex::handleLeftBracket()
 {
-	uint32 beginIndex = getLastIndex();
 	JZFUNC_BEGIN_LOG();
+
+	uint32 beginIndex = getLastIndex();
   //now it is analyzing macro like func,do something
-  JZWRITE_DEBUG("now push a mark");
   uint32 mark = mLexRecList.size();
   pushLeftBracket(mark);
-  JZWRITE_DEBUG("push over");
-//		if (1 == getBracketMarkStackSize())
-//		{
-//			JZWRITE_DEBUG("first bracket,don't save");
-//			return eLexNoError;
-//		}
+
 	uint32 endIndex = getLastIndex();
 	saveWord("(",beginIndex,endIndex);
+
 	JZFUNC_END_LOG();
 	return eLexNoError;
 }
-uint32 MacroParamLex::getBracketBeginMark()
+
+uint32 MacroParamLex::getParamSepMark()
 {
-	return mBracketMarkStack.top();
+	return mParamSepStack.top();
 }
 
 uint32 MacroParamLex::handleComma()
@@ -73,9 +67,7 @@ uint32 MacroParamLex::handleComma()
 	uint32 commaBeginIndex = getLastIndex();
   if (1 == getBracketMarkStackSize())
   {
-    //save it!
-    //the logic is right but the parameter get logic is stupid,
-    //pls follow the comment I made in handleRightBracket, to get the right logic about handling marco parameter
+    pushIntoParamList();
     return eLexNoError;
   }
 	
@@ -91,6 +83,10 @@ uint32 MacroParamLex::getBracketMarkStackSize()
 
 void MacroParamLex::pushLeftBracket(uint32 mark)
 {
+  if(0 == mBracketMarkStack.size())
+  {
+    mParamSepStack.push(mark);
+  }
 	mBracketMarkStack.push(mark);
 }
 
@@ -102,4 +98,19 @@ void MacroParamLex::popLeftBracket()
 RealParamList MacroParamLex::getParamList()
 {
   return mRealParamList;
+}
+
+void MacroParamLex::pushIntoParamList()
+{
+  int lastMark = getParamSepMark();
+  LexRec beginRec = mLexRecList[lastMark];
+  uint32 beginIndex = beginRec.beginIndex;
+  uint32 endIndex = getLastIndex();
+  string param = "";
+  for(int i = beginIndex; i < endIndex; i++)
+  {
+    param += mReaderStack.top().buffer[i];
+  }
+  mRealParamList.push_back(param);
+  mParamSepStack.push(mLexRecList.size());
 }

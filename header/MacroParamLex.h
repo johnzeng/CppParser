@@ -18,10 +18,13 @@ private:
 	void pushLeftBracket(uint32 mark);
 	void popLeftBracket();
 	uint32 getBracketMarkStackSize();
-	uint32 getBracketBeginMark();
+	uint32 getParamSepMark();
+
+  void pushIntoParamList();
 
 private:
 	BracketMarkStack mBracketMarkStack;
+  ParamSeperaterMarkStack mParamSepStack;
 	RealParamList mRealParamList;
 };
 

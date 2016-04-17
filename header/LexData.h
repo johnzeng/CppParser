@@ -8,6 +8,7 @@ using namespace std;
 
 typedef vector<string> RealParamList;
 typedef stack<int> BracketMarkStack;
+typedef stack<int> ParamSeperaterMarkStack;
 typedef map<string,int> ParamSiteMap;
 //struct define
 struct DefineRec;
