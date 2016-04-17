@@ -73,8 +73,6 @@ struct FileReaderRecord
 	uint32 mStreamOffTag;
 
   //ok,this is a little stupid now, we are going to do another lex
-	//func like macor analyzing 
-	bool mFuncLikeMacroParamAnalyzing;
 	vector<PrecompileSelector> mPSStack;
 		
 };

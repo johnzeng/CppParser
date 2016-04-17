@@ -28,7 +28,7 @@ uint32 LexBase::analyzeAFile(const string& fileName)
 	const char* buffWithOutComment = LexUtil::eraseComment(buffWithOutBackSlant,&bufSize);
 	JZSAFE_DELETE(buffWithOutBackSlant);
 
-	pushReaderRecord(buffWithOutComment,bufSize,fileName,eFileTypeFile);
+	pushReaderRecordByParams(buffWithOutComment,bufSize,fileName,eFileTypeFile);
 	uint32 ret = doLex();
   //buffWithOutComment will be delete in popReaderRecord
 	popReaderRecord();
@@ -320,7 +320,7 @@ void LexBase::pushReaderRecord(FileReaderRecord record)
 	mReaderStack.push(record);
 }
 
-void LexBase::pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType  )
+void LexBase::pushReaderRecordByParams(const char* buff,uint64 size,const string& fileName,uint32 recordType  )
 {
 	FileReaderRecord rec = 
 		initFileRecord(
@@ -410,7 +410,7 @@ FileReaderRecord LexBase::initFileRecord(
 		.fileName = fileName,
 		.recordType = recordType,
 		.mStreamOffTag = 0,	
-		.mFuncLikeMacroParamAnalyzing = false,
+//		.mFuncLikeMacroParamAnalyzing = false,
 	};
 	return ret;
 }

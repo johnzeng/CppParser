@@ -67,9 +67,8 @@ debuger:$(TEST_TARGET)
 
 clean:
 	-rm depend
-	-rm $(TARGET)
 	-rm $(OBJS)
-	-rm $(TEST_TARGET)
+	-rm -rf ./target/*
 
 -include depend
 

@@ -97,10 +97,10 @@ TEST(MacroLex, macroTest3){
 	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
 
   MacroLex lex;
-//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(11, recList.size());
   ASSERT_STREQ("(", recList[0].word.c_str());
@@ -139,12 +139,38 @@ TEST(MacroLex, macroTest4){
   LexRecList recList = lex.getRecList();
 //	JZSetLoggerLevel(JZ_LOG_TEST);
 
-  ASSERT_EQ(7, recList.size());
+  ASSERT_EQ(5, recList.size());
   ASSERT_STREQ("\"hello\"", recList[0].word.c_str());
   ASSERT_STREQ("123123", recList[1].word.c_str());
   ASSERT_STREQ("<<", recList[2].word.c_str());
   ASSERT_STREQ("123", recList[3].word.c_str());
   ASSERT_STREQ("1123", recList[4].word.c_str());
-  ASSERT_STREQ("\"1\"", recList[5].word.c_str());
-  ASSERT_STREQ("123", recList[6].word.c_str());
+}
+
+//cover case : # and ## in  macro function
+TEST(MacroLex, macroTest5){
+  //this is really a strong test, so don't do it for more than one file every time
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/macro_test_5");
+  char* argv[2] = {argv0,argv1};
+
+	JZSetLoggerLevel(JZ_LOG_TEST);
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  MacroLex lex;
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.analyzeAFile(toCompileFile);
+  LexRecList recList = lex.getRecList();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
+
+  ASSERT_EQ(2, recList.size());
+  ASSERT_STREQ("\"1\"", recList[0].word.c_str());
+  ASSERT_STREQ("123", recList[1].word.c_str());
 }

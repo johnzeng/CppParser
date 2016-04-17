@@ -53,7 +53,7 @@ public:
 protected:
 	virtual uint32 heartBeatForNormalWord(string& word );
 
-	virtual void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+  virtual void pushReaderRecord(FileReaderRecord record);
 
 	virtual FileReaderRecord popReaderRecord();
 

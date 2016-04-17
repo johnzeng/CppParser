@@ -56,11 +56,11 @@ public:
 	uint32 handleDoubleQuotation();			//'
   uint32 doLex();
 
-  void pushReaderRecord(FileReaderRecord record);
+  virtual void pushReaderRecord(FileReaderRecord record);
 
-	virtual void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+	virtual void pushReaderRecordByParams(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
-	virtual FileReaderRecord popReaderRecord();
+	FileReaderRecord popReaderRecord();
 
 protected:
 

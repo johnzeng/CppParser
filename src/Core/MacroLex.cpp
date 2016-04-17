@@ -590,7 +590,7 @@ uint32 MacroLex::checkMacro(bool *isSuccess,uint32 checkMark)
 	}
 	memcpy(buff,logicStr.c_str(), logicStr.size());
 	JZWRITE_DEBUG("analyze buff :%s",logicStr.c_str());
-	pushReaderRecord(buff,logicStr.size(),"",eFileTypeMacro);
+	pushReaderRecordByParams(buff,logicStr.size(),"",eFileTypeMacro);
 
 	//pop until reach last
 	int lastRecPtr = mLexRecList.size();
@@ -1026,7 +1026,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
     parmLexer.pushReaderRecord(curFileRecord);
     uint32 parmLexerRet = parmLexer.doLex();
     FileReaderRecord afterLexRecord = parmLexer.popReaderRecord();
-    LexBase::pushReaderRecord(afterLexRecord);
+    pushReaderRecord(afterLexRecord);
     if (eLexNoError != parmLexerRet && eLexReachFileEnd != parmLexerRet && eLexParamAnalyzeOVer != parmLexerRet)
     {
       //this should be error;
@@ -1035,7 +1035,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
     }
     paramList = parmLexer.getParamList();
 		//param number check
-		if (true == defRec->isVarArgs)
+		if (defRec->isVarArgs)
 		{
 			if (defRec->paramMap.size() - 1 > paramList.size())
 			{
@@ -1047,7 +1047,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 		{
 			if (defRec->paramMap.size() != paramList.size())
 			{
-				JZWRITE_DEBUG("Func like macro param not right");
+				JZWRITE_DEBUG("Func like macro param not right and defRec->isVarArgs is: %d", defRec->isVarArgs);
 				return defRec->paramMap.size() > paramList.size() ?
 				eLexFuncLikeMacroParamTooLess : eLexFuncLikeMacroParamTooManay;
 			}
@@ -1066,7 +1066,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 	
 	char* buff = (char*)malloc(expendStr.size());
 	strncpy(buff, expendStr.c_str(), expendStr.size());
-	pushReaderRecord(buff,expendStr.size(),word,eFileTypeMacroParam);
+	pushReaderRecordByParams(buff,expendStr.size(),word,eFileTypeMacroParam);
 
 	uint32 ret = doLex();
 
@@ -1244,19 +1244,19 @@ FileReaderRecord MacroLex::popReaderRecord()
   return LexBase::popReaderRecord();
 }
 
-void MacroLex::pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType  )
+void MacroLex::pushReaderRecord(FileReaderRecord record)
 {
-	switch(recordType)
+	switch(record.recordType)
 	{
 		case eFileTypeMacroParam:
-			mPreprocessingMacroSet.insert(fileName);
+			mPreprocessingMacroSet.insert(record.fileName);
 			break;
 		case eFileTypeFile:
-			mPreprocessedFile.insert(fileName);
+			mPreprocessedFile.insert(record.fileName);
 		default:
 		{
 			break;	
 		}
 	}
-  LexBase::pushReaderRecord(buff,size,fileName,recordType);
+  LexBase::pushReaderRecord(record);
 }
