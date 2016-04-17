@@ -1021,8 +1021,18 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 	if (true == defRec->isFuncLikeMacro)
 	{
     MacroParamLex parmLexer;
-    parmLexer.doLex();
+
+    FileReaderRecord curFileRecord = popReaderRecord();
+    parmLexer.pushReaderRecord(curFileRecord);
+    uint32 parmLexerRet = parmLexer.doLex();
+    if (eLexNoError != parmLexerRet && eLexReachFileEnd != parmLexerRet)
+    {
+      //this should be error;
+      return parmLexerRet;
+    }
     paramList = parmLexer.getParamList();
+    FileReaderRecord afterLexRecord = parmLexer.popReaderRecord();
+    LexBase::pushReaderRecord(afterLexRecord);
 		//param number check
 		if (true == defRec->isVarArgs)
 		{

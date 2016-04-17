@@ -56,6 +56,12 @@ public:
 	uint32 handleDoubleQuotation();			//'
   uint32 doLex();
 
+  void pushReaderRecord(FileReaderRecord record);
+
+	virtual void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+
+	virtual FileReaderRecord popReaderRecord();
+
 protected:
 
 	virtual uint32 heartBeat(string& word );
@@ -84,11 +90,6 @@ protected:
 			LexInput skipEmptyInput = eLexSkipEmptyInput,
 		   	LexInput inOneLine = eLexInMulLine);
 
-  void pushReaderRecord(FileReaderRecord record);
-
-	virtual void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
-
-	virtual FileReaderRecord popReaderRecord();
 
 	uint32 getLastIndex();
 
