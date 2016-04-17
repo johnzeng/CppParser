@@ -116,7 +116,7 @@ TEST(MacroLex, macroTest3){
   ASSERT_STREQ(")", recList[10].word.c_str());
 }
 
-//cover case : # in  macro function
+//cover case : # and ## in  macro function
 TEST(MacroLex, macroTest4){
   //this is really a strong test, so don't do it for more than one file every time
   int argc = 2;
@@ -139,10 +139,12 @@ TEST(MacroLex, macroTest4){
   LexRecList recList = lex.getRecList();
 //	JZSetLoggerLevel(JZ_LOG_TEST);
 
-  ASSERT_EQ(5, recList.size());
+  ASSERT_EQ(7, recList.size());
   ASSERT_STREQ("\"hello\"", recList[0].word.c_str());
   ASSERT_STREQ("123123", recList[1].word.c_str());
   ASSERT_STREQ("<<", recList[2].word.c_str());
   ASSERT_STREQ("123", recList[3].word.c_str());
   ASSERT_STREQ("1123", recList[4].word.c_str());
+  ASSERT_STREQ("\"1\"", recList[5].word.c_str());
+  ASSERT_STREQ("123", recList[6].word.c_str());
 }

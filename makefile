@@ -46,11 +46,11 @@ $(mylib_PATH):
 	@echo "now checkout mylib"
 	$(MYLIB_CHECKOUT)
 
-$(TEST_TARGET):$(TARGET) $(TEST_SOURCE) $(SOURCES) $(HEADERS)
+$(TEST_TARGET):$(TARGET) $(TEST_SOURCE)
 	@echo "==================== build tester ==========================="
 	$(CXX) $(TARGET) $(TEST_SOURCE) $(TEST_FLAG) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
 
-test:$(TEST_TARGET)
+test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	@echo "==================== tester build finished ==========================="
 	./$(TEST_TARGET)
 
