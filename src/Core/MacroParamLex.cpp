@@ -113,7 +113,9 @@ void MacroParamLex::pushIntoParamList()
   }
   if(false == LexUtil::isEmptyInput(param))
   {
-    mRealParamList.push_back(param);
+    mRealParamList.push_back(
+        LexUtil::eatLREmptyInput(param)
+        );
   }
   mParamSepStack.push(mLexRecList.size());
 }

@@ -139,9 +139,10 @@ TEST(MacroLex, macroTest4){
   LexRecList recList = lex.getRecList();
 //	JZSetLoggerLevel(JZ_LOG_TEST);
 
-  ASSERT_EQ(4, recList.size());
+  ASSERT_EQ(5, recList.size());
   ASSERT_STREQ("\"hello\"", recList[0].word.c_str());
   ASSERT_STREQ("123123", recList[1].word.c_str());
   ASSERT_STREQ("<<", recList[2].word.c_str());
   ASSERT_STREQ("123", recList[3].word.c_str());
+  ASSERT_STREQ("1123", recList[4].word.c_str());
 }

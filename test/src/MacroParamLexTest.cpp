@@ -25,7 +25,7 @@ TEST(MacroParamLexTest, simpleTest)
   ASSERT_STREQ("1", paramList[0].c_str());
   ASSERT_STREQ("\"2\"", paramList[1].c_str());
   ASSERT_STREQ("\"332\"", paramList[2].c_str());
-  ASSERT_STREQ("  def", paramList[3].c_str());
+  ASSERT_STREQ("def", paramList[3].c_str());
 
 }
 
