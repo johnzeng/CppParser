@@ -52,3 +52,25 @@ TEST(MacroParamLexTest, loopBracket)
   ASSERT_STREQ("(1,2,3)", paramList[1].c_str());
 
 }
+
+TEST(MacroParamLexTest, emptyParam)
+{
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/simple_macro_lex_3");
+  char* argv[2] = {argv0,argv1};
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  MacroParamLex lex;
+  lex.analyzeAFile(toCompileFile);
+  RealParamList paramList = lex.getParamList();
+
+  ASSERT_EQ(0, paramList.size());
+
+}

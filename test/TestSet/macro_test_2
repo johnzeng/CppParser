@@ -3,4 +3,4 @@
 //#define they(a, ...) (a(...)0)
 #define every (abce)
 
-main(he(),she(3),they(1,2,3,4), every);
+main(he(),she(3), every);

@@ -1,5 +1,6 @@
 #include "MacroParamLex.h"
 #include "JZLogger.h"
+#include "LexUtil.h"
 
 MacroParamLex::MacroParamLex()
 {
@@ -110,6 +111,9 @@ void MacroParamLex::pushIntoParamList()
   {
     param += mReaderStack.top().buffer[i];
   }
-  mRealParamList.push_back(param);
+  if(false == LexUtil::isEmptyInput(param))
+  {
+    mRealParamList.push_back(param);
+  }
   mParamSepStack.push(mLexRecList.size());
 }
