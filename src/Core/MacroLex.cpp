@@ -1025,14 +1025,15 @@ uint32 MacroLex::handleDefinedWord(const string& word)
     FileReaderRecord curFileRecord = popReaderRecord();
     parmLexer.pushReaderRecord(curFileRecord);
     uint32 parmLexerRet = parmLexer.doLex();
-    if (eLexNoError != parmLexerRet && eLexReachFileEnd != parmLexerRet)
+    FileReaderRecord afterLexRecord = parmLexer.popReaderRecord();
+    LexBase::pushReaderRecord(afterLexRecord);
+    if (eLexNoError != parmLexerRet && eLexReachFileEnd != parmLexerRet && eLexParamAnalyzeOVer != parmLexerRet)
     {
       //this should be error;
+      JZWRITE_DEBUG("return here")
       return parmLexerRet;
     }
     paramList = parmLexer.getParamList();
-    FileReaderRecord afterLexRecord = parmLexer.popReaderRecord();
-    LexBase::pushReaderRecord(afterLexRecord);
 		//param number check
 		if (true == defRec->isVarArgs)
 		{

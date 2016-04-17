@@ -37,7 +37,7 @@ TEST(MacroLex, macroTest1){
   ASSERT_STREQ(";", recList[9].word.c_str());
 
 }
-/*
+
 //cover case : function macro
 TEST(MacroLex, macroTest2){
   //this is really a strong test, so don't do it for more than one file every time
@@ -56,8 +56,10 @@ TEST(MacroLex, macroTest2){
 	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
 
   MacroLex lex;
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(15, recList.size());
   ASSERT_STREQ("main", recList[0].word.c_str());
@@ -75,4 +77,4 @@ TEST(MacroLex, macroTest2){
   ASSERT_STREQ(")", recList[12].word.c_str());
   ASSERT_STREQ(")", recList[13].word.c_str());
   ASSERT_STREQ(";", recList[14].word.c_str());
-}*/
+}
