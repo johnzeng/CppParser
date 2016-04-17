@@ -78,3 +78,70 @@ TEST(MacroLex, macroTest2){
   ASSERT_STREQ(")", recList[13].word.c_str());
   ASSERT_STREQ(";", recList[14].word.c_str());
 }
+
+//cover case : var function macro
+TEST(MacroLex, macroTest3){
+  //this is really a strong test, so don't do it for more than one file every time
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/macro_test_3");
+  char* argv[2] = {argv0,argv1};
+
+	JZSetLoggerLevel(JZ_LOG_TEST);
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  MacroLex lex;
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.analyzeAFile(toCompileFile);
+  LexRecList recList = lex.getRecList();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
+
+  ASSERT_EQ(11, recList.size());
+  ASSERT_STREQ("(", recList[0].word.c_str());
+  ASSERT_STREQ("1", recList[1].word.c_str());
+  ASSERT_STREQ("(", recList[2].word.c_str());
+  ASSERT_STREQ("2", recList[3].word.c_str());
+  ASSERT_STREQ(",", recList[4].word.c_str());
+  ASSERT_STREQ("3", recList[5].word.c_str());
+  ASSERT_STREQ(",", recList[6].word.c_str());
+  ASSERT_STREQ("\"123\"", recList[7].word.c_str());
+  ASSERT_STREQ(")", recList[8].word.c_str());
+  ASSERT_STREQ("0", recList[9].word.c_str());
+  ASSERT_STREQ(")", recList[10].word.c_str());
+}
+
+//cover case : # in  macro function
+TEST(MacroLex, macroTest4){
+  //this is really a strong test, so don't do it for more than one file every time
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/macro_test_4");
+  char* argv[2] = {argv0,argv1};
+
+	JZSetLoggerLevel(JZ_LOG_TEST);
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  MacroLex lex;
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.analyzeAFile(toCompileFile);
+  LexRecList recList = lex.getRecList();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
+
+  ASSERT_EQ(4, recList.size());
+  ASSERT_STREQ("\"hello\"", recList[0].word.c_str());
+  ASSERT_STREQ("123123", recList[1].word.c_str());
+  ASSERT_STREQ("<<", recList[2].word.c_str());
+  ASSERT_STREQ("123", recList[3].word.c_str());
+}

@@ -1,0 +1,5 @@
+#define he(a) #a
+#define she(a,b) a##b
+
+he(hello)
+she(123,123<<123)
