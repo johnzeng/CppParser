@@ -12,6 +12,8 @@ public:
 	uint32 handleRightBracket();			//)
 	uint32 handleComma();					//,
 
+  RealParamList getParamList();
+
 private:
 	void pushLeftBracket(uint32 mark);
 	void popLeftBracket();
@@ -20,6 +22,7 @@ private:
 
 private:
 	BracketMarkStack mBracketMarkStack;
+	RealParamList mRealParamList;
 };
 
 #endif /* end of include guard: MACROPARMLEX_H */

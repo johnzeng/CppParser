@@ -1,4 +1,5 @@
 #include "MacroLex.h"
+#include "MacroParamLex.h"
 #include "DefineManager.h"
 #include "JZMacroFunc.h"
 #include "LexPatternTable.h"
@@ -1016,40 +1017,16 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 		return eLexMacroIsAlreadyExpending;
 	}
 	JZWRITE_DEBUG("now expending macro:%s",word.c_str());
+  RealParamList paramList;
 	if (true == defRec->isFuncLikeMacro)
 	{
-    //I will rewrite this part of code. I think we should just read all parameters from file directlly
-//		string matchWord;
-//		uint32 errRet = consumeCharUntilReach('(',&matchWord);
-//		if (errRet != eLexNoError)
-//		{
-//			JZFUNC_END_LOG();
-//			return eLexUnexpectedSeperator;
-//		}
-		//read real param
-//		handleLeftBracket();
-//		uint32 ret = doLex();
-//		JZWRITE_DEBUG("do lex end for handle define word: %s", word.c_str());
-		//untile here, param list is all get
-//		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
-//		{
-//			popErrorSite();
-//			JZFUNC_END_LOG();
-//			return ret;
-//		}
-
-		JZWRITE_DEBUG("now add param list");
-#ifdef DEBUG
-		JZWRITE_DEBUG("now print param list");
-		for(int i = 0 ; i < mRealParamList.size(); i++)
-		{
-			JZWRITE_DEBUG("i is %d,word is :[%s]",i,mRealParamList[i].c_str());	
-		}
-#endif
+    MacroParamLex parmLexer;
+    parmLexer.doLex();
+    paramList = parmLexer.getParamList();
 		//param number check
 		if (true == defRec->isVarArgs)
 		{
-			if (defRec->paramMap.size() - 1 > mRealParamList.size())
+			if (defRec->paramMap.size() - 1 > paramList.size())
 			{
 				JZWRITE_DEBUG("var func like marco param not enough");
 				return eLexFuncLikeMacroParamTooLess;
@@ -1057,10 +1034,10 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 		}
 		else
 		{
-			if (defRec->paramMap.size() != mRealParamList.size())
+			if (defRec->paramMap.size() != paramList.size())
 			{
 				JZWRITE_DEBUG("Func like macro param not right");
-				return defRec->paramMap.size() > mRealParamList.size() ?
+				return defRec->paramMap.size() > paramList.size() ?
 				eLexFuncLikeMacroParamTooLess : eLexFuncLikeMacroParamTooManay;
 			}
 		}
@@ -1069,7 +1046,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 	//not func like ,just expend it
 	//use defineManager to expend it
 	string expendStr = "";
-	uint32 expendErr = expendMacro(defRec, mRealParamList, expendStr);
+	uint32 expendErr = expendMacro(defRec, paramList, expendStr);
 	if (eLexNoError != expendErr)
 	{
 		JZFUNC_END_LOG();
@@ -1079,7 +1056,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 	char* buff = (char*)malloc(expendStr.size());
 	strncpy(buff, expendStr.c_str(), expendStr.size());
 	pushReaderRecord(buff,expendStr.size(),word,eFileTypeMacroParam);
-	mRealParamList.clear();
+
 	uint32 ret = doLex();
 
 	if (ret != eLexNoError && ret != eLexReachFileEnd)
@@ -1238,3 +1215,37 @@ uint32 MacroLex::handleBar()
 	return ret;
 }
 
+FileReaderRecord MacroLex::popReaderRecord()
+{
+	switch(mReaderStack.top().recordType)
+	{
+		case eFileTypeMacroParam:
+			{
+				auto toEraseIt = mPreprocessingMacroSet.find(mReaderStack.top().fileName);
+				mPreprocessingMacroSet.erase(toEraseIt);
+			}
+			break;
+		default:
+		{
+			break;	
+		}
+	}
+  return LexBase::popReaderRecord();
+}
+
+void MacroLex::pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType  )
+{
+	switch(recordType)
+	{
+		case eFileTypeMacroParam:
+			mPreprocessingMacroSet.insert(fileName);
+			break;
+		case eFileTypeFile:
+			mPreprocessedFile.insert(fileName);
+		default:
+		{
+			break;	
+		}
+	}
+  LexBase::pushReaderRecord(buff,size,fileName,recordType);
+}

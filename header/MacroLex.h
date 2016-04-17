@@ -53,6 +53,10 @@ public:
 protected:
 	virtual uint32 heartBeatForNormalWord(string& word );
 
+	virtual void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+
+	virtual FileReaderRecord popReaderRecord();
+
 	// isSuccess is useless when word == "#else" or word == "#endif"
 	uint32 pushPrecompileStreamControlWord(uint32 word, bool isSuccess = true);
 	bool isLastStreamUseful();
@@ -72,7 +76,6 @@ protected:
 //	bool isFuncLikeMacroMode();
 
 private:
-	RealParamList mRealParamList;
 	StringSet mOnceFileSet;
 	StringSet mPreprocessingMacroSet;
 

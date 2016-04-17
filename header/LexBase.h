@@ -54,10 +54,9 @@ public:
   // some basic handler
 	uint32 handleSingleQuotation();  		//"
 	uint32 handleDoubleQuotation();			//'
-protected:
-
   uint32 doLex();
 
+protected:
 
 	virtual uint32 heartBeat(string& word );
 
@@ -87,9 +86,9 @@ protected:
 
   void pushReaderRecord(FileReaderRecord record);
 
-	void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+	virtual void pushReaderRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
-	void popReaderRecord();
+	virtual FileReaderRecord popReaderRecord();
 
 	uint32 getLastIndex();
 

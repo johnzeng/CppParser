@@ -98,3 +98,8 @@ void MacroParamLex::popLeftBracket()
 {
 	mBracketMarkStack.pop();
 }
+
+RealParamList MacroParamLex::getParamList()
+{
+  return mRealParamList;
+}

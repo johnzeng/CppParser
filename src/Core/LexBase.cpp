@@ -326,38 +326,13 @@ void LexBase::pushReaderRecord(const char* buff,uint64 size,const string& fileNa
 		initFileRecord(
 				buff,size, fileName,recordType);
   pushReaderRecord(rec);
-  //alarm: these part of logic should be in child of lexbase
-//	switch(recordType)
-//	{
-//		case eFileTypeMacroParam:
-//			mPreprocessingMacroSet.insert(fileName);
-//			break;
-//		case eFileTypeFile:
-//			mPreprocessedFile.insert(fileName);
-//		default:
-//		{
-//			break;	
-//		}
-//	}
 }
 
-void LexBase::popReaderRecord()
+FileReaderRecord LexBase::popReaderRecord()
 {
-	switch(mReaderStack.top().recordType)
-	{
-  //alarm: these part of logic should be in child of lexbase
-//		case eFileTypeMacroParam:
-//			{
-//				auto toEraseIt = mPreprocessingMacroSet.find(mReaderStack.top().fileName);
-//				mPreprocessingMacroSet.erase(toEraseIt);
-//			}
-//			break;
-		default:
-		{
-			break;	
-		}
-	}
-	mReaderStack.pop();
+	FileReaderRecord topRecord = mReaderStack.top();
+  mReaderStack.pop();
+  return topRecord;
 }
 
 
