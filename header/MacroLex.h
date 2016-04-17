@@ -24,9 +24,6 @@ public:
 	uint32 handleEqual();					//=
 
 	//should be part of macro param handler
-	uint32 handleLeftBracket();				//(
-	uint32 handleRightBracket();			//)
-	uint32 handleComma();					//,
   
 	//macro handler
 	uint32 handleSharpDefine();
@@ -68,15 +65,11 @@ protected:
 	bool isMacroExpending(const string& input);
 	bool isOnceFile(const string& input);
 
-	void turnOnFuncLikeMacroMode();
-	void turnOffFuncLikeMacroMode();
+//	void turnOnFuncLikeMacroMode();
+//	void turnOffFuncLikeMacroMode();
 	void pushDefParam(const DefineRec *rec,const ParamSiteMap *indexMap);
 	void popDefParam();
-	bool isFuncLikeMacroMode();
-	uint32 getBracketMarkStackSize();
-	void pushLeftBracket(uint32 mark);
-	void popLeftBracket();
-	uint32 getBracketBeginMark();
+//	bool isFuncLikeMacroMode();
 
 private:
 	RealParamList mRealParamList;

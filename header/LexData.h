@@ -71,14 +71,14 @@ struct FileReaderRecord
 	//stream tag
 	uint32 mStreamOffTag;
 
+  //ok,this is a little stupid now, we are going to do another lex
 	//func like macor analyzing 
 	bool mFuncLikeMacroParamAnalyzing;
-	BracketMarkStack mBracketMarkStack;
 	vector<PrecompileSelector> mPSStack;
 		
 };
 
-FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+//FileReaderRecord initFileRecord(const char* buff,uint64 size,const string& fileName,uint32 recordType);
 
 typedef vector<LexRec> LexRecList;
 

@@ -19,9 +19,6 @@ MacroLex::MacroLex()
 	mPatternTable->insertPattern('&',  (LexPatternHandler)(&MacroLex::handleAnd));
 	mPatternTable->insertPattern('=',  (LexPatternHandler)(&MacroLex::handleEqual));
 	mPatternTable->insertPattern('!',  (LexPatternHandler)(&MacroLex::handleExclamation));
-	mPatternTable->insertPattern('(',  (LexPatternHandler)(&MacroLex::handleLeftBracket));
-	mPatternTable->insertPattern(')',  (LexPatternHandler)(&MacroLex::handleRightBracket));
-	mPatternTable->insertPattern(',',  (LexPatternHandler)(&MacroLex::handleComma));
 	/*********************************************************
 		init marco pattern map here 
 	 ********************************************************/
@@ -752,39 +749,39 @@ bool MacroLex::isOnceFile(const string& input)
 	}
 }
 
-void MacroLex::turnOnFuncLikeMacroMode()
-{
-	JZFUNC_BEGIN_LOG();
-	if (mReaderStack.empty())
-	{
-		return;
-	}
-	mReaderStack.top().mFuncLikeMacroParamAnalyzing = true;
-}
+//void MacroLex::turnOnFuncLikeMacroMode()
+//{
+//	JZFUNC_BEGIN_LOG();
+//	if (mReaderStack.empty())
+//	{
+//		return;
+//	}
+//	mReaderStack.top().mFuncLikeMacroParamAnalyzing = true;
+//}
+//
+//void MacroLex::turnOffFuncLikeMacroMode()
+//{
+//	JZFUNC_BEGIN_LOG();
+//	if (mReaderStack.empty())
+//	{
+//		return;
+//	}
+//	mReaderStack.top().mFuncLikeMacroParamAnalyzing = false;
+//}
 
-void MacroLex::turnOffFuncLikeMacroMode()
-{
-	JZFUNC_BEGIN_LOG();
-	if (mReaderStack.empty())
-	{
-		return;
-	}
-	mReaderStack.top().mFuncLikeMacroParamAnalyzing = false;
-}
-
-bool MacroLex::isFuncLikeMacroMode()
-{
-	if (mReaderStack.empty())
-	{
-		return false;
-	}
-	bool ret = mReaderStack.top().mFuncLikeMacroParamAnalyzing;
-	if (ret)
-	{
-		JZWRITE_DEBUG("func like mode");
-	}
-	return ret;
-}
+//bool MacroLex::isFuncLikeMacroMode()
+//{
+//	if (mReaderStack.empty())
+//	{
+//		return false;
+//	}
+//	bool ret = mReaderStack.top().mFuncLikeMacroParamAnalyzing;
+//	if (ret)
+//	{
+//		JZWRITE_DEBUG("func like mode");
+//	}
+//	return ret;
+//}
 
 uint32 MacroLex::heartBeatForNormalWord(string& word)
 {
@@ -810,7 +807,6 @@ uint32 MacroLex::heartBeatForNormalWord(string& word)
     saveWord(word,beginIndex, endIndex);
   }
   else if (
-      false == isFuncLikeMacroMode() &&
         true == isLastStreamUseful() &&
       DefineManager::eDefMgrDefined == mDefMgr.isDefined(word) &&
       false == isMacroExpending(word))
@@ -1023,26 +1019,24 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 	if (true == defRec->isFuncLikeMacro)
 	{
     //I will rewrite this part of code. I think we should just read all parameters from file directlly
-		string matchWord;
-		uint32 errRet = consumeCharUntilReach('(',&matchWord);
-		if (errRet != eLexNoError)
-		{
-			JZFUNC_END_LOG();
-			return eLexUnexpectedSeperator;
-		}
+//		string matchWord;
+//		uint32 errRet = consumeCharUntilReach('(',&matchWord);
+//		if (errRet != eLexNoError)
+//		{
+//			JZFUNC_END_LOG();
+//			return eLexUnexpectedSeperator;
+//		}
 		//read real param
-		turnOnFuncLikeMacroMode();
-		handleLeftBracket();
-		uint32 ret = doLex();
-		JZWRITE_DEBUG("do lex end for handle define word: %s", word.c_str());
-		turnOffFuncLikeMacroMode();
+//		handleLeftBracket();
+//		uint32 ret = doLex();
+//		JZWRITE_DEBUG("do lex end for handle define word: %s", word.c_str());
 		//untile here, param list is all get
-		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
-		{
-			popErrorSite();
-			JZFUNC_END_LOG();
-			return ret;
-		}
+//		if (eLexNoError != ret && eLexReachFileEnd != ret && eLexParamAnalyzeOVer != ret)
+//		{
+//			popErrorSite();
+//			JZFUNC_END_LOG();
+//			return ret;
+//		}
 
 		JZWRITE_DEBUG("now add param list");
 #ifdef DEBUG
@@ -1099,66 +1093,6 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 	return eLexNoError;	
 }
 
-uint32 MacroLex::handleRightBracket()
-{
-	JZFUNC_BEGIN_LOG();
-	uint32 bracketBeginIndex = getLastIndex();
-	if (true == isFuncLikeMacroMode())
-	{
-		JZWRITE_DEBUG("now pop a mark");
-		if (0 == getBracketMarkStackSize())
-		{
-			JZFUNC_END_LOG();
-			return eLexUnknowError;
-		}
-		if (1 == getBracketMarkStackSize())
-		{
-      //I think I get the stupid think here now. The logic is ok , but we should not get the parameter from the begin mark,
-      //we should get parameter from a start mark
-      //we will need to do it in this way
-      //1, when the left bracket is pushed, init the left bracket, and init a paramter mark
-      //2, meet a comma ,update the parameter mark
-      //3, meet a right bracket, end the input.
-		}
-		popLeftBracket();
-		if (0 == getBracketMarkStackSize())
-		{
-			JZFUNC_END_LOG();
-			return eLexParamAnalyzeOVer;
-		}
-
-	}
-	uint32 bracketEndIndex = getLastIndex();
-	saveWord(")", bracketBeginIndex, bracketEndIndex);
-	JZFUNC_END_LOG();
-	return eLexNoError;
-}
-uint32 MacroLex::handleLeftBracket()
-{
-	uint32 beginIndex = getLastIndex();
-	JZFUNC_BEGIN_LOG();
-	if (true == isFuncLikeMacroMode())
-	{
-		//now it is analyzing macro like func,do something
-		JZWRITE_DEBUG("now push a mark");
-		uint32 mark = mLexRecList.size();
-		pushLeftBracket(mark);
-		JZWRITE_DEBUG("push over");
-//		if (1 == getBracketMarkStackSize())
-//		{
-//			JZWRITE_DEBUG("first bracket,don't save");
-//			return eLexNoError;
-//		}
-	}
-	uint32 endIndex = getLastIndex();
-	saveWord("(",beginIndex,endIndex);
-	JZFUNC_END_LOG();
-	return eLexNoError;
-}
-uint32 MacroLex::getBracketBeginMark()
-{
-	return mReaderStack.top().mBracketMarkStack.top();
-}
 uint32 MacroLex::handleLeftSharpBracket()
 {
 	uint32 beginIndex = getLastIndex();
@@ -1192,25 +1126,6 @@ uint32 MacroLex::handleLeftSharpBracket()
 	uint32 endIndex = getLastIndex();
 	saveWord(toSave,beginIndex, endIndex);
 	return ret;
-}
-
-uint32 MacroLex::handleComma()
-{
-	uint32 commaBeginIndex = getLastIndex();
-	if (true == isFuncLikeMacroMode())
-	{
-		if (1 == getBracketMarkStackSize())
-		{
-			//save it!
-      //the logic is right but the parameter get logic is stupid,
-      //pls follow the comment I made in handleRightBracket, to get the right logic about handling marco parameter
-			return eLexNoError;
-		}
-	}
-	
-	uint32 commaEndIndex = getLastIndex();
-	saveWord(",",commaBeginIndex,commaEndIndex);
-	return eLexNoError;
 }
 
 uint32 MacroLex::handleRightSharpBracket()
@@ -1247,20 +1162,6 @@ uint32 MacroLex::handleRightSharpBracket()
 	uint32 endIndex = getLastIndex();
 	saveWord(toSave, beginIndex, endIndex);
 	return ret;
-}
-uint32 MacroLex::getBracketMarkStackSize()
-{
-	return mReaderStack.top().mBracketMarkStack.size();
-}
-
-void MacroLex::pushLeftBracket(uint32 mark)
-{
-	mReaderStack.top().mBracketMarkStack.push(mark);
-}
-
-void MacroLex::popLeftBracket()
-{
-	mReaderStack.top().mBracketMarkStack.pop();
 }
 
 uint32 MacroLex::handleAnd()

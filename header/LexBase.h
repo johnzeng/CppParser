@@ -2,8 +2,7 @@
 #define LEXBASE_H
 
 #include "LexData.h"
-
-class LexPatternTable;
+#include "LexPatternTable.h"
 
 class LexBase{
 public:
