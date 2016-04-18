@@ -22,14 +22,15 @@ TEST(MacroLex, macroIfTest1){
 
   MacroLex lex;
   lex.analyzeAFile(toCompileFile);
-	JZSetLoggerLevel(JZ_LOG_DEBUG);
-  lex.printLexRec();
-	JZSetLoggerLevel(JZ_LOG_TEST);
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+//  lex.printLexRec();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
 
   LexRecList recList = lex.getRecList();
 
-  ASSERT_EQ(3, recList.size());
+  ASSERT_EQ(4, recList.size());
   ASSERT_STREQ("hello", recList[0].word.c_str());
   ASSERT_STREQ("nono", recList[1].word.c_str());
   ASSERT_STREQ("yes", recList[2].word.c_str());
+  ASSERT_STREQ("yes3", recList[3].word.c_str());
 }

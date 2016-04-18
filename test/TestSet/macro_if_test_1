@@ -20,3 +20,14 @@ nono
 yes
 #endif
 //should output yes
+
+#ifndef hi
+yes
+#elif 0
+yes2
+#elif 1
+yes3
+#else
+yes4
+#endif
+//should output yes3
