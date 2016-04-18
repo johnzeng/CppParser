@@ -789,9 +789,12 @@ uint32 MacroLex::heartBeatForNormalWord(string& word)
 	uint32 ret = eLexNoError;
 
   JZWRITE_DEBUG("is macro:%d,is Stream useful %d",eFileTypeFile == mReaderStack.top().recordType,isLastStreamUseful());
+  if(false == isLastStreamUseful())
+  {
+    return eLexNoError;
+  }
   //not interpunction
-  if (isLastStreamUseful() &&
-    "defined" == word)
+  if ( "defined" == word)
   {
     //this is defined in #if or #elif
     uint32 beginIndex = getLastIndex() + 1 - word.size() ;
@@ -807,7 +810,6 @@ uint32 MacroLex::heartBeatForNormalWord(string& word)
     saveWord(word,beginIndex, endIndex);
   }
   else if (
-        true == isLastStreamUseful() &&
       DefineManager::eDefMgrDefined == mDefMgr.isDefined(word) &&
       false == isMacroExpending(word))
   {

@@ -30,6 +30,6 @@ TEST(MacroLex, macroIfTest1){
 
   ASSERT_EQ(3, recList.size());
   ASSERT_STREQ("hello", recList[0].word.c_str());
-  ASSERT_STREQ("non0", recList[1].word.c_str());
+  ASSERT_STREQ("nono", recList[1].word.c_str());
   ASSERT_STREQ("yes", recList[2].word.c_str());
 }
