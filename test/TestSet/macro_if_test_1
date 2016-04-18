@@ -1,0 +1,22 @@
+#if 1
+hello
+#else
+hi
+#endif
+//should out put hello
+
+#if defined(hello)
+tell
+#endif
+//should output nothing
+
+#define hi
+#if defined( hi)
+nono
+#endif
+//shoud output nono
+
+#ifdef hi
+yes
+#endif
+//should output yes
