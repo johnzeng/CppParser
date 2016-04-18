@@ -1,0 +1,4 @@
+#define them(a,...) printf(a,##__VA_ARGS__)
+
+them(1,"1")
+them(1)
