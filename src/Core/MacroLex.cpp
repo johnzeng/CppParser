@@ -449,7 +449,6 @@ uint32 MacroLex::handleSharpDefine()
 		defineRec.isFuncLikeMacro = true;
 		//read format parm
 		string param;
-		char seperator;
 		uint32 paramRet;
 		bool isParam = true;
 		while(eLexNoError == (paramRet = consumeWord(param,eLexSkipEmptyInput,eLexInOneLine)))
@@ -467,7 +466,7 @@ uint32 MacroLex::handleSharpDefine()
 					JZFUNC_END_LOG();
 					return eLexUnexpectedSeperator;
 				}
-				if (seperator == '.')
+				if (param[0] == '.')
 				{
 					uint32 endIndex = getLastIndex() - 1;
 					uint32 beginIndex = getLastIndex() - 1 - param.size();

@@ -191,3 +191,26 @@ TEST(LexUtil, smallTestCase){
   EXPECT_EQ(true, LexUtil::ignoreMacroWhenStreamIsOff("warning"));
   EXPECT_EQ(true, LexUtil::ignoreMacroWhenStreamIsOff("error"));
 }
+
+TEST(LexUtil, interpunction)
+{
+  EXPECT_EQ(true, LexUtil::isInterpunction(','));
+  EXPECT_EQ(true, LexUtil::isInterpunction('.'));
+  EXPECT_EQ(true, LexUtil::isInterpunction(';'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('('));
+  EXPECT_EQ(true, LexUtil::isInterpunction('"'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('*'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('/'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('&'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('^'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('%'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('#'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('-'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('+'));
+  EXPECT_EQ(true, LexUtil::isInterpunction('='));
+  EXPECT_EQ(true, LexUtil::isInterpunction('?'));
+
+  EXPECT_EQ(false, LexUtil::isInterpunction('@'));
+  EXPECT_EQ(false, LexUtil::isInterpunction('_'));
+  EXPECT_EQ(false, LexUtil::isInterpunction('$'));
+}

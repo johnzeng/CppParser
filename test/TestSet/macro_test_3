@@ -1,3 +1,4 @@
-#define they(a, ...) (a(...)0)
+#define they(a, ...) (a(__VA_ARGS__)0)
 
 they(1,2,3,"123")
+they(1)

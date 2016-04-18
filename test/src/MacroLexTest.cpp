@@ -100,9 +100,10 @@ TEST(MacroLex, macroTest3){
 	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
+  lex.printLexRec();
 	JZSetLoggerLevel(JZ_LOG_TEST);
 
-  ASSERT_EQ(11, recList.size());
+  ASSERT_EQ(17, recList.size());
   ASSERT_STREQ("(", recList[0].word.c_str());
   ASSERT_STREQ("1", recList[1].word.c_str());
   ASSERT_STREQ("(", recList[2].word.c_str());
@@ -114,6 +115,14 @@ TEST(MacroLex, macroTest3){
   ASSERT_STREQ(")", recList[8].word.c_str());
   ASSERT_STREQ("0", recList[9].word.c_str());
   ASSERT_STREQ(")", recList[10].word.c_str());
+
+  ASSERT_STREQ("(", recList[11].word.c_str());
+  ASSERT_STREQ("1", recList[12].word.c_str());
+  ASSERT_STREQ("(", recList[13].word.c_str());
+  ASSERT_STREQ(")", recList[14].word.c_str());
+  ASSERT_STREQ("0", recList[15].word.c_str());
+  ASSERT_STREQ(")", recList[16].word.c_str());
+
 }
 
 //cover case : # and ## in  macro function

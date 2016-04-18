@@ -56,6 +56,7 @@ bool LexUtil::isInterpunction(const char input)
 		case '\n':
 		case ';':
 		case ':':
+		case '.':
 		{
 			return true;
 		}
