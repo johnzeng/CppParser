@@ -1,0 +1,2 @@
+#define he(a,b)                 print(a,b,a,b,a##b)
+he(1,2)

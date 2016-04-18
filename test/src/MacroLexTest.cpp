@@ -254,3 +254,42 @@ TEST(MacroLex, macroTest7){
   ASSERT_STREQ("1", recList[8].word.c_str());
   ASSERT_STREQ(")", recList[9].word.c_str());
 }
+
+//cover case : one parameter, use manay times
+TEST(MacroLex, macroTest8){
+  //this is really a strong test, so don't do it for more than one file every time
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/macro_test_8");
+  char* argv[2] = {argv0,argv1};
+
+	JZSetLoggerLevel(JZ_LOG_TEST);
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  MacroLex lex;
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.analyzeAFile(toCompileFile);
+  LexRecList recList = lex.getRecList();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
+
+  ASSERT_EQ(12, recList.size());
+  ASSERT_STREQ("print", recList[0].word.c_str());
+  ASSERT_STREQ("(", recList[1].word.c_str());
+  ASSERT_STREQ("1", recList[2].word.c_str());
+  ASSERT_STREQ(",", recList[3].word.c_str());
+  ASSERT_STREQ("2", recList[4].word.c_str());
+  ASSERT_STREQ(",", recList[5].word.c_str());
+  ASSERT_STREQ("1", recList[6].word.c_str());
+  ASSERT_STREQ(",", recList[7].word.c_str());
+  ASSERT_STREQ("2", recList[8].word.c_str());
+  ASSERT_STREQ(",", recList[9].word.c_str());
+  ASSERT_STREQ("12", recList[10].word.c_str());
+  ASSERT_STREQ(")", recList[11].word.c_str());
+
+}
