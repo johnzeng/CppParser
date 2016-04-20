@@ -22,9 +22,9 @@ TEST(MacroLex, macroIfTest1){
 
   MacroLex lex;
   lex.analyzeAFile(toCompileFile);
-//	JZSetLoggerLevel(JZ_LOG_DEBUG);
-//  lex.printLexRec();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.printLexRec();
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   LexRecList recList = lex.getRecList();
 
