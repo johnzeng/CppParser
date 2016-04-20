@@ -18,6 +18,8 @@ nono
 
 #ifdef hi
 yes
+#else
+no
 #endif
 //should output yes
 
@@ -31,6 +33,7 @@ yes
 yes2
 #elif 1
 yes3
+defined(hello)
 #else
 yes4
 #endif

@@ -21,16 +21,21 @@ TEST(MacroLex, macroIfTest1){
 	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
 
   MacroLex lex;
-  lex.analyzeAFile(toCompileFile);
+
 	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.analyzeAFile(toCompileFile);
   lex.printLexRec();
 	JZSetLoggerLevel(JZ_LOG_TEST);
 
   LexRecList recList = lex.getRecList();
 
-  ASSERT_EQ(4, recList.size());
+  ASSERT_EQ(8, recList.size());
   ASSERT_STREQ("hello", recList[0].word.c_str());
   ASSERT_STREQ("nono", recList[1].word.c_str());
   ASSERT_STREQ("yes", recList[2].word.c_str());
   ASSERT_STREQ("yes3", recList[3].word.c_str());
+  ASSERT_STREQ("defined", recList[4].word.c_str());
+  ASSERT_STREQ("(", recList[5].word.c_str());
+  ASSERT_STREQ("hello", recList[6].word.c_str());
+  ASSERT_STREQ(")", recList[7].word.c_str());
 }
