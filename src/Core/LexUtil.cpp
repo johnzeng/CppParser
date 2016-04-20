@@ -274,6 +274,10 @@ char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
 		}
 	}
 	*bufSize = j;
+  if (isCommentBlock || isString || isChar)
+  {
+    JZWRITE_ERROR("not end with plain text");
+  }
 	JZFUNC_END_LOG();
 	return ret;
 }

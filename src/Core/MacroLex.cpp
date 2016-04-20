@@ -1233,13 +1233,9 @@ uint32 MacroLex::heartBeat()
   if(false == isLastStreamUseful())
   {
     char nextChar = 0;
-    while(eLexNoError == readChar(&nextChar))
+    while(eLexNoError == consumeChar(&nextChar))
     {
-      if(nextChar != '#')
-      {
-        consumeChar(&nextChar);
-      }
-      else
+      if(nextChar == '#')
       {
         consumeChar(&nextChar);
         uint32 ret = handleSharp();
@@ -1247,6 +1243,7 @@ uint32 MacroLex::heartBeat()
         {
           return ret;
         }
+        //else continue
       }
     }
     return eLexNoError;
