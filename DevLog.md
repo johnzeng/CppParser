@@ -1,5 +1,6 @@
 2016/04/20
 Log1: 目前来说比较直接的想法是在判断为无用流之后直接开一个函数读掉他们，在heartbeat那里做修改，如果是无用流，直接eatUntilNextSharp，并且不能eat掉sharp.
+Log2: important:正式更名为CppParser
 
 2016/04/18
 Log1: 多数跟函数展开的bug已经修复了。但是还有一个gtest的问题。因为gtest是多线程的，所以并不知道会不会有跨线程的bug。目前看来，测试用例似乎存在这种问题
