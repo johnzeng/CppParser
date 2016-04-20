@@ -1246,6 +1246,10 @@ uint32 MacroLex::heartBeat()
         //else continue
       }
     }
+    if(eLexNoError != consumeRet)
+    {
+      JZWRITE_ERROR("not end with correct macro");
+    }
     return consumeRet;
   }
   else
