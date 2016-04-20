@@ -7,6 +7,7 @@
 #include "KeyWordDefine.h"
 #include <stdlib.h>
 #include "LexUtil.h"
+#include "string.h"
 
 MacroLex::MacroLex()
 {

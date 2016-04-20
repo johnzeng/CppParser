@@ -78,4 +78,5 @@ count:
 
 depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
 	@echo "=================== now gen depend =============="
+	- mkdir target
 	-@sh $(depend_generator) "$(CPPFLAGS)" 2>&1 > /dev/null
