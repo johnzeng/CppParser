@@ -1,0 +1,39 @@
+#if 1+1==2
+yes0
+#endif
+//echo yes
+
+#if 10/2==5
+yes1
+#endif
+//echo yes
+
+#if 1*2 == 2
+yes2
+#endif
+//echo yes
+
+#if 1*2 == 2
+yes3
+#endif
+//echo yes
+
+#if 1 < 2
+yes4
+#endif
+//echo yes
+
+#if 4 > 2
+yes5
+#endif
+//echo yes
+
+#if 1 <= 1
+yes6
+#endif
+//echo yes
+
+#if 4 >= 4
+yes7
+#endif
+//echo yes
