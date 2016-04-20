@@ -1227,3 +1227,32 @@ void MacroLex::pushReaderRecord(FileReaderRecord record)
 	}
   LexBase::pushReaderRecord(record);
 }
+
+uint32 MacroLex::heartBeat()
+{
+  if(false == isLastStreamUseful())
+  {
+    char nextChar = 0;
+    while(eLexNoError == readChar(&nextChar))
+    {
+      if(nextChar != '#')
+      {
+        consumeChar(&nextChar);
+      }
+      else
+      {
+        consumeChar(&nextChar);
+        uint32 ret = handleSharp();
+        if(eLexNoError == ret)
+        {
+          return ret;
+        }
+      }
+    }
+    return eLexNoError;
+  }
+  else
+  {
+    return LexBase::heartBeat();
+  }
+}

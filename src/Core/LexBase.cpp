@@ -41,10 +41,9 @@ uint32 LexBase::doLex()
 {
 	JZFUNC_BEGIN_LOG();
 	uint32 ret = eLexNoError;
-	string word;
 	do
   {
-    ret = heartBeat(word);
+    ret = heartBeat();
 
 	}while(ret == eLexNoError);
 
@@ -61,9 +60,10 @@ uint32 LexBase::heartBeatForNormalWord(string& word)
   return eLexNoError;
 
 }
-uint32 LexBase::heartBeat(string& word)
+uint32 LexBase::heartBeat()
 {
   // for lex base, we don't save normal word, we just handle sepeators
+  string word = "";
   uint32 ret = consumeWord(word);
   JZWRITE_DEBUG("read word:%s",word.c_str());
 

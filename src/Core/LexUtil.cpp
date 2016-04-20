@@ -197,6 +197,10 @@ char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
 			{
 				lastIsBlant = false;
 			}
+      if('\n' == input[i])
+      {
+        isString = false;
+      }
 			j++;
 		}
 		else if(true == isChar)
@@ -214,6 +218,10 @@ char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
 			{
 				lastIsBlant = false;
 			}
+      if('\n' == input[i])
+      {
+        isString = false;
+      }
 			j++;
 		
 		}

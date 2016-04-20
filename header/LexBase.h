@@ -64,7 +64,7 @@ public:
 
 protected:
 
-	virtual uint32 heartBeat(string& word );
+	virtual uint32 heartBeat();
 
 	virtual uint32 heartBeatForNormalWord(string& word );
 

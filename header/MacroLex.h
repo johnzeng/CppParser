@@ -51,6 +51,7 @@ public:
 	
 	vector<PrecompileSelector>& getTopPSStack();
 protected:
+  virtual uint32 heartBeat();
 	virtual uint32 heartBeatForNormalWord(string& word );
 
   virtual void pushReaderRecord(FileReaderRecord record);
