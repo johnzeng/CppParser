@@ -749,40 +749,6 @@ bool MacroLex::isOnceFile(const string& input)
 	}
 }
 
-//void MacroLex::turnOnFuncLikeMacroMode()
-//{
-//	JZFUNC_BEGIN_LOG();
-//	if (mReaderStack.empty())
-//	{
-//		return;
-//	}
-//	mReaderStack.top().mFuncLikeMacroParamAnalyzing = true;
-//}
-//
-//void MacroLex::turnOffFuncLikeMacroMode()
-//{
-//	JZFUNC_BEGIN_LOG();
-//	if (mReaderStack.empty())
-//	{
-//		return;
-//	}
-//	mReaderStack.top().mFuncLikeMacroParamAnalyzing = false;
-//}
-
-//bool MacroLex::isFuncLikeMacroMode()
-//{
-//	if (mReaderStack.empty())
-//	{
-//		return false;
-//	}
-//	bool ret = mReaderStack.top().mFuncLikeMacroParamAnalyzing;
-//	if (ret)
-//	{
-//		JZWRITE_DEBUG("func like mode");
-//	}
-//	return ret;
-//}
-
 uint32 MacroLex::heartBeatForNormalWord(string& word)
 {
 	JZFUNC_BEGIN_LOG();
@@ -794,9 +760,9 @@ uint32 MacroLex::heartBeatForNormalWord(string& word)
     return eLexNoError;
   }
   //not interpunction
-  if ( "defined" == word)
+  if ( "defined" == word && mReaderStack.top().recordType == eFileTypeMacro)
   {
-    //this is defined in #if or #elif
+    //this is defined in #if or #elif, we should add more test on this. I think I create a bug here
     uint32 beginIndex = getLastIndex() + 1 - word.size() ;
     uint32 endIndex = getLastIndex();
     uint32 err = handleIsDefined(word);
