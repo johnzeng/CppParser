@@ -4,6 +4,7 @@
 #include "JZMacroFunc.h"
 #include "LexPatternTable.h"
 #include "JZFileUtil.h"
+#include "GrammarUtil.h"
 
 LexBase::LexBase()
 {
@@ -361,18 +362,19 @@ uint32 LexBase::consumeWord(
 		{
 			//skip empty input
 			consumeChar(&nextChar);
-			continue;
 		}
-		if (false == LexUtil::isInterpunction(nextChar))
+    else if (false == LexUtil::isInterpunction(nextChar))
 		{
 			//not interpunction
 			consumeChar(&nextChar);
-//			if (retStr.size() == 0 && true == LexUtil::isConstNumberChar(nextChar))
-//			{
-//				LexUtil::pointIsSeperator(false);
-//			}
 			retStr += nextChar;
 		}
+    else if('.' == nextChar && GrmUtilPtr->isDeci(retStr))
+    {
+      //in this case this is a float number
+			consumeChar(&nextChar);
+      retStr += nextChar;
+    }
 		else if(LexUtil::isEmptyInput(retStr))
 		{
 			consumeChar(&nextChar);

@@ -26,10 +26,14 @@ TEST(LexBase, simpleInput){
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
 
-  ASSERT_EQ(3, recList.size());
+  ASSERT_EQ(7, recList.size());
   ASSERT_STREQ("int", recList[0].word.c_str());
   ASSERT_STREQ("a", recList[1].word.c_str());
   ASSERT_STREQ(";", recList[2].word.c_str());
+  ASSERT_STREQ("1", recList[3].word.c_str());
+  ASSERT_STREQ("19l", recList[4].word.c_str());
+  ASSERT_STREQ("12.01", recList[5].word.c_str());
+  ASSERT_STREQ("12.1f", recList[6].word.c_str());
 
 }
 
