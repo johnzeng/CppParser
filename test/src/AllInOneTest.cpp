@@ -22,6 +22,6 @@ TEST(Lex, allInOne){
 
   Lex lex;
   lex.analyzeAFile(toCompileFile);
-  LexRecList recList = lex.getRecList();
+//  lex.printLexRec();
 
 }
