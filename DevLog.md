@@ -1,5 +1,4 @@
 ##2016/04/20
-
 Log1:目前来说比较直接的想法是在判断为无用流之后直接开一个函数读掉他们，在heartbeat那里做修改，如果是无用流，直接eatUntilNextSharp，并且不能eat掉sharp.
 Log2:important:正式更名为CppParser
 
@@ -52,6 +51,7 @@ Log1:	关于#if宏的匹配问题，需要重新研究才行，各种地方都�
 Log3:	目前完成了大部分预编译工作了，还要做一个宏布尔运算器，计算#if,#elif的值,最后一点工作了，剩下就是测试了
 
 Log2:	注意，define的链接符##会比宏定义优先处理也就是说下面的定义：
+
 ```cpp
 #define HELLO te
 #define hell() HELLO ## st
@@ -138,11 +138,12 @@ Log2:	连接符强制将两个参数黏合在一起。注意是粘合
 		}
 ```
 
-		File end:macro_test.cpp
-		上述文件将输出
-		a 8192
-		(不带回车)为何会出现这个输出，是因为连接符将1<<1跟3连接在了一起，变成了1<<13。所以左移了13位，变成了8192
-		值得注意的是，这个连接符前后有没有空格并不影响计算结果
+
+File end:macro_test.cpp
+上述文件将输出
+a 8192
+(不带回车)为何会出现这个输出，是因为连接符将1<<1跟3连接在了一起，变成了1<<13。所以左移了13位，变成了8192
+值得注意的是，这个连接符前后有没有空格并不影响计算结果
 
 Log3:	我觉得我还是重新写一次预编译过程比较好。。。。先不管了，还是按照现在这样写。编译过程对于string的保持不对并不影响编译结果，所以保持不变，不动。
 Log4:	总的来说，宏定义的处理不会跨文件
@@ -163,11 +164,11 @@ Log1:	wtf函数宏定义展开为何如此烦烦烦烦。。。。。需要进�
 Log1:	宏定义对于空格的处理优点特别
 
 ```
-		#define hell (a) //将被认为是一个define，hell的内容将被替换成(a)
-		#define hell(a) //将被认为是一个define, hell(x)的内容被替换成空白。
+#define hell (a) //将被认为是一个define，hell的内容将被替换成(a)
+#define hell(a) //将被认为是一个define, hell(x)的内容被替换成空白。
 ```
 
-		他们的差异就是中间有没有空格。所以c语言里面的空格还是不能完全忽略的
+他们的差异就是中间有没有空格。所以c语言里面的空格还是不能完全忽略的
 
 ##2015/6/21
 Log1:	重写define mngr，这个东西不能直接返回string。或者说，应该直接返回lex record比较好.
@@ -236,10 +237,10 @@ File: marco_error2.cpp
 		return 0;
 	}
 ```
-	File end :marco_error2.cpp
+File end :marco_error2.cpp
 
 Log3: 并非所有define都是直接拓展的。下面的代码将会报错：
-	File marco_error3.cpp
+File marco_error3.cpp
 	
 ```	
 	#include <stdio.h>
@@ -253,7 +254,8 @@ Log3: 并非所有define都是直接拓展的。下面的代码将会报错：
 	}
 ```
 
-	File end :marco_error3.cpp
+File end :marco_error3.cpp
+
 ##2015/6/16
 Log1:	include并非完全是把头文件拓展开来。\的影响不会从上一个文件继承到下一个文件
 
