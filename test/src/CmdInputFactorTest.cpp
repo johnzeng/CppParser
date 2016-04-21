@@ -16,11 +16,11 @@ TEST(CmdInputFactorTest, GetInputFile){
   item->analyze(argc, argv);
 
   string toCompileFile = item->getNextFile();
-  JZWRITE_TEST("first file is: %s", toCompileFile.c_str())
+//  JZWRITE_TEST("first file is: %s", toCompileFile.c_str())
   ASSERT_STREQ("./test/TestSet/all_in_one", toCompileFile.c_str());
 
   toCompileFile = item->getNextFile();
-  JZWRITE_TEST("second file is: %s", toCompileFile.c_str())
+//  JZWRITE_TEST("second file is: %s", toCompileFile.c_str())
   ASSERT_STREQ("./test/TestSet/testcpp", toCompileFile.c_str());
 
   JZSAFE_DELETE(item);

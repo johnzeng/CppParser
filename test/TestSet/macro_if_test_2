@@ -67,3 +67,20 @@ yes12
 yes13
 #endif
 //echo yes
+
+#define hell (2+1)
+#if hell + hello == 3
+yes14
+#endif
+//echo yes
+
+#if !hell
+yes15
+#else
+yes16
+#endif
+//echo yes16
+
+#if !hello
+yes17
+#endif
