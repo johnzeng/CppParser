@@ -37,3 +37,33 @@ yes6
 yes7
 #endif
 //echo yes
+
+#if 4 != 4
+yes8
+#endif
+//don't echo yes
+
+#if 4 
+yes9
+#endif
+//echo yes
+
+#if (4 + 1) * 4 == 20
+yes10
+#endif
+//echo yes
+
+#if ((4 + 1) * 4 ) % 3 == 2
+yes11
+#endif
+//echo yes
+
+#if (1+1)*(2-1) == 2
+yes12
+#endif
+//echo yes
+
+#if 1 << 3 == 8
+yes13
+#endif
+//echo yes

@@ -59,7 +59,7 @@ TEST(MacroLex, macroIfTest2){
 
   LexRecList recList = lex.getRecList();
 
-  ASSERT_EQ(8, recList.size());
+  ASSERT_EQ(13, recList.size());
   ASSERT_STREQ("yes0", recList[0].word.c_str());
   ASSERT_STREQ("yes1", recList[1].word.c_str());
   ASSERT_STREQ("yes2", recList[2].word.c_str());
@@ -68,4 +68,9 @@ TEST(MacroLex, macroIfTest2){
   ASSERT_STREQ("yes5", recList[5].word.c_str());
   ASSERT_STREQ("yes6", recList[6].word.c_str());
   ASSERT_STREQ("yes7", recList[7].word.c_str());
+  ASSERT_STREQ("yes9", recList[8].word.c_str());
+  ASSERT_STREQ("yes10", recList[9].word.c_str());
+  ASSERT_STREQ("yes11", recList[10].word.c_str());
+  ASSERT_STREQ("yes12", recList[11].word.c_str());
+  ASSERT_STREQ("yes13", recList[12].word.c_str());
 }
