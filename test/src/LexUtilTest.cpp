@@ -179,6 +179,7 @@ TEST(LexUtil, smallTestCase){
   ASSERT_STREQ("abce", LexUtil::eatLREmptyInput("abce   ").c_str());
   ASSERT_STREQ("abce", LexUtil::eatLREmptyInput("  abce").c_str());
 
+  //this method is useless now because we use another way to do that now.
   EXPECT_EQ(false, LexUtil::ignoreMacroWhenStreamIsOff("if"));
   EXPECT_EQ(false, LexUtil::ignoreMacroWhenStreamIsOff("ifdef"));
   EXPECT_EQ(false, LexUtil::ignoreMacroWhenStreamIsOff("ifndef"));

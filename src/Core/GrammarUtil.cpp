@@ -258,6 +258,14 @@ bool GrammarUtil::isFloatNumber(const string& input)
 			}
 			continue;
 		}
+    if(i == input.size() - 1)
+    {
+      return 'f' == input[i] || 'F' == input[i];
+    }
+    if(i == input.size() - 2)
+    {
+      return ('l' == input[i] || 'L' == input[i]) && ('f' == input[i + 1] || 'F' == input[i + 1]);
+    }
 		return false;
 	}
 	return pointNum == 1;
@@ -279,6 +287,14 @@ bool GrammarUtil::isDeci(const string& input)
 		{
 			continue;
 		}
+    else if(i == input.size() - 1)
+    {
+      return input[i] == 'l' || input[i] == 'L';
+    }
+    else if(i == input.size() - 2)
+    {
+      return (input[i] == 'l' || input[i] == 'L') && (input[i + 1] == 'l' || input[i + 1] == 'L');
+    }
 		else
 		{
 			return false;	

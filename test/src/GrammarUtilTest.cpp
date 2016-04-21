@@ -62,6 +62,8 @@ TEST(GrammarUtil, numberType){
 
   EXPECT_EQ(false, GrmUtilPtr->isDeci("0x1234567890abcdefABCDEF"));
   EXPECT_EQ(false, GrmUtilPtr->isDeci("0123445670"));
+  EXPECT_EQ(true, GrmUtilPtr->isDeci("123445670l"));
+  EXPECT_EQ(true, GrmUtilPtr->isDeci("123445670ll"));
   EXPECT_EQ(true, GrmUtilPtr->isDeci("1234567890"));
   EXPECT_EQ(false, GrmUtilPtr->isDeci("1234567890.000001"));
 
@@ -69,6 +71,8 @@ TEST(GrammarUtil, numberType){
   EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("0123445670"));
   EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("123456780"));
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001"));
+  EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001f"));
+  EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001lf"));
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("0.05"));
 
   EXPECT_EQ(true, GrmUtilPtr->isConstNumber("0x1234567890abcdefABCDEF"));
@@ -80,6 +84,7 @@ TEST(GrammarUtil, numberType){
   EXPECT_EQ(true, GrmUtilPtr->isConstIntNumber("0123445670"));
   EXPECT_EQ(true, GrmUtilPtr->isConstIntNumber("1234567890"));
   EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("1234567890.000001"));
+
 //Yes we don't think this is a legal number or double, 
 //we think that '-' should be a separatro, so it should not appear in the number.
   EXPECT_EQ(false, GrmUtilPtr->isConstIntNumber("-1234567890"));
