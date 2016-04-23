@@ -9,7 +9,7 @@ AR=ar
 debug_var=1
 
 ifeq ($(debug_var),1)
-RELEASE_FLAG=-DDEBUG -g -fno-pie
+RELEASE_FLAG=-DDEBUG -g -fno-pie -fprofile-arcs -ftest-coverage
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b develop
 else
 RELEASE_FLAG=-DRELEASE
