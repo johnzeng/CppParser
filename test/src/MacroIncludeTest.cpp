@@ -48,12 +48,9 @@ TEST(MacroLex, macroInclude2){
 
   IncludeHandler::getInstance()->addUserHeaderSearchPath("./test/TestSet");	
 
-	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
-	JZSetLoggerLevel(JZ_LOG_TEST);
 
   LexRecList recList = lex.getRecList();
-  lex.printLexRec();
   ASSERT_EQ(recList.size(), 3);
   ASSERT_STREQ("int", recList[0].word.c_str());
   ASSERT_STREQ("hello", recList[1].word.c_str());

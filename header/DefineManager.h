@@ -11,14 +11,17 @@ using namespace std;
  * 
  */
 
-struct DefineRec
+class DefineRec
 {
+public:
 	string key;
 	bool isFuncLikeMacro;
 	bool isVarArgs;
 	string defineStr;		//if it is an empty macro,this will be empty
 	LexRecList formalParam;		//use when this is a funclike macro
 	ParamSiteMap paramMap;
+
+  DefineRec();
 } ;
 
 typedef map<string ,DefineRec> DefineRecMap;

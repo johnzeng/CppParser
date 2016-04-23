@@ -42,13 +42,12 @@ void globalInitAtBegin()
 	auto defineMapIt = userDefineMap.begin();
 	for(; defineMapIt != userDefineMap.end() ; defineMapIt++ )
 	{
-		DefineRec rec = 
-		{
-			.key = defineMapIt->first,
-			.isFuncLikeMacro = false,
-			.isVarArgs = false,
-			.defineStr = defineMapIt->second,
-		};
+		DefineRec rec ;
+    rec.key = defineMapIt->first;
+    rec.isFuncLikeMacro = false;
+    rec.isVarArgs = false;
+    rec.defineStr = defineMapIt->second;
+
 		auto err = DefineManager::getGlobalInstance()->addDefineMap(defineMapIt->first, rec);
 		if (err != DefineManager::eDefMgrNoError)
 		{

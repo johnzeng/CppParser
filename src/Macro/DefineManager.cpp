@@ -3,6 +3,13 @@
 #include "JZLogger.h"
 #include "Lex.h"
 
+DefineRec::DefineRec():
+  key(""),
+  isFuncLikeMacro(false),
+  isVarArgs(false),
+  defineStr("")
+{}
+
 DefineManager::DefineManager()
 {
 	
