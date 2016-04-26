@@ -293,3 +293,4 @@ TEST(MacroLex, macroTest8){
   ASSERT_STREQ(")", recList[11].word.c_str());
 
 }
+
