@@ -148,3 +148,12 @@ TEST(GrammarUtil, strTrans){
   EXPECT_EQ(1, GrmUtilPtr->str2double("1.0"));
   EXPECT_EQ(0, GrmUtilPtr->str2double("0"));
 }
+
+TEST(GrammarUtil, covMissed)
+{
+  EXPECT_EQ(false, GrmUtilPtr->isDoulbeMeanWord("("));
+  ASSERT_STREQ("", GrmUtilPtr->src2StandWord("(").c_str());
+
+  EXPECT_EQ(true, GrmUtilPtr->isDoulbeMeanWord("+"));
+  ASSERT_STREQ(STAND_WORD_PREFIX"+", GrmUtilPtr->src2StandWord("+").c_str());
+}

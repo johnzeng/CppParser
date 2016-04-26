@@ -52,8 +52,10 @@ $(TEST_TARGET):$(TARGET) $(TEST_OBJECTS)
 	$(CXX) $(TARGET) $(TEST_OBJECTS) $(TEST_FLAG) $(mylib_PATH)/test/libtest.a $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
 
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
+	-find . -name "*.gcda" -exec rm {} \;
 	@echo "==================== tester build finished ==========================="
 	./$(TEST_TARGET)
+	gcovr -r . -e mylib
 
 lib:
 	cd $(mylib_PATH) && make
@@ -65,7 +67,6 @@ debuger:$(TEST_TARGET)
 	lldb $(TEST_TARGET)
 
 clean:
-	-find . -name "*.gcda" -exec rm {} \;
 	-find . -name "*.gcno" -exec rm {} \;
 	-rm depend
 	-rm $(OBJS)
@@ -77,7 +78,7 @@ count:
 	wc -l $(HEADERS) $(SOURCES)
 
 cov:
-	gcovr -r .
+	gcovr -r . -e mylib
 
 
 depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
