@@ -1076,6 +1076,7 @@ uint32 MacroLex::handleLeftSharpBracket()
 		ret = readChar(&nextChar);
 		if ('=' == nextChar)
 		{
+      consumeChar(&nextChar);
 			toSave += nextChar;
 		}
 	}

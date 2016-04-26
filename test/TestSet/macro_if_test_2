@@ -84,3 +84,8 @@ yes16
 #if !hello
 yes17
 #endif
+
+#if 16 >> 3 == 2
+yes18
+#endif
+//echo yes
