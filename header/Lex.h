@@ -19,7 +19,7 @@ public:
 	uint32 handlePlus();					//+
 	uint32 handleMinus();					//-
 	uint32 handleUpponSharp();				//^
-	uint32 handleWave();					//~
+//	uint32 handleWave();					//~
 
 
 	uint32 handleMod();						//%

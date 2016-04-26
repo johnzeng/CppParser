@@ -18,7 +18,7 @@ Lex::Lex(){
 	mPatternTable->insertPattern('*',  (LexPatternHandler)(&Lex::handleStart));
 	mPatternTable->insertPattern('+',  (LexPatternHandler)(&Lex::handlePlus));
 	mPatternTable->insertPattern('-',  (LexPatternHandler)(&Lex::handleMinus));
-	mPatternTable->insertPattern('~',  (LexPatternHandler)(&Lex::handleWave));
+//	mPatternTable->insertPattern('~',  (LexPatternHandler)(&Lex::handleWave));
 	mPatternTable->insertPattern('%',  (LexPatternHandler)(&Lex::handleMod));
 	mPatternTable->insertPattern('^',  (LexPatternHandler)(&Lex::handleUpponSharp));
 	mPatternTable->insertPattern(':',  (LexPatternHandler)(&Lex::handleColon));
@@ -85,23 +85,23 @@ uint32 Lex::handleMinus()
 	return ret;
 }
 
-uint32 Lex::handleWave()
+/*uint32 Lex::handleWave()
 {
 	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
 	ret = readChar(&nextChar);
 	string toSave = "~";
-	if ('=' == nextChar)
-	{
-		consumeChar(&nextChar);
-		toSave += nextChar;
-	}
+//	if ('=' == nextChar)
+//	{
+//		consumeChar(&nextChar);
+//		toSave += nextChar;
+//	}
 	uint32 endIndex = getLastIndex();
 	saveWord(toSave,beginIndex,endIndex);
 //	saveWord(toSave);
 	return ret;
-}
+}*/
 
 uint32 Lex::handleUpponSharp()
 {

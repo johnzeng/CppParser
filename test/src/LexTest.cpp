@@ -28,7 +28,7 @@ TEST(Lex, strangeOpr)
 
   LexRecList recList = lex.getRecList();
 
-  ASSERT_EQ(25, recList.size());
+  ASSERT_EQ(34, recList.size());
   ASSERT_STREQ("int", recList[0].word.c_str());
   ASSERT_STREQ("pr", recList[1].word.c_str());
   ASSERT_STREQ("(", recList[2].word.c_str());
@@ -54,4 +54,14 @@ TEST(Lex, strangeOpr)
   ASSERT_STREQ("b", recList[22].word.c_str());
   ASSERT_STREQ("+=", recList[23].word.c_str());
   ASSERT_STREQ("1", recList[24].word.c_str());
+  ASSERT_STREQ("a", recList[25].word.c_str());
+  ASSERT_STREQ("^=", recList[26].word.c_str());
+  ASSERT_STREQ("1", recList[27].word.c_str());
+  ASSERT_STREQ("hello", recList[28].word.c_str());
+  ASSERT_STREQ("::", recList[29].word.c_str());
+  ASSERT_STREQ("a", recList[30].word.c_str());
+
+  ASSERT_STREQ("b", recList[31].word.c_str());
+  ASSERT_STREQ("%=", recList[32].word.c_str());
+  ASSERT_STREQ("3", recList[33].word.c_str());
 }
