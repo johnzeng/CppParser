@@ -1258,3 +1258,9 @@ uint32 MacroLex::heartBeat()
     return LexBase::heartBeat();
   }
 }
+
+void MacroLex::printLexRec()
+{
+  LexBase::printLexRec();
+  mDefMgr.printAllDefine();
+}

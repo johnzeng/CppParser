@@ -72,3 +72,4 @@ TEST(LexBase, baseStrTest){
   ASSERT_STREQ(")", recList[11].word.c_str());
 
 }
+

@@ -38,3 +38,7 @@ defined(hello)
 yes4
 #endif
 //should output yes3
+
+#ifdef Linux
+yes5
+#endif

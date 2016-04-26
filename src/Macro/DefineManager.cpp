@@ -43,9 +43,10 @@ uint32 DefineManager::getDefineNum()
 void DefineManager::printAllDefine()
 {
 	auto it = mSrcLexMap.begin();
+  JZWRITE_DEBUG("Define number is:%d" , getDefineNum());
 	for(; it != mSrcLexMap.end(); it++)
 	{
-		printf("key is :%s,is func like :%s,param num :%lu def word is:%s\n", 
+		JZWRITE_DEBUG("key is :%s,is func like :%s,param num :%lu def word is:%s\n", 
 				it->first.c_str(),
 				it->second.isFuncLikeMacro ? "true" : "false",
 				it->second.formalParam.size(),

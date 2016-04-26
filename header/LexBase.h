@@ -45,7 +45,7 @@ public:
 	LexBase ();
 	virtual ~LexBase ();
 
-	void printLexRec();
+	virtual void printLexRec();
 
 	uint32 analyzeAFile(const string& fileName);
 
@@ -83,7 +83,8 @@ protected:
 
 	//alarm: this only useful for a char,in a file.
 	//if that file is poped,this func can do nothing on it
-	uint32 undoConsume();
+  //2016/04/26 remove this function I think no one should use it
+//	uint32 undoConsume();
 
 	uint32 consumeWord(
 			string &retStr,

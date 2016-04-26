@@ -22,6 +22,7 @@ TEST(Lex, allInOne){
 
   Lex lex;
   lex.analyzeAFile(toCompileFile);
-//  lex.printLexRec();
+  lex.printLexRec();
+  
 
 }

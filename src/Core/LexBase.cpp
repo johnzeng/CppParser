@@ -124,12 +124,12 @@ void LexBase::printLexRec()
 		}
 		else
 		{
-			printf("%s\n",line.c_str());
+			JZWRITE_DEBUG("%s\n",line.c_str());
 			line = it->word;
 			curLine = it->line;
 		}
 	}
-	printf("%s\n",line.c_str());
+	JZWRITE_DEBUG("%s\n",line.c_str());
 
 	JZFUNC_END_LOG();
 }
@@ -187,39 +187,31 @@ uint32 LexBase::getLastIndex()
 	return 0;
 }
 
-uint32 LexBase::undoConsume()
-{
-	if (mReaderStack.empty())
-	{
-		return eLexReaderStackEmpty;
-	}
-	FileReaderRecord &record = mReaderStack.top();
-	if (record.curIndex <= 0)
-	{
-		return eLexAlreadyLastWord;
-	}
-	record.curIndex--;
-	char curChar = record.buffer[record.curIndex];
-	if(true == LexUtil::isLineEnder(curChar))
-	{
-		record.curLineNum --;	
-	}
-	return eLexNoError;
-}
+//uint32 LexBase::undoConsume()
+//{
+//	if (mReaderStack.empty())
+//	{
+//		return eLexReaderStackEmpty;
+//	}
+//	FileReaderRecord &record = mReaderStack.top();
+//	if (record.curIndex <= 0)
+//	{
+//		return eLexAlreadyLastWord;
+//	}
+//	record.curIndex--;
+//	char curChar = record.buffer[record.curIndex];
+//	if(true == LexUtil::isLineEnder(curChar))
+//	{
+//		record.curLineNum --;	
+//	}
+//	return eLexNoError;
+//}
 
 void LexBase::saveWordTo(
 		const string& input,LexRecList& list,
 		uint32 beginIndex,uint32 endIndex,
 	   	uint32 recordType)
 {
-	//if this is a word, you must already consume a seperator
-//refactor log, this part of logic should be implement into the child of lex base.
-//	if (false == isLastStreamUseful())
-//	{
-//		//yeah! this stream is not useful!
-//		JZWRITE_DEBUG("stream is off");
-//		return;
-//	}
 	if (true == LexUtil::isEmptyInput(input))
 	{
 		//don't add empty input
@@ -551,7 +543,7 @@ void LexBase::popErrorSite()
 {
 	string curLineChar = "";
 	uint32 lastEnderIndex = 0;
-	uint32 curIndex = (int)mReaderStack.top().curIndex;
+	uint32 curIndex = (uint32)mReaderStack.top().curIndex;
 	if ('\n' == mReaderStack.top().buffer[curIndex])
 	{
 		curIndex --;

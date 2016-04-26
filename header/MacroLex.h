@@ -14,6 +14,8 @@ public:
   MacroLex();
   virtual ~MacroLex();
 
+	virtual void printLexRec();
+
 	//handler function
 	uint32 handleSharp();					//#
 	uint32 handleBar();						//|
