@@ -58,7 +58,7 @@ TEST(MacroLex, macroInclude2){
 }
 
 //cover test: can not match a word
-TEST(LexBase, unmatch_word_test){
+TEST(MacroLex, unmatch_word_test){
   //this is really a strong test, so don't do it for more than one file every time
   int argc = 2;
   char argv0[128] = {0},argv1[128] = {0};
@@ -72,7 +72,7 @@ TEST(LexBase, unmatch_word_test){
 	//now begin to analyze the files input from command line
 	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
 
-  LexBase lex;
+  MacroLex lex;
   uint32 ret = lex.analyzeAFile(toCompileFile);
   ASSERT_NE(LexBase::eLexReachLineEnd, ret);
 

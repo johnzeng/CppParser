@@ -256,8 +256,8 @@ uint32 LexBase::tryToMatchWord(const string& word)
 	FileReaderRecord &record = mReaderStack.top();
 	if (record.bufferSize <= record.curIndex + word.size())
 	{
-		JZSAFE_DELETE(mReaderStack.top().buffer);
-		mReaderStack.pop();
+//		JZSAFE_DELETE(mReaderStack.top().buffer);
+//		mReaderStack.pop();
 		JZFUNC_END_LOG();
 		return eLexReachFileEnd;
 	}
