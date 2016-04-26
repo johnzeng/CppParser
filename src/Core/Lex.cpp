@@ -46,6 +46,8 @@ uint32 Lex::handlePoint()
 	}else if ('*' == nextChar)
 	{
 		//.*
+    //Member pointer selector
+    consumeChar(&nextChar);
 		toSave += nextChar;
 	}
 	uint32 endIndex = getLastIndex();
@@ -73,6 +75,8 @@ uint32 Lex::handleMinus()
 		ret = readChar(&nextChar);
 		if ('*' == nextChar) //->*
 		{
+      //Member pointer selector
+			consumeChar(&nextChar);
 			toSave += nextChar;
 		}
 	}
