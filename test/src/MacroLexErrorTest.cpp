@@ -178,9 +178,17 @@ TEST(MacroLex, errorTest7){
 	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
 
   MacroLex lex;
-//	JZSetLoggerLevel(JZ_LOG_DEBUG);
   uint32 ret = lex.analyzeAFile(toCompileFile);
+	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.printLexRec();
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
-  ASSERT_EQ(ret, LexBase::eLexMacroIsAlreadyExpending);
+  LexRecList list = lex.getRecList();
+
+  ASSERT_EQ(list.size() ,4);
+  ASSERT_STREQ(list[0].word.c_str(), "he");
+  ASSERT_STREQ(list[1].word.c_str(), "(");
+  ASSERT_STREQ(list[2].word.c_str(), "a");
+  ASSERT_STREQ(list[3].word.c_str(), ")");
 
 }
