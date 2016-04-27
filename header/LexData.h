@@ -54,6 +54,12 @@ enum LexRecordType
 
 enum FileReaderRecordType
 {
+  //it's a little mess up here
+  //need to define different file type for:
+  //1, normal file
+  //2, macro param type
+  //3, macro if type
+  //4, expending macro
 	eFileTypeFile,
 	eFileTypeDefine,
 	eFileTypeMacro,
