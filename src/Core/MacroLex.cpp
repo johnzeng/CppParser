@@ -1063,11 +1063,6 @@ uint32 MacroLex::handleLeftSharpBracket()
 		consumeChar(&nextChar);
 		toSave += nextChar;
 	}
-	//if any error happen,return now
-	if (ret != eLexNoError)
-	{
-		return ret;
-	}
 
 	if (0 == toSave.compare("<<") )
 	{
@@ -1082,7 +1077,7 @@ uint32 MacroLex::handleLeftSharpBracket()
 	}
 	uint32 endIndex = getLastIndex();
 	saveWord(toSave,beginIndex, endIndex);
-	return ret;
+	return eLexNoError;
 }
 
 uint32 MacroLex::handleRightSharpBracket()
@@ -1090,19 +1085,16 @@ uint32 MacroLex::handleRightSharpBracket()
 	uint32 beginIndex = getLastIndex();
 	uint32 ret = eLexNoError;
 	char nextChar = 0;
-	ret = readChar(&nextChar);
+
 	string toSave = ">";
+
+	ret = readChar(&nextChar);
 	if (
 		'=' == nextChar ||
 		'>' == nextChar)
 	{
 		consumeChar(&nextChar);
 		toSave += nextChar;
-	}
-	//if any error happen,return now
-	if (ret != eLexNoError)
-	{
-		return ret;
 	}
 
 	if (0 == toSave.compare(">>") )
@@ -1118,7 +1110,7 @@ uint32 MacroLex::handleRightSharpBracket()
 	}
 	uint32 endIndex = getLastIndex();
 	saveWord(toSave, beginIndex, endIndex);
-	return ret;
+	return eLexNoError;
 }
 
 uint32 MacroLex::handleAnd()
@@ -1137,7 +1129,7 @@ uint32 MacroLex::handleAnd()
 	}
 	uint32 endIndex = getLastIndex();
 	saveWord(toSave,beginIndex,endIndex);
-	return ret;
+	return eLexNoError;
 }
 
 uint32 MacroLex::handleEqual()
@@ -1154,7 +1146,7 @@ uint32 MacroLex::handleEqual()
 	}
 	uint32 endIndex = getLastIndex();
 	saveWord(toSave,beginIndex,endIndex);
-	return ret;
+	return eLexNoError;
 }
 
 uint32 MacroLex::handleExclamation()

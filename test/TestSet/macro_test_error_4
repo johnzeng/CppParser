@@ -1,0 +1,6 @@
+#define he(...) hello(__VA_ARGS__)
+#define she()
+
+he(a,b,c)
+//param too manay
+she(a)

@@ -1,0 +1,3 @@
+#define she(a,...) hello
+
+she()
