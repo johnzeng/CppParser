@@ -23,3 +23,31 @@ yes7
 #else
 yes8
 #endif
+
+#if 1 !=2 ? 1==2? 1:0 : 1!=2? 1:0
+yes9
+#else
+yes10
+#endif
+
+#if ~1
+yes11
+#else
+yes12
+#endif
+
+#if ~0
+yes11
+#else
+yes12
+#endif
+
+#if 0x10 & 0x20
+yes13
+#endif
+
+#if 0x10 - 0x10
+yes14
+#else
+yes15
+#endif
