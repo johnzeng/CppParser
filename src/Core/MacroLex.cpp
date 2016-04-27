@@ -590,7 +590,7 @@ uint32 MacroLex::checkMacro(bool *isSuccess,uint32 checkMark)
 	}
 	memcpy(buff,logicStr.c_str(), logicStr.size());
 	JZWRITE_DEBUG("analyze buff :%s",logicStr.c_str());
-	pushReaderRecordByParams(buff,logicStr.size(),"",eFileTypeMacro);
+	pushReaderRecordByParams(buff,logicStr.size(),"",eFileTypeMacroIf);
 
 	//pop until reach last
 	int lastRecPtr = mLexRecList.size();
@@ -755,13 +755,12 @@ uint32 MacroLex::heartBeatForNormalWord(string& word)
 	JZFUNC_BEGIN_LOG();
 	uint32 ret = eLexNoError;
 
-  JZWRITE_DEBUG("is macro:%d,is Stream useful %d",eFileTypeFile == mReaderStack.top().recordType,isLastStreamUseful());
   if(false == isLastStreamUseful())
   {
     return eLexNoError;
   }
   //not interpunction
-  if ( "defined" == word && mReaderStack.top().recordType == eFileTypeMacro)
+  if ( "defined" == word && mReaderStack.top().recordType == eFileTypeMacroIf)
   {
     //this is defined in #if or #elif, we should add more test on this. I think I create a bug here
     uint32 beginIndex = getLastIndex() + 1 - word.size() ;
@@ -981,6 +980,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 	}
 	if (true == isMacroExpending(word))
 	{
+    //this case is not going to be covered if the code is running as normal
 		JZFUNC_END_LOG();
 		return eLexMacroIsAlreadyExpending;
 	}
@@ -1036,7 +1036,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 	
 	char* buff = (char*)malloc(expendStr.size());
 	strncpy(buff, expendStr.c_str(), expendStr.size());
-	pushReaderRecordByParams(buff,expendStr.size(),word,eFileTypeMacroParam);
+	pushReaderRecordByParams(buff,expendStr.size(),word,eFileTypeMacroExpand);
 
 	uint32 ret = doLex();
 
@@ -1193,7 +1193,7 @@ FileReaderRecord MacroLex::popReaderRecord()
 {
 	switch(mReaderStack.top().recordType)
 	{
-		case eFileTypeMacroParam:
+		case eFileTypeMacroExpand:
 			{
 				auto toEraseIt = mPreprocessingMacroSet.find(mReaderStack.top().fileName);
 				mPreprocessingMacroSet.erase(toEraseIt);
@@ -1211,7 +1211,7 @@ void MacroLex::pushReaderRecord(FileReaderRecord record)
 {
 	switch(record.recordType)
 	{
-		case eFileTypeMacroParam:
+		case eFileTypeMacroExpand:
 			mPreprocessingMacroSet.insert(record.fileName);
 			break;
 		case eFileTypeFile:

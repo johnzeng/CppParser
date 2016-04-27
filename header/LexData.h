@@ -61,8 +61,9 @@ enum FileReaderRecordType
   //3, macro if type
   //4, expending macro
 	eFileTypeFile,
-	eFileTypeDefine,
-	eFileTypeMacro,
+	eFileTypeMacroDefine,
+  eFileTypeMacroIf,
+	eFileTypeMacroExpand,
 	eFileTypeMacroParam,
 };
 
