@@ -25,7 +25,7 @@ void IncludeHandler::init()
 	
 	for(int i = 0 ; i < headerSearchPathListSize; i ++)
 	{
-		mSystemIncludePath.push_back(gHeadSearchPath[i]);	
+		addSystemHeaderSearchPath(gHeadSearchPath[i]);	
 	}
 	this->handleEnvIncludePath();
 }

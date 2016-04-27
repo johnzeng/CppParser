@@ -54,7 +54,7 @@ $(TEST_TARGET):$(TARGET) $(TEST_OBJECTS)
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	-find . -name "*.gcda" -exec rm {} \;
 	@echo "==================== tester build finished ==========================="
-	./$(TEST_TARGET)
+	export C_INCLUDE_PATH="./" &&	export CPLUS_INCLUDE_PATH="./" && export OBJC_INC_ENV_PATH="./" && ./$(TEST_TARGET)
 	gcovr -r . -e mylib
 
 lib:

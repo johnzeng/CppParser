@@ -51,3 +51,9 @@ yes14
 #else
 yes15
 #endif
+
+#if 1^0
+yes16
+#else
+yes17
+#endif
