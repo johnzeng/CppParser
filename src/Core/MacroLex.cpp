@@ -961,7 +961,7 @@ uint32 MacroLex::expendMacro(const DefineRec* def,const RealParamList& paramList
 	}
 	if (word != "")
 	{
-		//not end with interpunction;
+		//not end with interpunction; almost impossilble because we add \n at the end of define
 		ret += word;
 	}
 	JZWRITE_DEBUG("ret is :[%s]",ret.c_str());

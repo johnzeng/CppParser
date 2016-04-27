@@ -1,0 +1,25 @@
+#if 1>2 ? 0:1
+yes1
+#endif
+
+#if 1>2 ? 0: 3>2 ? 1:9
+yes2
+#endif
+
+#if -1 + 1
+yes3
+#else
+yes4
+#endif
+
+#if 1 + -1
+yes5
+#else
+yes6
+#endif
+
+#if 1 + +1
+yes7
+#else
+yes8
+#endif

@@ -60,16 +60,10 @@ uint32 MacroLex::isMacroSuccess(const LexRecList& logic, bool* ret)
 					word = GrmUtilPtr->src2StandWord(word);	
 				}
 			}
-			else if(BASE_OPERATOR == word)
-			{
-				//do nothing	
-			}
-			else
-			{
-				JZWRITE_DEBUG("unhandled double mean word:%s",word.c_str());	
-				JZFUNC_END_LOG();
-				return eLexUnknowError;
-			}
+//      else
+//      {
+//        // it get a chance to be BASE_OPERATOR, but we don't need to handle it.
+//      }
 		}
 		MacroCheckData data;
 		uint32 setRet = GrmUtilPtr->setMacroCheckData(word, data);
