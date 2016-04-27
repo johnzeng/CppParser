@@ -16,7 +16,7 @@ void globalInitAtBegin()
 
 	//init logger
 	JZLoggerInit();
-	JZSetLoggerLevel(JZ_LOG_ALL);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 	JZSetLoggerOutPutStatue(1,1);
 	JZSetLogFileName("logs/app.log");
 

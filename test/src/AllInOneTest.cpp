@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include "JZLogger.h"
 
+int libEntry(int argc, char* argv[]);
+
 //cover case: simple define, basic input
 TEST(Lex, allInOne){
   //this is really a strong test, so don't do it for more than one file every time
@@ -25,4 +27,14 @@ TEST(Lex, allInOne){
   lex.printLexRec();
   
 
+}
+
+TEST(Libentry, oneTest)
+{
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/all_in_one");
+  char* argv[2] = {argv0,argv1};
+  libEntry(argc,argv);
 }
