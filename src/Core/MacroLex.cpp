@@ -995,10 +995,11 @@ uint32 MacroLex::handleDefinedWord(const string& word)
     uint32 parmLexerRet = parmLexer.doLex();
     FileReaderRecord afterLexRecord = parmLexer.popReaderRecord();
     pushReaderRecord(afterLexRecord);
-    if (eLexNoError != parmLexerRet && eLexReachFileEnd != parmLexerRet && eLexParamAnalyzeOVer != parmLexerRet)
+
+    if (eLexParamAnalyzeOVer != parmLexerRet)
     {
       //this should be error;
-      JZWRITE_DEBUG("return here")
+      JZFUNC_END_LOG();
       return parmLexerRet;
     }
     paramList = parmLexer.getParamList();
@@ -1008,6 +1009,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 			if (defRec->paramMap.size() - 1 > paramList.size())
 			{
 				JZWRITE_DEBUG("var func like marco param not enough");
+        JZFUNC_END_LOG();
 				return eLexFuncLikeMacroParamTooLess;
 			}
 		}
