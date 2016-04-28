@@ -35,12 +35,13 @@ TEST_SOURCE=$(wildcard ./test/src/*.cpp ./test/src/*/*.c ./test/src/*/*.cpp)
 TEST_OBJECTS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(TEST_SOURCE)))
 
 $(TARGET):$(OBJS) depend $(myLib)
+	@echo "=========================  now build target ================================"
 	@echo $(OBJS)
 	$(AR) -r $(TARGET) $(OBJS) 
 
 	
 $(myLib): $(mylib_PATH)
-	@echo "now build mylib"
+	@echo "=========================  now build mylib  ================================"
 	cd $(mylib_PATH) && make
 
 $(mylib_PATH):
@@ -48,12 +49,12 @@ $(mylib_PATH):
 	$(MYLIB_CHECKOUT)
 
 $(TEST_TARGET):$(TARGET) $(TEST_OBJECTS)
-	@echo "==================== build tester ==========================="
+	@echo "=======================  build tester   ======================================="
 	$(CXX) $(TARGET) $(TEST_OBJECTS) $(TEST_FLAG) $(mylib_PATH)/test/libtest.a $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
 
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
+	@echo "==================== tester is going to run  ================================="
 	-find . -name "*.gcda" -exec rm {} \;
-	@echo "==================== tester build finished ==========================="
 	export C_INCLUDE_PATH="./" &&	export CPLUS_INCLUDE_PATH="./" && export OBJC_INC_ENV_PATH="./" && ./$(TEST_TARGET)
 	gcovr -r . -e mylib
 
@@ -80,11 +81,12 @@ count:
 	wc -l $(HEADERS) $(SOURCES)
 
 cov:
+	@echo "=================== now gen cov html file ============================="
 	gcovr -r . -e mylib --html --html-details -o target/cov.html
 
 
 depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
-	@echo "=================== now gen depend =============="
+	@echo "=================== now gen depend  =================================="
 	-@sh $(depend_generator) "$(CPPFLAGS) $(TEST_FLAG)" 2>&1 > /dev/null
 
 .PHONY:count,clean,test,macro,debuger,release,cov
