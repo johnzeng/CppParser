@@ -25,14 +25,13 @@ uint32 LexBase::analyzeAFile(const string& fileName)
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
 
-  map<long,long> lineOffsetMap;
-	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize, lineOffsetMap);
+	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
 	JZSAFE_DELETE(buff);
 
 	const char* buffWithOutComment = LexUtil::eraseComment(buffWithOutBackSlant,&bufSize);
 	JZSAFE_DELETE(buffWithOutBackSlant);
 
-	pushReaderRecordByParams(buffWithOutComment,bufSize,fileName,eFileTypeFile,lineOffsetMap);
+	pushReaderRecordByParams(buffWithOutComment,bufSize,fileName,eFileTypeFile);
 	uint32 ret = doLex();
   //buffWithOutComment will be delete in popReaderRecord
 	popReaderRecord();
@@ -316,15 +315,14 @@ void LexBase::pushReaderRecord(FileReaderRecord record)
 	mReaderStack.push(record);
 }
 
-void LexBase::pushReaderRecordByParams(const char* buff,uint64 size,const string& fileName,uint32 recordType , map<long,long> lineOffsetMap )
+void LexBase::pushReaderRecordByParams(const char* buff,uint64 size,const string& fileName,uint32 recordType )
 {
 	FileReaderRecord rec = 
 		initFileRecord(
 				buff,
         size,
         fileName,
-        recordType,
-        lineOffsetMap
+        recordType
         );
   pushReaderRecord(rec);
 }
@@ -400,7 +398,7 @@ uint32 LexBase::consumeWord(
  ********************************************************/
 FileReaderRecord LexBase::initFileRecord(
 		const char* buff,uint64 size,const string& fileName,
-		uint32 recordType, const map<long,long> lineOffsetMap)
+		uint32 recordType)
 {
 	FileReaderRecord ret = 
 	{
@@ -411,7 +409,6 @@ FileReaderRecord LexBase::initFileRecord(
 		.fileName = fileName,
 		.recordType = recordType,
 		.mStreamOffTag = 0,	
-    .lineOffsetMap = lineOffsetMap,
 	};
 	return ret;
 }

@@ -291,7 +291,7 @@ char* LexUtil::eraseComment(const char* input,uint64 *bufSize)
 	return ret;
 }
 
-char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize, map<long, long> &lineOffsetMap)
+char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize)
 {
 	JZFUNC_BEGIN_LOG();
 
@@ -302,15 +302,10 @@ char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize, map<long, l
 
 	uint64 j = 0;
 	bool isConverBackSlant = false;
-  long curLine = 1;
 
 	JZWRITE_DEBUG("buff size is :%lld",*bufSize);
 	for(uint64 i = 0 ; i < (*bufSize); i++)
 	{
-    if('\n' == input[i])
-    {
-      curLine ++;
-    }
 		if (false == isBackSlant(input[i]))
 		{
 			ret[j++] = input[i];
@@ -337,8 +332,6 @@ char* LexUtil::eraseLineSeperator(const char* input,uint64 *bufSize, map<long, l
 		};
 		if (true == endWithBackSlant)
 		{
-      lineOffsetMap[curLine] ++;
-      curLine ++;
 			i = k;
 		}
 		else
