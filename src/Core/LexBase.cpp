@@ -4,6 +4,7 @@
 #include "JZMacroFunc.h"
 #include "LexPatternTable.h"
 #include "JZFileUtil.h"
+#include "StringUtil.h"
 #include "GrammarUtil.h"
 
 LexBase::LexBase()
@@ -128,7 +129,7 @@ void LexBase::printLexRec()
 		else
 		{
 			JZWRITE_DEBUG("%s\n",line.c_str());
-			line = it->word;
+			line = StringUtil::tostr(it->line) + " " +  it->word;
 			curLine = it->line;
 		}
 	}
@@ -174,6 +175,9 @@ uint32 LexBase::consumeChar(char *ret)
 	if (true == LexUtil::isLineEnder(*ret))
 	{
 		record.curLineNum++;
+    if(record.lineOffsetMap.find(record.curLineNum - 1) != record.lineOffsetMap.end()){
+      record.curLineNum += record.lineOffsetMap[record.curLineNum - 1];
+    }
 	}
 	record.curIndex++;
 

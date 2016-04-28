@@ -25,15 +25,24 @@ TEST(LexBase, simpleInput){
   LexBase lex;
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
+	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.printLexRec();
+
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(7, recList.size());
   ASSERT_STREQ("int", recList[0].word.c_str());
+  ASSERT_EQ(5, recList[0].line);
   ASSERT_STREQ("a", recList[1].word.c_str());
   ASSERT_STREQ(";", recList[2].word.c_str());
   ASSERT_STREQ("1", recList[3].word.c_str());
+  ASSERT_EQ(6, recList[3].line);
   ASSERT_STREQ("19l", recList[4].word.c_str());
+  ASSERT_EQ(7, recList[4].line);
   ASSERT_STREQ("12.01", recList[5].word.c_str());
+  ASSERT_EQ(8, recList[5].line);
   ASSERT_STREQ("12.1f", recList[6].word.c_str());
+  ASSERT_EQ(9, recList[6].line);
 
 }
 
