@@ -420,6 +420,7 @@ FileReaderRecord LexBase::initFileRecord(
   if(eFileTypeFile != recordType)
   {
     ret.curLineNum = mReaderStack.top().curLineNum;
+    ret.fileName = mReaderStack.top().fileName;
   }
 	return ret;
 }
