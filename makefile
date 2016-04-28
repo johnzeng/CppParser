@@ -68,6 +68,7 @@ debuger:$(TEST_TARGET)
 
 clean:
 	-find . -name "*.gcno" -exec rm {} \;
+	-find . -name "*.gcda" -exec rm {} \;
 	-rm depend
 	-rm $(OBJS)
 	-rm -rf ./target/*
