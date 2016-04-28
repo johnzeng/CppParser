@@ -175,7 +175,7 @@ uint32 LexBase::consumeChar(char *ret)
 	if (true == LexUtil::isLineEnder(*ret))
 	{
 		record.curLineNum++;
-    if(record.lineOffsetMap.find(record.curLineNum - 1) != record.lineOffsetMap.end()){
+    while(record.lineOffsetMap.find(record.curLineNum - 1) != record.lineOffsetMap.end()){
       record.curLineNum += record.lineOffsetMap[record.curLineNum - 1];
     }
 	}

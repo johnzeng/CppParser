@@ -30,6 +30,7 @@ TEST(Lex, strangeOpr)
 
   ASSERT_EQ(49, recList.size());
   ASSERT_STREQ("int", recList[0].word.c_str());
+  ASSERT_EQ(recList[0].line , 13);
   ASSERT_STREQ("pr", recList[1].word.c_str());
   ASSERT_STREQ("(", recList[2].word.c_str());
   ASSERT_STREQ("a", recList[3].word.c_str());
@@ -40,6 +41,7 @@ TEST(Lex, strangeOpr)
   ASSERT_STREQ(".*", recList[8].word.c_str());
   ASSERT_STREQ("var", recList[9].word.c_str());
   ASSERT_STREQ("a", recList[10].word.c_str());
+  ASSERT_EQ(recList[10].line , 19);
   ASSERT_STREQ("->*", recList[11].word.c_str());
   ASSERT_STREQ("var", recList[12].word.c_str());
   ASSERT_STREQ("a", recList[13].word.c_str());
