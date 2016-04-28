@@ -1,4 +1,4 @@
-#define he(a) #a
+#define he(a) # a
 #define she(a,b) a##b
 
 he(hello)

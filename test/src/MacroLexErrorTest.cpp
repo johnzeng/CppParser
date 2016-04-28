@@ -192,3 +192,57 @@ TEST(MacroLex, errorTest7){
   ASSERT_STREQ(list[3].word.c_str(), ")");
 
 }
+
+//cover case : error because # is not followed with parameter
+TEST(MacroLex, errorTest8){
+  //this is really a strong test, so don't do it for more than one file every time
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/macro_test_error_8");
+  char* argv[2] = {argv0,argv1};
+
+	JZSetLoggerLevel(JZ_LOG_TEST);
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  MacroLex lex;
+  uint32 ret = lex.analyzeAFile(toCompileFile);
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+//  lex.printLexRec();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
+
+  LexRecList list = lex.getRecList();
+
+}
+
+//cover case : error because ## is not followed with parameter
+TEST(MacroLex, errorTest9){
+  //this is really a strong test, so don't do it for more than one file every time
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/macro_test_error_9");
+  char* argv[2] = {argv0,argv1};
+
+	JZSetLoggerLevel(JZ_LOG_TEST);
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  MacroLex lex;
+  uint32 ret = lex.analyzeAFile(toCompileFile);
+//	JZSetLoggerLevel(JZ_LOG_DEBUG);
+//  lex.printLexRec();
+//	JZSetLoggerLevel(JZ_LOG_TEST);
+
+  LexRecList list = lex.getRecList();
+
+}

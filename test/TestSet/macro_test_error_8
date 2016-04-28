@@ -1,0 +1,3 @@
+#define hi(a) # ab
+
+hi(tell)

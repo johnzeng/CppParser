@@ -3,6 +3,7 @@
 *.swp
 *.gcno
 *.gcda
+*.html
 
 logs/
 target/

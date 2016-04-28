@@ -119,8 +119,14 @@ TEST(GrammarUtil, numberType){
 TEST(GrammarUtil, strTrans){
 //  JZSetLoggerLevel(JZ_LOG_ALL);
   EXPECT_EQ(100, GrmUtilPtr->str2int32("100"));
+  //we don't test for minuse because this pattern shouldn't exist in parser, it should be treated as - 100, this is two words
+//  EXPECT_EQ(100, GrmUtilPtr->str2int32("100"));
   EXPECT_EQ(1, GrmUtilPtr->str2int32("1"));
   EXPECT_EQ(0, GrmUtilPtr->str2int32("0"));
+
+  EXPECT_EQ(100, GrmUtilPtr->str2Uint32("100"));
+  EXPECT_EQ(1, GrmUtilPtr->str2Uint32("1"));
+  EXPECT_EQ(0, GrmUtilPtr->str2Uint32("0"));
 
   //hex trans
   EXPECT_EQ(0, GrmUtilPtr->str2int32("0x0"));
@@ -133,6 +139,16 @@ TEST(GrammarUtil, strTrans){
   EXPECT_EQ(7, GrmUtilPtr->str2int32("07"));
   EXPECT_EQ(28, GrmUtilPtr->str2int32("034"));
   
+  EXPECT_EQ(0, GrmUtilPtr->str2int64("00"));
+  EXPECT_EQ(8, GrmUtilPtr->str2int64("010"));
+  EXPECT_EQ(7, GrmUtilPtr->str2int64("07"));
+  EXPECT_EQ(28, GrmUtilPtr->str2int64("034"));
+
+  EXPECT_EQ(0, GrmUtilPtr->str2Uint64("00"));
+  EXPECT_EQ(8, GrmUtilPtr->str2Uint64("010"));
+  EXPECT_EQ(7, GrmUtilPtr->str2Uint64("07"));
+  EXPECT_EQ(28, GrmUtilPtr->str2Uint64("034"));
+
   //should get 0 because  this is not a legal input
   //Actually I think we need to add some exception to this funciton,
   //because we get a chance that this is not a legal input
@@ -142,11 +158,13 @@ TEST(GrammarUtil, strTrans){
   EXPECT_EQ(0.51f, GrmUtilPtr->str2float("0.51"));
   EXPECT_EQ(1, GrmUtilPtr->str2float("1.0"));
   EXPECT_EQ(0, GrmUtilPtr->str2float("0"));
+  EXPECT_EQ(0, GrmUtilPtr->str2float("g"));
 
   EXPECT_EQ(0.5, GrmUtilPtr->str2double("0.5"));
   EXPECT_EQ(0.51, GrmUtilPtr->str2double("0.51"));
   EXPECT_EQ(1, GrmUtilPtr->str2double("1.0"));
   EXPECT_EQ(0, GrmUtilPtr->str2double("0"));
+  EXPECT_EQ(0, GrmUtilPtr->str2double("g"));
 }
 
 TEST(GrammarUtil, covMissed)

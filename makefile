@@ -78,7 +78,7 @@ count:
 	wc -l $(HEADERS) $(SOURCES)
 
 cov:
-	gcovr -r . -e mylib
+	gcovr -r . -e mylib --html --html-details -o cov.html
 
 
 depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
