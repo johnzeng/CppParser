@@ -417,6 +417,10 @@ FileReaderRecord LexBase::initFileRecord(
 		.mStreamOffTag = 0,	
     .lineOffsetMap = lineOffsetMap,
 	};
+  if(eFileTypeFile != recordType)
+  {
+    ret.curLineNum = mReaderStack.top().curLineNum;
+  }
 	return ret;
 }
 

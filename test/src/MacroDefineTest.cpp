@@ -24,10 +24,17 @@ TEST(MacroLex, macroTest1){
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
 
+	JZSetLoggerLevel(JZ_LOG_DEBUG);
+  lex.printLexRec();
+
+	JZSetLoggerLevel(JZ_LOG_TEST);
+
   ASSERT_EQ(10, recList.size());
   ASSERT_STREQ("main", recList[0].word.c_str());
+  ASSERT_EQ(4, recList[0].line);
   ASSERT_STREQ("(", recList[1].word.c_str());
   ASSERT_STREQ("1", recList[2].word.c_str());
+  ASSERT_EQ(4, recList[2].line);
   ASSERT_STREQ(")", recList[3].word.c_str());
   ASSERT_STREQ(";", recList[4].word.c_str());
   ASSERT_STREQ("hello", recList[5].word.c_str());
