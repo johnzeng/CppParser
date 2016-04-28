@@ -71,6 +71,7 @@ clean:
 	-rm depend
 	-rm $(OBJS)
 	-rm -rf ./target/*
+	-rm *.html
 
 -include depend
 
@@ -78,12 +79,11 @@ count:
 	wc -l $(HEADERS) $(SOURCES)
 
 cov:
-	gcovr -r . -e mylib --html --html-details -o cov.html
+	gcovr -r . -e mylib --html --html-details -o target/cov.html
 
 
 depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
 	@echo "=================== now gen depend =============="
-	- mkdir target
 	-@sh $(depend_generator) "$(CPPFLAGS) $(TEST_FLAG)" 2>&1 > /dev/null
 
 .PHONY:count,clean,test,macro,debuger,release,cov
