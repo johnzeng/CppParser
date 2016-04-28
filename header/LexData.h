@@ -54,12 +54,6 @@ enum LexRecordType
 
 enum FileReaderRecordType
 {
-  //it's a little mess up here
-  //need to define different file type for:
-  //1, normal file
-  //2, macro param type
-  //3, macro if type
-  //4, expending macro
 	eFileTypeFile,
 	eFileTypeMacroDefine,
   eFileTypeMacroIf,
@@ -76,10 +70,12 @@ struct FileReaderRecord
 	const string fileName;	//if this is a define ,file name will be key
 	uint32 recordType;
 
+  map<long,long> lineOffsetMap;
+
 	//stream tag
 	uint32 mStreamOffTag;
 
-  //ok,this is a little stupid now, we are going to do another lex
+  //precompile selector stack
 	vector<PrecompileSelector> mPSStack;
 		
 };

@@ -4,7 +4,7 @@
 #include "DefineManager.h"
 namespace LexUtil {
 	char* eraseComment(const char* input, uint64 *bufSize);
-	char* eraseLineSeperator(const char* input,uint64 *bufSize);
+	char* eraseLineSeperator(const char* input,uint64 *bufSize, map<long,long>& lineOffsetMap);
 	bool isInterpunction(const char input);
 	bool isLineEnder(const char input);
 	bool isEmptyInput(const char input);

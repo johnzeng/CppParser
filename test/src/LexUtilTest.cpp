@@ -6,35 +6,36 @@
 
 TEST(LexUtil, eraseLineSeperator){
   //these cases are a little complex in input because they are full of special charactor.
+  map<long,long> lineOffsetMap;
   
   //don't remove \n if it doesn't have "\"    
   const char* input0 = "this is a test!\n this is a test";
   uint64 bufSize0 = strlen(input0);
-  const char* eraseRet0 = LexUtil::eraseLineSeperator((const char*)input0, &bufSize0);
+  const char* eraseRet0 = LexUtil::eraseLineSeperator((const char*)input0, &bufSize0, lineOffsetMap);
   ASSERT_STREQ("this is a test!\n this is a test", eraseRet0);
 
   //remove \ \n if it has a \ at the end of line
   const char* input1 = "this is a test!\\ \n this is a test";
   uint64 bufSize1 = strlen(input1);
-  const char* eraseRet1 = LexUtil::eraseLineSeperator((const char*)input1, &bufSize1);
+  const char* eraseRet1 = LexUtil::eraseLineSeperator((const char*)input1, &bufSize1, lineOffsetMap);
   ASSERT_STREQ("this is a test! this is a test", eraseRet1);
 
   //remove \ \n if it has a \ at the end of line event if it's inside the ""
   const char* input2 = "\"this is a test!\\ \n this is a test\"";
   uint64 bufSize2 = strlen(input2);
-  const char* eraseRet2 = LexUtil::eraseLineSeperator((const char*)input2, &bufSize2);
+  const char* eraseRet2 = LexUtil::eraseLineSeperator((const char*)input2, &bufSize2, lineOffsetMap);
   ASSERT_STREQ("\"this is a test! this is a test\"", eraseRet2);
 
   //don't remove \ \n if it is escaped by a \ before the last one
   const char* input3 = "\"this is a test!\\\\ \n this is a test\"";
   uint64 bufSize3 = strlen(input3);
-  const char* eraseRet3 = LexUtil::eraseLineSeperator((const char*)input3, &bufSize3);
+  const char* eraseRet3 = LexUtil::eraseLineSeperator((const char*)input3, &bufSize3, lineOffsetMap);
   ASSERT_STREQ("\"this is a test!\\\\ \n this is a test\"", eraseRet3);
 
   //remove \ \n even if it is inside a comment
   const char* input4 = "//this is a test!\\ \n this is a test";
   uint64 bufSize4 = strlen(input4);
-  const char* eraseRet4 = LexUtil::eraseLineSeperator((const char*)input4, &bufSize4);
+  const char* eraseRet4 = LexUtil::eraseLineSeperator((const char*)input4, &bufSize4, lineOffsetMap);
   ASSERT_STREQ("//this is a test! this is a test", eraseRet4);
 
   JZSAFE_DELETE(eraseRet0);
@@ -55,7 +56,7 @@ TEST(LexUtil, eraseComment){
   const char* input1 = "this is a test!\n this is a test/* this is a comment*/";
   uint64 bufSize1 = strlen(input1);
   const char* eraseRet1 = LexUtil::eraseComment((const char*)input1, &bufSize1);
-  ASSERT_STREQ("this is a test!\n this is a test", eraseRet1);
+  ASSERT_STREQ("this is a test!\n this is a test ", eraseRet1);
 
   //do not erase the \n and next line
   const char* input2 = "this is a test!\n this is a test// this is a comment\nthis is a new line";
@@ -67,7 +68,7 @@ TEST(LexUtil, eraseComment){
   const char* input3 = "this is a test!\n this /*this is a comment*/is a test";
   uint64 bufSize3 = strlen(input3);
   const char* eraseRet3 = LexUtil::eraseComment((const char*)input3, &bufSize3);
-  ASSERT_STREQ("this is a test!\n this is a test", eraseRet3);
+  ASSERT_STREQ("this is a test!\n this  is a test", eraseRet3);
 
   //comment is disabled in string
   const char* input4 = "this is a test!\n this is a test\n\"//don't erase this comment\"";
@@ -91,13 +92,13 @@ TEST(LexUtil, eraseComment){
   const char* input7 = "this is a test!\n /*\"this is a comment inside\"*/this is a test// this is a comment";
   uint64 bufSize7 = strlen(input7);
   const char* eraseRet7 = LexUtil::eraseComment((const char*)input7, &bufSize7);
-  ASSERT_STREQ("this is a test!\n this is a test", eraseRet7);
+  ASSERT_STREQ("this is a test!\n  this is a test", eraseRet7);
 
-  //erasee \n if it's in the comment of /**/
+  //don't erasee \n if it's in the comment of /**/
   const char* input8 = "this is a test!\n /*\n*/this is a test// this is a comment";
   uint64 bufSize8 = strlen(input8);
   const char* eraseRet8 = LexUtil::eraseComment((const char*)input8, &bufSize8);
-  ASSERT_STREQ("this is a test!\n this is a test", eraseRet8);
+  ASSERT_STREQ("this is a test!\n  \nthis is a test", eraseRet8);
 
   JZSAFE_DELETE(eraseRet0);
   JZSAFE_DELETE(eraseRet1);
@@ -112,9 +113,10 @@ TEST(LexUtil, eraseComment){
 
 TEST(LexUtil, combineLineSeperatorEraserAndCommentEraser){
   //should erase the comment if there is a line seperator
+  map<long,long> lineOffsetMap;
   const char* input0 = "this is a test! //\\ \n this is a test";
   uint64 bufSize0 = strlen(input0);
-  const char* eraseStepA0 = LexUtil::eraseLineSeperator((const char*)input0, &bufSize0);
+  const char* eraseStepA0 = LexUtil::eraseLineSeperator((const char*)input0, &bufSize0,lineOffsetMap);
   const char* eraseStepB0 = LexUtil::eraseComment((const char*)eraseStepA0, &bufSize0);
   ASSERT_STREQ("this is a test! ", eraseStepB0);
 
@@ -124,9 +126,9 @@ TEST(LexUtil, combineLineSeperatorEraserAndCommentEraser){
   //should erase the comment if there is a line seperator
   const char* input1 = "this is a test! /*\\ \n this is a test*/";
   uint64 bufSize1 = strlen(input1);
-  const char* eraseStepA1 = LexUtil::eraseLineSeperator((const char*)input1, &bufSize1);
+  const char* eraseStepA1 = LexUtil::eraseLineSeperator((const char*)input1, &bufSize1,lineOffsetMap);
   const char* eraseStepB1 = LexUtil::eraseComment((const char*)eraseStepA1, &bufSize1);
-  ASSERT_STREQ("this is a test! ", eraseStepB1);
+  ASSERT_STREQ("this is a test!  ", eraseStepB1);
 
   JZSAFE_DELETE(eraseStepA1);
   JZSAFE_DELETE(eraseStepB1);

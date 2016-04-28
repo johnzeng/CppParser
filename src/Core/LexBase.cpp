@@ -12,6 +12,7 @@ LexBase::LexBase()
 	mPatternTable->insertPattern('\'', &LexBase::handleSingleQuotation);
 	mPatternTable->insertPattern('"',  &LexBase::handleDoubleQuotation);
 }
+
 LexBase::~LexBase()
 {
   JZSAFE_DELETE(mPatternTable)
@@ -23,13 +24,15 @@ uint32 LexBase::analyzeAFile(const string& fileName)
 	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
-	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize);
+
+  map<long,long> lineOffsetMap;
+	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize, lineOffsetMap);
 	JZSAFE_DELETE(buff);
 
 	const char* buffWithOutComment = LexUtil::eraseComment(buffWithOutBackSlant,&bufSize);
 	JZSAFE_DELETE(buffWithOutBackSlant);
 
-	pushReaderRecordByParams(buffWithOutComment,bufSize,fileName,eFileTypeFile);
+	pushReaderRecordByParams(buffWithOutComment,bufSize,fileName,eFileTypeFile,lineOffsetMap);
 	uint32 ret = doLex();
   //buffWithOutComment will be delete in popReaderRecord
 	popReaderRecord();
@@ -313,11 +316,16 @@ void LexBase::pushReaderRecord(FileReaderRecord record)
 	mReaderStack.push(record);
 }
 
-void LexBase::pushReaderRecordByParams(const char* buff,uint64 size,const string& fileName,uint32 recordType  )
+void LexBase::pushReaderRecordByParams(const char* buff,uint64 size,const string& fileName,uint32 recordType , map<long,long> lineOffsetMap )
 {
 	FileReaderRecord rec = 
 		initFileRecord(
-				buff,size, fileName,recordType);
+				buff,
+        size,
+        fileName,
+        recordType,
+        lineOffsetMap
+        );
   pushReaderRecord(rec);
 }
 
@@ -392,19 +400,18 @@ uint32 LexBase::consumeWord(
  ********************************************************/
 FileReaderRecord LexBase::initFileRecord(
 		const char* buff,uint64 size,const string& fileName,
-		uint32 recordType)
+		uint32 recordType, const map<long,long> lineOffsetMap)
 {
 	FileReaderRecord ret = 
 	{
 		.buffer = buff,
 		.bufferSize = size,
 		.curIndex = 0,
-    //actually the curLineNumber paam is not useful enough now because we erase comment and back slash at the very begining, I am thinking about refator this process but not sure if it's necessary
 		.curLineNum = 1,
 		.fileName = fileName,
 		.recordType = recordType,
 		.mStreamOffTag = 0,	
-//		.mFuncLikeMacroParamAnalyzing = false,
+    .lineOffsetMap = lineOffsetMap,
 	};
 	return ret;
 }

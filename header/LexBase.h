@@ -58,7 +58,7 @@ public:
 
   virtual void pushReaderRecord(FileReaderRecord record);
 
-	virtual void pushReaderRecordByParams(const char* buff,uint64 size,const string& fileName,uint32 recordType);
+	virtual void pushReaderRecordByParams(const char* buff,uint64 size,const string& fileName,uint32 recordType,map<long,long> lineOffsetMap = map<long,long>());
 
 	FileReaderRecord popReaderRecord();
 
@@ -99,7 +99,7 @@ protected:
 
   FileReaderRecord initFileRecord(
 		const char* buff,uint64 size,const string& fileName,
-		uint32 recordType);
+		uint32 recordType, const map<long,long> lineOffsetMap);
 
 	void popErrorSite();
 protected:
