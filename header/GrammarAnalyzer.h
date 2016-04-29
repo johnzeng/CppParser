@@ -3,6 +3,27 @@
 
 #include "LexData.h"
 
+enum GrammarNodeType
+{
+  eGrammarNodeTopNode,   //this node is going to be the top class node in grammar analyzer
+
+  eGrammarNodeBlock,
+  eGrammarNodeDataTypeDefine,
+  eGrammarNodeVarDefine,
+  eGrammarNodeStatment,
+}
+
+class GrammarNode {
+public:
+  GrammarNode(GrammarNode* father);
+  virtual ~GrammarData ();
+
+private:
+  GrammarNode *mFather;
+  vector<GrammarNode*> mChildrens;
+  uint32 mNodeType;
+};
+
 enum DataTypeEnum{
   eDataTypeUnknow,
   eDataTypeStruct,
@@ -11,24 +32,62 @@ enum DataTypeEnum{
   eDataTypeUnion,
   eDataTypePtr
 }
-class DataTypeDefine {
+
+class DataTypeDefine:public GrammarNode {
 public:
   DataTypeDefine (string word);
   virtual ~DataTypeDefine ();
 
 private:
-  string mWrod;
+  vector<string> mKeyWrods;
+  string signature;
   uint32 mDateType;
 };
 
-class GrammarNode {
+class VarDefine:public GrammarNode {
 public:
-  GrammarNode(GrammarNode* father);
-  virtual ~GrammarData ();
+  VarDefine ();
+  virtual ~VarDefine ();
 
 private:
-
+  DataTypeDefine* mDataType;
 };
+
+class ClassDefine: public DataTypeDefine{
+public:
+  ClassDefine(string word);
+  virtual ~ClassDefine();
+private:
+  vector<DataTypeDefine*> mFields;
+}
+
+class StructDefine: public DataTypeDefine {
+public:
+  StructDefine ();
+  virtual ~StructDefine ();
+
+private:
+  vector<DataTypeDefine*> mFields;
+};
+
+class EnumDefine: public DataTypeDefine{
+public:
+  EnumDefine ();
+  virtual ~EnumDefine ();
+
+private:
+  vector<string> mFields;
+};
+
+class UnionDefine:public DataTypeDefine {
+public:
+  UnionDefine ();
+  virtual ~UnionDefine ();
+
+private:
+  vector<DataTypeDefine*> mFields;
+};
+
 
 class GrammarAnalyzer {
 public:
