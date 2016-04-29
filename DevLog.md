@@ -1,3 +1,40 @@
+##2016/04/29
+Log1: 神奇的函数指针：
+typedef void (*he)();
+定义一个he类型，是指向void （）类型函数的指针。
+
+```cpp
+#include <stdio.h>
+typedef void (* hello)();
+void a(){
+  printf("hello");
+}
+int main(int argc, const char *argv[]){
+  hello ptr = a;
+  ptr();
+  return 0;
+}
+```
+
+另一方面，
+typedef void * he();
+定义一个类型，这个类型定义的变量为void* ()函数变量。相当于定义这个函数名，函数的输入为空，输出为void*
+
+```cpp
+#include <stdio.h>
+typedef void * hello();
+hello a;
+void* a(){
+  printf("hello");
+  return NULL;
+}
+int main(int argc, const char *argv[]){
+  a();
+  return 0;
+}
+```
+
+注意这里定义的是函数名，跟函数指针是不同的东西
 ##2016/04/28
 Log1: 增加了行数统计。目前还在增加测试用例保证各种情况得到的结果都是对的
 Log2: 目前增加新的0.1.1tag，当前版本应该已经完成大部分预编译和词法分析需要做的东西了。接下来就是语法分析了。
@@ -92,7 +129,7 @@ File: macro_test.cpp
 
 File: macro_test1.cpp
 
-```
+```cpp
 		#include <stdio.h>
 
 		#define B(...) printf(__VA_ARGS__);
@@ -135,7 +172,7 @@ Log1:	宏定义的连接符号##，对于前后都是参数的情况，会先替
 Log2:	连接符强制将两个参数黏合在一起。注意是粘合
 		File : macro_test.cpp
 		
-```
+```cpp
 		#include <stdio.h>
 
 		#define hello(a,b,c) printf("a %d",b## 3)
@@ -181,7 +218,7 @@ Log1:	wtf函数宏定义展开为何如此烦烦烦烦。。。。。需要进�
 ##2015/6/24
 Log1:	宏定义对于空格的处理优点特别
 
-```
+```cpp
 #define hell (a) //将被认为是一个define，hell的内容将被替换成(a)
 #define hell(a) //将被认为是一个define, hell(x)的内容被替换成空白。
 ```
@@ -224,7 +261,7 @@ File end :marco.cpp
 但是另一方面，如果展开的时候出现循环，就会重现无法扩展。原因是宏定义只能展开一次。例如下面的代码无法编译通过:	
 	File: marco_error.cpp
 
-```
+```cpp
 	#include <stdio.h>
 	//间接出现循环
 	#define b() a()
@@ -242,7 +279,7 @@ File end :marco.cpp
 
 File: marco_error2.cpp
 	
-```
+```cpp
 	#include <stdio.h>
 
 	//直接循环
@@ -260,7 +297,7 @@ File end :marco_error2.cpp
 Log3: 并非所有define都是直接拓展的。下面的代码将会报错：
 File marco_error3.cpp
 	
-```	
+```cpp	
 	#include <stdio.h>
 
 	#define hello " 123+ 1
