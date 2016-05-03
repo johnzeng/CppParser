@@ -1,3 +1,35 @@
+##2016/05/03
+Log1: 神奇的返回函数指针的函数
+
+```cpp
+#include <stdio.h>
+
+typedef void * hello();
+
+int test (int a, int b)
+{
+  printf("hello %d", a+b);
+  return a+b;
+}
+
+int (*getFunc()) (int,int) 
+{
+    return test;
+}
+
+int (*(*getGetFunc()) ())(int,int)
+{
+  return getFunc;
+}
+
+int main(int argc, const char *argv[]){
+  getGetFunc()()(1,2);
+  return 0;
+}
+```
+
+`getFunc `返回一个`int(*)(int,int)`指针。似乎是迭代的。`getGetFunc`返回一个`int(*(*()))(int,int)` 这种签名不要太坑。。
+
 ##2016/04/29
 Log1: 神奇的函数指针：
 typedef void (*he)();
