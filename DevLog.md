@@ -30,6 +30,8 @@ int main(int argc, const char *argv[]){
 
 `getFunc `返回一个`int(*)(int,int)`指针。似乎是迭代的。`getGetFunc`返回一个`int(*(*()))(int,int)` 这种签名不要太坑。。
 
+Log2:注意类型定义里面的括号不能随意乱加，否则应该抛异常
+
 ##2016/04/29
 Log1: 神奇的函数指针：
 typedef void (*he)();
