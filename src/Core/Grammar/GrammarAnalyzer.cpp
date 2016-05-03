@@ -1,7 +1,7 @@
 #include "GrammarAnalyzer.h"
 
-GrammarNode::GrammarNode(GrammarNode* father):
-  mFather(father)
+GrammarNode::GrammarNode():
+  mFather(NULL)
 {
 }
 
@@ -14,16 +14,22 @@ GrammarNode::~GrammarNode()
   }
 }
 
-GrammarNode* GrammarNode::getTopNode()
+GrammarBlock* GrammarBlock::getTopNode()
 {
-    static GrammarNode* instance = NULL;
+    static GrammarBlock* instance = NULL;
     if (NULL == instance)
     {
-      instance = new GrammarNode(NULL);
+      instance = new GrammarBlock();
       instance->mFather = instance;
       instance->mNodeType = eGrammarNodeTopNode;
 
       //add other init for top class node
+//      BasicDefine intDefine = BasicDefine("int");
+//      BasicDefine longDefine = BasicDefine("long");
+//      BasicDefine doubleDefine = BasicDefine("double");
+//      BasicDefine charDefine = BasicDefine("char");
+//      BasicDefine doubleDefine = BasicDefine("double");
+//      BasicDefine floatDefine = BasicDefine("float");
     }
     return instance;
 }
@@ -35,10 +41,10 @@ DataTypeDefine::~DataTypeDefine()
 {
 }
 
-NormalDefine::NormalDefine(string keyWord)
+BasicDefine::BasicDefine(string keyWord)
 {
   mKeyWrods = keyWord;
   signature = "__" + mKeyWrods;
-  mDataType = eDataTypeNormal;
+  mDataType = eDataTypeBasic;
 }
 

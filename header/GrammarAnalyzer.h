@@ -11,14 +11,13 @@ enum GrammarNodeType
   eGrammarNodeDataTypeDefine,
   eGrammarNodeVarDefine,
   eGrammarNodeStatment,
-};
+}
 
 class GrammarNode {
 public:
-  GrammarNode(GrammarNode* father);
+  GrammarNode();
   virtual ~GrammarData ();
 
-  static GrammarNode* getTopNode();
 
 private:
   GrammarNode *mFather;
@@ -55,15 +54,41 @@ public:
 
 private:
   DataTypeDefine* mDataType;
+  bool isStatic;
+  bool isVirtual;
+  bool isConst;
 };
 
-class NormalDefine:public DataTypeDefine {
+enum GrammarBlockType{
+  eGrammarBlockTop,
+  eGrammarBlockFunc,
+  eGrammarBlockWhile,
+  eGrammarBlockFor,
+  eGrammarBlockIf,
+  eGrammarBlockElse
+};
+
+class GrammarBlock: public GrammarNode {
 public:
-  NormalDefine (string keyWord);
-  virtual ~NormalDefine ();
+  GrammarBlock ();
+  virtual ~GrammarBlock ();
+
+  static GrammarBlock* getTopNode();
+
+  uint32 addDataTypeDefine(string key, DataTypeDefine dataType);
+  uint32 addVarDefine(string key, VarDefine var);
+private:
+  map<string,DataTypeDefine> mDataTypeList;
+  map<string,VarDefine> mVarList;
+};
+
+class BasicDefine:public DataTypeDefine {
+public:
+  BasicDefine (vector<string> keyWords);
+  virtual ~BasicDefine ();
 
 private:
-  
+  vector<string> keyWords;
 };
 
 class PointerDefine:public DataTypeDefine {
