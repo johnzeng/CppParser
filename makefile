@@ -28,7 +28,8 @@ CPPFLAGS=$(INCLUDE_FLAGS) $(OTHER_CPP_FLAGS) $(OTHER_FLAGS) $(TEST_FLAG)
 TARGET=target/libAnalyzer.a
 TEST_TARGET=target/tester
 
-SOURCES=$(wildcard ./src/*.cpp ./src/*/*.c ./src/*/*.cpp)
+SOURCES=$(shell find ./src -type f -name '*.cpp') $(shell find ./src -type f -name '*.c')
+
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
 TEST_SOURCE=$(wildcard ./test/src/*.cpp ./test/src/*/*.c ./test/src/*/*.cpp)

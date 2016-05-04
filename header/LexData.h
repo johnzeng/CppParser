@@ -67,7 +67,7 @@ struct FileReaderRecord
 	uint64 bufferSize;		//should not be change after init
 	uint32 curIndex;
 	uint32 curLineNum;
-	const string fileName;	//if this is a define ,file name will be key
+	string fileName;	//if this is a define ,file name will be key
 	uint32 recordType;
 
   map<long,long> lineOffsetMap;

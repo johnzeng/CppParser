@@ -11,15 +11,14 @@ enum GrammarNodeType
   eGrammarNodeDataTypeDefine,
   eGrammarNodeVarDefine,
   eGrammarNodeStatment,
-}
+};
 
 class GrammarNode {
 public:
   GrammarNode();
-  virtual ~GrammarData ();
+  virtual ~GrammarNode();
 
-
-private:
+protected:
   GrammarNode *mFather;
   vector<GrammarNode*> mChildrens;
   uint32 mNodeType;
@@ -27,7 +26,7 @@ private:
 
 enum DataTypeEnum{
   eDataTypeUnknow,
-  eDataTypeNormal,
+  eDataTypeBasic,
   eDataTypeStruct,
   eDataTypeEnum,
   eDataTypeClass,
@@ -38,13 +37,15 @@ enum DataTypeEnum{
 
 class DataTypeDefine:public GrammarNode {
 public:
-  DataTypeDefine (string word);
+  DataTypeDefine ();
   virtual ~DataTypeDefine ();
 
-private:
-  vector<string> mKeyWrods;
-  string signature;
-  uint32 mDateType;
+  string getSignature();
+
+protected:
+  vector<string> mKeyWords;
+  string mSignature;
+  uint32 mDataType;
 };
 
 class VarDefine:public GrammarNode {
@@ -75,8 +76,8 @@ public:
 
   static GrammarBlock* getTopNode();
 
-  uint32 addDataTypeDefine(string key, DataTypeDefine dataType);
-  uint32 addVarDefine(string key, VarDefine var);
+  uint32 addDataTypeDefine(DataTypeDefine dataType);
+  uint32 addVarDefine(VarDefine var);
 private:
   map<string,DataTypeDefine> mDataTypeList;
   map<string,VarDefine> mVarList;
@@ -88,7 +89,6 @@ public:
   virtual ~BasicDefine ();
 
 private:
-  vector<string> keyWords;
 };
 
 class PointerDefine:public DataTypeDefine {
@@ -119,7 +119,7 @@ public:
   virtual ~ClassDefine();
 private:
   map<string,DataTypeDefine*> mFields;
-}
+};
 
 class StructDefine: public DataTypeDefine {
 public:
@@ -136,7 +136,7 @@ public:
   virtual ~EnumDefine ();
 
 private:
-  map<string, value> mFields;
+  map<string, int> mFields;
 };
 
 class UnionDefine:public DataTypeDefine {
