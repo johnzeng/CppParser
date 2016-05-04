@@ -1,5 +1,6 @@
 #include "GrammarAnalyzer.h"
 #include "StringUtil.h"
+#include "JZLogger.h"
 
 GrammarNode::GrammarNode():
   mFather(NULL)
@@ -20,6 +21,7 @@ GrammarBlock* GrammarBlock::getTopNode()
     static GrammarBlock* instance = NULL;
     if (NULL == instance)
     {
+      JZFUNC_BEGIN_LOG();
       instance = new GrammarBlock();
       instance->mFather = instance;
       instance->mNodeType = eGrammarNodeTopNode;
@@ -46,6 +48,7 @@ GrammarBlock* GrammarBlock::getTopNode()
       basicLongLong.push_back("long");
       BasicDefine longLongDefine = BasicDefine(basicLongLong);
       instance->addDataTypeDefine(longLongDefine);
+      JZFUNC_END_LOG();
     }
     return instance;
 }
@@ -75,3 +78,46 @@ BasicDefine::BasicDefine(vector<string> keyWord)
   mDataType = eDataTypeBasic;
 }
 
+string DataTypeDefine::getKeyWord(int index)
+{
+  if(index < mKeyWords.size())
+  {
+    return mKeyWords[index];
+  }
+  else
+  {
+    return "";
+  }
+}
+
+void GrammarNode::setFather(GrammarNode* father)
+{
+  mFather = father;
+}
+
+uint32 GrammarBlock::addDataTypeDefine(DataTypeDefine dataType)
+{
+  dataType.setFather(this) ;
+
+  string sig = dataType.getSignature();
+
+  auto it = mDataTypeList.find(sig);
+  if(mDataTypeList.end() != it)
+  {
+    return eGrammarErrorDoubleDefinedDataType;
+  }
+  mDataTypeList[sig] = dataType;
+  mChildrens.push_back(&mDataTypeList[sig]);
+
+  return eGrammarErrorNoError;
+}
+
+VarDefine::VarDefine(string id, DataTypeDefine* define)
+{
+  mIdentify = id;
+  mDataType = define;
+  if (NULL == define)
+  {
+    JZWRITE_ERROR("NULL define");
+  }
+}

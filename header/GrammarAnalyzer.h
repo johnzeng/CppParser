@@ -3,6 +3,13 @@
 
 #include "LexData.h"
 
+enum GrammarReturnCode
+{
+  eGrammarErrorNoError = 0,
+
+  eGrammarErrorDoubleDefinedDataType = 1,
+};
+
 enum GrammarNodeType
 {
   eGrammarNodeTopNode,   //this node is going to be the top class node in grammar analyzer
@@ -18,6 +25,7 @@ public:
   GrammarNode();
   virtual ~GrammarNode();
 
+  void setFather(GrammarNode* father);
 protected:
   GrammarNode *mFather;
   vector<GrammarNode*> mChildrens;
@@ -41,6 +49,7 @@ public:
   virtual ~DataTypeDefine ();
 
   string getSignature();
+  string getKeyWord(int i);
 
 protected:
   vector<string> mKeyWords;
@@ -50,14 +59,15 @@ protected:
 
 class VarDefine:public GrammarNode {
 public:
-  VarDefine ();
+  VarDefine (string id, DataTypeDefine* define);
   virtual ~VarDefine ();
 
 private:
   DataTypeDefine* mDataType;
-  bool isStatic;
-  bool isVirtual;
-  bool isConst;
+  string mIdentify;
+  bool mIsStatic;
+  bool mIsVirtual;
+  bool mIsConst;
 };
 
 enum GrammarBlockType{
