@@ -1195,6 +1195,7 @@ FileReaderRecord MacroLex::popReaderRecord()
 	{
 		case eFileTypeMacroExpand:
 			{
+        //since we use filename as key of processingMacroSet, we may need other way to log file name or just another way to set key
 				auto toEraseIt = mPreprocessingMacroSet.find(mReaderStack.top().fileName);
 				mPreprocessingMacroSet.erase(toEraseIt);
 			}
