@@ -58,6 +58,15 @@ enum GrammarBlockType{
   All class define start here 
  ********************************************************/
 
+class GrammarNode;
+class DataTypeDefine;
+class VarDefine;
+class GrammarBlock;
+class ClassDefine;
+class EnumDefine;
+class StructDefine;
+class FunctionDefine;
+
 class GrammarNode {
 public:
   GrammarNode();
@@ -79,10 +88,12 @@ public:
   string getSignature();
   string getKeyWord(int i);
 
+  uint32 addBody(GrammarBlock* body);
 protected:
   vector<string> mKeyWords;
   string mSignature;
   uint32 mDataType;
+  GrammarBlock* mBody;
 };
 
 class VarDefine:public GrammarNode {
@@ -108,11 +119,11 @@ public:
 
   static GrammarBlock createTopNode();
 
-  uint32 addDataTypeDefine(DataTypeDefine dataType);
-  uint32 addVarDefine(VarDefine var);
+  uint32 addDataTypeDefine(DataTypeDefine* dataType);
+  uint32 addVarDefine(VarDefine* var);
 private:
-  map<string,DataTypeDefine> mDataTypeList;
-  map<string,VarDefine> mVarList;
+  map<string,DataTypeDefine*> mDataTypeList;
+  map<string,VarDefine*> mVarList;
 };
 
 class BasicDefine:public DataTypeDefine {
@@ -164,7 +175,7 @@ private:
 
 class EnumDefine: public DataTypeDefine{
 public:
-  EnumDefine ();
+  EnumDefine (string id);
   virtual ~EnumDefine ();
 
 private:

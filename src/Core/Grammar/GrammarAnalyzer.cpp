@@ -13,12 +13,14 @@ uint32 GrammarAnalyzer::doAnalyze()
   int listSize = mRecList.size();
   while (index < listSize)
   {
-    uint32 nextIndex = index;
+    int32 nextIndex = index;
+    uint32 ret = eGrammarErrorNoError;
     if(eGrammarErrorNoError != (ret = blockHeartBeat(index, nextIndex, mTopBlock) ))
     {
       return ret;
     }
   }
+  return eGrammarErrorNoError;
 }
 
 uint32 GrammarAnalyzer::blockHeartBeat(int32 index, int32& lastIndex, GrammarBlock& curBlock)
@@ -47,7 +49,7 @@ uint32 GrammarAnalyzer::handleEnum(int32 index, int32& lastIndex, GrammarBlock& 
   return handleEnumId(index + 1, lastIndex, curBlock);
 }
 
-uint32 GrammarAnalyzer::handleEnumId(int, index, int& lastIndex, GrammarBlock &curBlock)
+uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock &curBlock)
 {
   if(mRecList.size() <= index)
   {
@@ -59,6 +61,8 @@ uint32 GrammarAnalyzer::handleEnumId(int, index, int& lastIndex, GrammarBlock &c
 //    return eGrammarErrorNotEnum;
 //  }
   lastIndex = index;
-  EnumDefine curEnum;
-
+  string id = mRecList[index].word;
+  EnumDefine *curEnum = new EnumDefine(id);
+  GrammarBlock* body = new GrammarBlock();
+  curEnum->addBody(body);
 }

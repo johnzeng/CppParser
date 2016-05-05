@@ -40,34 +40,34 @@ GrammarBlock GrammarBlock::createTopNode()
   //add other init for top class node
   vector<string> basicInt;
   basicInt.push_back("int");
-  BasicDefine intDefine = BasicDefine(basicInt);
+  BasicDefine *intDefine = new BasicDefine(basicInt);
   instance.addDataTypeDefine(intDefine);
 
   vector<string> basicUnsignedInt;
   basicUnsignedInt.push_back("unsigned");
   basicUnsignedInt.push_back("int");
-  BasicDefine uintDefine = BasicDefine(basicUnsignedInt);
+  BasicDefine *uintDefine = new BasicDefine(basicUnsignedInt);
   instance.addDataTypeDefine(uintDefine);
 
   vector<string> basicLong;
   basicLong.push_back("long");
-  BasicDefine longDefine = BasicDefine(basicLong);
+  BasicDefine *longDefine = new BasicDefine(basicLong);
   instance.addDataTypeDefine(longDefine);
 
   vector<string> basicLongLong;
   basicLongLong.push_back("long");
   basicLongLong.push_back("long");
-  BasicDefine longLongDefine = BasicDefine(basicLongLong);
+  BasicDefine *longLongDefine = new BasicDefine(basicLongLong);
   instance.addDataTypeDefine(longLongDefine);
   JZFUNC_END_LOG();
   return instance;
 }
 
-uint32 GrammarBlock::addDataTypeDefine(DataTypeDefine dataType)
+uint32 GrammarBlock::addDataTypeDefine(DataTypeDefine *dataType)
 {
-  dataType.setFather(this) ;
+  dataType->setFather(this) ;
 
-  string sig = dataType.getSignature();
+  string sig = dataType->getSignature();
 
   auto it = mDataTypeList.find(sig);
   if(mDataTypeList.end() != it)
@@ -75,8 +75,22 @@ uint32 GrammarBlock::addDataTypeDefine(DataTypeDefine dataType)
     return eGrammarErrorDoubleDefinedDataType;
   }
   mDataTypeList[sig] = dataType;
-  mChildrens.push_back(&mDataTypeList[sig]);
+  mChildrens.push_back(mDataTypeList[sig]);
 
+  return eGrammarErrorNoError;
+}
+
+uint32 GrammarBlock::addVarDefine(VarDefine* var)
+{
+  var->setFather(this);
+  string key = var->getId();
+  auto it = mVarList.find(key);
+  if(mVarList.end() != it)
+  {
+    return eGrammarErrorDoubleDefinedVar;
+  }
+  mVarList[key] = var;
+  mChildrens.push_back(mVarList[key]);
   return eGrammarErrorNoError;
 }
 
@@ -85,25 +99,17 @@ uint32 GrammarBlock::addDataTypeDefine(DataTypeDefine dataType)
  DataTypeDefine begin 
  ********************************************************/
 
-DataTypeDefine::DataTypeDefine()
+DataTypeDefine::DataTypeDefine():
+  mBody(NULL)
 {
 }
 DataTypeDefine::~DataTypeDefine()
 {
-}
-
-uint32 GrammarBlock::addVarDefine(VarDefine var)
-{
-  var.setFather(this);
-  string key = var.getId();
-  auto it = mVarList.find(key);
-  if(mVarList.end() != it)
+  if (NULL != mBody)
   {
-    return eGrammarErrorDoubleDefinedVar;
+    delete mBody;
+    mBody = NULL;
   }
-  mVarList[key] = var;
-  mChildrens.push_back(&mVarList[key]);
-  return eGrammarErrorNoError;
 }
 
 string DataTypeDefine::getSignature()
@@ -122,6 +128,20 @@ string DataTypeDefine::getKeyWord(int index)
     return "";
   }
 }
+
+uint32 DataTypeDefine::addBody(GrammarBlock* body)
+{
+  if(NULL == body)
+  {
+    return eGrammarErrorUnknown;
+  }
+
+  body->setFather(this);
+  this->mBody = body;
+
+  return eGrammarErrorNoError;
+}
+
 /*********************************************************
   DataTypeDefine end
  BasicDefine beging 
@@ -161,3 +181,17 @@ string VarDefine::getId()
 {
   return mIdentify;
 }
+
+/*********************************************************
+  VarDefine end
+  EnumDefine begin
+ ********************************************************/
+
+EnumDefine::EnumDefine(string id)
+{
+  mKeyWords.push_back(id);
+  mSignature = id;
+  mDataType = eDataTypeEnum;
+}
+
+EnumDefine::~EnumDefine(){}

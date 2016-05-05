@@ -13,7 +13,7 @@ protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock& curBlock);
 
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock& curBlock);
-  uint32 handleEnumId(int, index, int& lastIndex, GrammarBlock &curBlock);
+  uint32 handleEnumId(int index, int& lastIndex, GrammarBlock &curBlock);
   uint32 handleEnumFieldName(int index, int& lastIndex, GrammarBlock& curBlock);
   uint32 handleEnumFieldEqual(int index, int& lastIndex, GrammarBlock& curBlock);
   uint32 handleEnumFieldValue(int index, int& lastIndex, GrammarBlock& curBlock);

@@ -453,7 +453,7 @@ template <typename type> type GrammarUtil::str2Num(const string& input)
 	
 }
 
-bool GrammarUtil::isKeyWord(string& input)
+bool GrammarUtil::isKeyWord(const string& input)
 {
   auto it = mKeyWordSet.find(input);
   if(mKeyWordSet.end() != it)
