@@ -11,8 +11,14 @@ enum GrammarReturnCode
 {
   eGrammarErrorNoError = 0,
 
-  eGrammarErrorDoubleDefinedDataType = 1,
-  eGrammarErrorDoubleDefinedVar = 2,
+  eGrammarErrorNotEnum = 1,
+
+  eGrammarErrorReasonableErrors = 99,
+
+  eGrammarErrorDoubleDefinedDataType = 100,
+  eGrammarErrorDoubleDefinedVar = 101,
+
+  eGrammarErrorFileEnd = 1000,
 
   eGrammarErrorUnknown,
 };

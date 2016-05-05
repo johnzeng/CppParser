@@ -131,6 +131,8 @@ public:
 
 	static GrammarUtil* getInstance();
 
+  bool isKeyWord(const string& input);
+
 	bool isOperator(const string& input);
 
 	bool isPreprocessOperator(const string& input);

@@ -73,7 +73,39 @@ void GrammarUtil::init()
 	/*********************************************************
 		operator useful not only in preprocess 
 	 ********************************************************/
-	
+
+  /*********************************************************
+    add key words 
+   ********************************************************/
+  
+  mKeyWordSet.insert("int");
+  mKeyWordSet.insert("long");
+  mKeyWordSet.insert("unsigned");
+  mKeyWordSet.insert("class");
+  mKeyWordSet.insert("enum");
+  mKeyWordSet.insert("static");
+  mKeyWordSet.insert("struct");
+  mKeyWordSet.insert("char");
+  mKeyWordSet.insert("double");
+  mKeyWordSet.insert("float");
+  mKeyWordSet.insert("bool");
+  mKeyWordSet.insert("void");
+  mKeyWordSet.insert("const");
+  mKeyWordSet.insert("volatile");
+  mKeyWordSet.insert("typedef");
+  mKeyWordSet.insert("private");
+  mKeyWordSet.insert("public");
+  mKeyWordSet.insert("protected");
+  mKeyWordSet.insert("if");
+  mKeyWordSet.insert("else");
+  mKeyWordSet.insert("while");
+  mKeyWordSet.insert("for");
+  mKeyWordSet.insert("goto");
+  mKeyWordSet.insert("return");
+  mKeyWordSet.insert("auto");
+  mKeyWordSet.insert("NULL");
+  mKeyWordSet.insert("template");
+  
 }
 
 void GrammarUtil::insertOperatorToPreprocessOpSet(const string& op,uint32 priority, uint32 mark,int opNum, int associativity)
@@ -419,4 +451,15 @@ template <typename type> type GrammarUtil::str2Num(const string& input)
 	}
 	return ret;
 	
+}
+
+bool GrammarUtil::isKeyWord(string& input)
+{
+  auto it = mKeyWordSet.find(input);
+  if(mKeyWordSet.end() != it)
+  {
+    return true;
+  }
+
+  return false;
 }
