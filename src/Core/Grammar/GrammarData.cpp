@@ -6,7 +6,6 @@
   Grammar Node 
  ********************************************************/
 
-
 GrammarNode::GrammarNode():
   mFather(NULL)
 {
