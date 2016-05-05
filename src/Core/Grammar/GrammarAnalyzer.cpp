@@ -112,12 +112,33 @@ uint32 GrammarBlock::addDataTypeDefine(DataTypeDefine dataType)
   return eGrammarErrorNoError;
 }
 
-VarDefine::VarDefine(string id, DataTypeDefine* define)
+uint32 VarDefine::init(string id, DataTypeDefine* define)
 {
   mIdentify = id;
   mDataType = define;
   if (NULL == define)
   {
     JZWRITE_ERROR("NULL define");
+    return eGrammarErrorUnknown;
   }
+  return eGrammarErrorNoError;
+}
+
+uint32 GrammarBlock::addVarDefine(VarDefine var)
+{
+  var.setFather(this);
+  string key = var.getId();
+  auto it = mVarList.find(key);
+  if(mVarList.end() != it)
+  {
+    return eGrammarErrorDoubleDefinedVar;
+  }
+  mVarList[key] = var;
+  mChildrens.push_back(&mVarList[key]);
+  return eGrammarErrorNoError;
+}
+
+string VarDefine::getId()
+{
+  return mIdentify;
 }

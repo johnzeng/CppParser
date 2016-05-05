@@ -8,6 +8,9 @@ enum GrammarReturnCode
   eGrammarErrorNoError = 0,
 
   eGrammarErrorDoubleDefinedDataType = 1,
+  eGrammarErrorDoubleDefinedVar = 2,
+
+  eGrammarErrorUnknown,
 };
 
 enum GrammarNodeType
@@ -59,8 +62,11 @@ protected:
 
 class VarDefine:public GrammarNode {
 public:
-  VarDefine (string id, DataTypeDefine* define);
+  VarDefine(){};
+  uint32 init (string id, DataTypeDefine* define);
   virtual ~VarDefine ();
+
+  string getId();
 
 private:
   DataTypeDefine* mDataType;
