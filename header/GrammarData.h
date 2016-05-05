@@ -3,6 +3,10 @@
 
 #include "LexData.h"
 
+/*********************************************************
+  All enum begin here 
+ ********************************************************/
+
 enum GrammarReturnCode
 {
   eGrammarErrorNoError = 0,
@@ -23,6 +27,31 @@ enum GrammarNodeType
   eGrammarNodeStatment,
 };
 
+enum DataTypeEnum{
+  eDataTypeUnknow,
+  eDataTypeBasic,
+  eDataTypeStruct,
+  eDataTypeEnum,
+  eDataTypeClass,
+  eDataTypeUnion,
+  eDataTypeFunc,
+  eDataTypePtr
+};
+
+enum GrammarBlockType{
+  eGrammarBlockTop,
+  eGrammarBlockFunc,
+  eGrammarBlockWhile,
+  eGrammarBlockFor,
+  eGrammarBlockIf,
+  eGrammarBlockElse
+};
+
+
+/*********************************************************
+  All class define start here 
+ ********************************************************/
+
 class GrammarNode {
 public:
   GrammarNode();
@@ -34,17 +63,6 @@ protected:
   GrammarNode *mFather;
   vector<GrammarNode*> mChildrens;
   uint32 mNodeType;
-};
-
-enum DataTypeEnum{
-  eDataTypeUnknow,
-  eDataTypeBasic,
-  eDataTypeStruct,
-  eDataTypeEnum,
-  eDataTypeClass,
-  eDataTypeUnion,
-  eDataTypeFunc,
-  eDataTypePtr
 };
 
 class DataTypeDefine:public GrammarNode {
@@ -75,15 +93,6 @@ private:
   bool mIsStatic;
   bool mIsVirtual;
   bool mIsConst;
-};
-
-enum GrammarBlockType{
-  eGrammarBlockTop,
-  eGrammarBlockFunc,
-  eGrammarBlockWhile,
-  eGrammarBlockFor,
-  eGrammarBlockIf,
-  eGrammarBlockElse
 };
 
 class GrammarBlock: public GrammarNode {
