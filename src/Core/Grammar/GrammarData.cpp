@@ -30,41 +30,37 @@ void GrammarNode::setFather(GrammarNode* father)
  ********************************************************/
 
 
-GrammarBlock* GrammarBlock::getTopNode()
+GrammarBlock GrammarBlock::createTopNode()
 {
-    static GrammarBlock* instance = NULL;
-    if (NULL == instance)
-    {
-      JZFUNC_BEGIN_LOG();
-      instance = new GrammarBlock();
-      instance->mFather = instance;
-      instance->mNodeType = eGrammarNodeTopNode;
+  JZFUNC_BEGIN_LOG();
+  GrammarBlock instance;
+  instance.mFather = NULL;
+  instance.mNodeType = eGrammarNodeTopNode;
 
-      //add other init for top class node
-      vector<string> basicInt;
-      basicInt.push_back("int");
-      BasicDefine intDefine = BasicDefine(basicInt);
-      instance->addDataTypeDefine(intDefine);
+  //add other init for top class node
+  vector<string> basicInt;
+  basicInt.push_back("int");
+  BasicDefine intDefine = BasicDefine(basicInt);
+  instance.addDataTypeDefine(intDefine);
 
-      vector<string> basicUnsignedInt;
-      basicUnsignedInt.push_back("unsigned");
-      basicUnsignedInt.push_back("int");
-      BasicDefine uintDefine = BasicDefine(basicUnsignedInt);
-      instance->addDataTypeDefine(uintDefine);
+  vector<string> basicUnsignedInt;
+  basicUnsignedInt.push_back("unsigned");
+  basicUnsignedInt.push_back("int");
+  BasicDefine uintDefine = BasicDefine(basicUnsignedInt);
+  instance.addDataTypeDefine(uintDefine);
 
-      vector<string> basicLong;
-      basicLong.push_back("long");
-      BasicDefine longDefine = BasicDefine(basicLong);
-      instance->addDataTypeDefine(longDefine);
+  vector<string> basicLong;
+  basicLong.push_back("long");
+  BasicDefine longDefine = BasicDefine(basicLong);
+  instance.addDataTypeDefine(longDefine);
 
-      vector<string> basicLongLong;
-      basicLongLong.push_back("long");
-      basicLongLong.push_back("long");
-      BasicDefine longLongDefine = BasicDefine(basicLongLong);
-      instance->addDataTypeDefine(longLongDefine);
-      JZFUNC_END_LOG();
-    }
-    return instance;
+  vector<string> basicLongLong;
+  basicLongLong.push_back("long");
+  basicLongLong.push_back("long");
+  BasicDefine longLongDefine = BasicDefine(basicLongLong);
+  instance.addDataTypeDefine(longLongDefine);
+  JZFUNC_END_LOG();
+  return instance;
 }
 
 uint32 GrammarBlock::addDataTypeDefine(DataTypeDefine dataType)

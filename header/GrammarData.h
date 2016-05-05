@@ -100,7 +100,7 @@ public:
   GrammarBlock ();
   virtual ~GrammarBlock ();
 
-  static GrammarBlock* getTopNode();
+  static GrammarBlock createTopNode();
 
   uint32 addDataTypeDefine(DataTypeDefine dataType);
   uint32 addVarDefine(VarDefine var);

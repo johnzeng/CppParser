@@ -10,6 +10,8 @@ public:
 
 private:
   LexRecList mRecList;
+
+  GrammarBlock mTopBlock;
 };
 
 #endif /* end of include guard: GRAMMARANALYZER_H */
