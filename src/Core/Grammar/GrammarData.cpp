@@ -137,7 +137,9 @@ uint32 DataTypeDefine::addBody(GrammarBlock* body)
   }
 
   body->setFather(this);
-  this->mBody = body;
+  mBody = body;
+  mChildrens.push_back(body);
+  
 
   return eGrammarErrorNoError;
 }
