@@ -16,6 +16,7 @@ namespace LexUtil {
 	bool ignoreMacroWhenStreamIsOff(const string& word);
 	bool isConstNumberChar(const char input);
 	string eatLREmptyInput(const string &toBeEatan);
+  bool isIdentifyChar(const char input);
 
 } /* LexUtil */
 

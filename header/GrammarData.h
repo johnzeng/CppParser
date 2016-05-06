@@ -12,6 +12,8 @@ enum GrammarReturnCode
   eGrammarErrorNoError = 0,
 
   eGrammarErrorNotEnum = 1,
+  eGrammarErrorNotLeftBrace = 2,
+  eGrammarErrorNotExpected = 3,
 
   eGrammarErrorReasonableErrors = 99,
 
@@ -19,6 +21,7 @@ enum GrammarReturnCode
   eGrammarErrorDoubleDefinedVar = 101,
 
   eGrammarErrorFileEnd = 1000,
+  eGrammarErrorMissingSemicolon = 1001,
 
   eGrammarErrorUnknown,
 };
@@ -31,9 +34,7 @@ enum GrammarNodeType
   eGrammarNodeDataTypeDefine,
   eGrammarNodeVarDefine,
   eGrammarNodeStatment,
-};
 
-enum DataTypeEnum{
   eDataTypeUnknow,
   eDataTypeBasic,
   eDataTypeStruct,
@@ -41,18 +42,15 @@ enum DataTypeEnum{
   eDataTypeClass,
   eDataTypeUnion,
   eDataTypeFunc,
-  eDataTypePtr
-};
+  eDataTypePtr,
 
-enum GrammarBlockType{
   eGrammarBlockTop,
   eGrammarBlockFunc,
   eGrammarBlockWhile,
   eGrammarBlockFor,
   eGrammarBlockIf,
-  eGrammarBlockElse
+  eGrammarBlockElse,
 };
-
 
 /*********************************************************
   All class define start here 
@@ -73,6 +71,8 @@ public:
   virtual ~GrammarNode();
 
   void setFather(GrammarNode* father);
+  const GrammarNode* getFather(){return mFather;}
+  uint32 getType(){return mNodeType;}
 
 protected:
   GrammarNode *mFather;
@@ -92,7 +92,6 @@ public:
 protected:
   vector<string> mKeyWords;
   string mSignature;
-  uint32 mDataType;
   GrammarBlock* mBody;
 };
 
@@ -121,6 +120,8 @@ public:
 
   uint32 addDataTypeDefine(DataTypeDefine* dataType);
   uint32 addVarDefine(VarDefine* var);
+
+  const VarDefine* getVarDef(const string key);
 private:
   map<string,DataTypeDefine*> mDataTypeList;
   map<string,VarDefine*> mVarList;
@@ -177,6 +178,9 @@ class EnumDefine: public DataTypeDefine{
 public:
   EnumDefine (string id);
   virtual ~EnumDefine ();
+
+  uint32 addField(string id);
+  utin32 addField(string id, int value);
 
 private:
   map<string, int> mFields;

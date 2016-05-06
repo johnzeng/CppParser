@@ -443,6 +443,27 @@ bool LexUtil::isConstNumberChar(const char input)
 	return false;
 }
 
+bool LexUtil::isIdentifyChar(const char input)
+{
+  if('a' <= input && input <= 'z')
+  {
+    return true;
+  }
+  if('A' <= input && input <= 'Z')
+  {
+    return true;
+  }
+  if(true == isConstNumberChar(input))
+  {
+    return true;
+  }
+  if('_' == input)
+  {
+    return true;
+  }
+  return false;
+}
+
 /*********************************************************
 	LexUtil End here, now begin the lex pattern table 
  ********************************************************/

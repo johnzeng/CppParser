@@ -94,6 +94,18 @@ uint32 GrammarBlock::addVarDefine(VarDefine* var)
   return eGrammarErrorNoError;
 }
 
+const VarDefine* GrammarAnalyzer::getVarDef(const string key)
+{
+  auto it = mVarList.find(key);
+  if(mVarList.end() == it)
+  {
+    return NULL;
+  }
+  else
+  {
+    return it->second;
+  }
+}
 /*********************************************************
   GrammarBlock end
  DataTypeDefine begin 
@@ -197,3 +209,26 @@ EnumDefine::EnumDefine(string id)
 }
 
 EnumDefine::~EnumDefine(){}
+
+uint32 EnumDefine::addField(string id)
+{
+  auto it = mFields.find(id);
+  if(mFields.end() != it)
+  {
+    return eGrammarErrorDoubleDefinedVar;
+  }
+  //yes, this is not exactlly right value. I think a vector will be better for this.
+  mFields[id] = mFields.size();
+  return eGrammarErrorNoError;
+}
+
+uint32 EnumDefine::addField(string id, int value)
+{
+  auto it = mFields.find(id);
+  if(mFields.end() != it)
+  {
+    return eGrammarErrorDoubleDefinedVar;
+  }
+  mFields[id] = value;
+  return eGrammarErrorNoError;
+}
