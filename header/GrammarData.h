@@ -71,8 +71,8 @@ public:
   virtual ~GrammarNode();
 
   void setFather(GrammarNode* father);
-  const GrammarNode* getFather(){return mFather;}
-  uint32 getType(){return mNodeType;}
+  GrammarNode* getFather(){return mFather;}
+  uint32 getType()const{return mNodeType;}
 
 protected:
   GrammarNode *mFather;
@@ -180,7 +180,7 @@ public:
   virtual ~EnumDefine ();
 
   uint32 addField(string id);
-  utin32 addField(string id, int value);
+  uint32 addField(string id, int value);
 
 private:
   map<string, int> mFields;

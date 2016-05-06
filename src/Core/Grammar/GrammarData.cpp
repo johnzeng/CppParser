@@ -94,7 +94,7 @@ uint32 GrammarBlock::addVarDefine(VarDefine* var)
   return eGrammarErrorNoError;
 }
 
-const VarDefine* GrammarAnalyzer::getVarDef(const string key)
+const VarDefine* GrammarBlock::getVarDef(const string key)
 {
   auto it = mVarList.find(key);
   if(mVarList.end() == it)
@@ -171,7 +171,7 @@ BasicDefine::BasicDefine(vector<string> keyWord)
     tmpSig += "_" + StringUtil::tostr(size) + keyWord[i];
   }
   mSignature = tmpSig;
-  mDataType = eDataTypeBasic;
+  mNodeType = eDataTypeBasic;
 }
 
 /*********************************************************
@@ -205,7 +205,7 @@ EnumDefine::EnumDefine(string id)
 {
   mKeyWords.push_back(id);
   mSignature = id;
-  mDataType = eDataTypeEnum;
+  mNodeType = eDataTypeEnum;
 }
 
 EnumDefine::~EnumDefine(){}

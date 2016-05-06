@@ -22,9 +22,9 @@ protected:
   uint32 handleLeftBrace(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleRightBrace(int index, int& lastIndex, GrammarBlock* curBlock);
 
-  uint32 expect(string expected,int index);
+  uint32 expect(const string& expected,int index);
 
-  bool isLeagalVarIdentify(const string id, GrammarBlock* curBlock);
+  bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
   //return the statement's type;
   uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock);

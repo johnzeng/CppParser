@@ -1,5 +1,7 @@
 #include "GrammarAnalyzer.h"
 #include "GrammarUtil.h"
+#include "LexUtil.h"
+#include "JZLogger.h"
 
 GrammarAnalyzer::GrammarAnalyzer(LexRecList list):
   mRecList(list),
@@ -16,7 +18,7 @@ uint32 GrammarAnalyzer::doAnalyze()
   {
     int32 nextIndex = index;
     uint32 ret = eGrammarErrorNoError;
-    if(eGrammarErrorNoError != (ret = blockHeartBeat(index, nextIndex, mTopBlock) ))
+    if(eGrammarErrorNoError != (ret = blockHeartBeat(index, nextIndex, &mTopBlock) ))
     {
       return ret;
     }
@@ -27,7 +29,7 @@ uint32 GrammarAnalyzer::doAnalyze()
 uint32 GrammarAnalyzer::blockHeartBeat(int32 index, int32& lastIndex, GrammarBlock* curBlock)
 {
   int nextIndex = index;
-  uint32 ret = handleEnum(index, nextIndex, mTopBlock) /* || handleClass*/;
+  uint32 ret = handleEnum(index, nextIndex, curBlock) /* || handleClass*/;
   if (ret != eGrammarErrorNoError || ret != eGrammarErrorNotEnum)
   {
     index = nextIndex;
@@ -57,7 +59,7 @@ uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* cu
     return eGrammarErrorFileEnd;
   }
   //need to check the id
-  if (false == isLeagalVarIdentify(mRecList[index].word))
+  if (false == isLegalVarIdentify(mRecList[index].word, curBlock))
   {
     return eGrammarErrorDoubleDefinedDataType;
   }
@@ -97,7 +99,7 @@ uint32 GrammarAnalyzer::handleLeftBrace(int index, int& lastIndex, GrammarBlock*
   //need to check the id
   if (mRecList[index].word != "{")
   {
-    return eGrammarErrorNotSemicolon;
+    return eGrammarErrorNotLeftBrace;
   }
 
   auto father = curBlock->getFather();
@@ -147,10 +149,10 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
     return handleEnumFieldName(index + 1, lastIndex, curBlock);
   }
 
-  if(true == isLeagalVarIdentify(mRecList[index].word))
+  if(true == isLegalVarIdentify(mRecList[index].word,curBlock))
   {
     string fieldName = mRecList[index].word;
-    EnumDefine *define = dynamic_cast<EnumDefine*>(curBlock.getFather());
+    EnumDefine *define = dynamic_cast<EnumDefine*>(curBlock->getFather());
     if(NULL == define)
     {
       return eGrammarErrorUnknown;
@@ -202,7 +204,7 @@ uint32 GrammarAnalyzer::expect(const string& expected, int index)
   return eGrammarErrorNoError;
 }
 
-bool GrammarAnalyzer::isLeagalVarIdentify(const string id, GrammarBlock* curBlock)
+bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBlock)
 {
   const VarDefine* def = curBlock->getVarDef(id);
   if(NULL != def)
@@ -229,7 +231,7 @@ bool GrammarAnalyzer::isLeagalVarIdentify(const string id, GrammarBlock* curBloc
     char curChar = id[i];
     if (false == LexUtil::isIdentifyChar(curChar))
     {
-      return false
+      return false;
     }
   }
   return true;
