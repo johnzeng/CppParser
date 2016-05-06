@@ -22,6 +22,7 @@ enum GrammarReturnCode
 
   eGrammarErrorFileEnd = 1000,
   eGrammarErrorMissingSemicolon = 1001,
+  eGrammarErrorUnexpectedCommon = 1002,
 
   eGrammarErrorUnknown,
 };
@@ -181,9 +182,10 @@ public:
   EnumDefine (string id);
   virtual ~EnumDefine ();
 
-  uint32 addField(string id);
-  uint32 addField(string id, int value);
+  uint32 addField(const string& id);
+  uint32 addField(const string& id, int value);
 
+  bool fieldExist(const string& id);
 private:
   map<string, int> mFields;
 };

@@ -55,6 +55,7 @@ uint32 GrammarAnalyzer::handleEnum(int32 index, int32& lastIndex, GrammarBlock* 
   }
   if (mRecList[index].word != "enum")
   {
+    JZWRITE_DEBUG("get key word %s", mRecList[index].word.c_str());
     JZFUNC_END_LOG();
     return eGrammarErrorNotEnum;
   }
@@ -145,8 +146,9 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
 
   if(expect("}", index) == eGrammarErrorNoError)
   {
-    if(expect(";", lastIndex + 1) == eGrammarErrorNoError)
+    if(expect(";", index + 1) == eGrammarErrorNoError)
     {
+      lastIndex++;
       return eGrammarErrorNoError;
     }
     else
@@ -158,6 +160,14 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
 
   if(expect(",", index) == eGrammarErrorNoError)
   {
+    if(index - 1 < 0){
+      JZFUNC_END_LOG();
+      return eGrammarErrorUnknown;
+    }
+    if (mRecList[index - 1].word == ",")
+    {
+      return eGrammarErrorUnexpectedCommon;
+    }
     return handleEnumFieldName(index + 1, lastIndex, curBlock);
   }
 

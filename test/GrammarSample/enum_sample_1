@@ -4,3 +4,8 @@ enum test{
   nono,
 
 };
+
+enum test1{
+  no,
+  yes,
+};

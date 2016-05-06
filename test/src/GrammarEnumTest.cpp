@@ -32,16 +32,19 @@ TEST(GrammarAnalyzer, EnumBasic)
   
   GrammarBlock* topBlock = grammar.getTopBlock();
   
-  if(NULL == topBlock)
-  {
-    ASSERT_EQ(0,1);
-  }
+  ASSERT_EQ(true, topBlock != NULL);
 
-  DataTypeDefine* enumDef = topBlock->getDataDef("test");
-  if(NULL == enumDef)
-  {
-    ASSERT_EQ(0,1);
-  }
+  EnumDefine* enumDefTest = dynamic_cast<EnumDefine*>( topBlock->getDataDef("test") );
+  ASSERT_EQ(true, enumDefTest != NULL);
 
-  ASSERT_EQ(1,1);
+  ASSERT_EQ(true, enumDefTest->fieldExist("hello"));
+  ASSERT_EQ(true, enumDefTest->fieldExist("hi"));
+  ASSERT_EQ(true, enumDefTest->fieldExist("nono"));
+
+
+  EnumDefine* enumDefTest1 = dynamic_cast<EnumDefine*>( topBlock->getDataDef("test1") );
+  ASSERT_EQ(true, enumDefTest1 != NULL);
+
+  ASSERT_EQ(true, enumDefTest1->fieldExist("no"));
+  ASSERT_EQ(true, enumDefTest1->fieldExist("yes"));
 }

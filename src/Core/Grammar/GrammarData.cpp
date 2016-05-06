@@ -228,7 +228,7 @@ EnumDefine::~EnumDefine(){
   JZFUNC_END_LOG();
 }
 
-uint32 EnumDefine::addField(string id)
+uint32 EnumDefine::addField(const string& id)
 {
   auto it = mFields.find(id);
   if(mFields.end() != it)
@@ -240,7 +240,7 @@ uint32 EnumDefine::addField(string id)
   return eGrammarErrorNoError;
 }
 
-uint32 EnumDefine::addField(string id, int value)
+uint32 EnumDefine::addField(const string& id, int value)
 {
   auto it = mFields.find(id);
   if(mFields.end() != it)
@@ -249,4 +249,17 @@ uint32 EnumDefine::addField(string id, int value)
   }
   mFields[id] = value;
   return eGrammarErrorNoError;
+}
+
+bool EnumDefine::fieldExist(const string& id)
+{
+  auto it = mFields.find(id);
+  if(mFields.end() != it)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
