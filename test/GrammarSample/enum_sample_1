@@ -1,0 +1,6 @@
+enum test{
+  hello,
+  hi = 1,
+  nono,
+
+};

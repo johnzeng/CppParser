@@ -28,7 +28,8 @@ void GrammarNode::setFather(GrammarNode* father)
   Grammar node end
  Grammar Block start 
  ********************************************************/
-
+GrammarBlock::GrammarBlock(){}
+GrammarBlock::~GrammarBlock(){}
 
 GrammarBlock GrammarBlock::createTopNode()
 {
@@ -94,10 +95,23 @@ uint32 GrammarBlock::addVarDefine(VarDefine* var)
   return eGrammarErrorNoError;
 }
 
-const VarDefine* GrammarBlock::getVarDef(const string key)
+VarDefine* GrammarBlock::getVarDef(const string key)
 {
   auto it = mVarList.find(key);
   if(mVarList.end() == it)
+  {
+    return NULL;
+  }
+  else
+  {
+    return it->second;
+  }
+}
+
+DataTypeDefine* GrammarBlock::getDataDef(const string key)
+{
+  auto it = mDataTypeList.find(key);
+  if(mDataTypeList.end() == it)
   {
     return NULL;
   }
@@ -117,11 +131,11 @@ DataTypeDefine::DataTypeDefine():
 }
 DataTypeDefine::~DataTypeDefine()
 {
-  if (NULL != mBody)
-  {
-    delete mBody;
-    mBody = NULL;
-  }
+//  if (NULL != mBody)
+//  {
+//    delete mBody;
+//    mBody = NULL;
+//  }
 }
 
 string DataTypeDefine::getSignature()
@@ -174,6 +188,8 @@ BasicDefine::BasicDefine(vector<string> keyWord)
   mNodeType = eDataTypeBasic;
 }
 
+BasicDefine::~BasicDefine(){}
+
 /*********************************************************
   BasicDefine end
  VarDefine begin 
@@ -208,7 +224,9 @@ EnumDefine::EnumDefine(string id)
   mNodeType = eDataTypeEnum;
 }
 
-EnumDefine::~EnumDefine(){}
+EnumDefine::~EnumDefine(){
+  JZFUNC_END_LOG();
+}
 
 uint32 EnumDefine::addField(string id)
 {

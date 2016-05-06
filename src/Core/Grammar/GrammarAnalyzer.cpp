@@ -7,7 +7,10 @@ GrammarAnalyzer::GrammarAnalyzer(LexRecList list):
   mRecList(list),
   mTopBlock(GrammarBlock::createTopNode())
 {
+}
 
+GrammarAnalyzer::~GrammarAnalyzer()
+{
 }
 
 uint32 GrammarAnalyzer::doAnalyze()
@@ -22,33 +25,41 @@ uint32 GrammarAnalyzer::doAnalyze()
     {
       return ret;
     }
+    index = nextIndex + 1;
   }
   return eGrammarErrorNoError;
 }
 
 uint32 GrammarAnalyzer::blockHeartBeat(int32 index, int32& lastIndex, GrammarBlock* curBlock)
 {
+  JZFUNC_BEGIN_LOG();
   int nextIndex = index;
   uint32 ret = handleEnum(index, nextIndex, curBlock) /* || handleClass*/;
-  if (ret != eGrammarErrorNoError || ret != eGrammarErrorNotEnum)
+  if (ret == eGrammarErrorNoError)
   {
-    index = nextIndex;
+    lastIndex = nextIndex;
+    JZFUNC_END_LOG();
     return ret;
   }
+  JZFUNC_END_LOG();
   return eGrammarErrorUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEnum(int32 index, int32& lastIndex, GrammarBlock* curBlock)
 {
+  JZFUNC_BEGIN_LOG();
   if(mRecList.size() <= index)
   {
+    JZFUNC_END_LOG();
     return eGrammarErrorFileEnd;
   }
   if (mRecList[index].word != "enum")
   {
+    JZFUNC_END_LOG();
     return eGrammarErrorNotEnum;
   }
   lastIndex = index;
+  JZFUNC_END_LOG();
   return handleEnumId(index + 1, lastIndex, curBlock);
 }
 
@@ -67,11 +78,12 @@ uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* cu
   string id = mRecList[index].word;
   EnumDefine *curEnum = new EnumDefine(id);
 
-  uint32 ret = handleSemicolon(index + 1,lastIndex, curBlock);
+  uint32 ret = expect(";",index + 1);
 
   if (ret == eGrammarErrorNoError)
   {
     curEnum->setFather(curBlock);
+    lastIndex = index;
     JZFUNC_END_LOG();
     return ret;
   }
@@ -82,7 +94,7 @@ uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* cu
   ret = handleLeftBrace(index + 1, lastIndex, body);
   if (ret == eGrammarErrorNoError)
   {
-    curEnum->setFather(curBlock);
+    curBlock->addDataTypeDefine(curEnum);
     JZFUNC_END_LOG();
     return ret;
   }
@@ -240,4 +252,9 @@ bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBloc
 uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   return eGrammarErrorNoError;
+}
+
+GrammarBlock* GrammarAnalyzer::getTopBlock()
+{
+  return &mTopBlock;
 }

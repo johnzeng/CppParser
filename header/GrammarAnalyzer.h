@@ -9,6 +9,8 @@ public:
   virtual ~GrammarAnalyzer ();
 
   uint32 doAnalyze();
+
+  GrammarBlock *getTopBlock();
 protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
@@ -18,9 +20,9 @@ protected:
 
   //they should be some common method, but I don't sure how to carry the info from invoker now.
   //they may be covered by expected..
-  uint32 handleSemicolon(int index, int& lastIndex, GrammarBlock* curBlock);
+//  uint32 handleSemicolon(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleLeftBrace(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 handleRightBrace(int index, int& lastIndex, GrammarBlock* curBlock);
+//  uint32 handleRightBrace(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 expect(const string& expected,int index);
 
@@ -28,6 +30,7 @@ protected:
 
   //return the statement's type;
   uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+
 
 private:
   LexRecList mRecList;
