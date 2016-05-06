@@ -56,6 +56,13 @@ TEST(GrammarUtil, numberType){
   EXPECT_EQ(false, GrmUtilPtr->isHex("1234567890.000001"));
 
   EXPECT_EQ(true, GrmUtilPtr->isHex("0x1234567890abcdefABCDEF"));
+  EXPECT_EQ(true, GrmUtilPtr->isHex("0x1234567890abcdefABCDEFl"));
+  EXPECT_EQ(true, GrmUtilPtr->isHex("0x1234567890abcdefABCDEFlu"));
+  EXPECT_EQ(true, GrmUtilPtr->isHex("0x1234567890abcdefABCDEFul"));
+  EXPECT_EQ(true, GrmUtilPtr->isHex("0x1234567890abcdefABCDEFll"));
+  EXPECT_EQ(true, GrmUtilPtr->isHex("0x1234567890abcdefABCDEFllu"));
+  EXPECT_EQ(true, GrmUtilPtr->isHex("0x1234567890abcdefABCDEFull"));
+  EXPECT_EQ(false, GrmUtilPtr->isHex("0x1234567890abcdefABCDEFlul"));
   EXPECT_EQ(false, GrmUtilPtr->isHex("0123445670"));
   EXPECT_EQ(false, GrmUtilPtr->isHex("1234567890"));
   EXPECT_EQ(false, GrmUtilPtr->isHex("1234567890.000001"));
@@ -64,6 +71,10 @@ TEST(GrammarUtil, numberType){
   EXPECT_EQ(false, GrmUtilPtr->isDeci("0123445670"));
   EXPECT_EQ(true, GrmUtilPtr->isDeci("123445670l"));
   EXPECT_EQ(true, GrmUtilPtr->isDeci("123445670ll"));
+  EXPECT_EQ(true, GrmUtilPtr->isDeci("123445670ul"));
+  EXPECT_EQ(true, GrmUtilPtr->isDeci("123445670ull"));
+  EXPECT_EQ(true, GrmUtilPtr->isDeci("123445670lu"));
+  EXPECT_EQ(true, GrmUtilPtr->isDeci("123445670llu"));
   EXPECT_EQ(true, GrmUtilPtr->isDeci("1234567890"));
   EXPECT_EQ(false, GrmUtilPtr->isDeci("1234567890.000001"));
 
@@ -72,7 +83,6 @@ TEST(GrammarUtil, numberType){
   EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("123456780"));
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001"));
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001f"));
-  EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001lf"));
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("0.05"));
 
   EXPECT_EQ(true, GrmUtilPtr->isConstNumber("0x1234567890abcdefABCDEF"));

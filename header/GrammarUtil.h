@@ -166,6 +166,7 @@ public:
 	bool isHex(const string& input);
 	bool isOcto(const string& input);
 	bool isDeci(const string& input);
+  bool endWithDeciSuffix(const string& input,int fromIndex);
 	int getNum(const char input);
 
 	template <typename type> type str2Num(const string& input);

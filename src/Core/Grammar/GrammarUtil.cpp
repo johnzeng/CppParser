@@ -294,10 +294,11 @@ bool GrammarUtil::isFloatNumber(const string& input)
     {
       return 'f' == input[i] || 'F' == input[i];
     }
-    if(i == input.size() - 2)
-    {
-      return ('l' == input[i] || 'L' == input[i]) && ('f' == input[i + 1] || 'F' == input[i + 1]);
-    }
+    //this is not legal so I removed it
+//    if(i == input.size() - 2)
+//    {
+//      return ('l' == input[i] || 'L' == input[i]) && ('f' == input[i + 1] || 'F' == input[i + 1]);
+//    }
 		return false;
 	}
 	return pointNum == 1;
@@ -319,13 +320,9 @@ bool GrammarUtil::isDeci(const string& input)
 		{
 			continue;
 		}
-    else if(i == input.size() - 1)
+    else if(i >= input.size() - 3)
     {
-      return input[i] == 'l' || input[i] == 'L';
-    }
-    else if(i == input.size() - 2)
-    {
-      return (input[i] == 'l' || input[i] == 'L') && (input[i + 1] == 'l' || input[i + 1] == 'L');
+      return endWithDeciSuffix(input, i);
     }
 		else
 		{
@@ -359,6 +356,10 @@ bool GrammarUtil::isHex(const string& input)
 		{
 			continue;	
 		}
+    else if(i >= input.size() - 3)
+    {
+      return endWithDeciSuffix(input, i);
+    }
 		else
 		{
 			return false;	
@@ -384,6 +385,10 @@ bool GrammarUtil::isOcto(const string& input)
 		{
 			continue;
 		}
+    else if(i >= input.size() - 3)
+    {
+      return endWithDeciSuffix(input, i);
+    }
 		else
 		{
 			return false;	
@@ -461,5 +466,31 @@ bool GrammarUtil::isKeyWord(const string& input)
     return true;
   }
 
+  return false;
+}
+
+bool GrammarUtil::endWithDeciSuffix(const string& input, int fromIndex)
+{
+  int32 size = input.size();
+  if(size <= 1)
+  {
+    return false;
+  }
+  int32 lastIndex = size - 1;
+  if(lastIndex == fromIndex){
+    return input[lastIndex] == 'l' || input[lastIndex] == 'L' || input[lastIndex] == 'u'|| input[lastIndex] == 'U';
+  }
+  else if(lastIndex == fromIndex + 1)
+  {
+    return ( input[lastIndex] == 'l' || input[lastIndex] == 'L' || input[lastIndex] == 'U' || input[lastIndex] == 'u') &&
+      ( input[lastIndex - 1] == 'l' || input[lastIndex - 1] == 'L' || input[lastIndex - 1] == 'U' || input[lastIndex - 1] == 'u');
+  }
+  else if(lastIndex == fromIndex + 2)
+  {
+    return ( input[lastIndex] == 'l' || input[lastIndex] == 'L'|| input[lastIndex] == 'U' || input[lastIndex] == 'u') &&
+      ( input[lastIndex - 1] == 'l' || input[lastIndex - 1] == 'L') &&
+      ( input[lastIndex - 2] == 'l' || input[lastIndex - 2] == 'L'|| input[lastIndex - 2] == 'U' || input[lastIndex - 2] == 'u');
+  }
+  
   return false;
 }
