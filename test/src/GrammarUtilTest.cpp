@@ -175,6 +175,7 @@ TEST(GrammarUtil, strTrans){
 
   EXPECT_EQ(0.5, GrmUtilPtr->str2float("0.5"));
   EXPECT_EQ(0.51f, GrmUtilPtr->str2float("0.51"));
+  EXPECT_EQ(5.1f, GrmUtilPtr->str2float("0.51e1"));
   EXPECT_EQ(1, GrmUtilPtr->str2float("1.0"));
   EXPECT_EQ(0, GrmUtilPtr->str2float("0"));
   EXPECT_EQ(0, GrmUtilPtr->str2float("g"));
