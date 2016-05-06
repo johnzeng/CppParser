@@ -83,3 +83,25 @@ TEST(LexBase, baseStrTest){
 
 }
 
+TEST(LexBase, charInput){
+  //this is really a strong test, so don't do it for more than one file every time
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/base_test");
+  char* argv[2] = {argv0,argv1};
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  LexBase lex;
+  lex.analyzeAFile(toCompileFile);
+  LexRecList recList = lex.getRecList();
+
+  ASSERT_EQ(1, recList.size());
+  ASSERT_STREQ("'\\u000'", recList[0].word.c_str());
+
+}
