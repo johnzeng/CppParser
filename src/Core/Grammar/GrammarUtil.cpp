@@ -264,6 +264,7 @@ bool GrammarUtil::isConstIntNumber(const string& input)
 bool GrammarUtil::isFloatNumber(const string& input)
 {
 	int pointNum = 0;
+  bool isScienceNumber = false;
 	for(int i = 0 ; i < input.size() ; i++)
 	{
 		if (LexUtil::isConstNumberChar(input[i]))
@@ -281,6 +282,10 @@ bool GrammarUtil::isFloatNumber(const string& input)
       }
       continue;
 		}
+    if(true == isScienceNumber)
+    {
+      return false;
+    }
 		if ('.' == input[i])
 		{
 			pointNum++;
@@ -294,11 +299,19 @@ bool GrammarUtil::isFloatNumber(const string& input)
     {
       return 'f' == input[i] || 'F' == input[i];
     }
-    //this is not legal so I removed it
-//    if(i == input.size() - 2)
-//    {
-//      return ('l' == input[i] || 'L' == input[i]) && ('f' == input[i + 1] || 'F' == input[i + 1]);
-//    }
+    else if(i != 0 && 'e' == input[i] && input.size() != i+1)
+    {
+      isScienceNumber = true;
+      if('+' == input[i+1] || '-' == input[i + 1])
+      {
+        i++;
+        if(input.size() == i + 1)
+        {
+          return false;
+        }
+      }
+      continue;
+    }
 		return false;
 	}
 	return pointNum == 1;
@@ -451,6 +464,10 @@ template <typename type> type GrammarUtil::str2Num(const string& input)
 	}
 	for (; i < input.size(); i++) 
 	{
+    if('L' == input[i] || 'l' == input[i] || 'U' == input[i] || 'u' == input[i])
+    {
+      break;
+    }
 		ret *= (type)dim;
 		ret += (type)getNum(input[i]);
 	}

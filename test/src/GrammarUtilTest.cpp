@@ -84,6 +84,14 @@ TEST(GrammarUtil, numberType){
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001"));
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("1234567890.000001f"));
   EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("0.05"));
+  EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("0.05e+100"));
+  EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("0.05e-100"));
+  EXPECT_EQ(true, GrmUtilPtr->isFloatNumber("0.05e-100"));
+  EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("e-100"));
+  EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("0.05e"));
+  EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("0.05e+"));
+  EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("0.05e-"));
+  EXPECT_EQ(false, GrmUtilPtr->isFloatNumber("e"));
 
   EXPECT_EQ(true, GrmUtilPtr->isConstNumber("0x1234567890abcdefABCDEF"));
   EXPECT_EQ(true, GrmUtilPtr->isConstNumber("0123445670"));
@@ -135,6 +143,7 @@ TEST(GrammarUtil, strTrans){
   EXPECT_EQ(0, GrmUtilPtr->str2int32("0"));
 
   EXPECT_EQ(100, GrmUtilPtr->str2Uint32("100"));
+  EXPECT_EQ(100, GrmUtilPtr->str2Uint32("100u"));
   EXPECT_EQ(1, GrmUtilPtr->str2Uint32("1"));
   EXPECT_EQ(0, GrmUtilPtr->str2Uint32("0"));
 
