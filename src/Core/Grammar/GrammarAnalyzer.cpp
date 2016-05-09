@@ -193,8 +193,7 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
       {
         return addRet;
       }
-      lastIndex = index + 2;
-      return handleEnumFieldName(index + 3, lastIndex, curBlock);
+      return handleEnumFieldName(lastIndex + 1, lastIndex, curBlock);
     }
     else
     {
