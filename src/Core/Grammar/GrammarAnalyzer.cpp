@@ -261,6 +261,33 @@ bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBloc
 
 uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock)
 {
+
+  //begin with (
+  uint32 expLeftRet = expect("(",index);
+  if(eGrammarErrorNoError == expLeftRet)
+  {
+    uint32 stRet = handleStatement(index + 1, lastIndex, curBlock);
+    if(eGrammarErrorNoError == stRet)
+    {
+      uint32 expRightRet = expect(")", lastIndex + 1);
+      if(eGrammarErrorNoError == expRightRet)
+      {
+        lastIndex = lastIndex + 1;
+        return eGrammarErrorNoError;
+      }
+      else{
+        return expRightRet;
+      }
+    }
+    else
+    {
+      return stRet;
+    }
+  }
+
+  
+  
+  lastIndex = index;
   return eGrammarErrorNoError;
 }
 
