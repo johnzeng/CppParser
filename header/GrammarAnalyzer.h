@@ -31,7 +31,10 @@ protected:
   //return the statement's type;
   uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
 
+  uint32 handleStatementLeftBracket(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
   uint32 expectAConstint(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 expectAVar(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
+  uint32 getVarCalResult(const string& op,DataTypeDefine* lVar, DataTypeDefine* rVar, DataTypeDefine& retVar);
 
 private:
   LexRecList mRecList;
