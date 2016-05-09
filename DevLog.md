@@ -1,3 +1,15 @@
+##2016/05/09
+Log1:
+interesting error:
+
+```
+src/Core/Grammar/GrammarData.cpp:124:42: error: expected '(' after 'dynamic_cast'
+      block = dynamic_cast<GrammarBlock*>father;
+                                         ^
+                                         (
+1 error generated.
+```
+
 ##2016/05/06
 Log1:BugFix, 可以识别llu,ull等后缀了，不能识别e常量这个有待斟酌。另外还有\u \U 开头的char问题
 Log2:BugFix, llu,ull,增加e常量的识别。

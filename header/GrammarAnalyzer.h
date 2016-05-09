@@ -29,8 +29,9 @@ protected:
   bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
   //return the statement's type;
-  uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
 
+  uint32 expectAConstint(int index, int& lastIndex, GrammarBlock* curBlock);
 
 private:
   LexRecList mRecList;

@@ -95,7 +95,7 @@ uint32 GrammarBlock::addVarDefine(VarDefine* var)
   return eGrammarErrorNoError;
 }
 
-VarDefine* GrammarBlock::getVarDef(const string key)
+VarDefine* GrammarBlock::getVarDefInBlock(const string& key)
 {
   auto it = mVarList.find(key);
   if(mVarList.end() == it)
@@ -108,7 +108,35 @@ VarDefine* GrammarBlock::getVarDef(const string key)
   }
 }
 
-DataTypeDefine* GrammarBlock::getDataDef(const string key)
+VarDefine* GrammarBlock::getVarDef(const string& key)
+{
+  GrammarBlock* block = this;
+  while (NULL != block)
+  {
+    VarDefine* ret = block->getVarDefInBlock(key);
+    if(NULL != ret)
+    {
+      return ret;
+    }
+    GrammarNode* father = block->getFather();
+    while (father != NULL)
+    {
+      block = dynamic_cast<GrammarBlock*>(father);
+      if(NULL != block)
+      {
+        break;
+      }
+      else
+      {
+        father = father->getFather();
+      }
+    }
+
+  }
+  return NULL;
+}
+
+DataTypeDefine* GrammarBlock::getDataDef(const string& key)
 {
   auto it = mDataTypeList.find(key);
   if(mDataTypeList.end() == it)

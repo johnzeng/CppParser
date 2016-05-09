@@ -122,8 +122,10 @@ public:
   uint32 addDataTypeDefine(DataTypeDefine* dataType);
   uint32 addVarDefine(VarDefine* var);
 
-  VarDefine* getVarDef(const string key);
-  DataTypeDefine* getDataDef(const string key);
+  VarDefine* getVarDefInBlock(const string& key);
+
+  VarDefine* getVarDef(const string& key);
+  DataTypeDefine* getDataDef(const string& key);
 
 private:
   map<string,DataTypeDefine*> mDataTypeList;
