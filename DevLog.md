@@ -1,6 +1,9 @@
 ##2016/05/10
 Log1:enum类型相当于省略了一个int标签，想想他跟其他的类型好像是一样的。
-Log2:增加Const volatile测试队列。
+Log2:增加Const volatile测试队列。增加一部分符号识别。
+Log3:enum在c＋＋11标准下面增加了新的特性， 可以支持enum class, enum struct的定义了。或者是enum hello: int {} 的定义。支持定义枚举类型了。
+Log4: c++11 特性，[attributes](http://en.cppreference.com/w/cpp/language/attributes)。目前看来这个特性不影响编译和解释。我认为应该先编写代码skip掉他们。
+
 ##2016/05/09
 Log1:
 interesting error:
