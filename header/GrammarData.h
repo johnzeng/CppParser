@@ -15,6 +15,8 @@ enum GrammarReturnCode
   eGrmErrNotLeftBrace = 2,
   eGrmErrNotExpected = 3,
   eGrmErrNotAttri = 4,
+  eGrmErrNotStorageClassSpecifier = 5,
+  eGrmErrNotFunctionSpecifier = 6,
 
   eGrmErrReasonableErrors = 99,
 
@@ -71,6 +73,15 @@ enum GrammarState
   eGramIsMinus,
   eGramIsBone,
   eGramIsWave,
+  eGramIsAuto,
+  eGramIsRegister,
+  eGramIsStatic,
+  eGramIsThreadLocal,
+  eGramIsExtern,
+  eGramIsMutable,
+  eGramIsInline,
+  eGramIsVirtual,
+  eGramIsExplicit,
 };
 
 enum EnumType{

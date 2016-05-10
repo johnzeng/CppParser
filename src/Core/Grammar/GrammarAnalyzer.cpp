@@ -3,16 +3,6 @@
 #include "LexUtil.h"
 #include "JZLogger.h"
 
-GrammarAnalyzer::GrammarAnalyzer(LexRecList list):
-  mRecList(list),
-  mTopBlock(GrammarBlock::createTopNode())
-{
-}
-
-GrammarAnalyzer::~GrammarAnalyzer()
-{
-}
-
 uint32 GrammarAnalyzer::doAnalyze()
 {
   int index = 0;
@@ -221,21 +211,6 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::expect(const string& expected, int index, bool oneLine)
-{
-  if(mRecList.size() <= index)
-  {
-    return eGrmErrFileEnd;
-  }
-  //need to check the id
-  if (mRecList[index].word != expected)
-  {
-    JZWRITE_DEBUG("expected %s not match", expected.c_str());
-    return eGrmErrNotExpected;
-  }
-  return eGrmErrNoError;
-}
-
 bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBlock)
 {
   const VarDefine* def = curBlock->getVarDefInBlock(id);
@@ -299,11 +274,6 @@ uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock*
   return eGrmErrNoError;
 }
 
-GrammarBlock* GrammarAnalyzer::getTopBlock()
-{
-  return &mTopBlock;
-}
-
 //uint32 GrammarAnalyzer::expectAConstInt(int index, int& lastIndex, GrammarBlock* curBlock)
 //{
 //  
@@ -333,81 +303,6 @@ uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarB
   }
   //should add more code to attach CV-qualifier to the following block
   return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::getCVQualifier(int index, int& lastIndex, uint32 &ret)
-{
-  ret = eGramIsNothing;
-  uint32 expConst = expect("const", index);
-  if (eGrmErrNoError == expConst)
-  {
-    lastIndex = index;
-    ret = eGramIsConst;
-    return eGrmErrNoError;
-  }
-  
-  uint32 expVolatile = expect("volatile", index);
-  if (eGrmErrNoError == expVolatile)
-  {
-    lastIndex = index;
-    ret = eGramIsVolatile;
-    return eGrmErrNoError;
-  }
-  return eGrmErrNotCVQualifier;
-}
-
-uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
-{
-  ret = eGramIsNothing;
-  uint32 expStar = expect("*", index);
-  if (eGrmErrNoError == expStar)
-  {
-    lastIndex = index;
-    ret = eGramIsStar;
-    return eGrmErrNoError;
-  }
-  
-  uint32 expAnd = expect("&", index);
-  if (eGrmErrNoError == expAnd)
-  {
-    lastIndex = index;
-    ret = eGramIsAnd;
-    return eGrmErrNoError;
-  }
-
-  uint32 expPlus = expect("+", index);
-  if (eGrmErrNoError == expPlus)
-  {
-    lastIndex = index;
-    ret = eGramIsPlus;
-    return eGrmErrNoError;
-  }
-
-  uint32 expMinus = expect("-", index);
-  if (eGrmErrNoError == expMinus)
-  {
-    lastIndex = index;
-    ret = eGramIsMinus;
-    return eGrmErrNoError;
-  }
-
-  uint32 expBone = expect("!", index);
-  if (eGrmErrNoError == expBone)
-  {
-    lastIndex = index;
-    ret = eGramIsBone;
-    return eGrmErrNoError;
-  }
-
-  uint32 expWave = expect("~", index);
-  if (eGrmErrNoError == expWave)
-  {
-    lastIndex = index;
-    ret = eGramIsWave;
-    return eGrmErrNoError;
-  }
-  return eGrmErrNotUnaryOperator;
-  
 }
 
 uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock)
@@ -483,5 +378,5 @@ uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock
   }
 
   return eGrmErrNotAttri;
-
 }
+

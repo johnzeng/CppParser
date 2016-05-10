@@ -43,6 +43,8 @@ protected:
   uint32 getCVQualifier(int index, int& lastIndex, uint32 &ret);
   uint32 getUnaryOperator(int index, int& lastIndex, uint32 &ret);
   uint32 getConstExpression(int index, int& lastIndex, uint32 &ret);
+  uint32 getFunctionSpecifier(int index, int& lastIndex, uint32 &ret);
+  uint32 getStorageClassSpecifier(int index, int& lastIndex, uint32 &ret);
 private:
   LexRecList mRecList;
 
