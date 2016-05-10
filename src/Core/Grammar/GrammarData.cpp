@@ -250,10 +250,10 @@ EnumDefine::EnumDefine(string id)
   mKeyWords.push_back(id);
   mSignature = id;
   mNodeType = eDataTypeEnum;
+  mEnumType = eEnumBasic;
 }
 
 EnumDefine::~EnumDefine(){
-  JZFUNC_END_LOG();
 }
 
 uint32 EnumDefine::addField(const string& id)

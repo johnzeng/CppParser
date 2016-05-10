@@ -73,6 +73,12 @@ enum GrammarState
   eGramIsWave,
 };
 
+enum EnumType{
+  eEnumBasic,
+  eEnumClass,
+  eEnumStruct,
+};
+
 /*********************************************************
   All class define start here 
  ********************************************************/
@@ -209,6 +215,7 @@ public:
 
   bool fieldExist(const string& id);
 private:
+  uint32 mEnumType;
   map<string, int> mFields;
 };
 

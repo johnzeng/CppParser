@@ -59,14 +59,16 @@ uint32 GrammarAnalyzer::handleEnum(int32 index, int32& lastIndex, GrammarBlock* 
     JZFUNC_END_LOG();
     return eGrmErrNotEnum;
   }
+  //should handle enum class and enum struct here
   lastIndex = index;
-  JZFUNC_END_LOG();
 
   uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
   if(attRet != eGrmErrNoError && attRet != eGrmErrNotAttri)
   {
     return attRet;
   }
+
+  JZFUNC_END_LOG();
   return handleEnumId(lastIndex + 1, lastIndex, curBlock);
 }
 
@@ -81,10 +83,12 @@ uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* cu
   {
     return eGrmErrDoubleDefinedDataType;
   }
+
   lastIndex = index;
   string id = mRecList[index].word;
   EnumDefine *curEnum = new EnumDefine(id);
 
+  //should hanlde enum 
   uint32 ret = expect(";",index + 1);
 
   if (ret == eGrmErrNoError)
