@@ -28,7 +28,7 @@ protected:
 
   bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
-  //return the statement's type; This will be a long check.... 
+  //return the statement's type; This will be a long check.... Actually I don't need to care about the right or wrong problem....how about we skip it at first.
   uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
 
   uint32 handleStatementLeftBracket(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
@@ -38,6 +38,8 @@ protected:
 
   uint32 handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 getCVQualifier(int index, int& lastIndex, uint32 &ret);
+
+  uint32 getUnaryOperator(int index, int& lastIndex, uint32 &ret);
 private:
   LexRecList mRecList;
 

@@ -25,6 +25,7 @@ enum GrammarReturnCode
   eGrmErrUnexpectedCommon = 1002,
   eGrmErrNotCVQualifier = 1003,
   eGrmErrDoubleCVQualifier = 1004,
+  eGrmErrNotUnaryOperator = 1005,
 
   eGrmErrUnknown,
 };
@@ -60,6 +61,12 @@ enum GrammarState
   eGramIsNothing,
   eGramIsConst,
   eGramIsVolatile,
+  eGramIsStar,
+  eGramIsAnd,
+  eGramIsPlus,
+  eGramIsMinus,
+  eGramIsBone,
+  eGramIsWave,
 };
 
 /*********************************************************

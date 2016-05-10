@@ -346,3 +346,56 @@ uint32 GrammarAnalyzer::getCVQualifier(int index, int& lastIndex, uint32 &ret)
   return eGrmErrNotCVQualifier;
 }
 
+uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
+{
+  ret = eGramIsNothing;
+  uint32 expStar = expect("*", index);
+  if (eGrmErrNoError == expStar)
+  {
+    lastIndex = index;
+    ret = eGramIsStar;
+    return eGrmErrNoError;
+  }
+  
+  uint32 expAnd = expect("&", index);
+  if (eGrmErrNoError == expAnd)
+  {
+    lastIndex = index;
+    ret = eGramIsAnd;
+    return eGrmErrNoError;
+  }
+
+  uint32 expPlus = expect("+", index);
+  if (eGrmErrNoError == expPlus)
+  {
+    lastIndex = index;
+    ret = eGramIsPlus;
+    return eGrmErrNoError;
+  }
+
+  uint32 expMinus = expect("-", index);
+  if (eGrmErrNoError == expMinus)
+  {
+    lastIndex = index;
+    ret = eGramIsMinus;
+    return eGrmErrNoError;
+  }
+
+  uint32 expBone = expect("!", index);
+  if (eGrmErrNoError == expBone)
+  {
+    lastIndex = index;
+    ret = eGramIsBone;
+    return eGrmErrNoError;
+  }
+
+  uint32 expWave = expect("~", index);
+  if (eGrmErrNoError == expWave)
+  {
+    lastIndex = index;
+    ret = eGramIsWave;
+    return eGrmErrNoError;
+  }
+  return eGrmErrNotUnaryOperator;
+  
+}
