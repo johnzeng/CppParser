@@ -227,19 +227,27 @@ uint32 GrammarAnalyzer::getPureSpecifier(int index, int& lastIndex, uint32 &ret)
 
 uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, uint32 &ret)
 {
-  uint32 expBone = expect("!", index);
-  if (eGrmErrNoError == expBone)
+  uint32 expOverride = expect("override", index);
+  if (eGrmErrNoError == expOverride)
   {
     lastIndex = index;
-    ret = eGramIsBone;
+    ret = eGramIsOverride;
     return eGrmErrNoError;
   }
 
-  uint32 expWave = expect("~", index);
-  if (eGrmErrNoError == expWave)
+  uint32 expFinal = expect("final", index);
+  if (eGrmErrNoError == expFinal)
   {
     lastIndex = index;
-    ret = eGramIsWave;
+    ret = eGramIsFinal;
+    return eGrmErrNoError;
+  }
+
+  uint32 expNew = expect("new", index);
+  if (eGrmErrNoError == expFinal)
+  {
+    lastIndex = index;
+    ret = eGramIsNew;
     return eGrmErrNoError;
   }
   return eGrmErrNotUnaryOperator;

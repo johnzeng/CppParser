@@ -88,6 +88,9 @@ enum GrammarState
   eGramIsPublic,
   eGramIsProtected,
   eGramIsPureSpecifier,
+  eGramIsOverride,
+  eGramIsFinal,
+  eGramIsNew,
 };
 
 enum EnumType{
