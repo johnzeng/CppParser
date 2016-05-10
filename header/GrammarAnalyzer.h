@@ -28,14 +28,16 @@ protected:
 
   bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
-  //return the statement's type;
+  //return the statement's type; This will be a long check.... 
   uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
 
   uint32 handleStatementLeftBracket(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
-  uint32 expectAConstint(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 expectAConstInt(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 expectAVar(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
   uint32 getVarCalResult(const string& op,DataTypeDefine* lVar, DataTypeDefine* rVar, DataTypeDefine& retVar);
 
+  uint32 handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 getCVQualifier(int index, int& lastIndex, uint32 &ret);
 private:
   LexRecList mRecList;
 

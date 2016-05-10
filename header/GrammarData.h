@@ -9,22 +9,24 @@
 
 enum GrammarReturnCode
 {
-  eGrammarErrorNoError = 0,
+  eGrmErrNoError = 0,
 
-  eGrammarErrorNotEnum = 1,
-  eGrammarErrorNotLeftBrace = 2,
-  eGrammarErrorNotExpected = 3,
+  eGrmErrNotEnum = 1,
+  eGrmErrNotLeftBrace = 2,
+  eGrmErrNotExpected = 3,
 
-  eGrammarErrorReasonableErrors = 99,
+  eGrmErrReasonableErrors = 99,
 
-  eGrammarErrorDoubleDefinedDataType = 100,
-  eGrammarErrorDoubleDefinedVar = 101,
+  eGrmErrDoubleDefinedDataType = 100,
+  eGrmErrDoubleDefinedVar = 101,
 
-  eGrammarErrorFileEnd = 1000,
-  eGrammarErrorMissingSemicolon = 1001,
-  eGrammarErrorUnexpectedCommon = 1002,
+  eGrmErrFileEnd = 1000,
+  eGrmErrMissingSemicolon = 1001,
+  eGrmErrUnexpectedCommon = 1002,
+  eGrmErrNotCVQualifier = 1003,
+  eGrmErrDoubleCVQualifier = 1004,
 
-  eGrammarErrorUnknown,
+  eGrmErrUnknown,
 };
 
 enum GrammarNodeType
@@ -51,6 +53,13 @@ enum GrammarNodeType
   eGrammarBlockFor,
   eGrammarBlockIf,
   eGrammarBlockElse,
+};
+
+enum GrammarState
+{
+  eGramIsNothing,
+  eGramIsConst,
+  eGramIsVolatile,
 };
 
 /*********************************************************

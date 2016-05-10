@@ -73,12 +73,12 @@ uint32 GrammarBlock::addDataTypeDefine(DataTypeDefine *dataType)
   auto it = mDataTypeList.find(sig);
   if(mDataTypeList.end() != it)
   {
-    return eGrammarErrorDoubleDefinedDataType;
+    return eGrmErrDoubleDefinedDataType;
   }
   mDataTypeList[sig] = dataType;
   mChildrens.push_back(mDataTypeList[sig]);
 
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 uint32 GrammarBlock::addVarDefine(VarDefine* var)
@@ -88,11 +88,11 @@ uint32 GrammarBlock::addVarDefine(VarDefine* var)
   auto it = mVarList.find(key);
   if(mVarList.end() != it)
   {
-    return eGrammarErrorDoubleDefinedVar;
+    return eGrmErrDoubleDefinedVar;
   }
   mVarList[key] = var;
   mChildrens.push_back(mVarList[key]);
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 VarDefine* GrammarBlock::getVarDefInBlock(const string& key)
@@ -187,7 +187,7 @@ uint32 DataTypeDefine::addBody(GrammarBlock* body)
 {
   if(NULL == body)
   {
-    return eGrammarErrorUnknown;
+    return eGrmErrUnknown;
   }
 
   body->setFather(this);
@@ -195,7 +195,7 @@ uint32 DataTypeDefine::addBody(GrammarBlock* body)
   mChildrens.push_back(body);
   
 
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 /*********************************************************
@@ -230,9 +230,9 @@ uint32 VarDefine::init(string id, DataTypeDefine* define)
   if (NULL == define)
   {
     JZWRITE_ERROR("NULL define");
-    return eGrammarErrorUnknown;
+    return eGrmErrUnknown;
   }
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 string VarDefine::getId()
@@ -261,11 +261,11 @@ uint32 EnumDefine::addField(const string& id)
   auto it = mFields.find(id);
   if(mFields.end() != it)
   {
-    return eGrammarErrorDoubleDefinedVar;
+    return eGrmErrDoubleDefinedVar;
   }
   //yes, this is not exactlly right value. I think a vector will be better for this.
   mFields[id] = mFields.size();
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 uint32 EnumDefine::addField(const string& id, int value)
@@ -273,10 +273,10 @@ uint32 EnumDefine::addField(const string& id, int value)
   auto it = mFields.find(id);
   if(mFields.end() != it)
   {
-    return eGrammarErrorDoubleDefinedVar;
+    return eGrmErrDoubleDefinedVar;
   }
   mFields[id] = value;
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 bool EnumDefine::fieldExist(const string& id)

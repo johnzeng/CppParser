@@ -1,3 +1,6 @@
+##2016/05/10
+Log1:enum类型相当于省略了一个int标签，想想他跟其他的类型好像是一样的。
+Log2:增加Const volatile测试队列。
 ##2016/05/09
 Log1:
 interesting error:

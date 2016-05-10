@@ -20,14 +20,14 @@ uint32 GrammarAnalyzer::doAnalyze()
   while (index < listSize)
   {
     int32 nextIndex = index;
-    uint32 ret = eGrammarErrorNoError;
-    if(eGrammarErrorNoError != (ret = blockHeartBeat(index, nextIndex, &mTopBlock) ))
+    uint32 ret = eGrmErrNoError;
+    if(eGrmErrNoError != (ret = blockHeartBeat(index, nextIndex, &mTopBlock) ))
     {
       return ret;
     }
     index = nextIndex + 1;
   }
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 uint32 GrammarAnalyzer::blockHeartBeat(int32 index, int32& lastIndex, GrammarBlock* curBlock)
@@ -35,14 +35,14 @@ uint32 GrammarAnalyzer::blockHeartBeat(int32 index, int32& lastIndex, GrammarBlo
   JZFUNC_BEGIN_LOG();
   int nextIndex = index;
   uint32 ret = handleEnum(index, nextIndex, curBlock) /* || handleClass*/;
-  if (ret == eGrammarErrorNoError)
+  if (ret == eGrmErrNoError)
   {
     lastIndex = nextIndex;
     JZFUNC_END_LOG();
     return ret;
   }
   JZFUNC_END_LOG();
-  return eGrammarErrorUnknown;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEnum(int32 index, int32& lastIndex, GrammarBlock* curBlock)
@@ -51,13 +51,13 @@ uint32 GrammarAnalyzer::handleEnum(int32 index, int32& lastIndex, GrammarBlock* 
   if(mRecList.size() <= index)
   {
     JZFUNC_END_LOG();
-    return eGrammarErrorFileEnd;
+    return eGrmErrFileEnd;
   }
   if (mRecList[index].word != "enum")
   {
     JZWRITE_DEBUG("get key word %s", mRecList[index].word.c_str());
     JZFUNC_END_LOG();
-    return eGrammarErrorNotEnum;
+    return eGrmErrNotEnum;
   }
   lastIndex = index;
   JZFUNC_END_LOG();
@@ -68,12 +68,12 @@ uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* cu
 {
   if(mRecList.size() <= index)
   {
-    return eGrammarErrorFileEnd;
+    return eGrmErrFileEnd;
   }
   //need to check the id
   if (false == isLegalVarIdentify(mRecList[index].word, curBlock))
   {
-    return eGrammarErrorDoubleDefinedDataType;
+    return eGrmErrDoubleDefinedDataType;
   }
   lastIndex = index;
   string id = mRecList[index].word;
@@ -81,7 +81,7 @@ uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* cu
 
   uint32 ret = expect(";",index + 1);
 
-  if (ret == eGrammarErrorNoError)
+  if (ret == eGrmErrNoError)
   {
     curEnum->setFather(curBlock);
     lastIndex = index;
@@ -93,33 +93,33 @@ uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* cu
   curEnum->addBody(body);
 
   ret = handleLeftBrace(index + 1, lastIndex, body);
-  if (ret == eGrammarErrorNoError)
+  if (ret == eGrmErrNoError)
   {
     curBlock->addDataTypeDefine(curEnum);
     JZFUNC_END_LOG();
     return ret;
   }
 
-  return eGrammarErrorUnknown;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleLeftBrace(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   if(mRecList.size() <= index)
   {
-    return eGrammarErrorFileEnd;
+    return eGrmErrFileEnd;
   }
   //need to check the id
   if (mRecList[index].word != "{")
   {
-    return eGrammarErrorNotLeftBrace;
+    return eGrmErrNotLeftBrace;
   }
 
   auto father = curBlock->getFather();
   uint32 fatherNodeType = father == NULL ? eGrammarBlockTop : father->getType();
 
   lastIndex = index;
-  uint32 ret = eGrammarErrorNoError;
+  uint32 ret = eGrmErrNoError;
   switch(fatherNodeType)
   {
     case eGrammarNodeTopNode:
@@ -140,33 +140,33 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
 {
   if(mRecList.size() <= index)
   {
-    return eGrammarErrorFileEnd;
+    return eGrmErrFileEnd;
   }
   lastIndex = index;
 
-  if(expect("}", index) == eGrammarErrorNoError)
+  if(expect("}", index) == eGrmErrNoError)
   {
-    if(expect(";", index + 1) == eGrammarErrorNoError)
+    if(expect(";", index + 1) == eGrmErrNoError)
     {
       lastIndex++;
-      return eGrammarErrorNoError;
+      return eGrmErrNoError;
     }
     else
     {
       JZWRITE_ERROR("missing ; at the end of enum define");
-      return eGrammarErrorMissingSemicolon;
+      return eGrmErrMissingSemicolon;
     }
   }
 
-  if(expect(",", index) == eGrammarErrorNoError)
+  if(expect(",", index) == eGrmErrNoError)
   {
     if(index - 1 < 0){
       JZFUNC_END_LOG();
-      return eGrammarErrorUnknown;
+      return eGrmErrUnknown;
     }
     if (mRecList[index - 1].word == ",")
     {
-      return eGrammarErrorUnexpectedCommon;
+      return eGrmErrUnexpectedCommon;
     }
     return handleEnumFieldName(index + 1, lastIndex, curBlock);
   }
@@ -177,20 +177,20 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
     EnumDefine *define = dynamic_cast<EnumDefine*>(curBlock->getFather());
     if(NULL == define)
     {
-      return eGrammarErrorUnknown;
+      return eGrmErrUnknown;
     }
-    if(expect("=", index + 1) == eGrammarErrorNoError)
+    if(expect("=", index + 1) == eGrmErrNoError)
     {
       uint32 value = 0;
       DataTypeDefine typeRet;
       uint32 getValeRet = handleStatement(index + 2, lastIndex, curBlock, typeRet);
-      if(getValeRet != eGrammarErrorNoError)
+      if(getValeRet != eGrmErrNoError)
       {
         //should check value type here;
         return getValeRet;
       }
       uint32 addRet = define->addField(fieldName,value);
-      if(addRet != eGrammarErrorNoError)
+      if(addRet != eGrmErrNoError)
       {
         return addRet;
       }
@@ -199,7 +199,7 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
     else
     {
       uint32 addRet = define->addField(fieldName);
-      if(addRet != eGrammarErrorNoError)
+      if(addRet != eGrmErrNoError)
       {
         return addRet;
       }
@@ -208,22 +208,22 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
     }
   }
 
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 uint32 GrammarAnalyzer::expect(const string& expected, int index)
 {
   if(mRecList.size() <= index)
   {
-    return eGrammarErrorFileEnd;
+    return eGrmErrFileEnd;
   }
   //need to check the id
   if (mRecList[index].word != expected)
   {
     JZWRITE_DEBUG("expected %s not match", expected.c_str());
-    return eGrammarErrorNotExpected;
+    return eGrmErrNotExpected;
   }
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBlock)
@@ -264,16 +264,16 @@ uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock*
 
   //begin with (
   uint32 expLeftRet = expect("(",index);
-  if(eGrammarErrorNoError == expLeftRet)
+  if(eGrmErrNoError == expLeftRet)
   {
     uint32 stRet = handleStatement(index + 1, lastIndex, curBlock, retType);
-    if(eGrammarErrorNoError == stRet)
+    if(eGrmErrNoError == stRet)
     {
       uint32 expRightRet = expect(")", lastIndex + 1);
-      if(eGrammarErrorNoError == expRightRet)
+      if(eGrmErrNoError == expRightRet)
       {
         lastIndex = lastIndex + 1;
-        return eGrammarErrorNoError;
+        return eGrmErrNoError;
       }
       else{
         return expRightRet;
@@ -286,11 +286,63 @@ uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock*
   }
 
   lastIndex = index;
-  return eGrammarErrorNoError;
+  return eGrmErrNoError;
 }
 
 GrammarBlock* GrammarAnalyzer::getTopBlock()
 {
   return &mTopBlock;
+}
+
+//uint32 GrammarAnalyzer::expectAConstInt(int index, int& lastIndex, GrammarBlock* curBlock)
+//{
+//  
+//}
+
+uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 getRet1 = eGramIsNothing;
+  uint32 errRet1 = getCVQualifier(index,lastIndex, getRet1);
+  if(eGrmErrNoError != errRet1)
+  {
+    //it's reasonable to get nothing here
+    return eGrmErrNoError;
+  }
+  
+  uint32 getRet2 = eGramIsNothing;
+  uint32 errRet2 = getCVQualifier(index + 1,lastIndex, getRet2);
+  if(eGrmErrNoError != errRet2)
+  {
+    //it's reasonable to get nothing here
+    return eGrmErrNoError;
+  }
+
+  if(getRet1 == getRet2)
+  {
+    return eGrmErrDoubleCVQualifier;
+  }
+  //should add more code to attach CV-qualifier to the following block
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::getCVQualifier(int index, int& lastIndex, uint32 &ret)
+{
+  ret = eGramIsNothing;
+  uint32 expConst = expect("const", index);
+  if (eGrmErrNoError == expConst)
+  {
+    lastIndex = index;
+    ret = eGramIsConst;
+    return eGrmErrNoError;
+  }
+  
+  uint32 expVolatile = expect("volatile", index);
+  if (eGrmErrNoError == expVolatile)
+  {
+    lastIndex = index;
+    ret = eGramIsVolatile;
+    return eGrmErrNoError;
+  }
+  return eGrmErrNotCVQualifier;
 }
 
