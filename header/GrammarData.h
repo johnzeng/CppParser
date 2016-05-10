@@ -17,6 +17,8 @@ enum GrammarReturnCode
   eGrmErrNotAttri = 4,
   eGrmErrNotStorageClassSpecifier = 5,
   eGrmErrNotFunctionSpecifier = 6,
+  eGrmErrNotAccessSpecifier = 7,
+  eGrmErrNotPure = 8,
 
   eGrmErrReasonableErrors = 99,
 
@@ -82,6 +84,10 @@ enum GrammarState
   eGramIsInline,
   eGramIsVirtual,
   eGramIsExplicit,
+  eGramIsPrivate,
+  eGramIsPublic,
+  eGramIsProtected,
+  eGramIsPureSpecifier,
 };
 
 enum EnumType{

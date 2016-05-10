@@ -177,4 +177,71 @@ uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
   return eGrmErrNotUnaryOperator;
   
 }
+ 
+uint32 GrammarAnalyzer::getAccessSpecifier(int index, int& lastIndex, uint32 &ret)
+{
+  
+  uint32 expPrivate = expect("private", index);
+  if (eGrmErrNoError == expPrivate)
+  {
+    lastIndex = index;
+    ret = eGramIsPrivate;
+    return eGrmErrNoError;
+  }
 
+  uint32 expPublic = expect("public", index);
+  if (eGrmErrNoError == expPublic)
+  {
+    lastIndex = index;
+    ret = eGramIsPublic;
+    return eGrmErrNoError;
+  }
+
+  uint32 expProtected = expect("protected", index);
+  if (eGrmErrNoError == expProtected)
+  {
+    lastIndex = index;
+    ret = eGramIsProtected;
+    return eGrmErrNoError;
+  }
+  return eGrmErrNotAccessSpecifier;
+}
+
+uint32 GrammarAnalyzer::getPureSpecifier(int index, int& lastIndex, uint32 &ret)
+{
+  uint32 expEqual = expect("=", index);
+  if (eGrmErrNoError == expEqual)
+  {
+    uint32 expZero = expect("0", index + 1);
+    if(eGrmErrNoError == expZero)
+    {
+      ret = eGramIsPureSpecifier;
+      lastIndex = index + 1;
+      return eGrmErrNoError;
+    }
+  }
+
+  return eGrmErrNotPure;
+
+}
+
+uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, uint32 &ret)
+{
+  uint32 expBone = expect("!", index);
+  if (eGrmErrNoError == expBone)
+  {
+    lastIndex = index;
+    ret = eGramIsBone;
+    return eGrmErrNoError;
+  }
+
+  uint32 expWave = expect("~", index);
+  if (eGrmErrNoError == expWave)
+  {
+    lastIndex = index;
+    ret = eGramIsWave;
+    return eGrmErrNoError;
+  }
+  return eGrmErrNotUnaryOperator;
+  
+}

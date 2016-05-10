@@ -45,6 +45,9 @@ protected:
   uint32 getConstExpression(int index, int& lastIndex, uint32 &ret);
   uint32 getFunctionSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getStorageClassSpecifier(int index, int& lastIndex, uint32 &ret);
+  uint32 getAccessSpecifier(int index, int& lastIndex, uint32 &ret);
+  uint32 getPureSpecifier(int index, int& lastIndex, uint32 &ret);
+  uint32 getVirtSpecifier(int index, int& lastIndex, uint32 &ret);
 private:
   LexRecList mRecList;
 
