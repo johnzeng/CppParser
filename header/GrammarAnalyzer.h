@@ -14,9 +14,12 @@ public:
 protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
+
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEnumId(int index, int& lastIndex, GrammarBlock *curBlock);
   uint32 handleEnumFieldName(int index, int& lastIndex, GrammarBlock* curBlock);
+
+  uint32 handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock);
 
   //they should be some common method, but I don't sure how to carry the info from invoker now.
   //they may be covered by expected..
@@ -24,7 +27,7 @@ protected:
   uint32 handleLeftBrace(int index, int& lastIndex, GrammarBlock* curBlock);
 //  uint32 handleRightBrace(int index, int& lastIndex, GrammarBlock* curBlock);
 
-  uint32 expect(const string& expected,int index);
+  uint32 expect(const string& expected,int index, bool oneLine = false);
 
   bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 

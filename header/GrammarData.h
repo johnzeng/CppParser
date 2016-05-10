@@ -14,6 +14,7 @@ enum GrammarReturnCode
   eGrmErrNotEnum = 1,
   eGrmErrNotLeftBrace = 2,
   eGrmErrNotExpected = 3,
+  eGrmErrNotAttri = 4,
 
   eGrmErrReasonableErrors = 99,
 
@@ -26,6 +27,9 @@ enum GrammarReturnCode
   eGrmErrNotCVQualifier = 1003,
   eGrmErrDoubleCVQualifier = 1004,
   eGrmErrNotUnaryOperator = 1005,
+  eGrmErrExpectNextDblSqBracket = 1006,
+  eGrmErrUnexpDblSqlBracket = 1007,
+  eGrmErrUnexpRightBracket = 1008,
 
   eGrmErrUnknown,
 };

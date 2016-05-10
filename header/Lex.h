@@ -13,6 +13,8 @@ public:
 
 public:
 	//handler function
+  uint32 handleLeftSqualBracket();  // [
+  uint32 handleRightSqualBracket(); // ]
 	uint32 handleSlant();					// /
 	uint32 handlePoint();					//.
 	uint32 handleStart();					//*

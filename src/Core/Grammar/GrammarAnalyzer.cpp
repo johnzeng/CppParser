@@ -61,7 +61,13 @@ uint32 GrammarAnalyzer::handleEnum(int32 index, int32& lastIndex, GrammarBlock* 
   }
   lastIndex = index;
   JZFUNC_END_LOG();
-  return handleEnumId(index + 1, lastIndex, curBlock);
+
+  uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
+  if(attRet != eGrmErrNoError && attRet != eGrmErrNotAttri)
+  {
+    return attRet;
+  }
+  return handleEnumId(lastIndex + 1, lastIndex, curBlock);
 }
 
 uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* curBlock)
@@ -211,7 +217,7 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::expect(const string& expected, int index)
+uint32 GrammarAnalyzer::expect(const string& expected, int index, bool oneLine)
 {
   if(mRecList.size() <= index)
   {
@@ -398,4 +404,80 @@ uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
   }
   return eGrmErrNotUnaryOperator;
   
+}
+
+uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expDoubleSquareBrackets = expect("[[", index);
+  if(eGrmErrNoError == expDoubleSquareBrackets)
+  {
+    uint32 i = 1;
+    uint32 expNextDoubleBrackets = expect("]]", index + i);
+    if(eGrmErrNoError == expNextDoubleBrackets)
+    {
+      return eGrmErrUnexpDblSqlBracket;
+    }
+
+    do
+    {
+      if(expNextDoubleBrackets == eGrmErrFileEnd)
+      {
+        return eGrmErrExpectNextDblSqBracket;
+      }
+      i++;
+      expNextDoubleBrackets = expect("]]", index + i);
+    }
+    while(expNextDoubleBrackets != eGrmErrNoError);
+    lastIndex = index + i;
+
+    uint32 nextAttRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
+
+    if(eGrmErrNotAttri == nextAttRet || eGrmErrNoError == nextAttRet)
+    {
+      return eGrmErrNoError;
+    }
+    else
+    {
+      return nextAttRet;
+    }
+  }
+
+  uint32 expAlignas = expect("alignas" ,index);
+  if(eGrmErrNoError == expAlignas)
+  {
+    uint32 expLeftBracket = expect("(", index + 1);
+    uint32 i = 2;
+    uint32 expRightBracket = expect(")", index + i);
+    if(expRightBracket == eGrmErrNoError)
+    {
+      return eGrmErrUnexpRightBracket;
+    }
+
+    do
+    {
+      if(expRightBracket == eGrmErrFileEnd)
+      {
+        return eGrmErrExpectNextDblSqBracket;
+      }
+      i++;
+      expRightBracket = expect(")", index + i);
+    }
+    while (eGrmErrNoError != expRightBracket);
+
+    lastIndex = index + i;
+
+    uint32 nextAttRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
+
+    if(eGrmErrNotAttri == nextAttRet || eGrmErrNoError == nextAttRet)
+    {
+      return eGrmErrNoError;
+    }
+    else
+    {
+      return nextAttRet;
+    }
+  }
+
+  return eGrmErrNotAttri;
+
 }
