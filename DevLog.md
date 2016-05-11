@@ -1,3 +1,10 @@
+#Develop Daily
+This file only contain the daily log. Nothing useful
+
++_+
+
+##2016/05/11
+Log1:增加funcDecl的部分代码。。。。那个bnf不要太长。。。。目前的计划是先把bnf实现了。后面的分析无非就是各种返回而已，比较好说。
 ##2016/05/10
 Log1:enum类型相当于省略了一个int标签，想想他跟其他的类型好像是一样的。
 Log2:增加Const volatile测试队列。增加一部分符号识别。

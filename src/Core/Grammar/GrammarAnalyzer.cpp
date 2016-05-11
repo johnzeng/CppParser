@@ -420,6 +420,10 @@ uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, Gramma
     {
       return eGrmErrNoError;
     }
+    else
+    {
+      return nextRet;
+    }
   }
   else if(eGrmErrNoError == attRet)
   {
@@ -493,6 +497,70 @@ uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  //Not implement yet
+  uint32 trailingRet = handleTrailingTypeSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == trailingRet)
+  {
+    return eGrmErrNoError;
+  }
+  
+  uint32 enumRet = handleEnumSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == trailingRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 classRet = handleClassSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == classRet)
+  {
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 simpleRet = handleSimpleTypeSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == simpleRet)
+  {
+    return eGrmErrNoError;
+  }
+  
+//let's move it later
+
+//  uint32 elaboratedRet = handleElaboratedTypeSpecifier(index, lastIndex, curBlock);
+//  if (eGrmErrNoError == elaboratedRet)
+//  {
+//    return eGrmErrNoError;
+//  }
+
+//let's move it later
+
+//  uint32 typeNameRet = handleTypeNameSpecifier(index, lastIndex, curBlock);
+//  if (eGrmErrNoError == typeNameRet)
+//  {
+//    return eGrmErrNoError;
+//  }
+
+  uint32 cvType = eGramIsNothing;
+  uint32 cvRet = getCVQualifier(index, lastIndex, cvType);
+  if (eGrmErrNoError == cvRet)
+  {
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
   return eGrmErrNoError;
 }

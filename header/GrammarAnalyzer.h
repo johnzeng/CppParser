@@ -19,6 +19,10 @@ protected:
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTrailingTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleSimpleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEnumId(int index, int& lastIndex, GrammarBlock *curBlock);
