@@ -402,7 +402,7 @@ uint32 GrammarAnalyzer::handleFuncDefinition(int index, int& lastIndex, GrammarB
   {
     return decSpecifierSeqRet;
   }
-  return eGrmErrNoError;
+  return handleDeclator(lastIndex + 1, lastIndex, curBlock);
 }
 
 uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
@@ -552,15 +552,111 @@ uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, G
 
 uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  return eGrmErrNoError;
+  //let's skip :: and nested name at first
+
+  uint32 charExp = expect("char",index);
+  if (eGrmErrNoError == charExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 char16_tExp = expect("char16_t",index);
+  if (eGrmErrNoError == char16_tExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 char32_tExp = expect("char32_t",index);
+  if (eGrmErrNoError == char32_tExp)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 wchar_tExp = expect("wchar_t",index);
+  if (eGrmErrNoError == wchar_tExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 boolExp = expect("bool",index);
+  if (eGrmErrNoError == boolExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 shortExp = expect("short",index);
+  if (eGrmErrNoError == shortExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 intExp = expect("int",index);
+  if (eGrmErrNoError == intExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 longExp = expect("long",index);
+  if (eGrmErrNoError == longExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 signedExp = expect("signed",index);
+  if (eGrmErrNoError == signedExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 unsignedExp = expect("unsigned",index);
+  if (eGrmErrNoError == unsignedExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 floatExp = expect("float",index);
+  if (eGrmErrNoError == floatExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 doubleExp = expect("double",index);
+  if (eGrmErrNoError == doubleExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  uint32 voidExp = expect("void",index);
+  if (eGrmErrNoError == voidExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+//  need a cpp 11 mark
+//  uint32 autoExp = expect("auto",index);
+//  if (eGrmErrNoError == autoExp)
+//  {
+//    lastIndex = index;
+//    return eGrmErrNoError;
+//  }
+
+  //let's skip decltype-specifier at first
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
 {
+  //should be same as handle enum, but I don't sur why I am traced into this .
   return eGrmErrNoError;
 }
 
 uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
 {
+  //should be same as handleClass
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  //long story again....
   return eGrmErrNoError;
 }

@@ -14,6 +14,7 @@ public:
 protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
+  uint32 handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
 
