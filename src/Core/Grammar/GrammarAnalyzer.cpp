@@ -656,16 +656,6 @@ uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBl
   return handleEnum(index, lastIndex, curBlock);
 }
 
-uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  //should be same as handleClass
-  return eGrmErrNoError;
-}
-uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
 uint32 GrammarAnalyzer::handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   uint32 ptrRet = handlePtrDeclarator(index, lastIndex, curBlock);
@@ -709,29 +699,79 @@ uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBl
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-
-//  uint32 idRet = handleDeclaratorId
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleParameterAndQualifiers(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-
-  return eGrmErrNoError;
-}
-uint32 GrammarAnalyzer::handleTrailingReturenType(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-
-  return eGrmErrNoError;
-}
 
 uint32 GrammarAnalyzer::handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
 {
+  uint32 typeNameRet = handleTypeName(index, lastIndex, curBlock);
+  if (eGrmErrNoError == typeNameRet)
+  {
+    uint32 ret = expect("::", lastIndex + 1);
+    if (eGrmErrNoError == ret)
+    {
+      lastIndex = lastIndex + 1;
+      return eGrmErrNoError;
+    }
+  }
 
-  return eGrmErrNoError;
+  uint32 namespaceRet = handleNameSpaceName(index, lastIndex, curBlock);
+  if (eGrmErrNoError == namespaceRet)
+  {
+    uint32 ret = expect("::", lastIndex + 1);
+    if (eGrmErrNoError == ret)
+    {
+      lastIndex = lastIndex + 1;
+      return eGrmErrNoError;
+    }
+  }
+
+  //cpp 11 mark
+  
+//  uint32 decltypeSpecifierRet = handleDecltypeSpecifier(index, lastIndex, curBlock);
+//  if (eGrmErrNoError == decltypeSpecifierRet)
+//  {
+//    uint32 ret = expect("::", index + 1);
+//    if (eGrmErrNoError == ret)
+//    {
+//      lastIndex = index + 1;
+//      return eGrmErrNoError;
+//    }
+//  }
+
+  uint32 nestedNameRet = handleNestNameSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == typeNameRet)
+  {
+    uint32 idRet = handleIdentifier(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == idRet)
+    {
+      uint32 ret = expect("::", lastIndex + 1);
+      if (eGrmErrNoError == ret)
+      {
+        lastIndex = lastIndex + 1;
+        return eGrmErrNoError;
+      }
+    }
+
+//    ok, let skip template part at first
+
+//    uint32 expTemplateRet = expect("template", lastIndex + 1);
+//    if (eGrmErrNoError == expTemplateRet)
+//    {
+//      uint32 simpleTemplateIdRet = handleSimpleTemplateId(lastIndex + 2, lastIndex, curBlock);
+//      if (eGrmErrNoError == simpleTemplateIdRet)
+//      {
+//        uint32 ret = expect("::", lastIndex + 1);
+//        if (eGrmErrNoError == ret)
+//        {
+//          lastIndex = lastIndex + 1;
+//          return eGrmErrNoError;
+//        }
+//      }
+//    }
+  }
+
+  return eGrmErrUnknown;
 }
+
 uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   uint32 starExp = expect("*", index);
@@ -792,3 +832,5 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
 
   return eGrmErrUnknown;
 }
+
+

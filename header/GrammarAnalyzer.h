@@ -14,6 +14,13 @@ public:
 protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
+  uint32 handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleNameSpaceName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTypeName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleClassName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEnumName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTypedefName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
