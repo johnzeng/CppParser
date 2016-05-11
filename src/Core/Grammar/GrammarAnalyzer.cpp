@@ -23,14 +23,24 @@ uint32 GrammarAnalyzer::doAnalyze()
 uint32 GrammarAnalyzer::blockHeartBeat(int32 index, int32& lastIndex, GrammarBlock* curBlock)
 {
   JZFUNC_BEGIN_LOG();
-  int nextIndex = index;
-  uint32 ret = handleEnum(index, nextIndex, curBlock) /* || handleClass*/;
+  int nextEnumIndex = index;
+  uint32 ret = handleEnum(index, nextEnumIndex, curBlock) ;
   if (ret == eGrmErrNoError)
   {
-    lastIndex = nextIndex;
+    lastIndex = nextEnumIndex;
     JZFUNC_END_LOG();
     return ret;
   }
+
+  int32 nextFuncIndex = index;
+  uint32 funcRet = handleFuncDefinition(index, nextFuncIndex, curBlock);
+  if (funcRet == eGrmErrNoError)
+  {
+    lastIndex = nextFuncIndex;
+    JZFUNC_END_LOG();
+    return ret;
+  }
+
   JZFUNC_END_LOG();
   return eGrmErrUnknown;
 }
@@ -380,3 +390,109 @@ uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock
   return eGrmErrNotAttri;
 }
 
+uint32 GrammarAnalyzer::handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 attRet = handleAttributes(index, lastIndex, curBlock);
+  if(eGrmErrNotAttri != attRet && eGrmErrNoError != attRet)
+  {
+    return attRet;
+  }
+  uint32 decSpecifierSeqRet = handleDeclSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+  if (eGrmErrNotDecSpecifierSeq != decSpecifierSeqRet && eGrmErrNoError != decSpecifierSeqRet)
+  {
+    return decSpecifierSeqRet;
+  }
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 specifierRet = handleDeclSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError != specifierRet)
+  {
+    return specifierRet;
+  }
+  uint32 attRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
+  if(eGrmErrNotAttri == attRet)
+  {
+    uint32 nextRet = handleDeclSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNotDecSpecifierSeq == nextRet)
+    {
+      return eGrmErrNoError;
+    }
+  }
+  else if(eGrmErrNoError == attRet)
+  {
+    return eGrmErrNoError;
+  }
+  else
+  {
+    //not sure about this ret
+    JZFUNC_END_LOG();
+    return attRet;
+  }
+}
+
+uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 ret = eGramIsNothing;
+  uint32 storageClassSpecRet = getStorageClassSpecifier(index, lastIndex , ret);
+  if(eGrmErrNoError == storageClassSpecRet)
+  {
+    JZWRITE_DEBUG("shoulde add this property into seq");
+    return eGrmErrNoError;
+  }
+  else if (eGrmErrNotStorageClassSpecifier != storageClassSpecRet)
+  {
+    return storageClassSpecRet;
+  }
+
+  uint32 funcSpecifierRet = getFunctionSpecifier(index, lastIndex , ret);
+  if(eGrmErrNoError == funcSpecifierRet)
+  {
+    JZWRITE_DEBUG("shoulde add this property into seq");
+    return eGrmErrNoError;
+  }
+  else if (eGrmErrNotFunctionSpecifier != funcSpecifierRet)
+  {
+    return funcSpecifierRet;
+  }
+
+  uint32 expFriend = expect("friend", index);
+  if (eGrmErrNoError == expFriend)
+  {
+    lastIndex = index;
+    //ret = eGramIsFriend;
+    return eGrmErrNoError;
+  }
+
+  uint32 expTypeDef = expect("typedef", index);
+  if (eGrmErrNoError == expTypeDef)
+  {
+    lastIndex = index;
+    //ret = eGramIsTypedef;
+    return eGrmErrNoError;
+  }
+
+  uint32 expContExpr = expect("constexpr", index);
+  if (eGrmErrNoError == expTypeDef)
+  {
+    lastIndex = index;
+    //ret = eGramIsConstExpr;
+    return eGrmErrNoError;
+  }
+
+  uint32 typeSpeciRet = handleTypeSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == typeSpeciRet)
+  {
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  //Not implement yet
+  return eGrmErrNoError;
+}

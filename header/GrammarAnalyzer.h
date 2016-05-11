@@ -14,6 +14,11 @@ public:
 protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
+  uint32 handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+
+  uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEnumId(int index, int& lastIndex, GrammarBlock *curBlock);
@@ -48,6 +53,7 @@ protected:
   uint32 getAccessSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getPureSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getVirtSpecifier(int index, int& lastIndex, uint32 &ret);
+
 private:
   LexRecList mRecList;
 
