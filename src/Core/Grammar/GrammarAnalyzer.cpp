@@ -833,4 +833,105 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  if (mRecList.size() <= index)
+  {
+    return eGrmErrFileEnd;
+  }
+
+  string id = mRecList[index].word;
+
+  if (true == isLegalVarIdentify(id, curBlock))
+  {
+    return eGrmErrNoError;
+  }
+  else
+  {
+    return eGrmErrDoubleDefinedVar;
+  }
+}
+
+uint32 GrammarAnalyzer::handleNameSpaceName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 orgRet = handleOriginalNamespaceName(index, lastIndex, curBlock);
+  if (eGrmErrNoError == orgRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 namespcAlias = handleNamespaceAlias(index, lastIndex, curBlock);
+  if (eGrmErrNoError == namespcAlias)
+  {
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return handleIdentifier(index, lastIndex, curBlock);
+}
+
+uint32 GrammarAnalyzer::handleNamespaceAlias(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return handleIdentifier(index, lastIndex, curBlock);
+}
+
+uint32 GrammarAnalyzer::handleTypedefName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+
+  return handleIdentifier(index, lastIndex, curBlock);
+}
+
+uint32 GrammarAnalyzer::handleEnumName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return handleIdentifier(index, lastIndex, curBlock);
+}
+
+uint32 GrammarAnalyzer::handleClassName(int index, int& lastIndex, GrammarBlock* curBlock)
+{ 
+  uint32 idRet = handleIdentifier(index, lastIndex, curBlock);
+  if (idRet == eGrmErrNoError)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 tmpIdRet = handleSimpleTemplateId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == tmpIdRet)
+  {
+    return tmpIdRet;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTypeName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 classNameRet = handleClassName(index, lastIndex, curBlock);
+  if (eGrmErrNoError == classNameRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 enumNameRet = handleEnumName(index, lastIndex, curBlock);
+  if (eGrmErrNoError == enumNameRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 typedefName = handleTypedefName(index, lastIndex, curBlock);
+  if (eGrmErrNoError == typedefName)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 simpleTmpRet = handleSimpleTemplateId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == simpleTmpRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrNoError;
+}
 
