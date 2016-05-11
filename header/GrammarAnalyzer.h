@@ -17,6 +17,13 @@ protected:
   uint32 handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleParameterAndQualifiers(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTrailingReturenType(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handlePtrOperator(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);

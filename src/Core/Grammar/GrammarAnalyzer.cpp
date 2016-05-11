@@ -402,7 +402,14 @@ uint32 GrammarAnalyzer::handleFuncDefinition(int index, int& lastIndex, GrammarB
   {
     return decSpecifierSeqRet;
   }
-  return handleDeclator(lastIndex + 1, lastIndex, curBlock);
+  uint32 declatorRet = handleDeclator(lastIndex + 1, lastIndex, curBlock);
+  if(eGrmErrNoError != declatorRet)
+  {
+    return declatorRet;
+  }
+
+  return handleFunctionBody(lastIndex + 1 , lastIndex, curBlock);
+
 }
 
 uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
@@ -646,7 +653,7 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
 uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   //should be same as handle enum, but I don't sur why I am traced into this .
-  return eGrmErrNoError;
+  return handleEnum(index, lastIndex, curBlock);
 }
 
 uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
@@ -654,9 +661,134 @@ uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarB
   //should be same as handleClass
   return eGrmErrNoError;
 }
+uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
 
 uint32 GrammarAnalyzer::handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  //long story again....
+  uint32 ptrRet = handlePtrDeclarator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == ptrRet)
+  {
+    return ptrRet;
+  }
+
+//this part is cpp 11 standard
+
+//  uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
+//  if (eGrmErrNoError == noPtrRet)
+//  {
+//    uint32 parametersRet = handleParameterAndQualifiers(lastIndex + 1, lastIndex, curBlock);
+//    if (eGrmErrNoError == parametersRet)
+//    {
+//      uint32 trailingRet = handleTrailingReturenType(lastIndex + 1, lastIndex, curBlock);
+//      if (eGrmErrNoError == trailingRet)
+//      {
+//        return eGrmErrNoError;
+//      }
+//    }
+//  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
+  if (eGrmErrNoError == noPtrRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 ptrOperatorRet = handlePtrOperator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == ptrOperatorRet)
+  {
+    return handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
+  }
   return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+
+//  uint32 idRet = handleDeclaratorId
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleParameterAndQualifiers(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+
+  return eGrmErrNoError;
+}
+uint32 GrammarAnalyzer::handleTrailingReturenType(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+
+  return eGrmErrNoError;
+}
+uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 starExp = expect("*", index);
+  if (eGrmErrNoError == starExp)
+  {
+    uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
+    if(eGrmErrNoError == attRet || eGrmErrNotAttri == attRet){
+      uint32 ret = eGramIsNothing;
+      return getCVQualifier(lastIndex + 1,lastIndex, ret);
+    }
+  }
+
+  uint32 doubleAndExp = expect("&&", index);
+  if (eGrmErrNoError == doubleAndExp)
+  {
+    uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
+    if(eGrmErrNoError == attRet || eGrmErrNotAttri == attRet){
+      return eGrmErrNoError;
+    }
+    
+  }
+
+  uint32 andExp = expect("&", index);
+  if (eGrmErrNoError == andExp)
+  {
+    uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
+    if(eGrmErrNoError == attRet || eGrmErrNotAttri == attRet){
+      return eGrmErrNoError;
+    }
+  }
+  uint32 expNameSpc = expect("::", index);
+  uint32 nestRet = eGrmErrUnknown;
+  if (expNameSpc == eGrmErrNoError)
+  {
+    nestRet = handleNestNameSpecifier(index + 1, lastIndex, curBlock);
+  }
+  else
+  {
+    nestRet = handleNestNameSpecifier(index, lastIndex, curBlock);
+  }
+  if (eGrmErrNoError == nestRet)
+  {
+    uint32 iStarExp = expect("*", lastIndex + 1 );
+    if (eGrmErrNoError != iStarExp)
+    {
+      return iStarExp;
+    }
+    lastIndex = lastIndex + 1;
+
+    uint32 attRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == attRet || eGrmErrNotAttri == attRet)
+    {
+      uint32 ret = eGramIsNothing;
+      uint32 cvRet = getCVQualifier(lastIndex + 1, lastIndex, ret);
+      return cvRet;
+    }
+  }
+
+  return eGrmErrUnknown;
 }
