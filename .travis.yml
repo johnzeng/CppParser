@@ -6,10 +6,14 @@ before_install:
   - pip install --user cpp-coveralls
   - git clone https://github.com/google/googletest.git && ls
   - cd googletest/googletest && g++ -isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o
+
 install:
   
 script: 
-  - cp googletest/googletest/libgtest.o test
+  - ls
+  - ls googletest
+  - ls googletest/googletest
+  - cp googletest/googletest/libgtest.o test/
   - mkdir target
   - make test
 
