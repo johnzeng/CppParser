@@ -33,3 +33,8 @@ uint32 GrammarAnalyzer::handleSimpleTemplateId(int index, int& lastIndex, Gramma
   
   return eGrmErrNoError;
 }
+
+uint32 GrammarAnalyzer::handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}

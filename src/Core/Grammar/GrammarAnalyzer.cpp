@@ -832,6 +832,53 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
 
   return eGrmErrUnknown;
 }
+uint32 GrammarAnalyzer::handleDeclatorId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 dotRet = expect("...", index);
+  if (eGrmErrNoError == dotRet)
+  {
+    uint32 idExpRet = handleIdExpression(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == idExpRet)
+    {
+      return eGrmErrNoError;
+    }
+  }
+  else
+  {
+    uint32 idExpRet = handleIdExpression(index , lastIndex, curBlock);
+    if (eGrmErrNoError == idExpRet)
+    {
+      return eGrmErrNoError;
+    }
+  }
+
+  uint32 doubleExp = expect("::", index);
+  if (eGrmErrNoError == doubleExp)
+  {
+    uint32 nestRet = handleNestNameSpecifier(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == nestRet)
+    {
+      return handleClassName(index + 2, lastIndex, curBlock);
+    }
+    else
+    {
+      return handleClassName(index + 1, lastIndex , curBlock);
+    }
+  }
+  else
+  {
+    uint32 nestRet = handleNestNameSpecifier(index, lastIndex , curBlock);
+    if (eGrmErrNoError == nestRet)
+    {
+      return handleClassName(index + 1, lastIndex, curBlock);
+    }
+    else
+    {
+      return handleClassName(index, lastIndex , curBlock);
+    }
+  }
+  return eGrmErrUnknown;
+}
 
 uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock)
 {
