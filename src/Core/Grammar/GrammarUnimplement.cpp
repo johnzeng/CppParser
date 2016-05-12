@@ -76,8 +76,3 @@ uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, Gramm
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrNoError;
-}

@@ -1176,6 +1176,39 @@ uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, Gr
     }
   }
 
-  return eGrmErrNoError;
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 logicRet = handleLogicOrExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == logicRet)
+  {
+    uint32 expAsk = expect("?", lastIndex + 1);
+    if (eGrmErrNoError == expAsk)
+    {
+      uint32 expExpress = handleExpression(lastIndex + 2, lastIndex, curBlock);
+      if (eGrmErrNoError != expExpress)
+      {
+        return expExpress;
+      }
+      uint32 expRet = expect(":", lastIndex + 1);
+      if (eGrmErrNoError != expRet)
+      {
+        return expRet;
+      }
+      uint32 assignExp = handleAssignmentExpression(lastIndex + 2, lastIndex, curBlock);
+      if (eGrmErrNoError == assignExp)
+      {
+        return assignExp;
+      }
+      return eGrmErrNoError;
+    }
+    else
+    {
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrUnknown;
 }
 
