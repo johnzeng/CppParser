@@ -5,6 +5,7 @@ PLATFORM_FLAG=-D_LINUX_
 CC=clang
 CXX=clang++
 AR=ar
+GTEST_CHECKOUT=git clone https://github.com/google/googletest.git
 
 debug_var=1
 
@@ -27,6 +28,7 @@ CPPFLAGS=$(INCLUDE_FLAGS) $(OTHER_CPP_FLAGS) $(OTHER_FLAGS) $(TEST_FLAG)
 
 TARGET=target/libAnalyzer.a
 TEST_TARGET=target/tester
+TEST_LIB=target/libtest.a
 
 SOURCES=$(shell find ./src -type f -name '*.cpp') $(shell find ./src -type f -name '*.c')
 
@@ -34,6 +36,7 @@ OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
 TEST_SOURCE=$(wildcard ./test/src/*.cpp ./test/src/*/*.c ./test/src/*/*.cpp)
 TEST_OBJECTS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(TEST_SOURCE)))
+TARGET_DIR=target
 
 $(TARGET):$(OBJS) depend $(myLib)
 	@echo "=========================  now build target ================================"
@@ -45,13 +48,21 @@ $(myLib): $(mylib_PATH)
 	@echo "=========================  now build mylib  ================================"
 	cd $(mylib_PATH) && make
 
+$(TARGET_DIR):
+	mkdir $(TARGET_DIR)
+
+$(TEST_LIB): $( TARGET_DIR )
+	@echo "now build gtest"
+	GTEST_CHECKOUT && cd googletest/googletest && g++ -isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o && cd -
+	cp gtest/gtest/libgtest.a target/libtest.a
+
 $(mylib_PATH):
 	@echo "now checkout mylib"
 	$(MYLIB_CHECKOUT)
 
-$(TEST_TARGET):$(TARGET) $(TEST_OBJECTS)
+$(TEST_TARGET):$(TARGET) $(TEST_OBJECTS) $(TEST_LIB)
 	@echo "=======================  build tester   ======================================="
-	$(CXX) $(TARGET) $(TEST_OBJECTS) $(TEST_FLAG) $(mylib_PATH)/test/libtest.a $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
+	$(CXX) $(TARGET) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
 
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	@echo "==================== tester is going to run  ================================="
