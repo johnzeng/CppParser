@@ -79,7 +79,7 @@ clean:
 -include depend
 
 count:
-	wc -l $(HEADERS) $(SOURCES)
+	wc -l $(HEADERS) $(SOURCES) $(TEST_SOURCE)
 
 cov:
 	@echo "=================== now gen cov html file ============================="
