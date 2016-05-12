@@ -4,8 +4,7 @@ compiler: clang
 
 before_install:
   - pip install --user cpp-coveralls
-  - git clone https://github.com/google/googletest.git && ls
-  - cd googletest/googletest && g++ -isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o
+  - git clone https://github.com/google/googletest.git && cd googletest/googletest && g++ -isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o
 
 install:
   
