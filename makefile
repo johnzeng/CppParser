@@ -65,7 +65,7 @@ $(mylib_PATH):
 
 $(TEST_TARGET):$(TARGET) $(TEST_OBJECTS) $(TEST_LIB)
 	@echo "=======================  build tester   ======================================="
-	$(CXX) $(TARGET) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
+	$(CXX) $(OBJS) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
 
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	@echo "==================== tester is going to run  ================================="
