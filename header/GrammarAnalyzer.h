@@ -42,6 +42,8 @@ protected:
   uint32 handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleLiteralFunctionId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);

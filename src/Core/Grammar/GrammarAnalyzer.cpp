@@ -1108,3 +1108,47 @@ uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBloc
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 keyExp = expect("decltype", index);
+  if (eGrmErrNoError != keyExp)
+  {
+    return eGrmErrUnknown;
+  }
+  uint32 leftExp = expect("(", index + 1);
+  if (eGrmErrNoError != leftExp)
+  {
+    return eGrmErrUnknown;
+  }
+
+  uint32 expRet = handleExpression(index + 2 , lastIndex, curBlock);
+  if (eGrmErrNoError != expRet)
+  {
+    return eGrmErrUnknown;
+  }
+
+  uint32 rightExp = expect(")", lastIndex + 1);
+  if (eGrmErrNoError != rightExp)
+  {
+    lastIndex ++;
+    return eGrmErrUnknown;
+  }
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 assRet = handleAssignmentExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == assRet)
+  {
+    uint32 commaExp = expect(",", lastIndex + 1);
+    if (eGrmErrNoError == commaExp)
+    {
+      return handleExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+

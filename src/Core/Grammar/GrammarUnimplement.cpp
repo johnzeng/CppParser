@@ -58,7 +58,7 @@ uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, Gr
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   
   return eGrmErrNoError;
