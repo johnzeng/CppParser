@@ -46,6 +46,9 @@ protected:
   uint32 handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handlePtrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleNoptrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleConstantExpression(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);

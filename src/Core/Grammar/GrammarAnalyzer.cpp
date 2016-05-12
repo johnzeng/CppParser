@@ -1503,3 +1503,96 @@ uint32 GrammarAnalyzer::handleTypeSpecifierSeq(int index, int& lastIndex, Gramma
 
   return eGrmErrNotTypeSpecifierSeq;
 }
+
+uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 ptrRet = handlePtrAbstractDeclarator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == ptrRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 noPtrRet = handleNoptrAbstractDeclarator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == noPtrRet)
+  {
+    uint32 paramterRet = handleParameterAndQualifiers(lastIndex + 1, lastIndex ,curBlock);
+    if (eGrmErrNoError == paramterRet)
+    {
+      return handleTrailingReturenType(lastIndex + 1, lastIndex ,curBlock);
+    }
+  }
+  else
+  {
+    uint32 paramterRet = handleParameterAndQualifiers(index, lastIndex ,curBlock);
+    if (eGrmErrNoError == paramterRet)
+    {
+      return handleTrailingReturenType(lastIndex + 1, lastIndex ,curBlock);
+    }
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handlePtrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 noptrRet = handleNoptrAbstractDeclarator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == noptrRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 ptrOptRet = handlePtrOperator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == ptrOptRet)
+  {
+    uint32 ptrRet = handlePtrAbstractDeclarator(lastIndex + 1, lastIndex, curBlock);
+    return ptrRet;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleNoptrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 paramRet = handleParameterAndQualifiers(index, lastIndex, curBlock);
+  if (eGrmErrNoError == paramRet)
+  {
+    uint32 nextRet = handleNoptrAbstractDeclarator(lastIndex + 1 , lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+
+  uint32 leftSeqBracket = expect("[", index);
+  if (eGrmErrNoError == leftSeqBracket)
+  {
+    uint32 constRet = handleConstantExpression(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == constRet)
+    {
+      uint32 rightSeqBreacket = expect("]", lastIndex + 1);
+      if (eGrmErrNoError == rightSeqBreacket)
+      {
+        lastIndex++;
+        handleAttributes(lastIndex + 1, lastIndex, curBlock);
+        uint32 nextRet = handleNoptrAbstractDeclarator(lastIndex + 1,lastIndex, curBlock);
+        return eGrmErrNoError;
+      }
+    }
+  }
+
+  uint32 expLeftBracket = expect("(", index);
+  if (eGrmErrNoError == expLeftBracket)
+  {
+    uint32 ptrRet = handlePtrAbstractDeclarator(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == ptrRet)
+    {
+      uint32 ret = expect(")", lastIndex + 1);
+      if (ret == eGrmErrNoError)
+      {
+        lastIndex ++;
+        return eGrmErrNoError;
+      }
+    }
+  }
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleConstantExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return handleConditionalExpression(index, lastIndex, curBlock);
+}

@@ -73,8 +73,3 @@ uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, Grammar
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-

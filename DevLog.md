@@ -3,6 +3,9 @@ This file only contain the daily log. Nothing useful
 
 +_+
 
+##2016/05/12
+Log1:增加大量bnf代码。bnf现在有左迭代和右迭代。这里面是不是有区别呢。。。
+
 ##2016/05/11
 Log1:增加funcDecl的部分代码。。。。那个bnf不要太长。。。。目前的计划是先把bnf实现了。后面的分析无非就是各种返回而已，比较好说。
 ##2016/05/10
