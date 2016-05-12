@@ -1245,3 +1245,70 @@ uint32 GrammarAnalyzer::handleLogicAndExpression(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleInclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 nextRet = handleExclusiveOrExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == nextRet)
+  {
+    uint32 orRet = expect("|", lastIndex + 1);
+    if (eGrmErrNoError == orRet )
+    {
+      return handleInclusiveOrExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleExclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 nextRet = handleAndExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == nextRet)
+  {
+    uint32 orRet = expect("^", lastIndex + 1);
+    if (eGrmErrNoError == orRet )
+    {
+      return handleExclusiveOrExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleAndExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 nextRet = handleEqualityExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == nextRet)
+  {
+    uint32 orRet = expect("&", lastIndex + 1);
+    if (eGrmErrNoError == orRet )
+    {
+      return handleAndExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEqualityExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 nextRet = handleRelationalExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == nextRet)
+  {
+    uint32 eqRet = expect("==", lastIndex + 1);
+    if (eGrmErrNoError == eqRet)
+    {
+      return handleEqualityExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 nqRet = expect("!=", lastIndex + 1);
+    if (eGrmErrNoError == nqRet)
+    {
+      return handleEqualityExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+

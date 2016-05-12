@@ -70,8 +70,9 @@ uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, Gramm
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleInclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleRelationalExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
+  
   return eGrmErrNoError;
 }
 

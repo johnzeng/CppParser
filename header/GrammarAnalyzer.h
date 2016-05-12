@@ -57,6 +57,11 @@ protected:
   uint32 handleConditionalExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleLogicAndExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleInclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleExclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleAndExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEqualityExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleRelationalExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+
 
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEnumId(int index, int& lastIndex, GrammarBlock *curBlock);
