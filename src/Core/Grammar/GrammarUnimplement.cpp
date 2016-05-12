@@ -60,24 +60,21 @@ uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, Gr
 
 uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  
   return eGrmErrNoError;
 }
 
 uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  
   return eGrmErrNoError;
 }
 
 uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleTypeId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  
   return eGrmErrNoError;
 }
+

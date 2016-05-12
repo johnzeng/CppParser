@@ -1465,3 +1465,41 @@ uint32 GrammarAnalyzer::handleCastExpression(int index, int& lastIndex, GrammarB
   }
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleTypeId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 typeSpecifierRet = handleTypeSpecifierSeq(index, lastIndex, curBlock);
+  if (eGrmErrNoError == typeSpecifierRet)
+  {
+    uint32 abstrRet = handleAbstractDeclarator(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == abstrRet || eGrmErrNotAbstractDeclarator == abstrRet)
+    {
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleTypeSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 typeSpeRet = handleTypeSpecifier(index, lastIndex, curBlock);
+  if (typeSpeRet == eGrmErrNoError)
+  {
+    uint32 attRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == attRet)
+    {
+      return eGrmErrNoError;
+    }
+    else if (eGrmErrNotAttri == attRet)
+    {
+      uint32 seqRet = handleTypeSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+      if (seqRet == eGrmErrNotTypeSpecifierSeq)
+      {
+        return eGrmErrNoError;
+      }
+    }
+    return attRet;
+  }
+
+  return eGrmErrNotTypeSpecifierSeq;
+}
