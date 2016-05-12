@@ -68,7 +68,11 @@ $(mylib_PATH):
 
 $(TEST_TARGET):$(TARGET) $(TEST_OBJECTS) $(TEST_LIB)
 	@echo "=======================  build tester   ======================================="
+ifeq ($(debug_var),2)
+	$(CXX) $(OBJS) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o -lpthread -lgcov $(TEST_TARGET)
+else
 	$(CXX) $(TARGET) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
+endif
 
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	@echo "==================== tester is going to run  ================================="
