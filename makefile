@@ -17,11 +17,10 @@ else
 ifeq($(debug_var), 2)
 RELEASE_FLAG=-DDEBUG -g -fprofile-arcs -ftest-coverage
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b develop
-endif
 
-else
 RELEASE_FLAG=-DRELEASE
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b master
+endif
 endif
 
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header
