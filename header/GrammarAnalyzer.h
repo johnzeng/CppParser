@@ -51,6 +51,10 @@ protected:
   uint32 handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleSimpleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleThrowExpression(int index, int&lastIndex, GrammarBlock* curBlock);
+  uint32 handleLogicOrExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleConditionalExpression(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEnumId(int index, int& lastIndex, GrammarBlock *curBlock);
@@ -85,6 +89,7 @@ protected:
   uint32 getAccessSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getPureSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getVirtSpecifier(int index, int& lastIndex, uint32 &ret);
+  uint32 getAssignmentOperator(int index, int& lastIndex, uint32 &ret);
 
 private:
   LexRecList mRecList;

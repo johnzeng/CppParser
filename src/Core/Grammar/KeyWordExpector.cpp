@@ -253,3 +253,98 @@ uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, uint32 &ret)
   return eGrmErrNotUnaryOperator;
   
 }
+
+uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 &ret)
+{
+  //refactor: change exp name and ret value
+  uint32 exp1 = expect("=", index);
+  if (eGrmErrNoError == exp1)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp2 = expect("*=", index);
+  if (eGrmErrNoError == exp2)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp3 = expect("/=", index);
+  if (eGrmErrNoError == exp3)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp4 = expect("%=", index);
+  if (eGrmErrNoError == exp4)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp5 = expect("+=", index);
+  if (eGrmErrNoError == exp5)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp6 = expect("-=", index);
+  if (eGrmErrNoError == exp6)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp7 = expect(">>=", index);
+  if (eGrmErrNoError == exp7)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp8 = expect("<<=", index);
+  if (eGrmErrNoError == exp8)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp9 = expect("%=", index);
+  if (eGrmErrNoError == exp9)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp10 = expect("^=", index);
+  if (eGrmErrNoError == exp10)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp11 = expect("|=", index);
+  if (eGrmErrNoError == exp11)
+  {
+    lastIndex = index;
+    ret = eGramIsNothing;
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrNotUnaryOperator;
+  
+}

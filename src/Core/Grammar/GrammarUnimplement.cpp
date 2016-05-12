@@ -58,7 +58,25 @@ uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, Gr
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleLogicOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   
   return eGrmErrNoError;
