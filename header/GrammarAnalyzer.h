@@ -61,6 +61,13 @@ protected:
   uint32 handleAndExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEqualityExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleRelationalExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleShiftExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleAdditiveExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleMultiplicativeExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handlePmExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleCastExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTypeId(int index, int& lastIndex, GrammarBlock* curBlock);
 
 
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);

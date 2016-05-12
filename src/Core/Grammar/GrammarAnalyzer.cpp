@@ -1312,3 +1312,156 @@ uint32 GrammarAnalyzer::handleEqualityExpression(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleRelationalExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 shiftRet = handleShiftExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == shiftRet)
+  {
+    uint32 exp1 = expect("<", lastIndex + 1);
+    if (exp1 == eGrmErrNoError)
+    {
+      return handleRelationalExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 exp2 = expect(">", lastIndex + 1);
+    if (exp2 == eGrmErrNoError)
+    {
+      return handleRelationalExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 exp3 = expect("<=", lastIndex + 1);
+    if (exp3 == eGrmErrNoError)
+    {
+      return handleRelationalExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 exp4 = expect(">=", lastIndex + 1);
+    if (exp4 == eGrmErrNoError)
+    {
+      return handleRelationalExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleShiftExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 addRet = handleAdditiveExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == addRet)
+  {
+    uint32 eqRet = expect("<<", lastIndex + 1);
+    if (eGrmErrNoError == eqRet)
+    {
+      return handleShiftExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 nqRet = expect(">>", lastIndex + 1);
+    if (eGrmErrNoError == nqRet)
+    {
+      return handleShiftExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    return eGrmErrNoError;
+    
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleAdditiveExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 mulRet = handleMultiplicativeExpression(index, lastIndex,curBlock);
+  if (eGrmErrNoError == mulRet)
+  {
+    uint32 exp1 = expect("+", lastIndex + 1);
+    if (exp1 == eGrmErrNoError)
+    {
+      return handleAdditiveExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 exp2 = expect("=", lastIndex + 1);
+    if (exp2 == eGrmErrNoError)
+    {
+      return handleAdditiveExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    return eGrmErrNoError;
+    
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleMultiplicativeExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 pmRet = handlePmExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == pmRet)
+  {
+    
+    uint32 exp1 = expect("*", lastIndex + 1);
+    if (exp1 == eGrmErrNoError)
+    {
+      return handleMultiplicativeExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 exp2 = expect("/", lastIndex + 1);
+    if (exp2 == eGrmErrNoError)
+    {
+      return handleMultiplicativeExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 exp3 = expect("%", lastIndex + 1);
+    if (exp3 == eGrmErrNoError)
+    {
+      return handleMultiplicativeExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handlePmExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 castRet = handleCastExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == castRet)
+  {
+    uint32 exp1 = expect(".*", lastIndex + 1);
+    if (exp1 == eGrmErrNoError)
+    {
+      return handlePmExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 exp2 = expect("->*", lastIndex + 1);
+    if (exp2 == eGrmErrNoError)
+    {
+      return handlePmExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleCastExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 unArryRet = handleUnaryExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == unArryRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 leftExp = expect("(", index);
+  if (leftExp == eGrmErrNoError)
+  {
+    uint32 typeRet = handleTypeId(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == typeRet)
+    {
+      uint32 rightExp = expect(")", lastIndex + 1);
+      if (rightExp == eGrmErrNoError)
+      {
+        return handleCastExpression(lastIndex + 2, lastIndex, curBlock);
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
