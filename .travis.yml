@@ -9,7 +9,7 @@ install:
   
 script: 
   - mkdir target
-  - make test
+  - make test debug_var=2
 
 after_success:
   - coveralls --exclude mylib --exclude test --gcov-options '\-lp'
