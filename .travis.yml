@@ -1,9 +1,16 @@
 language: c++
 
 compiler: clang
-#install:
-#  - sudo apt-get install --allow-unauthenticated -qq clang-3.4
-#  - export CXX="clang++-3.4"
+
+before_install:
+  - pip install --user cpp-coveralls
+  - git clone https://github.com/google/googletest.git && cd gooletest/googletest && g++ -isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o
+install:
+  
 script: 
+  - cp googletest/googletest/libgtest.o test
   - mkdir target
-  - make
+  - make test
+
+after_success
+  - coveralls --exclude mylib --exclude test --gcov-options '\-lp'
