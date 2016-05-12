@@ -58,8 +58,9 @@ $(TEST_LIB): $(TARGET_DIR)
 	@echo " ======================= now build gtest =================================="
 	$(GTEST_CHECKOUT)
 	mkdir googletest/googletest/mybuild
-	cd googletest/googletest/mybuild && cmake	../ && make && ls && cd -
+	cd googletest/googletest/mybuild && cmake	../ && make && cd -
 	cp googletest/googletest/mybuild/libgtest.a target/libtest.a
+	ls target
 
 $(mylib_PATH):
 	@echo "now checkout mylib"
