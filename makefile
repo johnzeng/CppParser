@@ -54,10 +54,14 @@ $(myLib): $(mylib_PATH)
 $(TARGET_DIR):
 	mkdir $(TARGET_DIR)
 
-$(TEST_LIB): $(TARGET_DIR)
-	@echo " ======================= now build gtest =================================="
+googletest:
+	@echo " ======================= now checkout googletest=================================="
 	$(GTEST_CHECKOUT)
 	mkdir googletest/googletest/mybuild
+
+
+$(TEST_LIB): $(TARGET_DIR) googletest
+	@echo " ======================= now build gtest =================================="
 	cd googletest/googletest/mybuild && cmake	../ && make && cd -
 	cp googletest/googletest/mybuild/libgtest.a target/libtest.a
 	ls target
@@ -69,7 +73,7 @@ $(mylib_PATH):
 $(TEST_TARGET):$(TARGET) $(TEST_OBJECTS) $(TEST_LIB)
 	@echo "=======================  build tester   ======================================="
 ifeq ($(debug_var),2)
-	$(CXX) $(OBJS) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o -lpthread -lgcov $(TEST_TARGET)
+	$(CXX) $(OBJS) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -lpthread -lgcov -o $(TEST_TARGET)
 else
 	$(CXX) $(TARGET) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
 endif
