@@ -1212,3 +1212,36 @@ uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, G
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleLogicOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 nextRet = handleLogicAndExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == nextRet)
+  {
+    uint32 orRet = expect("||", lastIndex + 1);
+    if (eGrmErrNoError == orRet )
+    {
+      return handleLogicOrExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleLogicAndExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 inRet = handleInclusiveOrExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == inRet)
+  {
+    uint32 expAnd = expect("&&", lastIndex + 1);
+    if (eGrmErrNoError == expAnd)
+    {
+      return handleLogicAndExpression(lastIndex + 2, lastIndex, curBlock);
+    }
+    else
+    {
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrUnknown;
+}
+

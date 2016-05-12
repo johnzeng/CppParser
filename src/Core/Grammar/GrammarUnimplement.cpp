@@ -64,15 +64,14 @@ uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, Grammar
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleLogicOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleInclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  
   return eGrmErrNoError;
 }
 
