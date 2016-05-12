@@ -2,8 +2,8 @@ mylib_PATH=./mylib
 depend_generator=$(mylib_PATH)/depend_generator.sh
 myLib=$(mylib_PATH)/mylib.a
 PLATFORM_FLAG=-D_LINUX_
-CC=clang
-CXX=clang++
+#CC=clang
+#CXX=clang++
 AR=ar
 GTEST_CHECKOUT=git clone https://github.com/google/googletest.git
 
@@ -12,9 +12,13 @@ debug_var=1
 ifeq ($(debug_var),1)
 RELEASE_FLAG=-DDEBUG -g -fno-pie -fprofile-arcs -ftest-coverage
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b develop
-else ifeq($(debug_var), 2)
+else 
+
+ifeq($(debug_var), 2)
 RELEASE_FLAG=-DDEBUG -g -fprofile-arcs -ftest-coverage
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b develop
+endif
+
 else
 RELEASE_FLAG=-DRELEASE
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b master
@@ -41,7 +45,7 @@ TEST_SOURCE=$(wildcard ./test/src/*.cpp ./test/src/*/*.c ./test/src/*/*.cpp)
 TEST_OBJECTS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(TEST_SOURCE)))
 TARGET_DIR=target
 
-$(TARGET):$(OBJS) depend $(myLib)
+$(TARGET):$(OBJS) depend $(myLib) $(TARGET_DIR)
 	@echo "=========================  now build target ================================"
 	@echo $(OBJS)
 	$(AR) -r $(TARGET) $(OBJS) 
