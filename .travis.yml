@@ -12,7 +12,7 @@ script:
   - ls
   - ls googletest
   - ls googletest/googletest
-  - cp googletest/googletest/libgtest.o test/
+  - cp googletest/googletest/libgtest.a test/
   - mkdir target
   - make test
 
