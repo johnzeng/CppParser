@@ -57,7 +57,6 @@ test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	@echo "==================== tester is going to run  ================================="
 	-find . -name "*.gcda" -exec rm {} \;
 	export C_INCLUDE_PATH="./" &&	export CPLUS_INCLUDE_PATH="./" && export OBJC_INC_ENV_PATH="./" && ./$(TEST_TARGET)
-	gcovr -r . -e mylib
 
 lib:
 	cd $(mylib_PATH) && make
