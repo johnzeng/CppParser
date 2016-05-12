@@ -12,5 +12,5 @@ script:
   - mkdir target
   - make test
 
-after_success
+after_success:
   - coveralls --exclude mylib --exclude test --gcov-options '\-lp'
