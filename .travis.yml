@@ -4,13 +4,10 @@ compiler: clang
 
 before_install:
   - pip install --user cpp-coveralls
-  - git clone https://github.com/google/googletest.git && cd googletest/googletest && g++ -isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o && cd -
 
 install:
   
 script: 
-  - cp googletest/googletest/libgtest.a test/
-  - ls test
   - mkdir target
   - make test
 
