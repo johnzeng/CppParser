@@ -1045,3 +1045,66 @@ uint32 GrammarAnalyzer::handleUnqualifiedId(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 doubleExp = expect("::", index);
+  if (eGrmErrNoError == doubleExp)
+  {
+    uint32 idRet = handleIdentifier(index + 1, lastIndex, curBlock);
+    if (idRet == eGrmErrNoError)
+    {
+      return eGrmErrNoError;
+    }
+    uint32 opFuncId = handleOperatorFunctionId(index + 1, lastIndex, curBlock);
+    if (opFuncId == eGrmErrNoError)
+    {
+      return eGrmErrNoError;
+    }
+  //cpp 11 standard
+
+//    uint32 literalOpId = handleLiteralFunctionId(index + 1, lastIndex, curBlock);
+//    if (eGrmErrNoError == literalOpId)
+//    {
+//      return eGrmErrNoError;
+//    }
+
+    uint32 tempId = handleTemplateId(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == tempId)
+    {
+      return eGrmErrNoError;
+    }
+
+    uint32 nestedRet = handleNestNameSpecifier(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == nestedRet)
+    {
+      uint32 expTemplate = expect("template", lastIndex + 1);
+      if (eGrmErrNoError == expTemplate)
+      {
+        return handleUnqualifiedId(lastIndex + 2, lastIndex, curBlock);
+      }
+      else
+      {
+        return handleUnqualifiedId(lastIndex + 1, lastIndex, curBlock);
+      }
+        
+    }
+  }
+  else
+  {
+    uint32 nestedRet = handleNestNameSpecifier(index , lastIndex, curBlock);
+    if (eGrmErrNoError == nestedRet)
+    {
+      uint32 expTemplate = expect("template", lastIndex + 1);
+      if (eGrmErrNoError == expTemplate)
+      {
+        return handleUnqualifiedId(lastIndex + 2, lastIndex, curBlock);
+      }
+      else
+      {
+        return handleUnqualifiedId(lastIndex + 1, lastIndex, curBlock);
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
+

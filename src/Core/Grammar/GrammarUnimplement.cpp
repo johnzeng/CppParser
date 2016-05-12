@@ -63,9 +63,3 @@ uint32 GrammarAnalyzer::handleDecltypeSpecifier(int index, int& lastIndex, Gramm
   
   return eGrmErrNoError;
 }
-
-uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrNoError;
-}
