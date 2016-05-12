@@ -56,7 +56,7 @@ $(TARGET_DIR):
 
 $(TEST_LIB): $(TARGET_DIR)
 	@echo " ======================= now build gtest =================================="
-	$(GTEST_CHECKOUT) && cd googletest/googletest && g++ -isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o && cd -
+	$(GTEST_CHECKOUT) && cd googletest/googletest && clang++-isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o && cd -
 	cp googletest/googletest/libgtest.a target/libtest.a
 
 $(mylib_PATH):
