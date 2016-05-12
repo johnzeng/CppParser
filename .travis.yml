@@ -4,6 +4,7 @@ compiler: clang
 
 before_install:
   - pip install --user cpp-coveralls
+  - apt install cmake
 
 install:
   

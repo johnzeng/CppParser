@@ -56,7 +56,8 @@ $(TARGET_DIR):
 
 $(TEST_LIB): $(TARGET_DIR)
 	@echo " ======================= now build gtest =================================="
-	$(GTEST_CHECKOUT) && cd googletest/googletest && clang++ -isystem ./include -I./ -pthread -c ./src/gtest-all.cc && ar -rv libgtest.a gtest-all.o && cd -
+	$(GTEST_CHECKOUT)
+	cd googletest/googletest && cmake	../ && ls && cd -
 	cp googletest/googletest/libgtest.a target/libtest.a
 
 $(mylib_PATH):
@@ -65,7 +66,7 @@ $(mylib_PATH):
 
 $(TEST_TARGET):$(TARGET) $(TEST_OBJECTS) $(TEST_LIB)
 	@echo "=======================  build tester   ======================================="
-	$(CXX) $(OBJS) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
+	$(CXX) $(TARGET) $(TEST_OBJECTS) $(TEST_FLAG) $(TEST_LIB) $(CPPFLAGS) $(myLib) -o $(TEST_TARGET)
 
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	@echo "==================== tester is going to run  ================================="
