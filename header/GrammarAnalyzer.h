@@ -23,9 +23,12 @@ protected:
   uint32 handleEnumName(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypedefName(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclatorId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleUnqualifiedId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleQualifiedId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -35,6 +38,10 @@ protected:
   uint32 handleTrailingReturenType(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handlePtrOperator(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleOperatorFunctionId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleLiteralFunctionId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);

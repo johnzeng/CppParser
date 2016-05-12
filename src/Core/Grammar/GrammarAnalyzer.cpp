@@ -982,3 +982,66 @@ uint32 GrammarAnalyzer::handleTypeName(int index, int& lastIndex, GrammarBlock* 
   return eGrmErrNoError;
 }
 
+uint32 GrammarAnalyzer::handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 unqualifiedIdRet = handleUnqualifiedId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == unqualifiedIdRet)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 qualifiedIdRet = handleQualifiedId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == qualifiedIdRet)
+  {
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleUnqualifiedId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 idRet = handleIdentifier(index, lastIndex, curBlock);
+  if (idRet == eGrmErrNoError)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 opFuncId = handleOperatorFunctionId(index, lastIndex, curBlock);
+  if (opFuncId == eGrmErrNoError)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 conversionFuncIdRet = handleConversionFunctionId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == conversionFuncIdRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  //cpp 11 standard
+
+//  uint32 literalOpId = handleLiteralFunctionId(index, lastIndex, curBlock);
+//  if (eGrmErrNoError == literalOpId)
+//  {
+//    return eGrmErrNoError;
+//  }
+
+  uint32 tempId = handleTemplateId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == tempId)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 waveExp = expect("~", index);
+  if (eGrmErrNoError == waveExp)
+  {
+    uint32 classRet = handleClassName(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == classRet)
+    {
+      return eGrmErrNoError;
+    }
+    else
+    {
+      return handleDecltypeSpecifier(index + 1, lastIndex, curBlock);
+    }
+  }
+  return eGrmErrUnknown;
+}
+

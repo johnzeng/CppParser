@@ -34,7 +34,38 @@ uint32 GrammarAnalyzer::handleSimpleTemplateId(int index, int& lastIndex, Gramma
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock)
 {
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleOperatorFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleLiteralFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
   return eGrmErrNoError;
 }
