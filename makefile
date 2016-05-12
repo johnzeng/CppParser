@@ -13,11 +13,10 @@ ifeq ($(debug_var),1)
 RELEASE_FLAG=-DDEBUG -g -fno-pie -fprofile-arcs -ftest-coverage
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b develop
 else 
-
 ifeq($(debug_var), 2)
 RELEASE_FLAG=-DDEBUG -g -fprofile-arcs -ftest-coverage
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b develop
-
+else
 RELEASE_FLAG=-DRELEASE
 MYLIB_CHECKOUT=git clone https://github.com/johnzeng/mylib.git -b master
 endif
