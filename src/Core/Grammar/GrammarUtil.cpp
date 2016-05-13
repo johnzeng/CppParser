@@ -144,14 +144,14 @@ void GrammarUtil::insertOperatorTo(OpTypeMap &insertMap, const string& op,uint32
 		JZWRITE_DEBUG("no input!");
 		return;
 	}
-	OperatorType toInsertType = 
-	{
-		.priority = priority,
-		.mark = mark,
-		.symbol = op,
-		.associativity = associativity,
-		.operatorNum = opNum,
-	};
+	OperatorType toInsertType
+
+  toInsertType.priority = priority;
+  toInsertType.mark = mark;
+  toInsertType.symbol = op;
+  toInsertType.associativity = associativity;
+  toInsertType.operatorNum = opNum;
+
 	insertMap[op] = toInsertType;
 	//any way , mark is unique
 	mOpMarkMap[mark] = toInsertType;
