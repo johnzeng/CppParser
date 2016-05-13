@@ -1700,6 +1700,28 @@ uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, Grammar
   {
     return eGrmErrNoError;
   }
-  return eGrmErrNoError;
+  return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleNoexceptExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 keyRet = expect("noexcept",index);
+  if (eGrmErrNoError == keyRet)
+  {
+    uint32 leftRet = expect("(", index + 1);
+    if (eGrmErrNoError == leftRet)
+    {
+      uint32 expRet = handleExpression(index + 2, lastIndex, curBlock);
+      if (eGrmErrNoError == expRet)
+      {
+        uint32 expRight = expect(")", lastIndex + 1);
+        if (eGrmErrNoError == expRight)
+        {
+          lastIndex ++;
+          return eGrmErrNoError;
+        }
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
