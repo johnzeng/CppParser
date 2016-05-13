@@ -2,6 +2,8 @@
 This file only contain the daily log. Nothing useful
 
 +_+
+##2016/05/13
+Log1:修复一些g++编译问题，仍旧搞不明白为什么链接不上我的.a文件。
 
 ##2016/05/12
 Log1:增加大量bnf代码。bnf现在有左迭代和右迭代。这里面是不是有区别呢。。。

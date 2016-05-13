@@ -1596,3 +1596,110 @@ uint32 GrammarAnalyzer::handleConstantExpression(int index, int& lastIndex, Gram
 {
   return handleConditionalExpression(index, lastIndex, curBlock);
 }
+
+uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 postfixRet = handlePostfixExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == postfixRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 plusExp = expect("++", index);
+  if (eGrmErrNoError == plusExp)
+  {
+    return handleCastExpression(index + 1, lastIndex, curBlock);
+  }
+
+  uint32 minusExp = expect("--", index);
+  if (eGrmErrNoError == minusExp)
+  {
+    return handleCastExpression(index + 1, lastIndex, curBlock);
+  }
+
+  uint32 getRet = eGramIsNothing;
+  uint32 getOptRet = getUnaryOperator(index, lastIndex, getRet);
+  if (eGrmErrNoError == getOptRet)
+  {
+    return handleCastExpression(index + 1, lastIndex, curBlock);
+  }
+
+  uint32 sizeofExp = expect("sizeof", index);
+  if (eGrmErrNoError == sizeofExp)
+  {
+    uint32 expNextRet = handleUnaryExpression(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == expNextRet)
+    {
+      return eGrmErrNoError;
+    }
+
+    uint32 expLeft = expect("(", index + 1);
+    if (eGrmErrNoError == expLeft)
+    {
+      uint32 typeRet = handleTypeId(index + 2, lastIndex, curBlock);
+      if (eGrmErrNoError == typeRet)
+      {
+        uint32 expRight = expect(")", lastIndex + 1);
+        if (eGrmErrNoError == expRight)
+        {
+          lastIndex ++;
+          return eGrmErrNoError;
+        }
+      }
+    }
+
+    uint32 expDot = expect("...", index + 1);
+    if (eGrmErrNoError == expDot)
+    {
+      uint32 idRet = handleIdentifier(index + 2, lastIndex, curBlock);
+      if (eGrmErrNoError == idRet)
+      {
+        uint32 expRight = expect(")", lastIndex + 1);
+        if (eGrmErrNoError == expRight)
+        {
+          lastIndex ++;
+          return eGrmErrNoError;
+        }
+      }
+    }
+  }
+
+  uint32 expAlignof = expect("alignof", index);
+  if(eGrmErrNoError == expAlignof)
+  {
+    uint32 expLeft = expect("(", index + 1);
+    if (eGrmErrNoError == expLeft)
+    {
+      uint32 typeRet = handleTypeId(index + 2, lastIndex, curBlock);
+      if (eGrmErrNoError == typeRet)
+      {
+        uint32 expRight = expect(")", lastIndex + 1);
+        if (eGrmErrNoError == expRight)
+        {
+          lastIndex ++;
+          return eGrmErrNoError;
+        }
+      }
+    }
+  }
+
+  uint32 noexceptRet = handleNoexceptExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == noexceptRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 newExpRet = handleNewExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == newExpRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 deleteRet = handleDeleteExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == deleteRet)
+  {
+    return eGrmErrNoError;
+  }
+  return eGrmErrNoError;
+}
+

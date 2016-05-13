@@ -68,7 +68,22 @@ uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, Gramm
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleNoexceptExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   return eGrmErrNoError;
 }

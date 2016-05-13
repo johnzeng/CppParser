@@ -73,6 +73,10 @@ protected:
   uint32 handleCastExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handlePostfixExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleNoexceptExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock);
 
 
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);
