@@ -144,7 +144,7 @@ void GrammarUtil::insertOperatorTo(OpTypeMap &insertMap, const string& op,uint32
 		JZWRITE_DEBUG("no input!");
 		return;
 	}
-	OperatorType toInsertType
+	OperatorType toInsertType;
 
   toInsertType.priority = priority;
   toInsertType.mark = mark;
