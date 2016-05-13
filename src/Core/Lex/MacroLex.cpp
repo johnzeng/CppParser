@@ -87,12 +87,10 @@ uint32 MacroLex::handleIsDefined(string& ret)
 uint32 MacroLex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)
 {
 	JZFUNC_BEGIN_LOG();
-	PrecompileSelector ps = 
-	{
-		.mark = mark,
-		.isSuccess = isSuccess,
-		.tag = getTopPSStack().size() + 1,
-	};
+	PrecompileSelector ps;
+  ps.mark = mark;
+  ps.isSuccess = isSuccess;
+  ps.tag = getTopPSStack().size() + 1;
 
 	//set begin tag
 	switch(mark)
