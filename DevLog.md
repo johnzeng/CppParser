@@ -2,8 +2,10 @@
 This file only contain the daily log. Nothing useful
 
 +_+
+
 ##2016/05/13
 Log1:修复一些g++编译问题，仍旧搞不明白为什么链接不上我的.a文件。
+Log2:已经知道有部分bnf存在循环。如果直接跑可能会出现死循环的问题。需要考虑加入loop breaker，在调用函数之前压入行号，如果在同样的index上面回到同样的行号，就是loop了。
 
 ##2016/05/12
 Log1:增加大量bnf代码。bnf现在有左迭代和右迭代。这里面是不是有区别呢。。。
