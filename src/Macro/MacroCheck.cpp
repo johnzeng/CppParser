@@ -23,15 +23,15 @@ uint32 MacroLex::isMacroSuccess(const LexRecList& logic, bool* ret)
 		JZFUNC_END_LOG();
 		return eLexUnknowError;
 	}
-	MacroCheckData baseData = 
-	{
-		.word = BASE_OPERATOR,
-		.mark = baseOpPtr->mark,
-		.number = 0,
-		.priority = baseOpPtr->priority,
-		.opPtr = baseOpPtr,
-		.type = eMacroCheckDataOperator,
-	};
+	MacroCheckData baseData;
+
+  baseData.word = BASE_OPERATOR;
+  baseData.mark = baseOpPtr->mark;
+  baseData.number = 0;
+  baseData.priority = baseOpPtr->priority;
+  baseData.opPtr = baseOpPtr;
+  baseData.type = eMacroCheckDataOperator;
+
 	symStack.push(baseData);
 	opStack.push(baseData);
 
