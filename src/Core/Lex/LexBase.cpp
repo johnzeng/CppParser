@@ -224,16 +224,15 @@ void LexBase::saveWordTo(
 		//don't add empty input
 		return;
 	}
-	LexRec rec = 
-	{
-		.word = input,
-		.line = mReaderStack.top().curLineNum,
-		.file = mReaderStack.top().fileName,
-		.type = recordType,
-		.fileType = mReaderStack.top().recordType,
-		.endIndex = endIndex,
-		.beginIndex = beginIndex,
-	};
+	LexRec rec ; 
+  rec.word = input;
+  rec.line = mReaderStack.top().curLineNum;
+  rec.file = mReaderStack.top().fileName;
+  rec.type = recordType;
+  rec.fileType = mReaderStack.top().recordType;
+  rec.endIndex = endIndex;
+  rec.beginIndex = beginIndex;
+	
 //	JZWRITE_DEBUG("input is :[%s],begin:%d,end:%d",input.c_str(),beginIndex,endIndex);
 	list.push_back(rec);
 }
@@ -406,17 +405,17 @@ FileReaderRecord LexBase::initFileRecord(
 		const char* buff,uint64 size,const string& fileName,
 		uint32 recordType, const map<long,long> lineOffsetMap)
 {
-	FileReaderRecord ret = 
-	{
-		.buffer = buff,
-		.bufferSize = size,
-		.curIndex = 0,
-		.curLineNum = 1,
-		.fileName = fileName,
-		.recordType = recordType,
-		.mStreamOffTag = 0,	
-    .lineOffsetMap = lineOffsetMap,
-	};
+	FileReaderRecord ret;
+
+  ret.buffer = buff;
+  ret.bufferSize = size;
+  ret.curIndex = 0;
+  ret.curLineNum = 1;
+  ret.fileName = fileName;
+  ret.recordType = recordType;
+  ret.mStreamOffTag = 0;	
+  ret.lineOffsetMap = lineOffsetMap;
+
   if(eFileTypeFile != recordType)
   {
     ret.curLineNum = mReaderStack.top().curLineNum;
