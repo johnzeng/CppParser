@@ -1725,3 +1725,243 @@ uint32 GrammarAnalyzer::handleNoexceptExpression(int index, int& lastIndex, Gram
   }
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 prmRet = handlePrimaryExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == prmRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 leftSeqRet = expect("[", index);
+  if (eGrmErrNoError == leftSeqRet)
+  {
+    uint32 expRet = handleExpression(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == expRet)
+    {
+      uint32 rightSeqRet = expect("]", lastIndex + 1);
+      if (eGrmErrNoError == rightSeqRet)
+      {
+        uint32 nextPostRet = handlePostfixExpression(lastIndex + 2, lastIndex, curBlock);
+        if (nextPostRet == eGrmErrNoError)
+        {
+          return eGrmErrNoError;
+        }
+//        if (nextPostRet == eGrmErrNotPostfixExpress)
+//        {
+//          return eGrmErrNoError
+//        }
+
+      }
+    }
+
+    uint32 bracedRet = handleBracedInitList(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == bracedRet /*|| eGrmErrNotBraceInitList*/)
+    {
+      uint32 rightSeqRet = expect("]", lastIndex + 1);
+      if (eGrmErrNoError == rightSeqRet)
+      {
+        uint32 nextPostRet = handlePostfixExpression(lastIndex + 2, lastIndex, curBlock);
+        if (nextPostRet == eGrmErrNoError)
+        {
+          return eGrmErrNoError;
+        }
+//        if (nextPostRet == eGrmErrNotPostfixExpress)
+//        {
+//          return eGrmErrNoError
+//        }
+
+      }
+    }
+  }
+
+  uint32 expLeftBracket = expect("(", index, curBlock);
+  if (eGrmErrNoError == expLeftBracket)
+  {
+    uint32 expressListRet = handleExpressionList(index + 1,lastIndex, curBlock);
+    if (eGrmErrNoError == expressListRet /* || eGrmErrNotExpressList == expressListRet*/)
+    {
+      uint32 expRightBracket = expect(")", lastIndex + 1, curBlock);
+      if (eGrmErrNoError == expRightBracket)
+      {
+        lastIndex ++;
+        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
+        return eGrmErrNoError;
+      }
+    }
+  }
+
+  uint32 simpleRet = handleSimpleTypeSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == simpleRet)
+  {
+    uint32 expLeftBracket = expect("(", lastIndex + 1, curBlock);
+    if (eGrmErrNoError == expLeftBracket)
+    {
+      uint32 expressListRet = handleExpressionList(lastIndex + 2,lastIndex, curBlock);
+      if (eGrmErrNoError == expressListRet /* || eGrmErrNotExpressList == expressListRet*/)
+      {
+        uint32 expRightBracket = expect(")", lastIndex + 1, curBlock);
+        if (eGrmErrNoError == expRightBracket)
+        {
+          lastIndex ++;
+          return eGrmErrNoError;
+        }
+      }
+    }
+
+    return handleBracedInitList(lastIndex + 1, lastIndex, curBlock);
+  }
+
+  uint32 typenameRet = handleTypeNameSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == typenameRet)
+  {
+    uint32 expLeftBracket = expect("(", lastIndex + 1, curBlock);
+    if (eGrmErrNoError == expLeftBracket)
+    {
+      uint32 expressListRet = handleExpressionList(lastIndex + 2,lastIndex, curBlock);
+      if (eGrmErrNoError == expressListRet /* || eGrmErrNotExpressList == expressListRet*/)
+      {
+        uint32 expRightBracket = expect(")", lastIndex + 1, curBlock);
+        if (eGrmErrNoError == expRightBracket)
+        {
+          lastIndex ++;
+          return eGrmErrNoError;
+        }
+      }
+    }
+    return handleBracedInitList(lastIndex + 1, lastIndex, curBlock);
+  }
+
+  uint32 expDot = expect(".", index);
+  if (eGrmErrNoError == expDot)
+  {
+    uint32 expTep = expect("template", index + 1);
+    if (eGrmErrNoError == expTep)
+    {
+      uint32 idExpRet = handleIdExpression(index + 2, lastIndex, curBlock);
+      if (idExpRet == eGrmErrNoError)
+      {
+        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
+        return eGrmErrNoError;
+      }
+    }
+    else
+    {
+      uint32 idExpRet = handleIdExpression(index + 1, lastIndex, curBlock);
+      if (idExpRet == eGrmErrNoError)
+      {
+        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
+        return eGrmErrNoError;
+      }
+    }
+
+    return handlePesudoDestructorName(index + 1, lastIndex, curBlock);
+  }
+
+  uint32 expArray = expect("->", index);
+  if (eGrmErrNoError == expArray)
+  {
+    uint32 expTep = expect("template", index + 1);
+    if (eGrmErrNoError == expTep)
+    {
+      uint32 idExpRet = handleIdExpression(index + 2, lastIndex, curBlock);
+      if (idExpRet == eGrmErrNoError)
+      {
+        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
+        return eGrmErrNoError;
+      }
+    }
+    else
+    {
+      uint32 idExpRet = handleIdExpression(index + 1, lastIndex, curBlock);
+      if (idExpRet == eGrmErrNoError)
+      {
+        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
+        return eGrmErrNoError;
+      }
+      
+    }
+    return handlePesudoDestructorName(index + 1, lastIndex, curBlock);
+  }
+
+  uint32 plusExp = expect("++", index);
+  if (eGrmErrNoError == plusExp)
+  {
+    handlePostfixExpression(index + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+
+  uint32 minuseExp = expect("--", index);
+  if (eGrmErrNoError == minuseExp)
+  {
+    handlePostfixExpression(index + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+
+  uint32 expDynamic = expect("dynamic_cast",index);
+  uint32 expStatic = expect("static_cast",index);
+  uint32 expRein = expect("reinterpret_cast",index);
+  uint32 expConstCast = expect("const_cast",index);
+  if (expDynamic == eGrmErrNoError || expStatic == eGrmErrNoError || eGrmErrNoError == expRein || eGrmErrNoError == expConstCast)
+  {
+    uint32 leftSharp = expect("<", index + 1);
+    if (eGrmErrNoError == leftSharp)
+    {
+      uint32 typeIdRet = handleTypeId(index + 2, lastIndex , curBlock);
+      if (eGrmErrNoError == typeIdRet)
+      {
+        uint32 expRightSharp = expect(">", lastIndex + 1);
+        if (eGrmErrNoError == expRightSharp)
+        {
+          uint32 expLeftBracket = expect("(", lastIndex + 2);
+          if (eGrmErrNoError == expLeftBracket)
+          {
+            uint32 innerExpressRet = handleExpression(lastIndex + 3, lastIndex, curBlock);
+            if (eGrmErrNoError == innerExpressRet)
+            {
+              uint32 rightBracketRet = expect(")", lastIndex + 1);
+              if (eGrmErrNoError == rightBracketRet)
+              {
+                return eGrmErrNoError;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  uint32 typeidRet = expect("typeid", index);
+  if (eGrmErrNoError == typeidRet)
+  {
+    uint32 innerLeftBraceRet = expect("(", index +1);
+    if (eGrmErrNoError == innerLeftBraceRet)
+    {
+      uint32 expressionRet = handleExpression(index + 2, lastIndex, curBlock);
+      if (eGrmErrNoError == expressionRet)
+      {
+        uint32 rightRet = expect(")", lastIndex + 1);
+        if (eGrmErrNoError == rightRet)
+        {
+          lastIndex ++;
+          return eGrmErrNoError;
+        }
+      }
+
+      uint32 typeIdRet = handleTypeId(index + 1, lastIndex, curBlock);
+      if (eGrmErrNoError == typeIdRet)
+      {
+        uint32 rightRet = expect(")", lastIndex + 1);
+        if (eGrmErrNoError == rightRet)
+        {
+          lastIndex ++;
+          return eGrmErrNoError;
+        }
+        
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
+

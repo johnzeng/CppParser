@@ -68,17 +68,37 @@ uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, Gramm
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
 uint32 GrammarAnalyzer::handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   return eGrmErrNoError;
 }
 
 uint32 GrammarAnalyzer::handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleExpressionList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handlePesudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleTypeNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   return eGrmErrNoError;
 }

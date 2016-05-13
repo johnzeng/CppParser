@@ -49,6 +49,11 @@ protected:
   uint32 handlePtrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleNoptrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleConstantExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handlePrimaryExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleExpressionList(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handlePesudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTypeNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
