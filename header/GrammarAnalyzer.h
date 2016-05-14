@@ -52,8 +52,8 @@ protected:
   uint32 handlePrimaryExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleExpressionList(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 handlePesudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 handleTypeNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handlePseudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTypenameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);

@@ -93,13 +93,3 @@ uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarB
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handlePesudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleTypeNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-

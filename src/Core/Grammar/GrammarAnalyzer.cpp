@@ -542,11 +542,11 @@ uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, G
 
 //let's move it later
 
-//  uint32 typeNameRet = handleTypeNameSpecifier(index, lastIndex, curBlock);
-//  if (eGrmErrNoError == typeNameRet)
-//  {
-//    return eGrmErrNoError;
-//  }
+  uint32 typeNameRet = handleTypenameSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == typeNameRet)
+  {
+    return eGrmErrNoError;
+  }
 
   uint32 cvType = eGramIsNothing;
   uint32 cvRet = getCVQualifier(index, lastIndex, cvType);
@@ -1813,7 +1813,7 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
     return handleBracedInitList(lastIndex + 1, lastIndex, curBlock);
   }
 
-  uint32 typenameRet = handleTypeNameSpecifier(index, lastIndex, curBlock);
+  uint32 typenameRet = handleTypenameSpecifier(index, lastIndex, curBlock);
   if (eGrmErrNoError == typenameRet)
   {
     uint32 expLeftBracket = expect("(", lastIndex + 1, curBlock);
@@ -1856,7 +1856,7 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
       }
     }
 
-    return handlePesudoDestructorName(index + 1, lastIndex, curBlock);
+    return handlePseudoDestructorName(index + 1, lastIndex, curBlock);
   }
 
   uint32 expArray = expect("->", index);
@@ -1882,7 +1882,7 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
       }
       
     }
-    return handlePesudoDestructorName(index + 1, lastIndex, curBlock);
+    return handlePseudoDestructorName(index + 1, lastIndex, curBlock);
   }
 
   uint32 plusExp = expect("++", index);
@@ -1962,6 +1962,98 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
       }
     }
   }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handlePseudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expWave = expect("~", index);
+  if (eGrmErrNoError == expWave)
+  {
+    return handleDecltypeSpecifier(index + 1, lastIndex, curBlock);
+  }
+
+  uint32 expDouble = expect("::", index);
+  uint32 offset = (eGrmErrNoError == expDouble) ? 1: 0;
+  uint32 nextIndex = index +  offset;
+  uint32 nestRet = handleNestNameSpecifier(nextIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == nestRet)
+  {
+    nextIndex = lastIndex + 1;
+    uint32 tmpRet = expect("template", lastIndex + 1);
+    if (eGrmErrNoError == tmpRet)
+    {
+      uint32 smpRet = handleSimpleTemplateId(lastIndex + 2, lastIndex, curBlock);
+      if (eGrmErrNoError == smpRet)
+      {
+        uint32 expNexDouble = expect("::", lastIndex + 1);
+        if (eGrmErrNoError == expNexDouble)
+        {
+          uint32 expNextWave = expect("~", lastIndex + 2);
+          return handleTypeName(lastIndex + 3, lastIndex, curBlock);
+        }
+      }
+    }
+  }
+  uint32 expWaveNext = expect("~", nextIndex);
+  if (eGrmErrNoError == expWaveNext)
+  {
+    return handleTypeName(nextIndex + 1, lastIndex, curBlock);
+  }
+  else
+  {
+    uint32 typeRet = handleTypeName(nextIndex, lastIndex, curBlock);
+    if (eGrmErrNoError == typeRet)
+    {
+      uint32 expNexDouble = expect("::", lastIndex + 1);
+      if (expNexDouble == eGrmErrNoError)
+      {
+        uint32 expWaveRet = expect("~", lastIndex + 2);
+        if (eGrmErrNoError == expWaveRet)
+        {
+          return handleTypeName(lastIndex + 3, lastIndex, curBlock);
+        }
+      }
+    }
+  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTypenameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expRet = expect("typename", index);
+  if (eGrmErrNoError != expRet)
+  {
+    return eGrmErrNotTypenameSpecifier;
+  }
+
+  uint32 offset = expect("::", index + 1) == eGrmErrNoError ? 1:0;
+  uint32 nestedRet = handleNestNameSpecifier(index + 1 + offset, lastIndex, curBlock);
+  if (eGrmErrNoError != nestedRet)
+  {
+    return eGrmErrNotTypenameSpecifier;
+  }
+  uint32 tmpRet = expect("template", lastIndex + 1);
+  if (eGrmErrNoError == tmpRet)
+  {
+    return handleSimpleTemplateId(lastIndex + 2, lastIndex, curBlock);
+  }
+  else
+  {
+    uint32 simpRet = handleSimpleTemplateId(lastIndex + 1, lastIndex,  curBlock);
+    if (eGrmErrNoError == simpRet)
+    {
+      return eGrmErrNoError;
+    }
+
+    uint32 idRet = handleIdentifier(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == idRet)
+    {
+      return eGrmErrNoError;
+    }
+  }
+  
   return eGrmErrUnknown;
 }
 
