@@ -14,8 +14,8 @@ TEST(CommandLineFactorMngr, GetAddonFactor){
   EXPECT_EQ(ErrorCode::errNoError, item->addonFactorAnalyser());
   //actually I writed 3 -I in the file ,
   //but we should only get 2 because we -Iheader is same to -I ./header
-  EXPECT_LT(2, item->getHeaderFileSearchPath().size());
-  EXPECT_LT(2, item->getDefineMap().size());
+  EXPECT_LE(2, item->getHeaderFileSearchPath().size());
+  EXPECT_LE(2, item->getDefineMap().size());
   
   JZSAFE_DELETE(item);
 }

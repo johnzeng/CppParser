@@ -36,9 +36,21 @@ uint32 CommandLineFactorMngr::handleBarD(string param)
 uint32 CommandLineFactorMngr::handleBarI(string param)
 {
 	string wholeParam = param.substr(2);
+  if ("" == wholeParam)
+  {
+    return errNoSuchPath;
+  }
 
 	//this call may get problem for some -I,futher test is needed
-	string wholePath = mAddonFactorFileDirectory + "/./" + wholeParam;
+  string wholePath = "";
+  if ("" != wholeParam && '/' == wholeParam[0])
+  {
+    wholePath = wholeParam;
+  }
+  else
+  {
+    wholePath = mAddonFactorFileDirectory + "/" + wholeParam;
+  }
 
 	wholePath = JZGetAbsolutePath(wholePath.c_str());
 
