@@ -30,7 +30,7 @@ protected:
   uint32 handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 handleDeclatorId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleDeclaratorId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleUnqualifiedId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleQualifiedId(int index, int& lastIndex, GrammarBlock* curBlock);

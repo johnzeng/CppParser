@@ -2,12 +2,7 @@
 
 uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, uint32 &ret)
 {
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-//  uint32 idRet = handleDeclaratorId
+  //I am going to handle this function by my self, not by bnf because I already
   return eGrmErrNoError;
 }
 

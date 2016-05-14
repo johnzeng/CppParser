@@ -798,7 +798,7 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
 
   return eGrmErrUnknown;
 }
-uint32 GrammarAnalyzer::handleDeclatorId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleDeclaratorId(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   uint32 dotRet = expect("...", index);
   if (eGrmErrNoError == dotRet)
@@ -2393,6 +2393,52 @@ uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, Gramm
       uint32 expRight = expect(")", lastIndex + 1);
       if (eGrmErrNoError == expRight)
       {
+        return eGrmErrNoError;
+      }
+    }
+  }
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 idRet = handleDeclaratorId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == idRet)
+  {
+    handleAttributes(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+
+  uint32 paramRet = handleParameterAndQualifiers(index, lastIndex, curBlock);
+  if (eGrmErrNoError == paramRet)
+  {
+    handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+
+  uint32 expLeftSeqRet = expect("[", index);
+  if (eGrmErrNoError == expLeftSeqRet)
+  {
+    handleConstantExpression(index +  1, lastIndex, curBlock);
+    uint32 expRightSeqRet = expect("]", lastIndex + 1);
+    if (eGrmErrNoError == expRightSeqRet)
+    {
+      handleAttributes(lastIndex + 1, lastIndex, curBlock);
+      handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
+      return eGrmErrNoError;
+    }
+  }
+
+  uint32 expLeftBracket = expect("(", index);
+  if (eGrmErrNoError == expLeftBracket)
+  {
+    uint32 ptrDec = handlePtrDeclarator(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == ptrDec)
+    {
+      uint32 expRight = expect(")", lastIndex + 1);
+      if (eGrmErrNoError == expRight)
+      {
+        lastIndex ++;
         return eGrmErrNoError;
       }
     }
