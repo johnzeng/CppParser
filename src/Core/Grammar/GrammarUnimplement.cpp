@@ -1,5 +1,11 @@
 #include "GrammarAnalyzer.h"
 
+
+uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, uint32 &ret)
+{
+  return eGrmErrNoError;
+}
+
 uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
 {
 //  uint32 idRet = handleDeclaratorId
@@ -62,17 +68,7 @@ uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, Grammar
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
 uint32 GrammarAnalyzer::handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, uint32 &ret)
 {
   return eGrmErrNoError;
 }

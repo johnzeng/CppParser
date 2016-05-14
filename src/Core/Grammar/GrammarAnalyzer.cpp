@@ -2180,3 +2180,17 @@ uint32 GrammarAnalyzer::handleDeleteExpression(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 assignmentRet = handleAssignmentExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == assignmentRet)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 bracedRet = handleBracedInitList(index, lastIndex, curBlock);
+  if (eGrmErrNoError == bracedRet)
+  {
+    return eGrmErrNoError;
+  }
+  return eGrmErrNoError;
+}
