@@ -1,0 +1,11 @@
+#if defined(a)
+yes1
+#else
+no1
+#endif
+
+#if defined a 
+yes2
+#else
+no2
+#endif

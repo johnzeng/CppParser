@@ -47,12 +47,7 @@ uint32 MacroLex::handleIsDefined(string& ret)
 	JZFUNC_BEGIN_LOG();
 	string word;
 	uint32 errRet;
-	errRet = consumeCharUntilReach('(',&word,eLexInOneLine);
-	if (errRet != eLexNoError)
-	{
-		JZFUNC_END_LOG();
-		return errRet;
-	}
+  bool needRightBracket = false;
 	errRet = consumeWord(word, eLexSkipEmptyInput, eLexInOneLine);
 	if (errRet != eLexNoError && errRet != eLexReachLineEnd)
 	{
@@ -60,6 +55,16 @@ uint32 MacroLex::handleIsDefined(string& ret)
 		return errRet;
 	}
 
+  if ("(" == word)
+  {
+    needRightBracket = true;
+    errRet = consumeWord(word, eLexSkipEmptyInput, eLexInOneLine);
+    if (errRet != eLexNoError && errRet != eLexReachLineEnd)
+    {
+      JZFUNC_END_LOG();
+      return errRet;
+    }
+  }
 	//check
 	if (DefineManager::eDefMgrDefined == mDefMgr.isDefined(word))
 	{
@@ -71,14 +76,17 @@ uint32 MacroLex::handleIsDefined(string& ret)
 	}
 	JZWRITE_DEBUG("cur file is :%s",mReaderStack.top().fileName.c_str());
 	JZWRITE_DEBUG("check word:%s",word.c_str());
-	//consume until another )
-	errRet = consumeCharUntilReach(')',&word,eLexInOneLine);
-	if ((errRet != eLexNoError && errRet != eLexReachLineEnd)|| true == LexUtil::isEmptyInput(word))
-	{
-		popErrorSite();
-		JZFUNC_END_LOG();
-		return eLexUnexpectedSeperator;
-	}
+  if (needRightBracket)
+  {
+    //consume until another )
+    errRet = consumeCharUntilReach(')',&word,eLexInOneLine);
+    if ((errRet != eLexNoError && errRet != eLexReachLineEnd)|| true == LexUtil::isEmptyInput(word))
+    {
+      popErrorSite();
+      JZFUNC_END_LOG();
+      return eLexUnexpectedSeperator;
+    }
+  }
 	JZWRITE_DEBUG("ret word is :%s",ret.c_str());
 	JZFUNC_END_LOG();
 	return errRet;

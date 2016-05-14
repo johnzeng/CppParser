@@ -114,3 +114,30 @@ TEST(MacroLex, macroIfTest3){
   ASSERT_STREQ(recList[8].word.c_str(), "yes15");
   ASSERT_STREQ(recList[9].word.c_str(), "yes16");
 }
+
+//cover case: defined test
+TEST(MacroLex, macroIfTest4){
+  //this is really a strong test, so don't do it for more than one file every time
+  int argc = 2;
+  char argv0[128] = {0},argv1[128] = {0};
+  strcpy(argv0,"tester");
+  strcpy(argv1,"./test/TestSet/macro_if_test_4");
+  char* argv[2] = {argv0,argv1};
+
+
+	//analyze command line input
+	CmdInputFactor::getInstance()->analyze(argc, argv);
+
+	//now begin to analyze the files input from command line
+	string toCompileFile = CmdInputFactor::getInstance()->getNextFile();
+
+  MacroLex lex;
+
+  lex.analyzeAFile(toCompileFile);
+
+  LexRecList recList = lex.getRecList();
+
+  ASSERT_EQ(2, recList.size());
+  ASSERT_STREQ(recList[0].word.c_str(), "no1");
+  ASSERT_STREQ(recList[1].word.c_str(), "no2");
+}
