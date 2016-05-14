@@ -4,8 +4,8 @@
 This SimpleCompletor is aiming to create a completor for vim ,which is easy to config,and good enough to complete the c,cpp coding input.
 First work is to complete the c codes in property way.
 
-##2016/05/06
-Release 0.1.2, fixed most of the preprocessing bugs, and already begin to hack the grammar part.
+##2016/05/14
+Release 0.1.3, fixed most of the preprocessing bugs, and already begin to hack the grammar part.
 
 ##2016/03/29
 Adding gtest into this project and we are going to do test now!
