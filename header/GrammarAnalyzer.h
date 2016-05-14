@@ -14,6 +14,8 @@ public:
 protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
+  uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleStatementSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleFunctionTryBlock(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleCtorInitializer(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -111,7 +113,6 @@ protected:
   bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
   //return the statement's type; This will be a long check.... Actually I don't need to care about the right or wrong problem....how about we skip it at first.
-  uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
 
   uint32 handleStatementLeftBracket(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
   uint32 expectAConstInt(int index, int& lastIndex, GrammarBlock* curBlock);

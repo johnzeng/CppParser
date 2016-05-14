@@ -53,4 +53,8 @@ uint32 GrammarAnalyzer::handleFunctionTryBlock(int index, int& lastIndex, Gramma
   return eGrmErrNoError;
 }
 
-
+uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  lastIndex = index;
+  return eGrmErrNoError;
+}

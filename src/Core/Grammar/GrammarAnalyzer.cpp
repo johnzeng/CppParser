@@ -193,7 +193,7 @@ uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBl
     {
       uint32 value = 0;
       DataTypeDefine typeRet;
-      uint32 getValeRet = handleStatement(index + 2, lastIndex, curBlock, typeRet);
+      uint32 getValeRet = handleStatement(index + 2, lastIndex, curBlock);
       if(getValeRet != eGrmErrNoError)
       {
         //should check value type here;
@@ -253,41 +253,6 @@ bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBloc
   }
   return true;
 }
-
-uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retType)
-{
-
-  //begin with (
-  uint32 expLeftRet = expect("(",index);
-  if(eGrmErrNoError == expLeftRet)
-  {
-    uint32 stRet = handleStatement(index + 1, lastIndex, curBlock, retType);
-    if(eGrmErrNoError == stRet)
-    {
-      uint32 expRightRet = expect(")", lastIndex + 1);
-      if(eGrmErrNoError == expRightRet)
-      {
-        lastIndex = lastIndex + 1;
-        return eGrmErrNoError;
-      }
-      else{
-        return expRightRet;
-      }
-    }
-    else
-    {
-      return stRet;
-    }
-  }
-
-  lastIndex = index;
-  return eGrmErrNoError;
-}
-
-//uint32 GrammarAnalyzer::expectAConstInt(int index, int& lastIndex, GrammarBlock* curBlock)
-//{
-//  
-//}
 
 uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
 {
