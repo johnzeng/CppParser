@@ -14,6 +14,9 @@ public:
 protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
+  uint32 handleFunctionTryBlock(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleCtorInitializer(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleNameSpaceName(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock);

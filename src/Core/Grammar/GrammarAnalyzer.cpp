@@ -408,6 +408,7 @@ uint32 GrammarAnalyzer::handleFuncDefinition(int index, int& lastIndex, GrammarB
     return declatorRet;
   }
 
+  //also = delete and = default in cpp11
   return handleFunctionBody(lastIndex + 1 , lastIndex, curBlock);
 
 }
@@ -2392,6 +2393,26 @@ uint32 GrammarAnalyzer::handleTemplateArgument(int index, int& lastIndex, Gramma
   if (eGrmErrNoError == expIdExp)
   {
     return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 tryRet = handleFunctionTryBlock(index, lastIndex, curBlock);
+  if (eGrmErrNoError == tryRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 ctorInitializerRet = handleCtorInitializer(index, lastIndex, curBlock);
+  if (eGrmErrNoError == ctorInitializerRet)
+  {
+    return handleCompoundStatement(lastIndex + 1, lastIndex, curBlock);
+  }
+  else
+  {
+    return handleCompoundStatement(index, lastIndex, curBlock);
   }
   return eGrmErrUnknown;
 }
