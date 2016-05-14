@@ -2382,3 +2382,32 @@ uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlo
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expLeft = expect("(", index);
+  if (eGrmErrNoError == expLeft)
+  {
+    uint32 statRet = handleStatementSeq(index + 1,lastIndex, curBlock);
+    if (eGrmErrNoError == statRet)
+    {
+      uint32 expRight = expect(")", lastIndex + 1);
+      if (eGrmErrNoError == expRight)
+      {
+        return eGrmErrNoError;
+      }
+    }
+  }
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleStatementSeq(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 statRet = handleStatement(index, lastIndex, curBlock);
+  if (eGrmErrNoError == statRet)
+  {
+    uint32 nextRet = handleStatementSeq(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+

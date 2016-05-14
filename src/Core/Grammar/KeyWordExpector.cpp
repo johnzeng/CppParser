@@ -348,3 +348,320 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   return eGrmErrNotUnaryOperator;
   
 }
+
+uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, uint32 &ret)
+{
+// this func haven't handle the the ret value yet
+  ret = eGramIsNothing;
+  uint32 newExp = expect("new", index);
+  if (eGrmErrNoError == newExp)
+  {
+    lastIndex = index;
+    ret = eGramIsNew;
+    uint32 expLeft = expect("[", index + 1);
+    if (eGrmErrNoError == expLeft)
+    {
+      uint32 expRight = expect("]", index + 2);
+      if (eGrmErrNoError == expRight)
+      {
+        lastIndex = index + 2;
+        return eGrmErrNoError;
+      }
+    }
+    return eGrmErrNoError;
+  }
+
+  uint32 deleteExp = expect("delete", index);
+  if (eGrmErrNoError == deleteExp)
+  {
+    lastIndex = index;
+    ret = eGramIsNew;
+    uint32 expLeft = expect("[", index + 1);
+    if (eGrmErrNoError == expLeft)
+    {
+      uint32 expRight = expect("]", index + 2);
+      if (eGrmErrNoError == expRight)
+      {
+        lastIndex = index + 2;
+        return eGrmErrNoError;
+      }
+    }
+    return eGrmErrNoError;
+  }
+
+  uint32 op1Exp = expect("+", index);
+  if (eGrmErrNoError == op1Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op2Exp = expect("-", index);
+  if (eGrmErrNoError == op2Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op3Exp = expect("*", index);
+  if (eGrmErrNoError == op3Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op4Exp = expect("/", index);
+  if (eGrmErrNoError == op4Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op5Exp = expect("%", index);
+  if (eGrmErrNoError == op5Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op6Exp = expect("^", index);
+  if (eGrmErrNoError == op6Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op7Exp = expect("&", index);
+  if (eGrmErrNoError == op7Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op8Exp = expect("|", index);
+  if (eGrmErrNoError == op8Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op9Exp = expect("~", index);
+  if (eGrmErrNoError == op9Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op10Exp = expect("!", index);
+  if (eGrmErrNoError == op10Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op11Exp = expect("=", index);
+  if (eGrmErrNoError == op11Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op12Exp = expect("<", index);
+  if (eGrmErrNoError == op12Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op13Exp = expect(">", index);
+  if (eGrmErrNoError == op13Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op14Exp = expect("+=", index);
+  if (eGrmErrNoError == op14Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op15Exp = expect("-=", index);
+  if (eGrmErrNoError == op15Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op16Exp = expect("*=", index);
+  if (eGrmErrNoError == op16Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op17Exp = expect("/=", index);
+  if (eGrmErrNoError == op17Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op18Exp = expect("%=", index);
+  if (eGrmErrNoError == op18Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op19Exp = expect("^=", index);
+  if (eGrmErrNoError == op19Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op20Exp = expect("&=", index);
+  if (eGrmErrNoError == op20Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op21Exp = expect("|=", index);
+  if (eGrmErrNoError == op21Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op22Exp = expect("<<", index);
+  if (eGrmErrNoError == op22Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op23Exp = expect(">>", index);
+  if (eGrmErrNoError == op23Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op24Exp = expect(">>=", index);
+  if (eGrmErrNoError == op24Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op25Exp = expect("<<=", index);
+  if (eGrmErrNoError == op25Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op26Exp = expect("==", index);
+  if (eGrmErrNoError == op26Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op27Exp = expect("!=", index);
+  if (eGrmErrNoError == op27Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op28Exp = expect("<=", index);
+  if (eGrmErrNoError == op28Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op29Exp = expect(">=", index);
+  if (eGrmErrNoError == op29Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op30Exp = expect("&&", index);
+  if (eGrmErrNoError == op30Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op31Exp = expect("||", index);
+  if (eGrmErrNoError == op31Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op32Exp = expect("++", index);
+  if (eGrmErrNoError == op32Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op33Exp = expect("--", index);
+  if (eGrmErrNoError == op33Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op34Exp = expect(",", index);
+  if (eGrmErrNoError == op34Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op35Exp = expect("->*", index);
+  if (eGrmErrNoError == op35Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op36Exp = expect("->", index);
+  if (eGrmErrNoError == op36Exp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 op37Exp = expect("(", index);
+  if (eGrmErrNoError == op37Exp)
+  {
+    uint32 expRight = expect(")", index + 1);
+    if (eGrmErrNoError == expRight)
+    {
+      lastIndex = index + 1;
+      return eGrmErrNoError;
+    }
+  }
+
+  uint32 op38Exp = expect("[", index);
+  if (eGrmErrNoError == op38Exp)
+  {
+    uint32 expRight = expect("]", index + 1);
+    if (eGrmErrNoError == expRight)
+    {
+      lastIndex = index + 1;
+      return eGrmErrNoError;
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrNotOverloadableOperator;
+}

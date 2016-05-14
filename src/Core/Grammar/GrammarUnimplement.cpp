@@ -1,10 +1,5 @@
 #include "GrammarAnalyzer.h"
 
-uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, uint32 &ret)
-{
-  return eGrmErrNoError;
-}
-
 uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, uint32 &ret)
 {
   return eGrmErrNoError;
@@ -34,11 +29,6 @@ uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarB
 }
 
 uint32 GrammarAnalyzer::handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   return eGrmErrNoError;
 }

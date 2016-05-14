@@ -23,6 +23,7 @@ enum GrammarReturnCode
   eGrmErrNotAbstractDeclarator = 10,
   eGrmErrNotTypeSpecifierSeq = 11,
   eGrmErrNotTypenameSpecifier = 11,
+  eGrmErrNotOverloadableOperator = 11,
 
   eGrmErrReasonableErrors = 99,
 
