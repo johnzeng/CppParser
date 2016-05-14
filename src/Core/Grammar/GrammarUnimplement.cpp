@@ -1,5 +1,9 @@
 #include "GrammarAnalyzer.h"
 
+uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, uint32 &ret)
+{
+  return eGrmErrNoError;
+}
 
 uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, uint32 &ret)
 {
@@ -33,43 +37,14 @@ uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlo
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleOperatorFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleLiteralFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
 uint32 GrammarAnalyzer::handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   return eGrmErrNoError;
 }
+
+uint32 GrammarAnalyzer::handleTemplateArgumentList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrNoError;
+}
+
 

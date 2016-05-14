@@ -40,7 +40,7 @@ protected:
   uint32 handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleOperatorFunctionId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 handleLiteralFunctionId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleLiteralOperatorId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -55,6 +55,9 @@ protected:
   uint32 handlePseudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypenameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleConversionTypeId(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleConversionDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
+
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -83,6 +86,8 @@ protected:
   uint32 handleNoexceptExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTemplateArgumentList(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTemplateName(int index, int& lastIndex, GrammarBlock* curBlock);
 
 
   uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -120,6 +125,7 @@ protected:
   uint32 getVirtSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getAssignmentOperator(int index, int& lastIndex, uint32 &ret);
   uint32 getLiteral(int index, int& lastIndex, uint32 &ret);
+  uint32 getOverloadableOperator(int index, int& lastIndex, uint32 &ret);
 
 private:
   LexRecList mRecList;

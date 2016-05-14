@@ -1062,11 +1062,11 @@ uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBloc
     }
   //cpp 11 standard
 
-//    uint32 literalOpId = handleLiteralFunctionId(index + 1, lastIndex, curBlock);
-//    if (eGrmErrNoError == literalOpId)
-//    {
-//      return eGrmErrNoError;
-//    }
+    uint32 literalOpId = handleLiteralOperatorId(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == literalOpId)
+    {
+      return eGrmErrNoError;
+    }
 
     uint32 tempId = handleTemplateId(index + 1, lastIndex, curBlock);
     if (eGrmErrNoError == tempId)
@@ -2194,3 +2194,163 @@ uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, Gramm
   }
   return eGrmErrNoError;
 }
+
+uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expThrow = expect("throw", index);
+  if (eGrmErrNoError == expThrow)
+  {
+    lastIndex = index;
+    handleAssignmentExpression(index + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 operatorExp = expect("operator", index);
+  if (eGrmErrNoError == operatorExp)
+  {
+    return handleConversionTypeId(index + 1, lastIndex, curBlock);
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleConversionTypeId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 typeSpRet = handleTypeSpecifierSeq(index, lastIndex, curBlock);
+  if (eGrmErrNoError == typeSpRet)
+  {
+    handleConversionDeclarator(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleConversionDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 ptrRet = handlePtrOperator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == ptrRet)
+  {
+    uint32 nextRet = handleConversionDeclarator(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleLiteralOperatorId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expOpe = expect("operator", index);
+  if (eGrmErrNoError == expOpe)
+  {
+    uint32 expLi = expect("\"\"", index + 1);
+    if (eGrmErrNoError == expLi)
+    {
+      return handleIdentifier(index + 2, lastIndex, curBlock);
+    }
+  }
+  
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleOperatorFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expOperator = expect("operator", index);
+  if (eGrmErrNoError == expOperator)
+  {
+    uint32 ret = eGramIsNothing;
+    uint32 opRet = getOverloadableOperator(index + 1, lastIndex, ret);
+    if (eGrmErrNoError == opRet)
+    {
+      uint32 leftExp = expect("<", lastIndex + 1);
+      if (eGrmErrNoError == leftExp)
+      {
+        uint32 templateRet = handleTemplateArgumentList(lastIndex + 2, lastIndex, curBlock);
+        if (eGrmErrNoError == templateRet)
+        {
+          uint32 expRight = expect(">", lastIndex + 1);
+          if (eGrmErrNoError == expRight)
+          {
+            lastIndex ++;
+            return eGrmErrNoError;
+          }
+        }
+      }
+      else
+      {
+        return eGrmErrNoError;
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 tmpName = handleTemplateName(index, lastIndex, curBlock);
+  if (eGrmErrNoError == tmpName)
+  {
+    uint32 expLeft = expect("<", lastIndex + 1);
+    if (eGrmErrNoError == expLeft)
+    {
+      lastIndex ++;
+      uint32 argListRet = handleTemplateArgumentList(lastIndex + 2, lastIndex, curBlock);
+      uint32 expRight = expect(">", lastIndex + 1);
+      if (eGrmErrNoError == expRight)
+      {
+        return expRight;
+      }
+    }
+  }
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 nexTemp = handleSimpleTemplateId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == nexTemp)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 operatorRet = handleOperatorFunctionId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == operatorRet)
+  {
+    uint32 expLeft = expect("<", lastIndex + 1);
+    if (eGrmErrNoError == expLeft)
+    {
+      lastIndex ++;
+      uint32 argRet = handleTemplateArgumentList(lastIndex, lastIndex, curBlock);
+      uint32 expRight = expect(">", lastIndex + 1);
+      if (eGrmErrNoError == expRight)
+      {
+        return eGrmErrNoError;
+      }
+    }
+  }
+
+  uint32 literalOpRet = handleLiteralOperatorId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == literalOpRet)
+  {
+    uint32 expLeft = expect("<", lastIndex + 1);
+    if (eGrmErrNoError == expLeft)
+    {
+      lastIndex ++;
+      uint32 argRet = handleTemplateArgumentList(lastIndex, lastIndex, curBlock);
+      uint32 expRight = expect(">", lastIndex + 1);
+      if (eGrmErrNoError == expRight)
+      {
+        return eGrmErrNoError;
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTemplateName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return handleIdentifier(index, lastIndex, curBlock);
+}
+
