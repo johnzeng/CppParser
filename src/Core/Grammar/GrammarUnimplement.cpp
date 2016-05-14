@@ -42,9 +42,3 @@ uint32 GrammarAnalyzer::handleNewExpression(int index, int& lastIndex, GrammarBl
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleTemplateArgumentList(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
-

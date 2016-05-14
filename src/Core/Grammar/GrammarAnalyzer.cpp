@@ -2354,3 +2354,45 @@ uint32 GrammarAnalyzer::handleTemplateName(int index, int& lastIndex, GrammarBlo
   return handleIdentifier(index, lastIndex, curBlock);
 }
 
+uint32 GrammarAnalyzer::handleTemplateArgumentList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 tmpArg = handleTemplateArgument(index, lastIndex, curBlock);
+  if (eGrmErrNoError == tmpArg)
+  {
+    uint32 expDot = expect("...", lastIndex + 1);
+    if (eGrmErrNoError == expDot)
+    {
+      return eGrmErrNoError;
+    }
+
+    uint32 expComma = expect(",", lastIndex + 1);
+    if (eGrmErrNoError == expComma)
+    {
+      return handleTemplateArgumentList(lastIndex + 1, lastIndex, curBlock);
+    }
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTemplateArgument(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 constExpRet = handleConstantExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == constExpRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 expTypeId = handleTypeId(index, lastIndex, curBlock);
+  if (eGrmErrNoError == expTypeId)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 expIdExp = handleIdExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == expIdExp)
+  {
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+

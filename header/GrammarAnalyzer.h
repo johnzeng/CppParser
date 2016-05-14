@@ -87,6 +87,7 @@ protected:
   uint32 handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTemplateArgumentList(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTemplateArgument(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTemplateName(int index, int& lastIndex, GrammarBlock* curBlock);
 
 
