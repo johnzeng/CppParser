@@ -29,6 +29,7 @@ public:
   
 	//macro handler
 	uint32 handleSharpDefine();
+	uint32 handleSharpUndef();
 	uint32 handleSharpIf();
 	uint32 handleSharpElif();
 	uint32 handleSharpIfdef();

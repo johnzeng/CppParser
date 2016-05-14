@@ -357,7 +357,14 @@ uint32 LexBase::consumeWord(
 			)
 		{
 			JZFUNC_END_LOG();
-			return eLexReachLineEnd;
+      if (retStr == "")
+      {
+        return eLexReachLineEnd;
+      }
+      else
+      {
+        return eLexNoError;
+      }
 		}
 		if (eLexSkipEmptyInput == skipEmptyInput && 
 			true == LexUtil::isEmptyInput(nextChar) &&

@@ -56,8 +56,11 @@ public:
 	//will return error code
 	DefineManagerReturnCode addDefineMap(const string& src, const DefineRec& rec);
 
+  DefineManagerReturnCode cancelDefine(const string& src);
+
 	void printAllDefine();
 	uint32 getDefineNum();
+
 private:
 	DefineRecMap mSrcLexMap;
 	StringSet mCanceledDefine;

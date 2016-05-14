@@ -31,6 +31,7 @@ MacroLex::MacroLex()
 	mPatternTable->insertPattern("if",      (LexPatternHandler)(&MacroLex::handleSharpIf));	
 	mPatternTable->insertPattern("endif",   (LexPatternHandler)(&MacroLex::handleSharpEndIf));	
 	mPatternTable->insertPattern("define",  (LexPatternHandler)(&MacroLex::handleSharpDefine));	
+	mPatternTable->insertPattern("undef",  (LexPatternHandler)(&MacroLex::handleSharpUndef));	
 	mPatternTable->insertPattern("include", (LexPatternHandler)(&MacroLex::handleSharpInclude));	
 	mPatternTable->insertPattern("pragma",  (LexPatternHandler)(&MacroLex::handleSharpPragma));
 	mPatternTable->insertPattern("warning",  (LexPatternHandler)(&MacroLex::handleSharpWarning));
@@ -428,6 +429,21 @@ bool MacroLex::isLastMacroSuccess()
 bool MacroLex::isLastStreamUseful()
 {
 	return (getCompileStream() == 0) && isLastMacroSuccess();
+}
+
+uint32 MacroLex::handleSharpUndef()
+{
+  JZFUNC_BEGIN_LOG();
+  string key = "";
+  uint32 ret = consumeWord(key, eLexSkipEmptyInput, eLexInOneLine);
+  if (eLexNoError != ret)
+  {
+    return ret;
+  }
+  mDefMgr.cancelDefine(key);
+  
+  JZFUNC_END_LOG();
+  return eLexNoError;
 }
 
 uint32 MacroLex::handleSharpDefine()

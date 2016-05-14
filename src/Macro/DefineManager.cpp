@@ -129,3 +129,8 @@ const DefineRec* DefineManager::findDefineMap(const string& srcDefine)
 	return NULL;
 }
 
+DefineManager::DefineManagerReturnCode DefineManager::cancelDefine(const string& src)
+{
+  mCanceledDefine.insert(src);
+  return eDefMgrNoError;
+}
