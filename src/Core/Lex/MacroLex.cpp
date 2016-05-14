@@ -89,7 +89,7 @@ uint32 MacroLex::handleIsDefined(string& ret)
   }
 	JZWRITE_DEBUG("ret word is :%s",ret.c_str());
 	JZFUNC_END_LOG();
-	return errRet;
+	return eLexNoError;
 }
 
 uint32 MacroLex::pushPrecompileStreamControlWord(uint32 mark,bool isSuccess)

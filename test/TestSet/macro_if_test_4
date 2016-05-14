@@ -4,7 +4,7 @@ yes1
 no1
 #endif
 
-#if defined a 
+#if defined a && !defined b
 yes2
 #else
 no2
