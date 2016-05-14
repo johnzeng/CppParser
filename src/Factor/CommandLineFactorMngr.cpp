@@ -75,7 +75,7 @@ uint32 CommandLineFactorMngr::addonFactorAnalyser()
 				errorCode = handleBarI(inputLine);
 			}
 
-			if (errNoError != errorCode) {
+			if (errNoError != errorCode && errNoSuchPath != errorCode) {
 				return errorCode;
 			}
 		}

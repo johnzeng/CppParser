@@ -4,7 +4,7 @@ echo '#include <nono.h>' > test.c
 gcc -v test.c 2>&1 | grep '/'| \
    grep -v 'ignoring nonexistent directory' | grep -v '^GNU C ' | \
    grep -v "^COLLECT_LTO_WRAPPER" |grep -v '^gcc version' | \
-   grep -v "^Configured with" \
+   grep -v "^Configured with" |\
    grep -v 'test.c' | grep -v 'InstalledDir' > dirs.txt
 
 cat dirs.txt|grep -v '(framework directory)' | sed "s/^ /-I/" >> .factor

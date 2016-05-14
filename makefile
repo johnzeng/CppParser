@@ -92,8 +92,15 @@ release:clean makefile
 travis:
 	make test debug_var=2
 
+ldebug:
+	make debuger debug_var=2
+
 debuger:$(TEST_TARGET)
+ifeq ($(debug_var),2)
+	gdb $(TEST_TARGET)
+else
 	lldb $(TEST_TARGET)
+endif
 
 clean:
 	-find . -name "*.gcno" -exec rm {} \;
