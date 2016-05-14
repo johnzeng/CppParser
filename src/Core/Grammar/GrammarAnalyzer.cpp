@@ -2057,3 +2057,126 @@ uint32 GrammarAnalyzer::handleTypenameSpecifier(int index, int& lastIndex, Gramm
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expLeft = expect("{", index);
+  if (eGrmErrNoError == expLeft)
+  {
+    uint32 initList = handleInitializerList(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == initList)
+    {
+      uint32 commaRet = expect(",", lastIndex + 1);
+      if (eGrmErrNoError == commaRet)
+      {
+        lastIndex ++;
+      }
+    }
+  }
+  uint32 expRight = expect("}", lastIndex + 1);
+  if (eGrmErrNoError)
+  {
+    lastIndex ++;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleExpressionList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return handleInitializerList(index, lastIndex ,curBlock);
+}
+
+uint32 GrammarAnalyzer::handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 clauseRet = handleInitializerClause(index, lastIndex, curBlock);
+  if (eGrmErrNoError == clauseRet)
+  {
+    uint32 tripleDot = expect("...", lastIndex + 1);
+    if (eGrmErrNoError == tripleDot)
+    {
+      lastIndex++;
+    }
+    else
+    {
+      uint32 CommaRet = expect(",", lastIndex + 1);
+      if (eGrmErrNoError == CommaRet)
+      {
+        handleInitializerList(lastIndex + 2, lastIndex, curBlock);
+        return eGrmErrNoError;
+      }
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 thisExp = expect("this", index);
+  if (eGrmErrNoError == thisExp)
+  {
+    lastIndex = index;
+    return thisExp;
+  }
+  uint32 litRet = eGramIsNothing;
+  uint32 literalExp = getLiteral(index, lastIndex, litRet);
+  if (eGrmErrNoError == literalExp)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+
+  uint32 idExpRet = handleIdExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == idExpRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 leftExp = expect("(", index);
+  if (eGrmErrNoError == leftExp)
+  {
+    uint32 expRet = handleExpression(index + 1, lastIndex, curBlock);
+    if (expRet == eGrmErrNoError)
+    {
+      uint32 rightExp = expect(")", lastIndex + 1);
+      if (eGrmErrNoError == rightExp)
+      {
+        lastIndex ++;
+        return eGrmErrNoError;
+      }
+    }
+  }
+
+//  mark for lambda
+
+//  uint32 lambdaExp = handleLambdaExpression(index, lastIndex, curBlock);
+//  if (eGrmErrNoError == lambdaExp)
+//  {
+//    return eGrmErrNoError;
+//  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 offset = eGrmErrNoError == expect("::", index) ? 1:0;
+  uint32 deleteExp = expect("delete", index + offset);
+  if (eGrmErrNoError == deleteExp)
+  {
+    uint32 expLeft = expect("[", index + 1 + offset);
+    if (eGrmErrNoError == expLeft)
+    {
+      uint32 expRight = expect("]", index + 2 + offset);
+      if (eGrmErrNoError == expRight)
+      {
+        return handleCastExpression(index + 3 + offset, lastIndex ,curBlock);
+      }
+    }
+
+    return handleCastExpression(index + 1 + offset, lastIndex ,curBlock);
+  }
+  
+  return eGrmErrUnknown;
+}
+

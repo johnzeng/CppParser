@@ -54,6 +54,7 @@ protected:
   uint32 handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handlePseudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypenameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -118,6 +119,7 @@ protected:
   uint32 getPureSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getVirtSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getAssignmentOperator(int index, int& lastIndex, uint32 &ret);
+  uint32 getLiteral(int index, int& lastIndex, uint32 &ret);
 
 private:
   LexRecList mRecList;

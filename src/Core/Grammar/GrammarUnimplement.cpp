@@ -2,7 +2,6 @@
 
 uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-
 //  uint32 idRet = handleDeclaratorId
   return eGrmErrNoError;
 }
@@ -73,22 +72,7 @@ uint32 GrammarAnalyzer::handleNewExpression(int index, int& lastIndex, GrammarBl
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleExpressionList(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, uint32 &ret)
 {
   return eGrmErrNoError;
 }
