@@ -25,7 +25,7 @@ TEST(MacroLex, macroInclude1){
   lex.analyzeAFile(toCompileFile);
 
   LexRecList recList = lex.getRecList();
-//  ASSERT_GT(recList.size(), 10);
+  ASSERT_GT(recList.size(), 10);
 }
 
 //cover case: include and once

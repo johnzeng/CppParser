@@ -10,6 +10,8 @@ install:
   
 script: 
   - mkdir target
+  - bash script/env-search.sh && cat script/.factor >> .factor
+  - cat .factor
   - make test debug_var=2
 
 after_success:

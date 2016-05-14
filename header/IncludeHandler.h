@@ -10,9 +10,7 @@ using namespace std;
 #define CPP_INC_ENV_PATH "CPLUS_INCLUDE_PATH"
 #define OBJC_INC_ENV_PATH "OBJC_INCLUDE_PATH"
 
-//there is a very large problem that
-//I can not get the include search path in my engine...
-//I can just try now...
+//refer to script/env-search.sh to get more info about this
 const string gHeadSearchPath[] = {
 	"/usr/include/",
 	"/usr/local/include/"
