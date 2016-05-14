@@ -4,6 +4,8 @@
 #include "IncludeHandler.h"
 #include "JZLogger.h"
 
+void globalInitAtBegin();
+
 //cover case: include
 TEST(MacroLex, macroInclude1){
   int argc = 2;
@@ -12,6 +14,7 @@ TEST(MacroLex, macroInclude1){
   strcpy(argv1,"./test/TestSet/macro_include_test_1");
   char* argv[2] = {argv0,argv1};
 
+  globalInitAtBegin();
 	JZSetLoggerLevel(JZ_LOG_TEST);
 
 	//analyze command line input
