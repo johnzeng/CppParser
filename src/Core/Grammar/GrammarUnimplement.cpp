@@ -139,12 +139,6 @@ uint32 GrammarAnalyzer::handleNamespaceDefinition(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleEmptyDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleAttibuteDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   

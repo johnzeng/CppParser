@@ -12,7 +12,6 @@ public:
 
   GrammarBlock *getTopBlock();
 protected:
-  uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleExceptionSpeciafier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleParameterDeclarationList(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -140,12 +139,6 @@ protected:
 
   bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
-  //return the statement's type; This will be a long check.... Actually I don't need to care about the right or wrong problem....how about we skip it at first.
-
-  uint32 handleStatementLeftBracket(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
-  uint32 expectAConstInt(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 expectAVar(int index, int& lastIndex, GrammarBlock* curBlock, DataTypeDefine& retDefine);
-  uint32 getVarCalResult(const string& op,DataTypeDefine* lVar, DataTypeDefine* rVar, DataTypeDefine& retVar);
 
   uint32 handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 getRefQualifier(int index, int& lastIndex, uint32 &ret);

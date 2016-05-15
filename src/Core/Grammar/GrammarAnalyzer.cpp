@@ -7,34 +7,8 @@ uint32 GrammarAnalyzer::doAnalyze()
 {
   int index = 0;
   int listSize = mRecList.size();
-  while (index < listSize)
-  {
-    int32 nextIndex = index;
-    uint32 ret = eGrmErrNoError;
-    if(eGrmErrNoError != (ret = blockHeartBeat(index, nextIndex, &mTopBlock) ))
-    {
-      return ret;
-    }
-    index = nextIndex + 1;
-  }
-  return eGrmErrNoError;
-}
-
-uint32 GrammarAnalyzer::blockHeartBeat(int32 index, int32& lastIndex, GrammarBlock* curBlock)
-{
-  JZFUNC_BEGIN_LOG();
-
-  int32 nextFuncIndex = index;
-  uint32 funcRet = handleFuncDefinition(index, nextFuncIndex, curBlock);
-  if (funcRet == eGrmErrNoError)
-  {
-    lastIndex = nextFuncIndex;
-    JZFUNC_END_LOG();
-    return eGrmErrNoError;
-  }
-
-  JZFUNC_END_LOG();
-  return eGrmErrUnknown;
+  int32 lastIndex = 0;
+  return handleDeclarationSeq(0,lastIndex , &mTopBlock);
 }
 
 uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
@@ -2775,6 +2749,17 @@ uint32 GrammarAnalyzer::handleDeclaration(int index, int& lastIndex, GrammarBloc
     return eGrmErrNoError;
   }
 
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEmptyDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expRet = expect(";", index);
+  if (eGrmErrNoError == expRet)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
   return eGrmErrUnknown;
 }
 
