@@ -118,7 +118,7 @@ uint32 GrammarAnalyzer::expect(const string& expected, int index, bool oneLine)
   //need to check the id
   if (mRecList[index].word != expected)
   {
-    JZWRITE_DEBUG("expected %s not match", expected.c_str());
+//    JZWRITE_DEBUG("expected %s not match", expected.c_str());
     return eGrmErrNotExpected;
   }
   return eGrmErrNoError;
