@@ -14,7 +14,11 @@ public:
 protected:
   uint32 blockHeartBeat(int32 index,int32& lastIndex, GrammarBlock* curBlock);
 
+  uint32 handleExceptionSpeciafier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleParameterDeclarationList(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleParameterDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleParameterDeclarationClause(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleStatementSeq(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleFunctionTryBlock(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleCtorInitializer(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -29,7 +33,7 @@ protected:
   uint32 handleTypedefName(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleDeclaratorId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleUnqualifiedId(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -62,8 +66,6 @@ protected:
   uint32 handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleConversionTypeId(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleConversionDeclarator(int index, int& lastIndex, GrammarBlock* curBlock);
-
-
   uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTrailingTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
@@ -120,6 +122,7 @@ protected:
   uint32 getVarCalResult(const string& op,DataTypeDefine* lVar, DataTypeDefine* rVar, DataTypeDefine& retVar);
 
   uint32 handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 getRefQualifier(int index, int& lastIndex, uint32 &ret);
   uint32 getCVQualifier(int index, int& lastIndex, uint32 &ret);
   uint32 getUnaryOperator(int index, int& lastIndex, uint32 &ret);
   uint32 getConstExpression(int index, int& lastIndex, uint32 &ret);

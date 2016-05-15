@@ -3,6 +3,27 @@
 #include "LexUtil.h"
 #include "JZLogger.h"
 
+uint32 GrammarAnalyzer::getRefQualifier(int index, int& lastIndex, uint32 &ret)
+{
+  ret = eGramIsNothing;
+  uint32 exp1 = expect("&", index);
+  if (eGrmErrNoError == exp1)
+  {
+    lastIndex = index;
+    ret = eGramIsInline;
+    return eGrmErrNoError;
+  }
+  
+  uint32 exp2 = expect("&&", index);
+  if (eGrmErrNoError == exp2)
+  {
+    lastIndex = index;
+    ret = eGramIsVirtual;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
 uint32 GrammarAnalyzer::getFunctionSpecifier(int index, int& lastIndex, uint32 &ret)
 {
   ret = eGramIsNothing;
