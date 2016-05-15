@@ -28,10 +28,13 @@ TEST(GrammarAnalyzer, EnumBasic)
 
   JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
   uint32 ret = grammar.doAnalyze();
+
+  ASSERT_EQ(eGrmErrNoError, ret);
+
   JZSetLoggerLevel(JZ_LOG_TEST);
   
 //  GrammarBlock* topBlock = grammar.getTopBlock();
-//  
+  
 //  ASSERT_EQ(true, topBlock != NULL);
 
 //  EnumDefine* enumDefTest = dynamic_cast<EnumDefine*>( topBlock->getDataDef("test") );

@@ -135,7 +135,6 @@ TEST(GrammarUtil, numberType){
 
 
 TEST(GrammarUtil, strTrans){
-//  JZSetLoggerLevel(JZ_LOG_ALL);
   EXPECT_EQ(100, GrmUtilPtr->str2int32("100"));
   //we don't test for minuse because this pattern shouldn't exist in parser, it should be treated as - 100, this is two words
 //  EXPECT_EQ(100, GrmUtilPtr->str2int32("100"));
