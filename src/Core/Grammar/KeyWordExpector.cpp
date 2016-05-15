@@ -686,3 +686,28 @@ uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, uint3
   }
   return eGrmErrNotOverloadableOperator;
 }
+
+uint32 GrammarAnalyzer::getEnumKey(int index, int& lastIndex, uint32 &ret)
+{
+  ret = eGramIsNothing;
+  uint32 exp1 = expect("enum", index);
+  if (eGrmErrNoError == exp1)
+  {
+    lastIndex = index;
+    uint32 expClass = expect("class", index + 1);
+    if (eGrmErrNoError == expClass)
+    {
+      lastIndex = index + 1;
+//      ret = eGramIsEnumClass;
+    }
+    uint32 expStruct = expect("struct", index + 1);
+    if (eGrmErrNoError == expStruct)
+    {
+      lastIndex = index + 1;
+    }
+//    ret = eGramIsEnum;
+    return eGrmErrNoError;
+  }
+  
+  return eGrmErrUnknown;
+}

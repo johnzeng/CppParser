@@ -23,3 +23,35 @@ GrammarBlock* GrammarAnalyzer::getTopBlock()
   return &mTopBlock;
 }
 
+bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBlock)
+{
+  const VarDefine* def = curBlock->getVarDefInBlock(id);
+  if(NULL != def)
+  {
+    return false;
+  }
+
+  bool isKey = GrmUtilPtr->isKeyWord(id);
+  if(true == isKey)
+  {
+    return false;
+  }
+
+  for(int i = 0 ; i < id.size() ; i++)
+  {
+    if(i == 0)
+    {
+      if (true == LexUtil::isConstNumberChar(id[i]))
+      {
+        //should not start with number
+        return false;
+      }
+    }
+    char curChar = id[i];
+    if (false == LexUtil::isIdentifyChar(curChar))
+    {
+      return false;
+    }
+  }
+  return true;
+}

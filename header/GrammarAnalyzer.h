@@ -103,19 +103,13 @@ protected:
   uint32 handleJumpStatement(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTryBlock(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTemplateName(int index, int& lastIndex, GrammarBlock* curBlock);
-
-
-  uint32 handleEnum(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 handleEnumId(int index, int& lastIndex, GrammarBlock *curBlock);
-  uint32 handleEnumFieldName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEnumeratorList(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEnumHead(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEnumeratorDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEnumBase(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEnumerator(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock);
-
-  //they should be some common method, but I don't sure how to carry the info from invoker now.
-  //they may be covered by expected..
-//  uint32 handleSemicolon(int index, int& lastIndex, GrammarBlock* curBlock);
-  uint32 handleLeftBrace(int index, int& lastIndex, GrammarBlock* curBlock);
-//  uint32 handleRightBrace(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 expect(const string& expected,int index, bool oneLine = false);
 
@@ -140,6 +134,7 @@ protected:
   uint32 getVirtSpecifier(int index, int& lastIndex, uint32 &ret);
   uint32 getAssignmentOperator(int index, int& lastIndex, uint32 &ret);
   uint32 getLiteral(int index, int& lastIndex, uint32 &ret);
+  uint32 getEnumKey(int index, int& lastIndex, uint32 &ret);
   uint32 getOverloadableOperator(int index, int& lastIndex, uint32 &ret);
 
 private:

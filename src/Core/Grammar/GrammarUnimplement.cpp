@@ -61,4 +61,3 @@ uint32 GrammarAnalyzer::handleDeclarationStatement(int index, int& lastIndex, Gr
 {
   return eGrmErrUnknown;
 }
-
