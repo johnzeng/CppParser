@@ -711,3 +711,32 @@ uint32 GrammarAnalyzer::getEnumKey(int index, int& lastIndex, uint32 &ret)
   
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::getClassKey(int index, int& lastIndex, uint32 &ret)
+{
+  ret = eGramIsNothing;
+  uint32 exp1 = expect("class", index);
+  if (eGrmErrNoError == exp1)
+  {
+    lastIndex = index;
+//    ret = eGramIsEnum;
+    return eGrmErrNoError;
+  }
+  
+  uint32 exp2 = expect("struct", index);
+  if (eGrmErrNoError == exp2)
+  {
+    lastIndex = index;
+//    ret = eGramIsStruct;
+    return eGrmErrNoError;
+  }
+
+  uint32 exp3 = expect("uion", index);
+  if (eGrmErrNoError == exp3)
+  {
+    lastIndex = index;
+//    ret = eGramIsUnion;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}

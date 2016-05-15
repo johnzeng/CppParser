@@ -2560,3 +2560,76 @@ uint32 GrammarAnalyzer::handleEnumerator(int index, int& lastIndex, GrammarBlock
   return handleIdentifier(index, lastIndex, curBlock);
 }
 
+uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 classHead = handleClassHead(index, lastIndex, curBlock);
+  if (eGrmErrNoError == classHead)
+  {
+    uint32 expRet = expect("{", lastIndex + 1, curBlock);
+    if (eGrmErrNoError == expRet)
+    {
+      uint32 memberRet =handleMemberSpecification(lastIndex + 1, lastIndex, curBlock);
+      uint32 expRight = expect("}", lastIndex + 1, curBlock);
+      if (eGrmErrNoError == expRight)
+      {
+        lastIndex ++;
+        return eGrmErrNoError;
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleClassHead(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 keyType = eGramIsNothing;
+  uint32 keyRet = getClassKey(index, lastIndex, keyType);
+  if (eGrmErrNoError == keyRet)
+  {
+    handleAttributes(lastIndex + 1, lastIndex, curBlock);
+    uint32 headnameRet = handleClassHeadName(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == headnameRet)
+    {
+      handleClassVirtSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+    }
+    handleBaseClause(lastIndex + 1, lastIndex, curBlock);
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleClassHeadName(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 nestedNameRet = handleNestNameSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrUnknown == nestedNameRet)
+  {
+    return handleClassName(lastIndex + 1, lastIndex, curBlock);
+  }
+  else
+  {
+    return handleClassName(index, lastIndex, curBlock);
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleClassVirtSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 ret = eGramIsNothing;
+  uint32 getRet = getVirtSpecifier(index, lastIndex, ret);
+  if (eGramIsNothing == getRet)
+  {
+    handleClassVirtSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBaseClause(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 exp1 = expect(":", index);
+  if (eGrmErrNoError == exp1)
+  {
+    return handleBaseSpecifierList(index + 1, lastIndex, curBlock);
+  }
+  return eGrmErrUnknown;
+}
+

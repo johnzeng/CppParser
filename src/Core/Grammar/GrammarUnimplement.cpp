@@ -6,12 +6,6 @@ uint32 GrammarAnalyzer::handleTrailingReturenType(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  //should be same as handleClass
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleNewExpression(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   return eGrmErrUnknown;
@@ -61,3 +55,24 @@ uint32 GrammarAnalyzer::handleDeclarationStatement(int index, int& lastIndex, Gr
 {
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleMemberSpecification(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBaseTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBaseSpecifierList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBaseSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrUnknown;
+}
+

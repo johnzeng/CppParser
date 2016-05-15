@@ -108,7 +108,14 @@ protected:
   uint32 handleEnumeratorDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEnumBase(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEnumerator(int index, int& lastIndex, GrammarBlock* curBlock);
-
+  uint32 handleClassHead(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleMemberSpecification(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleClassHeadName(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleBaseClause(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleClassVirtSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleBaseSpecifierList(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleBaseSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleBaseTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 expect(const string& expected,int index, bool oneLine = false);
@@ -135,6 +142,7 @@ protected:
   uint32 getAssignmentOperator(int index, int& lastIndex, uint32 &ret);
   uint32 getLiteral(int index, int& lastIndex, uint32 &ret);
   uint32 getEnumKey(int index, int& lastIndex, uint32 &ret);
+  uint32 getClassKey(int index, int& lastIndex, uint32 &ret);
   uint32 getOverloadableOperator(int index, int& lastIndex, uint32 &ret);
 
 private:
