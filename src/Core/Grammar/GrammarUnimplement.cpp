@@ -61,3 +61,93 @@ uint32 GrammarAnalyzer::handleMemberSpecification(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleBlockDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleAsmDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleUsingDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleUsingDirective(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleStatic_assertDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleAliasDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleOpaqueEnumDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTemplateDecaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleExplicitInstantiation(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleExplicitSpecification(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleLinkageSpecification(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEmptyDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleAttibuteDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+

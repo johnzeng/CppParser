@@ -2708,3 +2708,73 @@ uint32 GrammarAnalyzer::handleClassOrDecltype(int index, int& lastIndex, Grammar
   
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleDeclarationSeq(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 declaraRet = handleDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == declaraRet)
+  {
+    uint32 nextRet = handleDeclarationSeq(lastIndex + 1, lastIndex,  curBlock);
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 blockRet = handleBlockDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == blockRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 functionRet = handleFuncDefinition(index, lastIndex, curBlock);
+  if (eGrmErrNoError == functionRet)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 templateRet = handleTemplateDecaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == templateRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 explicitInsRet = handleExplicitInstantiation(index, lastIndex, curBlock);
+  if (eGrmErrNoError == explicitInsRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 explicitSpecRet = handleExplicitSpecification(index, lastIndex, curBlock);
+  if (eGrmErrNoError == explicitSpecRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 linkageRet = handleLinkageSpecification(index, lastIndex, curBlock);
+  if (eGrmErrNoError == linkageRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 namespaceRet = handleNamespaceDefinition(index, lastIndex, curBlock);
+  if (eGrmErrNoError == namespaceRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 emptyRet = handleEmptyDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == emptyRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 attRet = handleAttibuteDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == attRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+

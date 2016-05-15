@@ -118,6 +118,23 @@ protected:
   uint32 handleBaseTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleClassOrDecltype(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleDeclarationSeq(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleBlockDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleSimpleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleAsmDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleUsingDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleUsingDirective(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleStatic_assertDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleAliasDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleOpaqueEnumDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTemplateDecaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleExplicitInstantiation(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleExplicitSpecification(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleLinkageSpecification(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleEmptyDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleAttibuteDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 expect(const string& expected,int index, bool oneLine = false);
 
