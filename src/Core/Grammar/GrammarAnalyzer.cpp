@@ -2567,3 +2567,63 @@ uint32 GrammarAnalyzer::handleParameterDeclaration(int index, int& lastIndex, Gr
 
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  lastIndex = index;
+  return eGrmErrNoError;
+  //I will move this on at first
+  uint32 handleLabelRet = handleLabeledStatement(index, lastIndex, curBlock);
+  if (eGrmErrNoError == handleLabelRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 declarationStateRet = handleDeclarationStatement(index, lastIndex, curBlock);
+  if (eGrmErrNoError == declarationStateRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 attRet = handleAttributes(index, lastIndex, curBlock);
+  uint32 toIndex = index;
+  if (eGrmErrNoError == attRet)
+  {
+    toIndex = lastIndex + 1;
+  }
+
+  uint32 expStat = handleExpressionStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == expStat)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 compoundStat = handleCompoundStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == compoundStat)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 selectionStat = handleSelectionStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == expStat)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 iterationRet = handleIterationStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == iterationRet)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 jumpStat = handleJumpStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == jumpStat)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 tryState = handleTryBlock(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == tryState)
+  {
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}

@@ -95,6 +95,13 @@ protected:
   uint32 handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTemplateArgumentList(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTemplateArgument(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleLabeledStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleExpressionStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleDeclarationStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleSelectionStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleIterationStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleJumpStatement(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleTryBlock(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleTemplateName(int index, int& lastIndex, GrammarBlock* curBlock);
 
 
