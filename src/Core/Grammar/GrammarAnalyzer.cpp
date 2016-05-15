@@ -2627,3 +2627,55 @@ uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock*
 
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleExpressionStatement(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 expRet = handleExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == expRet)
+  {
+    return expect(";", lastIndex + 1);
+  }
+  else
+  {
+    return expect(";", index );
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, uint32 &ret)
+{
+  
+  //need to handle some prefix thing.
+  //not handled yet
+  ret = eGramIsNothing;
+  if (mRecList.size() <= index)
+  {
+    return eGrmErrFileEnd;
+  }
+
+  string word = mRecList[index].word;
+
+  if (0 == word.size())
+  {
+    return eGrmErrUnknown;
+  }
+  if ("\"" == word)
+  {
+//    ret = eGramIsString;
+    return eGrmErrNoError;
+  }
+  else if("'" == word)
+  {
+    return eGrmErrNoError;
+  }
+  else if(false == LexUtil::isInterpunction(word[0]) && false == GrmUtilPtr->isKeyWord(word))
+  {
+    if (true == GrmUtilPtr->isConstIntNumber(word))
+    {
+//      ret = eGramIsNumber;
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrUnknown;
+}
+
