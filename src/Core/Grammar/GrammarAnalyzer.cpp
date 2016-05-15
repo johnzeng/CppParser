@@ -2633,3 +2633,78 @@ uint32 GrammarAnalyzer::handleBaseClause(int index, int& lastIndex, GrammarBlock
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleBaseSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 attRet = handleAttributes(index, lastIndex, curBlock);
+  if (eGrmErrNoError == attRet )
+  {
+    uint32 baseRet = handleBaseTypeSpecifier(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == baseRet)
+    {
+      return eGrmErrNoError;
+    }
+
+    uint32 ret = eGramIsNothing;
+    uint32 expVir = expect("virtual", lastIndex + 1);
+    if (eGrmErrNoError == expVir)
+    {
+      getAccessSpecifier(lastIndex + 2, lastIndex, ret);
+      return handleBaseTypeSpecifier(lastIndex + 1, lastIndex, curBlock);
+    }
+
+    uint32 accessRet = getAccessSpecifier(lastIndex + 1, lastIndex, ret);
+    if (eGrmErrNoError == accessRet)
+    {
+      uint32 offset = expect("virtual", lastIndex + 1) ? 1:0;
+      return handleBaseTypeSpecifier(lastIndex + 1 + offset, lastIndex, curBlock);
+    }
+  }
+  return eGrmErrUnknown;
+}
+uint32 GrammarAnalyzer::handleBaseSpecifierList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 specRet = handleBaseSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == specRet)
+  {
+    uint32 expComma = expect(",", lastIndex + 1);
+    if (eGrmErrNoError == expComma)
+    {
+      return handleBaseSpecifierList(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 expDot = expect("...", lastIndex + 1);
+    if (eGrmErrNoError == expDot)
+    {
+      lastIndex ++;
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBaseTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return handleClassOrDecltype(index, lastIndex, curBlock);
+}
+
+uint32 GrammarAnalyzer::handleClassOrDecltype(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 decRet = handleDecltypeSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == decRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 offset = expect("::", index) == eGrmErrNoError ? 1:0;
+  uint32 nestedNameRet = handleNestNameSpecifier(index + 1 + offset, lastIndex, curBlock);
+  if (eGrmErrNoError == nestedNameRet)
+  {
+    return handleClassName(lastIndex + 1, lastIndex, curBlock);
+  }
+  else
+  {
+    return handleClassName(index + offset + 1, lastIndex, curBlock);
+  }
+  
+  return eGrmErrUnknown;
+}

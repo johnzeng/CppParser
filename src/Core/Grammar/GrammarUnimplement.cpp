@@ -61,18 +61,3 @@ uint32 GrammarAnalyzer::handleMemberSpecification(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleBaseTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrUnknown;
-}
-
-uint32 GrammarAnalyzer::handleBaseSpecifierList(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrUnknown;
-}
-
-uint32 GrammarAnalyzer::handleBaseSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return eGrmErrUnknown;
-}
-

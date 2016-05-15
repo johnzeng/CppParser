@@ -117,6 +117,7 @@ protected:
   uint32 handleBaseSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleBaseTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleClassOrDecltype(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 expect(const string& expected,int index, bool oneLine = false);
 
