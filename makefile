@@ -81,7 +81,11 @@ endif
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	@echo "==================== tester is going to run  ================================="
 	-find . -name "*.gcda" -exec rm {} \;
+ifneq ($(p),)
+	export C_INCLUDE_PATH="./" &&	export CPLUS_INCLUDE_PATH="./" && export OBJC_INC_ENV_PATH="./" && ./$(TEST_TARGET) --gtest_filter=$(p)
+else
 	export C_INCLUDE_PATH="./" &&	export CPLUS_INCLUDE_PATH="./" && export OBJC_INC_ENV_PATH="./" && ./$(TEST_TARGET)
+endif
 
 lib:
 	cd $(mylib_PATH) && make
