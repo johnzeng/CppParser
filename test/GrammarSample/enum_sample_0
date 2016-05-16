@@ -2,4 +2,4 @@ enum hello{
   hi = 0,
   hello = 1,
 
-}
+};

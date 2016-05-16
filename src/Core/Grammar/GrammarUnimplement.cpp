@@ -61,18 +61,6 @@ uint32 GrammarAnalyzer::handleMemberSpecification(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleBlockDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-
-  return eGrmErrUnknown;
-}
-
-uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleAsmDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   
@@ -140,6 +128,17 @@ uint32 GrammarAnalyzer::handleNamespaceDefinition(int index, int& lastIndex, Gra
 }
 
 uint32 GrammarAnalyzer::handleAttibuteDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleInitDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleNamespaceAliasDefinition(int index, int& lastIndex, GrammarBlock* curBlock)
 {
   
   return eGrmErrUnknown;

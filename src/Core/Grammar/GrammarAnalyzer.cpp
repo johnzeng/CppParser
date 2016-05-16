@@ -2147,16 +2147,19 @@ uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlo
   uint32 tryRet = handleFunctionTryBlock(index, lastIndex, curBlock);
   if (eGrmErrNoError == tryRet)
   {
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
   uint32 ctorInitializerRet = handleCtorInitializer(index, lastIndex, curBlock);
   if (eGrmErrNoError == ctorInitializerRet)
   {
+    JZFUNC_END_LOG();
     return handleCompoundStatement(lastIndex + 1, lastIndex, curBlock);
   }
   else
   {
+    JZFUNC_END_LOG();
     return handleCompoundStatement(index, lastIndex, curBlock);
   }
   return eGrmErrUnknown;
@@ -2164,20 +2167,20 @@ uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlo
 
 uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock)
 {
-  uint32 expLeft = expect("(", index);
+  uint32 expLeft = expect("{", index);
   if (eGrmErrNoError == expLeft)
   {
     uint32 statRet = handleStatementSeq(index + 1,lastIndex, curBlock);
     if (eGrmErrNoError == statRet)
     {
-      uint32 expRight = expect(")", lastIndex + 1);
+      uint32 expRight = expect("}", lastIndex + 1);
       if (eGrmErrNoError == expRight)
       {
         return eGrmErrNoError;
       }
     }
   }
-  return eGrmErrNoError;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
@@ -2483,6 +2486,8 @@ uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBl
         uint32 expRight = expect("}", lastIndex + 1 + offset);
         if (eGrmErrNoError == expRight)
         {
+          lastIndex += offset;
+          lastIndex++;
           JZFUNC_END_LOG();
           return eGrmErrNoError;
         }
@@ -2797,4 +2802,95 @@ uint32 GrammarAnalyzer::handleEmptyDeclaration(int index, int& lastIndex, Gramma
   }
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleBlockDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  uint32 simpleRet = handleSimpleDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == simpleRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 asmRet = handleAsmDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == asmRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 namespaceRet = handleNamespaceAliasDefinition(index, lastIndex, curBlock);
+  if (eGrmErrNoError == namespaceRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 usingDeclRet = handleUsingDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == usingDeclRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 usingDireRet = handleUsingDirective(index, lastIndex, curBlock);
+  if (eGrmErrNoError == usingDireRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 static_assertRet = handleStatic_assertDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == static_assertRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 aliasDeclRet = handleAliasDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == aliasDeclRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 opaqueRet = handleOpaqueEnumDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == opaqueRet)
+  {
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock)
+{
+  int tryLastA = lastIndex;
+  int tryLastB = lastIndex;
+  int tryLastC = lastIndex;
+  int tryIndex = index;
+  uint32 attRet = handleAttributes(index, tryLastA, curBlock);
+  if (eGrmErrNoError == attRet)
+  {
+    tryIndex = tryLastA + 1;
+    lastIndex = tryLastA;
+  }
+
+  uint32 declSeqRet = handleDeclSpecifierSeq(tryIndex, tryLastB, curBlock);
+  if (eGrmErrNoError == declSeqRet)
+  {
+    tryIndex = tryLastB + 1;
+    lastIndex = tryLastB;
+  }
+
+  uint32 initRet = handleInitDeclaratorList(tryIndex,tryLastC, curBlock);
+  if (eGrmErrNoError == initRet)
+  {
+    lastIndex = tryLastC;
+    tryIndex = tryLastC + 1;
+  }
+
+  uint32 expEnd = expect(";", tryIndex);
+  if (eGrmErrNoError == expEnd)
+  {
+    lastIndex = tryIndex;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+    
+  return eGrmErrUnknown;
+}
+
 

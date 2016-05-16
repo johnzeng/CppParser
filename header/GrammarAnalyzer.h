@@ -132,8 +132,10 @@ protected:
   uint32 handleExplicitSpecification(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleLinkageSpecification(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleNamespaceAliasDefinition(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleEmptyDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
   uint32 handleAttibuteDeclaration(int index, int& lastIndex, GrammarBlock* curBlock);
+  uint32 handleInitDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock);
 
   uint32 expect(const string& expected,int index, bool oneLine = false);
 
