@@ -161,9 +161,15 @@ protected:
   uint32 getClassKey(int index, int& lastIndex, uint32 &ret);
   uint32 getOverloadableOperator(int index, int& lastIndex, uint32 &ret);
 
-  typedef uint32(*handler)(int,int&,GrammarBlock*);
+  typedef uint32(*handler)(int,int&,GrammarBlock*, GrammarReturnerBase* ret);
+  typedef uint32(*getter)(int, int&, uint32 &ret);
 
-  bool invoke();
+  bool invoke(handler han, const string& file, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt);
+
+  bool invoke(getter get, const string& file, const int line, const int index, int& lastIndex, uint32& ret, bool isOpt);
+
+  bool invoke(const string& file, const int line, const int index, int& lastIndex, const string& key, bool isOpt, bool inOoneLine = false);
+
 private:
 
   LexRecList mRecList;
