@@ -4,7 +4,9 @@
 #include "JZLogger.h"
 
 //this macro should only be used in this file
-#define INVOKE(handler, index, lastIndex, curBlock, returner) invoke(handler, __func__, __LINE__,,index, lastIndex, curBlock, returner)
+
+#define INVOKE(handler, index, lastIndex, curBlock, returner, isOpt) invoke(handler, __func__, __LINE__,index, lastIndex, curBlock, returner, isOpt)
+#define EXPECT(index,lastIndex, key, isOpt, inOneLine) invoke(__func__,__LINE__,index, lastIndex, key, isOpt, inOneLine)
 
 uint32 GrammarAnalyzer::doAnalyze()
 {
@@ -2514,17 +2516,47 @@ uint32 GrammarAnalyzer::handleEnumeratorList(int index, int& lastIndex, GrammarB
 
 uint32 GrammarAnalyzer::handleEnumeratorDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expEnumerator = handleEnumerator(index, lastIndex, curBlock);
-  if (eGrmErrNoError == expEnumerator)
+//  uint32 expEnumerator = handleEnumerator(index, lastIndex, curBlock);
+//  if (eGrmErrNoError == expEnumerator)
+//  {
+//    uint32 eqExp = expect("=", lastIndex + 1);
+//    if (eGrmErrNoError == eqExp)
+//    {
+//      return handleConstantExpression(lastIndex + 2, lastIndex, curBlock);
+//    }
+//    return eGrmErrNoError;
+//  }
+//  return eGrmErrUnknown;
+//  
+//
+//  Let's zuosi
+//
+  GrammarReturnerBase base;
+  int32 trylast = index;
+
+  bool ret = INVOKE(&GrammarAnalyzer::handleEnumerator, index, trylast, curBlock, &base, false) ;
+  if (ret)
   {
-    uint32 eqExp = expect("=", lastIndex + 1);
-    if (eGrmErrNoError == eqExp)
+    lastIndex = trylast;
+    bool continueRet = EXPECT(trylast + 1, trylast, "=", false, false) &&
+    INVOKE(&GrammarAnalyzer::handleConstantExpression, trylast + 1, trylast, curBlock, &base,false) ;
+
+    if (continueRet)
     {
-      return handleConstantExpression(lastIndex + 2, lastIndex, curBlock);
+      lastIndex = trylast;
     }
+  }
+
+  if (ret)
+  {
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
-  return eGrmErrUnknown;
+  else
+  {
+    JZFUNC_END_LOG();
+    return eGrmErrUnknown;
+  }
 }
 
 uint32 GrammarAnalyzer::handleEnumerator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
