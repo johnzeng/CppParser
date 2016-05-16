@@ -87,30 +87,6 @@ bool GrammarAnalyzer::invoke(handler han, const string& file, const int line, co
   }
 }
 
-bool GrammarAnalyzer::invoke(getter get, const string& file, const int line, const int index, int& lastIndex, uint32& ret, bool isOpt)
-{
-  if (false == mLoopBreaker.insert(file, line, index))
-  {
-    return false;
-  }
-  int32 tryLast = lastIndex;
-  uint32 invokeRet = get(index, tryLast, ret);
-  if (eGrmErrNoError == invokeRet)
-  {
-    lastIndex = tryLast;
-    return true;
-  }
-  else
-  {
-    if (isOpt)
-    {
-      lastIndex = index - 1;
-      return true;
-    }
-    return false;
-  }
-}
-
 bool GrammarAnalyzer::invoke(const string& file, const int line, const int index,int& lastIndex, const string& key, bool isOpt, bool inOneLine)
 {
   if (false == mLoopBreaker.insert(file, line, index))

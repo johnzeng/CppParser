@@ -3,14 +3,14 @@
 #include "LexUtil.h"
 #include "JZLogger.h"
 
-uint32 GrammarAnalyzer::getRefQualifier(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getRefQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
-  ret = eGramIsNothing;
+//  ret = eGramIsNothing;
   uint32 exp1 = expect("&", index);
   if (eGrmErrNoError == exp1)
   {
     lastIndex = index;
-    ret = eGramIsInline;
+//    ret = eGramIsInline;
     return eGrmErrNoError;
   }
   
@@ -18,20 +18,20 @@ uint32 GrammarAnalyzer::getRefQualifier(int index, int& lastIndex, uint32 &ret)
   if (eGrmErrNoError == exp2)
   {
     lastIndex = index;
-    ret = eGramIsVirtual;
+//    ret = eGramIsVirtual;
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::getFunctionSpecifier(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getFunctionSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
-  ret = eGramIsNothing;
+//  ret = eGramIsNothing;
   uint32 expInline = expect("inline", index);
   if (eGrmErrNoError == expInline)
   {
     lastIndex = index;
-    ret = eGramIsInline;
+//    ret = eGramIsInline;
     return eGrmErrNoError;
   }
   
@@ -39,7 +39,7 @@ uint32 GrammarAnalyzer::getFunctionSpecifier(int index, int& lastIndex, uint32 &
   if (eGrmErrNoError == expVirtual)
   {
     lastIndex = index;
-    ret = eGramIsVirtual;
+//    ret = eGramIsVirtual;
     return eGrmErrNoError;
   }
 
@@ -47,21 +47,21 @@ uint32 GrammarAnalyzer::getFunctionSpecifier(int index, int& lastIndex, uint32 &
   if (eGrmErrNoError == expExplicit)
   {
     lastIndex = index;
-    ret = eGramIsExplicit;
+//    ret = eGramIsExplicit;
     return eGrmErrNoError;
   }
   return eGrmErrNotFunctionSpecifier;
 }
 
-uint32 GrammarAnalyzer::getStorageClassSpecifier(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getStorageClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
-  ret = eGramIsNothing;
+//  ret = eGramIsNothing;
   //removed in cpp 11,so need more checking here
   uint32 expAuto = expect("auto", index);
   if (eGrmErrNoError == expAuto)
   {
     lastIndex = index;
-    ret = eGramIsAuto;
+//    ret = eGramIsAuto;
     return eGrmErrNoError;
   }
   
@@ -69,7 +69,7 @@ uint32 GrammarAnalyzer::getStorageClassSpecifier(int index, int& lastIndex, uint
   if (eGrmErrNoError == expRegister)
   {
     lastIndex = index;
-    ret = eGramIsRegister;
+//    ret = eGramIsRegister;
     return eGrmErrNoError;
   }
 
@@ -77,7 +77,7 @@ uint32 GrammarAnalyzer::getStorageClassSpecifier(int index, int& lastIndex, uint
   if (eGrmErrNoError == expRegister)
   {
     lastIndex = index;
-    ret = eGramIsStatic;
+//    ret = eGramIsStatic;
     return eGrmErrNoError;
   }
 
@@ -85,7 +85,7 @@ uint32 GrammarAnalyzer::getStorageClassSpecifier(int index, int& lastIndex, uint
   if (eGrmErrNoError == expRegister)
   {
     lastIndex = index;
-    ret = eGramIsThreadLocal;
+//    ret = eGramIsThreadLocal;
     return eGrmErrNoError;
   }
 
@@ -93,7 +93,7 @@ uint32 GrammarAnalyzer::getStorageClassSpecifier(int index, int& lastIndex, uint
   if (eGrmErrNoError == expExtern)
   {
     lastIndex = index;
-    ret = eGramIsExtern;
+//    ret = eGramIsExtern;
     return eGrmErrNoError;
   }
 
@@ -101,7 +101,7 @@ uint32 GrammarAnalyzer::getStorageClassSpecifier(int index, int& lastIndex, uint
   if (eGrmErrNoError == expRegister)
   {
     lastIndex = index;
-    ret = eGramIsMutable;
+//    ret = eGramIsMutable;
     return eGrmErrNoError;
   }
 
@@ -124,14 +124,14 @@ uint32 GrammarAnalyzer::expect(const string& expected, int index, bool oneLine)
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::getCVQualifier(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getCVQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
-  ret = eGramIsNothing;
+//  ret = eGramIsNothing;
   uint32 expConst = expect("const", index);
   if (eGrmErrNoError == expConst)
   {
     lastIndex = index;
-    ret = eGramIsConst;
+//    ret = eGramIsConst;
     return eGrmErrNoError;
   }
   
@@ -139,20 +139,20 @@ uint32 GrammarAnalyzer::getCVQualifier(int index, int& lastIndex, uint32 &ret)
   if (eGrmErrNoError == expVolatile)
   {
     lastIndex = index;
-    ret = eGramIsVolatile;
+//    ret = eGramIsVolatile;
     return eGrmErrNoError;
   }
   return eGrmErrNotCVQualifier;
 }
 
-uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
+uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
-  ret = eGramIsNothing;
+//  ret = eGramIsNothing;
   uint32 expStar = expect("*", index);
   if (eGrmErrNoError == expStar)
   {
     lastIndex = index;
-    ret = eGramIsStar;
+//    ret = eGramIsStar;
     return eGrmErrNoError;
   }
   
@@ -160,7 +160,7 @@ uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
   if (eGrmErrNoError == expAnd)
   {
     lastIndex = index;
-    ret = eGramIsAnd;
+//    ret = eGramIsAnd;
     return eGrmErrNoError;
   }
 
@@ -168,7 +168,7 @@ uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
   if (eGrmErrNoError == expPlus)
   {
     lastIndex = index;
-    ret = eGramIsPlus;
+//    ret = eGramIsPlus;
     return eGrmErrNoError;
   }
 
@@ -176,7 +176,7 @@ uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
   if (eGrmErrNoError == expMinus)
   {
     lastIndex = index;
-    ret = eGramIsMinus;
+//    ret = eGramIsMinus;
     return eGrmErrNoError;
   }
 
@@ -184,7 +184,7 @@ uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
   if (eGrmErrNoError == expBone)
   {
     lastIndex = index;
-    ret = eGramIsBone;
+//    ret = eGramIsBone;
     return eGrmErrNoError;
   }
 
@@ -192,21 +192,21 @@ uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, uint32& ret)
   if (eGrmErrNoError == expWave)
   {
     lastIndex = index;
-    ret = eGramIsWave;
+//    ret = eGramIsWave;
     return eGrmErrNoError;
   }
   return eGrmErrNotUnaryOperator;
   
 }
  
-uint32 GrammarAnalyzer::getAccessSpecifier(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getAccessSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   
   uint32 expPrivate = expect("private", index);
   if (eGrmErrNoError == expPrivate)
   {
     lastIndex = index;
-    ret = eGramIsPrivate;
+//    ret = eGramIsPrivate;
     return eGrmErrNoError;
   }
 
@@ -214,7 +214,7 @@ uint32 GrammarAnalyzer::getAccessSpecifier(int index, int& lastIndex, uint32 &re
   if (eGrmErrNoError == expPublic)
   {
     lastIndex = index;
-    ret = eGramIsPublic;
+//    ret = eGramIsPublic;
     return eGrmErrNoError;
   }
 
@@ -222,13 +222,13 @@ uint32 GrammarAnalyzer::getAccessSpecifier(int index, int& lastIndex, uint32 &re
   if (eGrmErrNoError == expProtected)
   {
     lastIndex = index;
-    ret = eGramIsProtected;
+//    ret = eGramIsProtected;
     return eGrmErrNoError;
   }
   return eGrmErrNotAccessSpecifier;
 }
 
-uint32 GrammarAnalyzer::getPureSpecifier(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getPureSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   uint32 expEqual = expect("=", index);
   if (eGrmErrNoError == expEqual)
@@ -236,7 +236,7 @@ uint32 GrammarAnalyzer::getPureSpecifier(int index, int& lastIndex, uint32 &ret)
     uint32 expZero = expect("0", index + 1);
     if(eGrmErrNoError == expZero)
     {
-      ret = eGramIsPureSpecifier;
+//      ret = eGramIsPureSpecifier;
       lastIndex = index + 1;
       return eGrmErrNoError;
     }
@@ -246,13 +246,13 @@ uint32 GrammarAnalyzer::getPureSpecifier(int index, int& lastIndex, uint32 &ret)
 
 }
 
-uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   uint32 expOverride = expect("override", index);
   if (eGrmErrNoError == expOverride)
   {
     lastIndex = index;
-    ret = eGramIsOverride;
+//    ret = eGramIsOverride;
     return eGrmErrNoError;
   }
 
@@ -260,7 +260,7 @@ uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, uint32 &ret)
   if (eGrmErrNoError == expFinal)
   {
     lastIndex = index;
-    ret = eGramIsFinal;
+//    ret = eGramIsFinal;
     return eGrmErrNoError;
   }
 
@@ -268,21 +268,21 @@ uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, uint32 &ret)
   if (eGrmErrNoError == expFinal)
   {
     lastIndex = index;
-    ret = eGramIsNew;
+//    ret = eGramIsNew;
     return eGrmErrNoError;
   }
   return eGrmErrNotUnaryOperator;
   
 }
 
-uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   //refactor: change exp name and ret value
   uint32 exp1 = expect("=", index);
   if (eGrmErrNoError == exp1)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -290,7 +290,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp2)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -298,7 +298,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp3)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -306,7 +306,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp4)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -314,7 +314,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp5)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -322,7 +322,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp6)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -330,7 +330,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp7)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -338,7 +338,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp8)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -346,7 +346,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp9)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -354,7 +354,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp10)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -362,7 +362,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   if (eGrmErrNoError == exp11)
   {
     lastIndex = index;
-    ret = eGramIsNothing;
+//    ret = eGramIsNothing;
     return eGrmErrNoError;
   }
 
@@ -370,15 +370,15 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, uint32 
   
 }
 
-uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 // this func haven't handle the the ret value yet
-  ret = eGramIsNothing;
+//  ret = eGramIsNothing;
   uint32 newExp = expect("new", index);
   if (eGrmErrNoError == newExp)
   {
     lastIndex = index;
-    ret = eGramIsNew;
+//    ret = eGramIsNew;
     uint32 expLeft = expect("[", index + 1);
     if (eGrmErrNoError == expLeft)
     {
@@ -396,7 +396,7 @@ uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, uint3
   if (eGrmErrNoError == deleteExp)
   {
     lastIndex = index;
-    ret = eGramIsNew;
+//    ret = eGramIsNew;
     uint32 expLeft = expect("[", index + 1);
     if (eGrmErrNoError == expLeft)
     {
@@ -687,9 +687,9 @@ uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, uint3
   return eGrmErrNotOverloadableOperator;
 }
 
-uint32 GrammarAnalyzer::getEnumKey(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getEnumKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
-  ret = eGramIsNothing;
+//  ret = eGramIsNothing;
   uint32 exp1 = expect("enum", index);
   if (eGrmErrNoError == exp1)
   {
@@ -712,9 +712,9 @@ uint32 GrammarAnalyzer::getEnumKey(int index, int& lastIndex, uint32 &ret)
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::getClassKey(int index, int& lastIndex, uint32 &ret)
+uint32 GrammarAnalyzer::getClassKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
-  ret = eGramIsNothing;
+//  ret = eGramIsNothing;
   uint32 exp1 = expect("class", index);
   if (eGrmErrNoError == exp1)
   {
@@ -737,6 +737,51 @@ uint32 GrammarAnalyzer::getClassKey(int index, int& lastIndex, uint32 &ret)
     lastIndex = index;
 //    ret = eGramIsUnion;
     return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+{
+  
+  //need to handle some prefix thing.
+  //not handled yet
+//  ret = eGramIsNothing;
+  if (mRecList.size() <= index)
+  {
+    return eGrmErrFileEnd;
+  }
+
+  string word = mRecList[index].word;
+
+  if (0 == word.size())
+  {
+    return eGrmErrUnknown;
+  }
+  if ("\"" == word)
+  {
+//    ret = eGramIsString;
+    return eGrmErrNoError;
+  }
+  else if("'" == word)
+  {
+    return eGrmErrNoError;
+  }
+  else if("true" == word || "false" == word)
+  {
+    return eGrmErrNoError;
+  }
+  else if("nullptr" == word || "NULL" == word)
+  {
+    return eGrmErrNoError;
+  }
+  else if(false == LexUtil::isInterpunction(word[0]) && false == GrmUtilPtr->isKeyWord(word))
+  {
+    if (true == GrmUtilPtr->isConstIntNumber(word))
+    {
+//      ret = eGramIsNumber;
+      return eGrmErrNoError;
+    }
   }
   return eGrmErrUnknown;
 }

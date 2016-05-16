@@ -3,6 +3,9 @@
 #include "LexUtil.h"
 #include "JZLogger.h"
 
+//this macro should only be used in this file
+#define INVOKE(handler, index, lastIndex, curBlock, returner) invoke(handler, __func__, __LINE__,,index, lastIndex, curBlock, returner)
+
 uint32 GrammarAnalyzer::doAnalyze()
 {
   int index = 0;
@@ -13,16 +16,16 @@ uint32 GrammarAnalyzer::doAnalyze()
 
 uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 getRet1 = eGramIsNothing;
-  uint32 errRet1 = getCVQualifier(index,lastIndex, getRet1);
+//  uint32 getRet1 = eGramIsNothing;
+  uint32 errRet1 = getCVQualifier(index,lastIndex,curBlock/*, getRet1*/);
   if(eGrmErrNoError != errRet1)
   {
     //it's reasonable to get nothing here
     return eGrmErrNoError;
   }
   
-  uint32 getRet2 = eGramIsNothing;
-  uint32 errRet2 = getCVQualifier(index + 1,lastIndex, getRet2);
+//  uint32 getRet2 = eGramIsNothing;
+  uint32 errRet2 = getCVQualifier(index + 1,lastIndex, curBlock);
   if(eGrmErrNoError != errRet2)
   {
     //it's reasonable to get nothing here
@@ -30,11 +33,11 @@ uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarB
     return eGrmErrNoError;
   }
 
-  if(getRet1 == getRet2)
-  {
-    JZFUNC_END_LOG();
-    return eGrmErrDoubleCVQualifier;
-  }
+//  if(getRet1 == getRet2)
+//  {
+//    JZFUNC_END_LOG();
+//    return eGrmErrDoubleCVQualifier;
+//  }
   //should add more code to attach CV-qualifier to the following block
   JZFUNC_END_LOG();
   return eGrmErrNoError;
@@ -183,8 +186,8 @@ uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, Gramma
 
 uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 ret = eGramIsNothing;
-  uint32 storageClassSpecRet = getStorageClassSpecifier(index, lastIndex , ret);
+//  uint32 ret = eGramIsNothing;
+  uint32 storageClassSpecRet = getStorageClassSpecifier(index, lastIndex , curBlock);
   if(eGrmErrNoError == storageClassSpecRet)
   {
     JZWRITE_DEBUG("shoulde add this property into seq");
@@ -197,7 +200,7 @@ uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBl
     return storageClassSpecRet;
   }
 
-  uint32 funcSpecifierRet = getFunctionSpecifier(index, lastIndex , ret);
+  uint32 funcSpecifierRet = getFunctionSpecifier(index, lastIndex , curBlock);
   if(eGrmErrNoError == funcSpecifierRet)
   {
     JZWRITE_DEBUG("shoulde add this property into seq");
@@ -294,8 +297,8 @@ uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, G
     return eGrmErrNoError;
   }
 
-  uint32 cvType = eGramIsNothing;
-  uint32 cvRet = getCVQualifier(index, lastIndex, cvType);
+//  uint32 cvType = eGramIsNothing;
+  uint32 cvRet = getCVQualifier(index, lastIndex, curBlock);
   if (eGrmErrNoError == cvRet)
   {
     return eGrmErrNoError;
@@ -520,8 +523,8 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
   {
     uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
     if(eGrmErrNoError == attRet || eGrmErrNotAttri == attRet){
-      uint32 ret = eGramIsNothing;
-      return getCVQualifier(lastIndex + 1,lastIndex, ret);
+//      uint32 ret = eGramIsNothing;
+      return getCVQualifier(lastIndex + 1,lastIndex, curBlock);
     }
   }
 
@@ -565,8 +568,8 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
     uint32 attRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
     if (eGrmErrNoError == attRet || eGrmErrNotAttri == attRet)
     {
-      uint32 ret = eGramIsNothing;
-      uint32 cvRet = getCVQualifier(lastIndex + 1, lastIndex, ret);
+//      uint32 ret = eGramIsNothing;
+      uint32 cvRet = getCVQualifier(lastIndex + 1, lastIndex, curBlock);
       return cvRet;
     }
   }
@@ -914,8 +917,8 @@ uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, Gr
   uint32 logicRet = handleLogicOrExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == logicRet)
   {
-    uint32 ret = eGramIsNothing;
-    uint32 expAssignmentRet = getAssignmentOperator(lastIndex + 1, lastIndex, ret);
+//    uint32 ret = eGramIsNothing;
+    uint32 expAssignmentRet = getAssignmentOperator(lastIndex + 1, lastIndex, curBlock);
     if (eGrmErrNoError == expAssignmentRet)
     {
       return handleInitializerClause(lastIndex + 1, lastIndex, curBlock);
@@ -1363,8 +1366,8 @@ uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, Grammar
     return handleCastExpression(index + 1, lastIndex, curBlock);
   }
 
-  uint32 getRet = eGramIsNothing;
-  uint32 getOptRet = getUnaryOperator(index, lastIndex, getRet);
+//  uint32 getRet = eGramIsNothing;
+  uint32 getOptRet = getUnaryOperator(index, lastIndex, curBlock);
   if (eGrmErrNoError == getOptRet)
   {
     return handleCastExpression(index + 1, lastIndex, curBlock);
@@ -1864,8 +1867,8 @@ uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, Gramm
     lastIndex = index;
     return thisExp;
   }
-  uint32 litRet = eGramIsNothing;
-  uint32 literalExp = getLiteral(index, lastIndex, litRet);
+//  uint32 litRet = eGramIsNothing;
+  uint32 literalExp = getLiteral(index, lastIndex, curBlock);
   if (eGrmErrNoError == literalExp)
   {
     lastIndex = index;
@@ -2005,8 +2008,8 @@ uint32 GrammarAnalyzer::handleOperatorFunctionId(int index, int& lastIndex, Gram
   uint32 expOperator = expect("operator", index);
   if (eGrmErrNoError == expOperator)
   {
-    uint32 ret = eGramIsNothing;
-    uint32 opRet = getOverloadableOperator(index + 1, lastIndex, ret);
+//    uint32 ret = eGramIsNothing;
+    uint32 opRet = getOverloadableOperator(index + 1, lastIndex, curBlock);
     if (eGrmErrNoError == opRet)
     {
       uint32 leftExp = expect("<", lastIndex + 1);
@@ -2254,8 +2257,8 @@ uint32 GrammarAnalyzer::handleParameterAndQualifiers(int index, int& lastIndex, 
         lastIndex ++;
         handleAttributes(lastIndex + 1, lastIndex, curBlock);
         handleCVQualifierSeq(lastIndex + 1, lastIndex, curBlock);
-        uint32 ret = eGramIsNothing;
-        getRefQualifier(lastIndex + 1, lastIndex, ret );
+//        uint32 ret = eGramIsNothing;
+        getRefQualifier(lastIndex + 1, lastIndex, curBlock);
         handleExceptionSpeciafier(lastIndex + 1, lastIndex, curBlock);
         return eGrmErrNoError;
       }
@@ -2425,51 +2428,6 @@ uint32 GrammarAnalyzer::handleExpressionStatement(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, uint32 &ret)
-{
-  
-  //need to handle some prefix thing.
-  //not handled yet
-  ret = eGramIsNothing;
-  if (mRecList.size() <= index)
-  {
-    return eGrmErrFileEnd;
-  }
-
-  string word = mRecList[index].word;
-
-  if (0 == word.size())
-  {
-    return eGrmErrUnknown;
-  }
-  if ("\"" == word)
-  {
-//    ret = eGramIsString;
-    return eGrmErrNoError;
-  }
-  else if("'" == word)
-  {
-    return eGrmErrNoError;
-  }
-  else if("true" == word || "false" == word)
-  {
-    return eGrmErrNoError;
-  }
-  else if("nullptr" == word || "NULL" == word)
-  {
-    return eGrmErrNoError;
-  }
-  else if(false == LexUtil::isInterpunction(word[0]) && false == GrmUtilPtr->isKeyWord(word))
-  {
-    if (true == GrmUtilPtr->isConstIntNumber(word))
-    {
-//      ret = eGramIsNumber;
-      return eGrmErrNoError;
-    }
-  }
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   JZFUNC_BEGIN_LOG();
@@ -2500,8 +2458,8 @@ uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleEnumHead(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 keyRet = eGramIsNothing;
-  uint32 getRet = getEnumKey(index, lastIndex, keyRet);
+//  uint32 keyRet = eGramIsNothing;
+  uint32 getRet = getEnumKey(index, lastIndex, curBlock);
   if (eGrmErrNoError == getRet)
   {
     handleAttributes(lastIndex + 1, lastIndex, curBlock);
@@ -2596,8 +2554,8 @@ uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarB
 
 uint32 GrammarAnalyzer::handleClassHead(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 keyType = eGramIsNothing;
-  uint32 keyRet = getClassKey(index, lastIndex, keyType);
+//  uint32 keyType = eGramIsNothing;
+  uint32 keyRet = getClassKey(index, lastIndex, curBlock);
   if (eGrmErrNoError == keyRet)
   {
     handleAttributes(lastIndex + 1, lastIndex, curBlock);
@@ -2627,8 +2585,8 @@ uint32 GrammarAnalyzer::handleClassHeadName(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleClassVirtSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 ret = eGramIsNothing;
-  uint32 getRet = getVirtSpecifier(index, lastIndex, ret);
+//  uint32 ret = eGramIsNothing;
+  uint32 getRet = getVirtSpecifier(index, lastIndex, curBlock);
   if (eGramIsNothing == getRet)
   {
     handleClassVirtSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
@@ -2658,15 +2616,15 @@ uint32 GrammarAnalyzer::handleBaseSpecifier(int index, int& lastIndex, GrammarBl
       return eGrmErrNoError;
     }
 
-    uint32 ret = eGramIsNothing;
+//    uint32 ret = eGramIsNothing;
     uint32 expVir = expect("virtual", lastIndex + 1);
     if (eGrmErrNoError == expVir)
     {
-      getAccessSpecifier(lastIndex + 2, lastIndex, ret);
+      getAccessSpecifier(lastIndex + 2, lastIndex, curBlock);
       return handleBaseTypeSpecifier(lastIndex + 1, lastIndex, curBlock);
     }
 
-    uint32 accessRet = getAccessSpecifier(lastIndex + 1, lastIndex, ret);
+    uint32 accessRet = getAccessSpecifier(lastIndex + 1, lastIndex, curBlock);
     if (eGrmErrNoError == accessRet)
     {
       uint32 offset = expect("virtual", lastIndex + 1) ? 1:0;

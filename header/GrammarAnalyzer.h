@@ -146,29 +146,30 @@ protected:
   bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
   uint32 handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
-  uint32 getRefQualifier(int index, int& lastIndex, uint32 &ret);
-  uint32 getCVQualifier(int index, int& lastIndex, uint32 &ret);
-  uint32 getUnaryOperator(int index, int& lastIndex, uint32 &ret);
-  uint32 getConstExpression(int index, int& lastIndex, uint32 &ret);
-  uint32 getFunctionSpecifier(int index, int& lastIndex, uint32 &ret);
-  uint32 getStorageClassSpecifier(int index, int& lastIndex, uint32 &ret);
-  uint32 getAccessSpecifier(int index, int& lastIndex, uint32 &ret);
-  uint32 getPureSpecifier(int index, int& lastIndex, uint32 &ret);
-  uint32 getVirtSpecifier(int index, int& lastIndex, uint32 &ret);
-  uint32 getAssignmentOperator(int index, int& lastIndex, uint32 &ret);
-  uint32 getLiteral(int index, int& lastIndex, uint32 &ret);
-  uint32 getEnumKey(int index, int& lastIndex, uint32 &ret);
-  uint32 getClassKey(int index, int& lastIndex, uint32 &ret);
-  uint32 getOverloadableOperator(int index, int& lastIndex, uint32 &ret);
+  uint32 getRefQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getCVQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getUnaryOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getConstExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getFunctionSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getStorageClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getAccessSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getPureSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getVirtSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getAssignmentOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getEnumKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getClassKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 getOverloadableOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
 
   typedef uint32(*handler)(int,int&,GrammarBlock*, GrammarReturnerBase* ret);
-  typedef uint32(*getter)(int, int&, uint32 &ret);
+  typedef uint32(*getter)(int, int&, GrammarBlock* curBlock, GrammarReturnerBase* ret);
 
   bool invoke(handler han, const string& file, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt);
 
-  bool invoke(getter get, const string& file, const int line, const int index, int& lastIndex, uint32& ret, bool isOpt);
-
   bool invoke(const string& file, const int line, const int index, int& lastIndex, const string& key, bool isOpt, bool inOoneLine = false);
+
+protected:
+
 
 private:
 
@@ -178,5 +179,6 @@ private:
   
   LoopBreaker mLoopBreaker;
 };
+
 
 #endif /* end of include guard: GRAMMARANALYZER_H */
