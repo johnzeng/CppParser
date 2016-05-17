@@ -186,6 +186,7 @@ private:
 //this macro should only be used in this file
 //
 #define INVOKE(handler, index, lastIndex, curBlock, returner, isOpt) invoke(&GrammarAnalyzer::handle ## handler, __func__, __LINE__,index, lastIndex, curBlock, returner, isOpt)
+
 #define EXPECT(index,lastIndex, key, isOpt, inOneLine) invoke(__func__,__LINE__,index, lastIndex, key, isOpt, inOneLine)
 
 #endif /* end of include guard: GRAMMARANALYZER_H */

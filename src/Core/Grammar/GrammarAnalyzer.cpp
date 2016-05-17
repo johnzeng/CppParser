@@ -400,9 +400,11 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
 
 uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
+  JZFUNC_BEGIN_LOG();
   uint32 ptrRet = handlePtrDeclarator(index, lastIndex, curBlock);
   if (eGrmErrNoError == ptrRet)
   {
+    JZFUNC_END_LOG();
     return ptrRet;
   }
 
@@ -417,6 +419,7 @@ uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock
       uint32 trailingRet = handleTrailingReturenType(lastIndex + 1, lastIndex, curBlock);
       if (eGrmErrNoError == trailingRet)
       {
+        JZFUNC_END_LOG();
         return eGrmErrNoError;
       }
     }
@@ -427,18 +430,22 @@ uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock
 
 uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
+  JZFUNC_BEGIN_LOG();
   uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
   if (eGrmErrNoError == noPtrRet)
   {
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
   uint32 ptrOperatorRet = handlePtrOperator(index, lastIndex, curBlock);
   if (eGrmErrNoError == ptrOperatorRet)
   {
+    JZFUNC_END_LOG();
     return handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
   }
-  return eGrmErrNoError;
+  JZFUNC_END_LOG();
+  return eGrmErrUnknown;
 }
 
 
@@ -2187,6 +2194,7 @@ uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, Gramm
 
 uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
+  JZFUNC_BEGIN_LOG();
   uint32 idRet = handleDeclaratorId(index, lastIndex, curBlock);
   if (eGrmErrNoError == idRet)
   {
@@ -2198,6 +2206,7 @@ uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, Gramma
   if (eGrmErrNoError == paramRet)
   {
     handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
@@ -2210,6 +2219,7 @@ uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, Gramma
     {
       handleAttributes(lastIndex + 1, lastIndex, curBlock);
       handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
+      JZFUNC_END_LOG();
       return eGrmErrNoError;
     }
   }
@@ -2224,11 +2234,13 @@ uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, Gramma
       if (eGrmErrNoError == expRight)
       {
         lastIndex ++;
+        JZFUNC_END_LOG();
         return eGrmErrNoError;
       }
     }
   }
-  return eGrmErrNoError;
+  JZFUNC_END_LOG();
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleStatementSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
@@ -2864,9 +2876,11 @@ uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, Gramm
     lastIndex = tryLastB;
   }
 
+  JZWRITE_DEBUG("====================================================== now begin ============")
   uint32 initRet = handleInitDeclaratorList(tryIndex,tryLastC, curBlock);
   if (eGrmErrNoError == initRet)
   {
+    JZWRITE_DEBUG("get true for initRet tryIndex %d, trylastC:  %d", tryIndex, tryLastC);
     lastIndex = tryLastC;
     tryIndex = tryLastC + 1;
   }
@@ -2879,12 +2893,13 @@ uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, Gramm
     return eGrmErrNoError;
   }
     
+  JZFUNC_END_LOG();
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleInitDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  int tryLastA = lastIndex;
+  int tryLastA = index;
   bool retA = INVOKE(InitDeclarator, index, tryLastA, curBlock, returner, false);
   if (retA)
   {
@@ -2895,8 +2910,10 @@ uint32 GrammarAnalyzer::handleInitDeclaratorList(int index, int& lastIndex, Gram
       INVOKE(InitDeclaratorList, tryLastB + 1, tryLastB, curBlock, returner, false);
     if (retB)
     {
+      JZWRITE_DEBUG("get true for , initDeclaratorList, tryLastB %d", tryLastB );
       lastIndex = tryLastB;
     }
+    JZWRITE_DEBUG("get true for , initDeclaratorList, tryIndex %d", tryLastA );
     return eGrmErrNoError;
   }
 
@@ -2905,13 +2922,14 @@ uint32 GrammarAnalyzer::handleInitDeclaratorList(int index, int& lastIndex, Gram
 
 uint32 GrammarAnalyzer::handleInitDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  int32 tryLast = lastIndex;
+  int32 tryLast = index;
   bool ret = 
     INVOKE(Declarator, index, tryLast, curBlock, returner, false) &&
     INVOKE(Initializer, tryLast + 1, tryLast, curBlock, returner, true);
   if (ret)
   {
     lastIndex = tryLast;
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
