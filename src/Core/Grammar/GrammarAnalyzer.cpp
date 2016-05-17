@@ -5,7 +5,7 @@
 
 //this macro should only be used in this file
 
-#define INVOKE(handler, index, lastIndex, curBlock, returner, isOpt) invoke(handler, __func__, __LINE__,index, lastIndex, curBlock, returner, isOpt)
+#define INVOKE(handler, index, lastIndex, curBlock, returner, isOpt) invoke(&GrammarAnalyzer::handle ## handler, __func__, __LINE__,index, lastIndex, curBlock, returner, isOpt)
 #define EXPECT(index,lastIndex, key, isOpt, inOneLine) invoke(__func__,__LINE__,index, lastIndex, key, isOpt, inOneLine)
 
 uint32 GrammarAnalyzer::doAnalyze()
@@ -2534,13 +2534,12 @@ uint32 GrammarAnalyzer::handleEnumeratorDefinition(int index, int& lastIndex, Gr
   GrammarReturnerBase base;
   int32 trylast = index;
 
-  bool ret = INVOKE(&GrammarAnalyzer::handleEnumerator, index, trylast, curBlock, &base, false) ;
+  bool ret = INVOKE(Enumerator, index, trylast, curBlock, &base, false) ;
   if (ret)
   {
     lastIndex = trylast;
     bool continueRet = EXPECT(trylast + 1, trylast, "=", false, false) &&
-    INVOKE(&GrammarAnalyzer::handleConstantExpression, trylast + 1, trylast, curBlock, &base,false) ;
-
+    INVOKE(ConstantExpression, trylast + 1, trylast, curBlock, &base,false) ;
     if (continueRet)
     {
       lastIndex = trylast;
