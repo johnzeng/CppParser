@@ -3,10 +3,7 @@
 #include "LexUtil.h"
 #include "JZLogger.h"
 
-//this macro should only be used in this file
 
-#define INVOKE(handler, index, lastIndex, curBlock, returner, isOpt) invoke(&GrammarAnalyzer::handle ## handler, __func__, __LINE__,index, lastIndex, curBlock, returner, isOpt)
-#define EXPECT(index,lastIndex, key, isOpt, inOneLine) invoke(__func__,__LINE__,index, lastIndex, key, isOpt, inOneLine)
 
 uint32 GrammarAnalyzer::doAnalyze()
 {
@@ -2885,4 +2882,84 @@ uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, Gramm
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleInitDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int tryLastA = lastIndex;
+  bool retA = INVOKE(InitDeclarator, index, tryLastA, curBlock, returner, false);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    int tryLastB = tryLastA;
+    bool retB = 
+      EXPECT(tryLastB + 1, tryLastB, ",", false, false) &&
+      INVOKE(InitDeclaratorList, tryLastB + 1, tryLastB, curBlock, returner, false);
+    if (retB)
+    {
+      lastIndex = tryLastB;
+    }
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleInitDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = lastIndex;
+  bool ret = 
+    INVOKE(Declarator, index, tryLast, curBlock, returner, false) &&
+    INVOKE(Initializer, tryLast + 1, tryLast, curBlock, returner, true);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = lastIndex;
+  bool retA = 
+    INVOKE(BraceOrEqualInitializer, index, tryLastA, curBlock, returner, false);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = lastIndex;
+  bool retB = 
+    EXPECT(index, tryLastB, "(", false, false) &&
+    INVOKE(ExpressionList, tryLastB + 1, tryLastB, curBlock, returner, false) &&
+    EXPECT(tryLastB + 1, tryLastB, ")", false, false) ;
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBraceOrEqualInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = lastIndex;
+  bool retA = INVOKE(BracedInitList, index, tryLastA, curBlock, returner, false);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = lastIndex;
+  bool retB = 
+    EXPECT(index, tryLastB, "=", false, false)&&
+    INVOKE(InitializerClause, tryLastB + 1, tryLastB, curBlock, returner, false);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
 

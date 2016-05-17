@@ -133,11 +133,6 @@ uint32 GrammarAnalyzer::handleAttibuteDeclaration(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleInitDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleNamespaceAliasDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   
