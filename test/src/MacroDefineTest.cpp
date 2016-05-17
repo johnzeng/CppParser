@@ -27,7 +27,7 @@ TEST(MacroLex, macroTest1){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.printLexRec();
 
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(10, recList.size());
   ASSERT_STREQ("main", recList[0].word.c_str());
@@ -66,7 +66,7 @@ TEST(MacroLex, macroTest2){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(15, recList.size());
   ASSERT_STREQ("main", recList[0].word.c_str());
@@ -150,7 +150,7 @@ TEST(MacroLex, macroTest4){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(5, recList.size());
   ASSERT_STREQ("\"hello\"", recList[0].word.c_str());
@@ -181,7 +181,7 @@ TEST(MacroLex, macroTest5){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(2, recList.size());
   ASSERT_STREQ("\"1\"", recList[0].word.c_str());
@@ -209,7 +209,7 @@ TEST(MacroLex, macroTest6){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(10, recList.size());
   ASSERT_STREQ("printf", recList[0].word.c_str());
@@ -246,7 +246,7 @@ TEST(MacroLex, macroTest7){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(10, recList.size());
   ASSERT_STREQ("printf", recList[0].word.c_str());
@@ -283,7 +283,7 @@ TEST(MacroLex, macroTest8){
 //	JZSetLoggerLevel(JZ_LOG_DEBUG);
   lex.analyzeAFile(toCompileFile);
   LexRecList recList = lex.getRecList();
-//	JZSetLoggerLevel(JZ_LOG_TEST);
+	JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(12, recList.size());
   ASSERT_STREQ("print", recList[0].word.c_str());

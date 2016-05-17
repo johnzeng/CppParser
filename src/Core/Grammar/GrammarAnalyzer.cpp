@@ -2717,8 +2717,11 @@ uint32 GrammarAnalyzer::handleDeclarationSeq(int index, int& lastIndex, GrammarB
   uint32 declaraRet = handleDeclaration(index, lastIndex, curBlock);
   if (eGrmErrNoError == declaraRet)
   {
-    uint32 nextRet = handleDeclarationSeq(lastIndex + 1, lastIndex,  curBlock);
-    return eGrmErrNoError;
+    if (lastIndex + 1 == mRecList.size())
+    {
+      return eGrmErrNoError;
+    }
+    return handleDeclarationSeq(lastIndex + 1, lastIndex,  curBlock);
   }
   return eGrmErrUnknown;
 }

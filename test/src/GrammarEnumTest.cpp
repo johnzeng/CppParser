@@ -79,7 +79,7 @@ TEST(GrammarAnalyzer, EnumBasic1)
 
 //  ASSERT_EQ(eGrmErrNoError, ret);
 
-//  JZSetLoggerLevel(JZ_LOG_TEST);
+  JZSetLoggerLevel(JZ_LOG_TEST);
   
 //  GrammarBlock* topBlock = grammar.getTopBlock();
   
@@ -125,7 +125,7 @@ TEST(GrammarAnalyzer, EnumAttributes)
 
 //  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
 //  uint32 ret = grammar.doAnalyze();
-//  JZSetLoggerLevel(JZ_LOG_TEST);
+  JZSetLoggerLevel(JZ_LOG_TEST);
   
 //  GrammarBlock* topBlock = grammar.getTopBlock();
   
