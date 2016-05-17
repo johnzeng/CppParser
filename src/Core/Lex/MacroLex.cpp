@@ -1069,6 +1069,7 @@ uint32 MacroLex::handleDefinedWord(const string& word)
 		return ret;
 	}
 	popReaderRecord();
+  JZSAFE_DELETE(buff);
 	JZFUNC_END_LOG();
 	return eLexNoError;	
 }
