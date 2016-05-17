@@ -72,12 +72,12 @@ TEST(GrammarAnalyzer, EnumBasic1)
 
   LexRecList recList = lex.getRecList();
 
-//  GrammarAnalyzer grammar = GrammarAnalyzer(recList);
+  GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-//  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
-//  uint32 ret = grammar.doAnalyze();
+  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
+  uint32 ret = grammar.doAnalyze();
 
-//  ASSERT_EQ(eGrmErrNoError, ret);
+  ASSERT_EQ(eGrmErrNoError, ret);
 
   JZSetLoggerLevel(JZ_LOG_TEST);
   
@@ -121,10 +121,11 @@ TEST(GrammarAnalyzer, EnumAttributes)
 
   LexRecList recList = lex.getRecList();
 
-//  GrammarAnalyzer grammar = GrammarAnalyzer(recList);
+  GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-//  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
-//  uint32 ret = grammar.doAnalyze();
+  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
+  uint32 ret = grammar.doAnalyze();
+  ASSERT_EQ(eGrmErrNoError, ret);
   JZSetLoggerLevel(JZ_LOG_TEST);
   
 //  GrammarBlock* topBlock = grammar.getTopBlock();
