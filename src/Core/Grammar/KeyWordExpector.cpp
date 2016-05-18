@@ -3,7 +3,7 @@
 #include "LexUtil.h"
 #include "JZLogger.h"
 
-uint32 GrammarAnalyzer::getRefQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleRefQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 //  ret = eGramIsNothing;
   uint32 exp1 = expect("&", index);
@@ -24,7 +24,7 @@ uint32 GrammarAnalyzer::getRefQualifier(int index, int& lastIndex, GrammarBlock*
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::getFunctionSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleFunctionSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 //  ret = eGramIsNothing;
   uint32 expInline = expect("inline", index);
@@ -53,7 +53,7 @@ uint32 GrammarAnalyzer::getFunctionSpecifier(int index, int& lastIndex, GrammarB
   return eGrmErrNotFunctionSpecifier;
 }
 
-uint32 GrammarAnalyzer::getStorageClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleStorageClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 //  ret = eGramIsNothing;
   //removed in cpp 11,so need more checking here
@@ -124,7 +124,7 @@ uint32 GrammarAnalyzer::expect(const string& expected, int index, bool oneLine)
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::getCVQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleCVQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 //  ret = eGramIsNothing;
   uint32 expConst = expect("const", index);
@@ -145,7 +145,7 @@ uint32 GrammarAnalyzer::getCVQualifier(int index, int& lastIndex, GrammarBlock* 
   return eGrmErrNotCVQualifier;
 }
 
-uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleUnaryOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 //  ret = eGramIsNothing;
   uint32 expStar = expect("*", index);
@@ -199,7 +199,7 @@ uint32 GrammarAnalyzer::getUnaryOperator(int index, int& lastIndex, GrammarBlock
   
 }
  
-uint32 GrammarAnalyzer::getAccessSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleAccessSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   
   uint32 expPrivate = expect("private", index);
@@ -228,7 +228,7 @@ uint32 GrammarAnalyzer::getAccessSpecifier(int index, int& lastIndex, GrammarBlo
   return eGrmErrNotAccessSpecifier;
 }
 
-uint32 GrammarAnalyzer::getPureSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handlePureSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   uint32 expEqual = expect("=", index);
   if (eGrmErrNoError == expEqual)
@@ -246,7 +246,7 @@ uint32 GrammarAnalyzer::getPureSpecifier(int index, int& lastIndex, GrammarBlock
 
 }
 
-uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleVirtSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   uint32 expOverride = expect("override", index);
   if (eGrmErrNoError == expOverride)
@@ -275,7 +275,7 @@ uint32 GrammarAnalyzer::getVirtSpecifier(int index, int& lastIndex, GrammarBlock
   
 }
 
-uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleAssignmentOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   //refactor: change exp name and ret value
   uint32 exp1 = expect("=", index);
@@ -370,7 +370,7 @@ uint32 GrammarAnalyzer::getAssignmentOperator(int index, int& lastIndex, Grammar
   
 }
 
-uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleOverloadableOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 // this func haven't handle the the ret value yet
 //  ret = eGramIsNothing;
@@ -687,7 +687,7 @@ uint32 GrammarAnalyzer::getOverloadableOperator(int index, int& lastIndex, Gramm
   return eGrmErrNotOverloadableOperator;
 }
 
-uint32 GrammarAnalyzer::getEnumKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleEnumKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 //  ret = eGramIsNothing;
   uint32 exp1 = expect("enum", index);
@@ -712,7 +712,7 @@ uint32 GrammarAnalyzer::getEnumKey(int index, int& lastIndex, GrammarBlock* curB
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::getClassKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleClassKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
 //  ret = eGramIsNothing;
   uint32 exp1 = expect("class", index);
@@ -741,7 +741,7 @@ uint32 GrammarAnalyzer::getClassKey(int index, int& lastIndex, GrammarBlock* cur
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::getLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+uint32 GrammarAnalyzer::handleLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   
   //need to handle some prefix thing.
