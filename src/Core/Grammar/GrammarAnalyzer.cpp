@@ -432,26 +432,39 @@ uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock
 uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   JZFUNC_BEGIN_LOG();
-  int32 tryB = index;
-  bool retB = INVOKE(NonPtrDeclarator, index, tryB, curBlock, returner, NOT_OPT) &&
-    INVOKE(ParametersAndQualifiers, tryB + 1, tryB, curBlock, returner, NOT_OPT);
-  if (retB)
+  int32 tryB = index - 1;
+  bool loopIn = false;
+  while(INVOKE(NonPtrDeclarator, tryB + 1, tryB, curBlock, returner, NOT_OPT))
   {
-    lastIndex = tryB;
-    JZFUNC_END_LOG();
-    return eGrmErrNoError;
+    JZWRITE_DEBUG("cur index: %d", tryB);
+    loopIn = true;
   }
-
-  int32 tryC = index;
-  bool retC = INVOKE(NonPtrDeclarator, index, tryC, curBlock, returner, NOT_OPT) &&
-    EXPECT(tryC + 1, tryC, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(ConstantExpression, tryC + 1, tryC, curBlock, returner, IS_OPT) &&
-    EXPECT(tryC + 1, tryC, "]", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(Attributes, tryC + 1, tryC, curBlock, returner, IS_OPT);
-  if (retC)
+  if (loopIn)
   {
-    lastIndex = tryC;
-    JZFUNC_END_LOG();
+
+    int32 tryB1 = tryB;
+    bool retB1 = INVOKE(ParametersAndQualifiers, tryB1 + 1, tryB1, curBlock, returner, NOT_OPT);
+    if (retB1)
+    {
+      lastIndex = tryB1;
+      JZFUNC_END_LOG();
+      return eGrmErrNoError;
+    }
+
+    int32 tryB2 = tryB;
+
+    bool retB2 = EXPECT(tryB2 + 1, tryB2, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(ConstantExpression, tryB2 + 1, tryB2, curBlock, returner, IS_OPT) &&
+      EXPECT(tryB2 + 1, tryB2, "]", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(Attributes, tryB2 + 1, tryB2, curBlock, returner, IS_OPT);
+    if (retB2)
+    {
+      lastIndex = tryB2;
+      JZFUNC_END_LOG();
+      return eGrmErrNoError;
+    }
+
+    lastIndex = tryB;
     return eGrmErrNoError;
   }
 
@@ -2246,7 +2259,18 @@ uint32 GrammarAnalyzer::handleParametersAndQualifiers(int index, int& lastIndex,
   uint32 expLeft = expect("(", index);
   if (eGrmErrNoError == expLeft)
   {
-    uint32 parameClauseRet = handleParameterDeclarationList(index + 1, lastIndex, curBlock);
+    uint32 expRight = expect(")", index + 1);
+    if (eGrmErrNoError == expRight)
+    {
+      lastIndex = index + 1;
+      handleAttributes(lastIndex + 1, lastIndex, curBlock);
+      handleCVQualifierSeq(lastIndex + 1, lastIndex, curBlock);
+//        uint32 ret = eGramIsNothing;
+      handleRefQualifier(lastIndex + 1, lastIndex, curBlock);
+      handleExceptionSpeciafier(lastIndex + 1, lastIndex, curBlock);
+      return eGrmErrNoError;
+    }
+    uint32 parameClauseRet = handleParameterDeclarationClause(index + 1, lastIndex, curBlock);
     if (eGrmErrNoError == parameClauseRet)
     {
       uint32 expRight = expect(")", lastIndex + 1);
@@ -2302,7 +2326,7 @@ uint32 GrammarAnalyzer::handleParameterDeclarationList(int index, int& lastIndex
     uint32 expComma = expect(",", lastIndex + 1);
     if (eGrmErrNoError == expComma)
     {
-      return handleParameterDeclarationList(lastIndex + 1, lastIndex, curBlock);
+      return handleParameterDeclarationList(lastIndex + 2, lastIndex, curBlock);
     }
 
     return eGrmErrNoError;

@@ -1,5 +1,5 @@
 int (*hello())(int a, int b);
 
-type-specifier (ptr-operator declarator-id parameters-and-qualifiers)parameters-and-qualifiers
+type-specifier nonptr-declarator parameters-and-qualifiers
 
 
