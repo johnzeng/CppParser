@@ -26,12 +26,12 @@ TEST(GrammarAnalyzer, EnumBasic0)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
+//  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
   uint32 ret = grammar.doAnalyze();
+  JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(eGrmErrNoError, ret);
 
-  JZSetLoggerLevel(JZ_LOG_TEST);
   
 //  GrammarBlock* topBlock = grammar.getTopBlock();
   
@@ -74,7 +74,7 @@ TEST(GrammarAnalyzer, EnumBasic1)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
+//  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
   uint32 ret = grammar.doAnalyze();
 
   ASSERT_EQ(eGrmErrNoError, ret);

@@ -530,7 +530,8 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
     uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
     if(eGrmErrNoError == attRet || eGrmErrNotAttri == attRet){
 //      uint32 ret = eGramIsNothing;
-      return getCVQualifier(lastIndex + 1,lastIndex, curBlock);
+      getCVQualifier(lastIndex + 1,lastIndex, curBlock);
+      return eGrmErrNoError;
     }
   }
 
