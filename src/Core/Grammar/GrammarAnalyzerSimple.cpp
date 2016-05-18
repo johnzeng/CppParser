@@ -95,6 +95,14 @@ bool GrammarAnalyzer::invoke(handler han, const string& file, const int line, co
 bool GrammarAnalyzer::invoke(const string& file, const int line, const int index,int& lastIndex, const string& key, bool isOpt, bool inOneLine)
 {
   JZWRITE_DEBUG("invoked by %s:%d:%d", file.c_str(), line, index);
+  if (mRecList.size() <= index)
+  {
+    return false;
+  }
+  if (true == GrmUtilPtr->isLoopBreakerKey(mRecList[index].word))
+  {
+    return false;
+  }
   if (false == mLoopBreaker.insert(file, line, index))
   {
     return false;

@@ -167,6 +167,7 @@ public:
 	bool isOcto(const string& input);
 	bool isDeci(const string& input);
   bool endWithDeciSuffix(const string& input,int fromIndex);
+  bool isLoopBreakerKey(const string& input);
 	int getNum(const char input);
 
 	template <typename type> type str2Num(const string& input);
@@ -187,6 +188,7 @@ private:
 	StringSet mDoubleMeanWord;
 	OpTypeMarkMap mOpMarkMap;
 	StringSet mKeyWordSet;
+  StringSet mLoopBreakKey;
 };
 
 #endif /* end of include guard: GRAMAUTIL_H */

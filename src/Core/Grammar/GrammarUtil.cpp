@@ -106,6 +106,10 @@ void GrammarUtil::init()
   mKeyWordSet.insert("NULL");
   mKeyWordSet.insert("template");
   
+  mLoopBreakKey.insert(";");
+//  mLoopBreakKey.insert(")");
+//  mLoopBreakKey.insert("}");
+//  mLoopBreakKey.insert("]");
 }
 
 void GrammarUtil::insertOperatorToPreprocessOpSet(const string& op,uint32 priority, uint32 mark,int opNum, int associativity)
@@ -510,4 +514,10 @@ bool GrammarUtil::endWithDeciSuffix(const string& input, int fromIndex)
   }
   
   return false;
+}
+
+bool GrammarUtil::isLoopBreakerKey(const string& key)
+{
+  auto it = mLoopBreakKey.find(key);
+  return mLoopBreakKey.end() != it;
 }
