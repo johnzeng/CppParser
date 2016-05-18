@@ -63,9 +63,9 @@ TEST(GrammarAnalyzer, FunctionBasic1)
   JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
   uint32 ret = grammar.doAnalyze();
 
+  JZSetLoggerLevel(JZ_LOG_TEST);
   ASSERT_EQ(eGrmErrNoError, ret);
 
-  JZSetLoggerLevel(JZ_LOG_TEST);
   
 }
 

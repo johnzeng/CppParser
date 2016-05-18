@@ -400,6 +400,7 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
 
 uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
+  JZWRITE_DEBUG("====================================================== now begin ============")
   JZFUNC_BEGIN_LOG();
   uint32 ptrRet = handlePtrDeclarator(index, lastIndex, curBlock);
   if (eGrmErrNoError == ptrRet)
@@ -413,7 +414,7 @@ uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock
   uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
   if (eGrmErrNoError == noPtrRet)
   {
-    uint32 parametersRet = handleParameterAndQualifiers(lastIndex + 1, lastIndex, curBlock);
+    uint32 parametersRet = handleParametersAndQualifiers(lastIndex + 1, lastIndex, curBlock);
     if (eGrmErrNoError == parametersRet)
     {
       uint32 trailingRet = handleTrailingReturenType(lastIndex + 1, lastIndex, curBlock);
@@ -428,8 +429,62 @@ uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  JZFUNC_BEGIN_LOG();
+  int32 tryB = index;
+  bool retB = INVOKE(NonPtrDeclarator, index, tryB, curBlock, returner, NOT_OPT) &&
+    INVOKE(ParametersAndQualifiers, tryB + 1, tryB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryB;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+
+  int32 tryC = index;
+  bool retC = INVOKE(NonPtrDeclarator, index, tryC, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryC + 1, tryC, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ConstantExpression, tryC + 1, tryC, curBlock, returner, IS_OPT) &&
+    EXPECT(tryC + 1, tryC, "]", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Attributes, tryC + 1, tryC, curBlock, returner, IS_OPT);
+  if (retC)
+  {
+    lastIndex = tryC;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+
+  int32 tryA = index;
+  //if we match declarator here, we don't go futher to parameters
+  bool retA = INVOKE(DeclaratorId, index, tryA, curBlock, returner, NOT_OPT) &&
+    INVOKE(Attributes, tryA + 1, tryA, curBlock, returner, IS_OPT);
+  if (retA)
+  {
+    lastIndex = tryA;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+
+  int32 tryD = index;
+  bool retD = EXPECT(index, tryD, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(PtrDeclarator, tryD + 1, tryD, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryD + 1, tryD, ")", NOT_OPT, NOT_IN_ONE_LINE);
+  if (retD)
+  {
+    lastIndex = tryD;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+
+  JZFUNC_END_LOG();
+  return eGrmErrUnknown;
+}
+
+
 uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
+  JZWRITE_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< now begin >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
   JZFUNC_BEGIN_LOG();
   uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
   if (eGrmErrNoError == noPtrRet)
@@ -442,7 +497,7 @@ uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBl
   if (eGrmErrNoError == ptrOperatorRet)
   {
     JZFUNC_END_LOG();
-    return handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
+    return handlePtrDeclarator(lastIndex + 1, lastIndex, curBlock);
   }
   JZFUNC_END_LOG();
   return eGrmErrUnknown;
@@ -616,7 +671,7 @@ uint32 GrammarAnalyzer::handleDeclaratorId(int index, int& lastIndex, GrammarBlo
 
 uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  JZFUNC_BEGIN_LOG();
+//  JZFUNC_BEGIN_LOG();
   if (mRecList.size() <= index)
   {
     return eGrmErrFileEnd;
@@ -628,12 +683,12 @@ uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock
   {
     lastIndex = index;
     JZWRITE_DEBUG("id is: %s" , id.c_str());
-    JZFUNC_END_LOG();
+//    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
   else
   {
-    JZFUNC_END_LOG();
+//    JZFUNC_END_LOG();
     return eGrmErrDoubleDefinedVar;
   }
 }
@@ -1254,7 +1309,7 @@ uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, Gram
   uint32 noPtrRet = handleNoptrAbstractDeclarator(index, lastIndex, curBlock);
   if (eGrmErrNoError == noPtrRet)
   {
-    uint32 paramterRet = handleParameterAndQualifiers(lastIndex + 1, lastIndex ,curBlock);
+    uint32 paramterRet = handleParametersAndQualifiers(lastIndex + 1, lastIndex ,curBlock);
     if (eGrmErrNoError == paramterRet)
     {
       return handleTrailingReturenType(lastIndex + 1, lastIndex ,curBlock);
@@ -1262,7 +1317,7 @@ uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, Gram
   }
   else
   {
-    uint32 paramterRet = handleParameterAndQualifiers(index, lastIndex ,curBlock);
+    uint32 paramterRet = handleParametersAndQualifiers(index, lastIndex ,curBlock);
     if (eGrmErrNoError == paramterRet)
     {
       return handleTrailingReturenType(lastIndex + 1, lastIndex ,curBlock);
@@ -1290,7 +1345,7 @@ uint32 GrammarAnalyzer::handlePtrAbstractDeclarator(int index, int& lastIndex, G
 
 uint32 GrammarAnalyzer::handleNoptrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 paramRet = handleParameterAndQualifiers(index, lastIndex, curBlock);
+  uint32 paramRet = handleParametersAndQualifiers(index, lastIndex, curBlock);
   if (eGrmErrNoError == paramRet)
   {
     uint32 nextRet = handleNoptrAbstractDeclarator(lastIndex + 1 , lastIndex, curBlock);
@@ -2175,58 +2230,6 @@ uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, Gramm
   }
   return eGrmErrUnknown;
 }
-
-uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  JZFUNC_BEGIN_LOG();
-  uint32 idRet = handleDeclaratorId(index, lastIndex, curBlock);
-  if (eGrmErrNoError == idRet)
-  {
-    handleAttributes(lastIndex + 1, lastIndex, curBlock);
-    return eGrmErrNoError;
-  }
-
-  uint32 paramRet = handleParameterAndQualifiers(index, lastIndex, curBlock);
-  if (eGrmErrNoError == paramRet)
-  {
-    handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
-    JZFUNC_END_LOG();
-    return eGrmErrNoError;
-  }
-
-  uint32 expLeftSeqRet = expect("[", index);
-  if (eGrmErrNoError == expLeftSeqRet)
-  {
-    handleConstantExpression(index +  1, lastIndex, curBlock);
-    uint32 expRightSeqRet = expect("]", lastIndex + 1);
-    if (eGrmErrNoError == expRightSeqRet)
-    {
-      handleAttributes(lastIndex + 1, lastIndex, curBlock);
-      handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
-      JZFUNC_END_LOG();
-      return eGrmErrNoError;
-    }
-  }
-
-  uint32 expLeftBracket = expect("(", index);
-  if (eGrmErrNoError == expLeftBracket)
-  {
-    uint32 ptrDec = handlePtrDeclarator(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == ptrDec)
-    {
-      uint32 expRight = expect(")", lastIndex + 1);
-      if (eGrmErrNoError == expRight)
-      {
-        lastIndex ++;
-        JZFUNC_END_LOG();
-        return eGrmErrNoError;
-      }
-    }
-  }
-  JZFUNC_END_LOG();
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleStatementSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 statRet = handleStatement(index, lastIndex, curBlock);
@@ -2238,7 +2241,7 @@ uint32 GrammarAnalyzer::handleStatementSeq(int index, int& lastIndex, GrammarBlo
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleParameterAndQualifiers(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+uint32 GrammarAnalyzer::handleParametersAndQualifiers(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expLeft = expect("(", index);
   if (eGrmErrNoError == expLeft)
@@ -2860,7 +2863,6 @@ uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, Gramm
     lastIndex = tryLastB;
   }
 
-  JZWRITE_DEBUG("====================================================== now begin ============")
   uint32 initRet = handleInitDeclaratorList(tryIndex,tryLastC, curBlock);
   if (eGrmErrNoError == initRet)
   {

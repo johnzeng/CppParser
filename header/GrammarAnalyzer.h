@@ -48,7 +48,7 @@ protected:
   uint32 handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
-  uint32 handleParameterAndQualifiers(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleParametersAndQualifiers(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleTrailingReturenType(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handlePtrOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);

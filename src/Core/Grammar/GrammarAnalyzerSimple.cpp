@@ -44,19 +44,19 @@ bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBloc
       if (true == LexUtil::isConstNumberChar(id[i]))
       {
         //should not start with number
-        JZFUNC_END_LOG();
+//        JZFUNC_END_LOG();
         return false;
       }
       else if (true == LexUtil::isInterpunction(id[i]))
       {
-        JZFUNC_END_LOG();
+//        JZFUNC_END_LOG();
         return false;
       }
     }
     char curChar = id[i];
     if (false == LexUtil::isIdentifyChar(curChar))
     {
-      JZFUNC_END_LOG();
+//      JZFUNC_END_LOG();
       return false;
     }
   }
@@ -72,6 +72,7 @@ bool GrammarAnalyzer::invoke(handler han, const string& file, const int line, co
   }
   int32 tryLast = lastIndex;
   uint32 invokeRet = (this->*han)(index, tryLast, curBlock, ret);
+  mLoopBreaker.remomve(file, line, index);
   if (eGrmErrNoError == invokeRet)
   {
     lastIndex = tryLast;
@@ -99,6 +100,8 @@ bool GrammarAnalyzer::invoke(const string& file, const int line, const int index
     return false;
   }
   uint32 invokeRet = expect(key, index, inOneLine);
+  mLoopBreaker.remomve(file, line, index);
+
   if (eGrmErrNoError == invokeRet)
   {
     lastIndex = index;
