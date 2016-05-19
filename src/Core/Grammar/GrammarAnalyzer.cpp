@@ -2968,3 +2968,17 @@ uint32 GrammarAnalyzer::handleBraceOrEqualInitializer(int index, int& lastIndex,
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleOpaqueEnumDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(EnumKey, tryLast, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(Attributes, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(Identifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(EnumBase, tryLast + 1, tryLast, curBlock, returner, IS_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
