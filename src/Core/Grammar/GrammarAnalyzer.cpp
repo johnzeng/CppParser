@@ -497,7 +497,6 @@ uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, Gramma
 
 uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  JZWRITE_DEBUG("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< now begin >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
   JZFUNC_BEGIN_LOG();
   uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
   if (eGrmErrNoError == noPtrRet)

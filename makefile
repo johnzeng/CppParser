@@ -104,6 +104,8 @@ ifeq ($(debug_var),2)
 	gdb $(TEST_TARGET)
 else ifneq ($(p),)
 	lldb -- $(TEST_TARGET) --gtest_filter=$(p)
+else
+	lldb $(TEST_TARGET)
 endif
 
 clean:
