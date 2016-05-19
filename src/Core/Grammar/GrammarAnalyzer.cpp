@@ -559,7 +559,7 @@ uint32 GrammarAnalyzer::handleNestNameSpecifier(int index, int& lastIndex, Gramm
   }
 
   int32 tryC = index;
-  bool retC = INVOKE(NameSpaceName, tryC, tryC, curBlock, returner, NOT_OPT) &&
+  bool retC = INVOKE(NamespaceName, tryC, tryC, curBlock, returner, NOT_OPT) &&
       EXPECT(tryC + 1, tryC, "::", NOT_OPT, NOT_IN_ONE_LINE);
   if (retC)
   {
@@ -686,7 +686,7 @@ uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock
   }
 }
 
-uint32 GrammarAnalyzer::handleNameSpaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+uint32 GrammarAnalyzer::handleNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 orgRet = handleOriginalNamespaceName(index, lastIndex, curBlock);
   if (eGrmErrNoError == orgRet)
@@ -701,11 +701,6 @@ uint32 GrammarAnalyzer::handleNameSpaceName(int index, int& lastIndex, GrammarBl
   }
 
   return eGrmErrUnknown;
-}
-
-uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return handleIdentifier(index, lastIndex, curBlock);
 }
 
 uint32 GrammarAnalyzer::handleNamespaceAlias(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
@@ -1909,7 +1904,6 @@ uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, Gramm
   uint32 literalExp = handleLiteral(index, lastIndex, curBlock);
   if (eGrmErrNoError == literalExp)
   {
-    lastIndex = index;
     return eGrmErrNoError;
   }
 
@@ -2999,3 +2993,135 @@ uint32 GrammarAnalyzer::handleNamespaceAliasDefinition(int index, int& lastIndex
   }
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleQualifiedNamespaceSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(NamespaceName, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+
+uint32 GrammarAnalyzer::handleNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryA = index;
+  bool retA = INVOKE(NamedNamespaceDefinition, index, tryA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryB = index;
+  bool retB = INVOKE(UnnamedNamespaceDefinition, index, tryB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleNamedNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryA = index;
+  bool retA = INVOKE(OriginalNamespaceDefinition, index, tryA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryB = index;
+  bool retB = INVOKE(ExtensionNamespaceDefinition, index, tryB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleOriginalNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(Identifier, index, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleNamespaceBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(DeclarationSeq, index, lastIndex, curBlock, returner, IS_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+  }
+  return eGrmErrNoError;
+ 
+}
+
+uint32 GrammarAnalyzer::handleExtensionNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(OriginalNamespaceName, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleUnnamedNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+   
+}
+

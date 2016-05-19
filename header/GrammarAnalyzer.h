@@ -17,7 +17,6 @@ public:
   GrammarBlock *getTopBlock();
 protected:
 
-
   uint32 handleBraceOrEqualInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleExceptionSpeciafier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleParameterDeclarationList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
@@ -144,11 +143,6 @@ protected:
   uint32 handleAttibuteDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleInitDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleInitDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
-
-  uint32 expect(const string& expected,int index, bool oneLine = false);
-
-  bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
-
   uint32 handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleRefQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleCVQualifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
@@ -161,6 +155,7 @@ protected:
   uint32 handleVirtSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleAssignmentOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 handleStringLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleEnumKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleClassKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleOverloadableOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
@@ -171,15 +166,15 @@ protected:
   uint32 handleExtensionNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleNamespaceBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
 
-
   typedef uint32(GrammarAnalyzer::*handler)(int,int&,GrammarBlock*, GrammarReturnerBase* ret);
 
   bool invoke(handler han, const string& func, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt);
 
   bool invoke(const string& func, const int line, const int index, int& lastIndex, const string& key, bool isOpt, bool inOoneLine = false);
 
-protected:
+  uint32 expect(const string& expected,int index, bool oneLine = false);
 
+  bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
 private:
 

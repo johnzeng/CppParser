@@ -2,7 +2,6 @@
 
 uint32 GrammarAnalyzer::handleTrailingReturenType(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-
   return eGrmErrUnknown;
 }
 
@@ -115,20 +114,9 @@ uint32 GrammarAnalyzer::handleLinkageSpecification(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleAttibuteDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleQualifiedNamespaceSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  
-  return eGrmErrUnknown;
-}

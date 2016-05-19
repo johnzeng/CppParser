@@ -741,6 +741,27 @@ uint32 GrammarAnalyzer::handleClassKey(int index, int& lastIndex, GrammarBlock* 
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleStringLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+{
+  if (mRecList.size() <= index)
+  {
+    return eGrmErrFileEnd;
+  }
+
+  string word = mRecList[index].word;
+
+  if (0 == word.size())
+  {
+    return eGrmErrUnknown;
+  }
+  if ('"' == word[0])
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
 uint32 GrammarAnalyzer::handleLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   
@@ -758,21 +779,23 @@ uint32 GrammarAnalyzer::handleLiteral(int index, int& lastIndex, GrammarBlock* c
   {
     return eGrmErrUnknown;
   }
-  if ("\"" == word)
+  if (eGrmErrNoError == handleStringLiteral(index, lastIndex, curBlock ))
   {
-//    ret = eGramIsString;
     return eGrmErrNoError;
   }
-  else if("'" == word)
+  else if('\'' == word[0])
   {
+    lastIndex = index;
     return eGrmErrNoError;
   }
   else if("true" == word || "false" == word)
   {
+    lastIndex = index;
     return eGrmErrNoError;
   }
   else if("nullptr" == word || "NULL" == word)
   {
+    lastIndex = index;
     return eGrmErrNoError;
   }
   else if(false == LexUtil::isInterpunction(word[0]) && false == GrmUtilPtr->isKeyWord(word))
@@ -780,6 +803,7 @@ uint32 GrammarAnalyzer::handleLiteral(int index, int& lastIndex, GrammarBlock* c
     if (true == GrmUtilPtr->isConstIntNumber(word))
     {
 //      ret = eGramIsNumber;
+      lastIndex = index;
       return eGrmErrNoError;
     }
   }
