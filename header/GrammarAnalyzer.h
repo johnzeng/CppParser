@@ -29,7 +29,7 @@ protected:
   uint32 handleCtorInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
-  uint32 handleNameSpaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleNamespaceAlias(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleTypeName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
@@ -165,6 +165,12 @@ protected:
   uint32 handleClassKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleOverloadableOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleQualifiedNamespaceSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 handleNamedNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 handleUnnamedNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 handleOriginalNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 handleExtensionNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 handleNamespaceBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+
 
   typedef uint32(GrammarAnalyzer::*handler)(int,int&,GrammarBlock*, GrammarReturnerBase* ret);
 
