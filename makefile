@@ -121,7 +121,7 @@ count:
 
 cov:
 	@echo "=================== now gen cov html file ============================="
-	gcovr -r . -e mylib --html --html-details -o target/cov.html
+	gcovr -r ./src --html --html-details -o target/cov.html
 
 
 depend:$(HEADERS) $(SOURCES) $(mylib_PATH)

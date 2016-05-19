@@ -1,5 +1,5 @@
 # CppParser
-[![Build Status](https://travis-ci.org/johnzeng/CppParser.svg?branch=develop)](https://travis-ci.org/johnzeng/CppParser) [![Coverage Status](https://coveralls.io/repos/github/johnzeng/CppParser/badge.svg?branch=master)](https://coveralls.io/github/johnzeng/CppParser?branch=develop)
+[![Build Status](https://travis-ci.org/johnzeng/CppParser.svg?branch=develop)](https://travis-ci.org/johnzeng/CppParser)[![Coverage Status](https://coveralls.io/repos/github/johnzeng/CppParser/badge.svg?branch=develop)](https://coveralls.io/github/johnzeng/CppParser?branch=develop) 
 
 This SimpleCompletor is aiming to create a completor for vim ,which is easy to config,and good enough to complete the c,cpp coding input.
 First work is to complete the c codes in property way.
