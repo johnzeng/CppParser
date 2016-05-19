@@ -740,6 +740,31 @@ uint32 GrammarAnalyzer::handleClassKey(int index, int& lastIndex, GrammarBlock* 
   }
   return eGrmErrUnknown;
 }
+uint32 GrammarAnalyzer::handleExternLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+{
+  if (mRecList.size() <= index)
+  {
+    return eGrmErrFileEnd;
+  }
+
+  string word = mRecList[index].word;
+
+  if (0 == word.size())
+  {
+    return eGrmErrUnknown;
+  }
+  if ("\"C\"" == word)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  if ("\"C++\"" == word)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
 
 uint32 GrammarAnalyzer::handleStringLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
