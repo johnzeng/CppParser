@@ -164,6 +164,7 @@ protected:
   uint32 handleEnumKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleClassKey(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleOverloadableOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 handleQualifiedNamespaceSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
 
   typedef uint32(GrammarAnalyzer::*handler)(int,int&,GrammarBlock*, GrammarReturnerBase* ret);
 

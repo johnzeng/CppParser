@@ -127,9 +127,8 @@ uint32 GrammarAnalyzer::handleAttibuteDeclaration(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleNamespaceAliasDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+uint32 GrammarAnalyzer::handleQualifiedNamespaceSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   
   return eGrmErrUnknown;
 }
-

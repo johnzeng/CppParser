@@ -2982,3 +2982,20 @@ uint32 GrammarAnalyzer::handleOpaqueEnumDeclaration(int index, int& lastIndex, G
   }
   return eGrmErrUnknown;
 }
+
+
+uint32 GrammarAnalyzer::handleNamespaceAliasDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "=", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(QualifiedNamespaceSpecifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ";", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
