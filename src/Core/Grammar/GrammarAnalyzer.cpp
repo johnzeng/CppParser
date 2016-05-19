@@ -3224,3 +3224,67 @@ uint32 GrammarAnalyzer::handleAttibuteDeclaration(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleMemInitializerId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = INVOKE(ClassOrDecltype, index, tryLastA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = index;
+  bool retB = INVOKE(Identifier, index, tryLastB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleMemInitializerList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool retA = INVOKE(MemInitializer, index, tryLast, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    int32 tryLastA = tryLast;
+    bool retA1 = EXPECT(tryLastA + 1, tryLastA, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(MemInitializerList, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+
+    EXPECT(tryLastA + 1, tryLastA, "...", IS_OPT, NOT_IN_ONE_LINE);
+
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleMemInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(MemInitializerId, index, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    int32 tryLastA = tryLast;
+    bool retA = EXPECT(tryLastA + 1, tryLastA, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(ExpressionList,tryLastA + 1, tryLastA, curBlock, returner, IS_OPT) &&
+      EXPECT(tryLastA + 1, tryLastA, ")", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retA)
+    {
+      lastIndex = tryLastA;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastB = tryLast;
+    bool retB =  INVOKE(BracedInitList,tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+    if (retB)
+    {
+      lastIndex = tryLastB;
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrUnknown;
+}
+

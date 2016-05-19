@@ -79,22 +79,7 @@ uint32 GrammarAnalyzer::handleTemplateDecaration(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleMemInitializerList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  
-  return eGrmErrUnknown;
-}
 
-uint32 GrammarAnalyzer::handleMemInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  
-  return eGrmErrUnknown;
-}
-
-uint32 GrammarAnalyzer::handleMemInitializerId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return eGrmErrUnknown;
-}
 uint32 GrammarAnalyzer::handleExplicitSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   return eGrmErrUnknown;
