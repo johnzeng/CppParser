@@ -519,73 +519,54 @@ uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 typeNameRet = handleTypeName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == typeNameRet)
+  int32 tryA = index - 1;
+  bool inLoop = false;
+  while(INVOKE(NestNameSpecifier, tryA + 1, tryA, curBlock, returner, NOT_OPT))
   {
-    uint32 ret = expect("::", lastIndex + 1);
-    if (eGrmErrNoError == ret)
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    lastIndex = tryA;
+    int32 tryA1 = tryA;
+    bool retA1 = INVOKE(Identifier, tryA1 + 1, tryA1, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryA1 + 1, tryA1, "::", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retA1)
     {
-      lastIndex = lastIndex + 1;
+      lastIndex = tryA1;
       return eGrmErrNoError;
     }
-  }
 
-  uint32 namespaceRet = handleNameSpaceName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == namespaceRet)
-  {
-    uint32 ret = expect("::", lastIndex + 1);
-    if (eGrmErrNoError == ret)
+    int32 tryA2 = tryA;
+    bool retA2 = EXPECT(tryA2 + 1, tryA2, "template", IS_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(SimpleTemplateId, tryA2 + 1, tryA2, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryA2 + 1, tryA1, "::", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retA2)
     {
-      lastIndex = lastIndex + 1;
+      lastIndex = tryA2;
       return eGrmErrNoError;
     }
+    return eGrmErrNoError;
   }
 
-  //cpp 11 mark
-  
-  uint32 decltypeSpecifierRet = handleDecltypeSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == decltypeSpecifierRet)
+  int32 tryB = index;
+  bool retB = INVOKE(TypeName, tryB, tryB, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryB + 1, tryB, "::", NOT_OPT, NOT_IN_ONE_LINE);
+
+  if (retB)
   {
-    uint32 ret = expect("::", index + 1);
-    if (eGrmErrNoError == ret)
-    {
-      lastIndex = index + 1;
-      return eGrmErrNoError;
-    }
+    lastIndex = tryB;
+    return eGrmErrNoError;
   }
-  //need to add loop breaker
 
-//  uint32 nestedNameRet = handleNestNameSpecifier(index, lastIndex, curBlock);
-//  if (eGrmErrNoError == typeNameRet)
-//  {
-//    uint32 idRet = handleIdentifier(lastIndex + 1, lastIndex, curBlock);
-//    if (eGrmErrNoError == idRet)
-//    {
-//      uint32 ret = expect("::", lastIndex + 1);
-//      if (eGrmErrNoError == ret)
-//      {
-//        lastIndex = lastIndex + 1;
-//        return eGrmErrNoError;
-//      }
-//    }
-//
-//    ok, let skip template part at first
-//
-//    uint32 expTemplateRet = expect("template", lastIndex + 1);
-//    if (eGrmErrNoError == expTemplateRet)
-//    {
-//      uint32 simpleTemplateIdRet = handleSimpleTemplateId(lastIndex + 2, lastIndex, curBlock);
-//      if (eGrmErrNoError == simpleTemplateIdRet)
-//      {
-//        uint32 ret = expect("::", lastIndex + 1);
-//        if (eGrmErrNoError == ret)
-//        {
-//          lastIndex = lastIndex + 1;
-//          return eGrmErrNoError;
-//        }
-//      }
-//    }
-//  }
+  int32 tryC = index;
+  bool retC = INVOKE(NameSpaceName, tryC, tryC, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryC + 1, tryC, "::", NOT_OPT, NOT_IN_ONE_LINE);
+  if (retC)
+  {
+    lastIndex = tryC;
+    return eGrmErrNoError;
+  }
 
   return eGrmErrUnknown;
 }
