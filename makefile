@@ -81,7 +81,11 @@ endif
 test:$(TEST_TARGET) $(SOURCES) $(HEADERS)
 	@echo "==================== tester is going to run  ================================="
 	-find . -name "*.gcda" -exec rm {} \;
+ifneq ($(p),)
+	export C_INCLUDE_PATH="./" &&	export CPLUS_INCLUDE_PATH="./" && export OBJC_INC_ENV_PATH="./" && ./$(TEST_TARGET) --gtest_filter=$(p)
+else
 	export C_INCLUDE_PATH="./" &&	export CPLUS_INCLUDE_PATH="./" && export OBJC_INC_ENV_PATH="./" && ./$(TEST_TARGET)
+endif
 
 lib:
 	cd $(mylib_PATH) && make
@@ -98,6 +102,8 @@ ldebug:
 debuger:$(TEST_TARGET)
 ifeq ($(debug_var),2)
 	gdb $(TEST_TARGET)
+else ifneq ($(p),)
+	lldb -- $(TEST_TARGET) --gtest_filter=$(p)
 else
 	lldb $(TEST_TARGET)
 endif
@@ -117,7 +123,7 @@ count:
 
 cov:
 	@echo "=================== now gen cov html file ============================="
-	gcovr -r . -e mylib --html --html-details -o target/cov.html
+	gcovr -r ./src --html --html-details -o target/cov.html
 
 
 depend:$(HEADERS) $(SOURCES) $(mylib_PATH)

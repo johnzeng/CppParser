@@ -1,0 +1,17 @@
+enum-specifier:
+  type-specifier
+    type-specifier-seq
+      enum-base
+      type-id
+      conversion-type-id
+      exception-declaration
+      new-type-id
+      for-range-declaration
+    decl-specifier
+      simple-declaration --> should be defined in this type
+      decl-specifier-seq
+        parameter-declaration
+        function-declaration
+        member-declaration
+
+

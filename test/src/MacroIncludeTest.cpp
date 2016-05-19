@@ -14,7 +14,7 @@ TEST(MacroLex, macroInclude1){
   strcpy(argv1,"./test/TestSet/macro_include_test_1");
   char* argv[2] = {argv0,argv1};
 
-  globalInitAtBegin();
+//  globalInitAtBegin();
 	JZSetLoggerLevel(JZ_LOG_TEST);
 
 	//analyze command line input

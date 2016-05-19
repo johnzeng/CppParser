@@ -3,284 +3,46 @@
 #include "LexUtil.h"
 #include "JZLogger.h"
 
+
+
 uint32 GrammarAnalyzer::doAnalyze()
 {
   int index = 0;
   int listSize = mRecList.size();
-  while (index < listSize)
-  {
-    int32 nextIndex = index;
-    uint32 ret = eGrmErrNoError;
-    if(eGrmErrNoError != (ret = blockHeartBeat(index, nextIndex, &mTopBlock) ))
-    {
-      return ret;
-    }
-    index = nextIndex + 1;
-  }
-  return eGrmErrNoError;
+  int32 lastIndex = 0;
+  return handleDeclarationSeq(0,lastIndex , &mTopBlock);
 }
 
-uint32 GrammarAnalyzer::blockHeartBeat(int32 index, int32& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  JZFUNC_BEGIN_LOG();
-  int nextEnumIndex = index;
-  uint32 ret = handleEnum(index, nextEnumIndex, curBlock) ;
-  if (ret == eGrmErrNoError)
-  {
-    lastIndex = nextEnumIndex;
-    JZFUNC_END_LOG();
-    return ret;
-  }
-
-  int32 nextFuncIndex = index;
-  uint32 funcRet = handleFuncDefinition(index, nextFuncIndex, curBlock);
-  if (funcRet == eGrmErrNoError)
-  {
-    lastIndex = nextFuncIndex;
-    JZFUNC_END_LOG();
-    return ret;
-  }
-
-  JZFUNC_END_LOG();
-  return eGrmErrUnknown;
-}
-
-uint32 GrammarAnalyzer::handleEnum(int32 index, int32& lastIndex, GrammarBlock* curBlock)
-{
-  JZFUNC_BEGIN_LOG();
-  if(mRecList.size() <= index)
-  {
-    JZFUNC_END_LOG();
-    return eGrmErrFileEnd;
-  }
-  if (mRecList[index].word != "enum")
-  {
-    JZWRITE_DEBUG("get key word %s", mRecList[index].word.c_str());
-    JZFUNC_END_LOG();
-    return eGrmErrNotEnum;
-  }
-  //should handle enum class and enum struct here
-  lastIndex = index;
-
-  uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
-  if(attRet != eGrmErrNoError && attRet != eGrmErrNotAttri)
-  {
-    return attRet;
-  }
-
-  JZFUNC_END_LOG();
-  return handleEnumId(lastIndex + 1, lastIndex, curBlock);
-}
-
-uint32 GrammarAnalyzer::handleEnumId(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  if(mRecList.size() <= index)
-  {
-    return eGrmErrFileEnd;
-  }
-  //need to check the id
-  if (false == isLegalVarIdentify(mRecList[index].word, curBlock))
-  {
-    return eGrmErrDoubleDefinedDataType;
-  }
-
-  lastIndex = index;
-  string id = mRecList[index].word;
-  EnumDefine *curEnum = new EnumDefine(id);
-
-  //should hanlde enum 
-  uint32 ret = expect(";",index + 1);
-
-  if (ret == eGrmErrNoError)
-  {
-    curEnum->setFather(curBlock);
-    lastIndex = index;
-    JZFUNC_END_LOG();
-    return ret;
-  }
-
-  GrammarBlock* body = new GrammarBlock();
-  curEnum->addBody(body);
-
-  ret = handleLeftBrace(index + 1, lastIndex, body);
-  if (ret == eGrmErrNoError)
-  {
-    curBlock->addDataTypeDefine(curEnum);
-    JZFUNC_END_LOG();
-    return ret;
-  }
-
-  return eGrmErrUnknown;
-}
-
-uint32 GrammarAnalyzer::handleLeftBrace(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  if(mRecList.size() <= index)
-  {
-    return eGrmErrFileEnd;
-  }
-  //need to check the id
-  if (mRecList[index].word != "{")
-  {
-    return eGrmErrNotLeftBrace;
-  }
-
-  auto father = curBlock->getFather();
-  uint32 fatherNodeType = father == NULL ? eGrammarBlockTop : father->getType();
-
-  lastIndex = index;
-  uint32 ret = eGrmErrNoError;
-  switch(fatherNodeType)
-  {
-    case eGrammarNodeTopNode:
-      ret = blockHeartBeat(index + 1, lastIndex, curBlock);
-      break;
-    case eDataTypeEnum:
-      ret = handleEnumFieldName(index + 1, lastIndex, curBlock);
-      break;
-    default:
-    {
-      break;  
-    }
-  }
-  return ret;
-}
-
-uint32 GrammarAnalyzer::handleEnumFieldName(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  if(mRecList.size() <= index)
-  {
-    return eGrmErrFileEnd;
-  }
-  lastIndex = index;
-
-  if(expect("}", index) == eGrmErrNoError)
-  {
-    if(expect(";", index + 1) == eGrmErrNoError)
-    {
-      lastIndex++;
-      return eGrmErrNoError;
-    }
-    else
-    {
-      JZWRITE_ERROR("missing ; at the end of enum define");
-      return eGrmErrMissingSemicolon;
-    }
-  }
-
-  if(expect(",", index) == eGrmErrNoError)
-  {
-    if(index - 1 < 0){
-      JZFUNC_END_LOG();
-      return eGrmErrUnknown;
-    }
-    if (mRecList[index - 1].word == ",")
-    {
-      return eGrmErrUnexpectedCommon;
-    }
-    return handleEnumFieldName(index + 1, lastIndex, curBlock);
-  }
-
-  if(true == isLegalVarIdentify(mRecList[index].word,curBlock))
-  {
-    string fieldName = mRecList[index].word;
-    EnumDefine *define = dynamic_cast<EnumDefine*>(curBlock->getFather());
-    if(NULL == define)
-    {
-      return eGrmErrUnknown;
-    }
-    if(expect("=", index + 1) == eGrmErrNoError)
-    {
-      uint32 value = 0;
-      DataTypeDefine typeRet;
-      uint32 getValeRet = handleStatement(index + 2, lastIndex, curBlock);
-      if(getValeRet != eGrmErrNoError)
-      {
-        //should check value type here;
-        return getValeRet;
-      }
-      uint32 addRet = define->addField(fieldName,value);
-      if(addRet != eGrmErrNoError)
-      {
-        return addRet;
-      }
-      return handleEnumFieldName(lastIndex + 1, lastIndex, curBlock);
-    }
-    else
-    {
-      uint32 addRet = define->addField(fieldName);
-      if(addRet != eGrmErrNoError)
-      {
-        return addRet;
-      }
-      lastIndex = index + 1;
-      return handleEnumFieldName(index + 2, lastIndex, curBlock);
-    }
-  }
-
-  return eGrmErrNoError;
-}
-
-bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBlock)
-{
-  const VarDefine* def = curBlock->getVarDefInBlock(id);
-  if(NULL != def)
-  {
-    return false;
-  }
-
-  bool isKey = GrmUtilPtr->isKeyWord(id);
-  if(true == isKey)
-  {
-    return false;
-  }
-
-  for(int i = 0 ; i < id.size() ; i++)
-  {
-    if(i == 0)
-    {
-      if (true == LexUtil::isConstNumberChar(id[i]))
-      {
-        //should not start with number
-        return false;
-      }
-    }
-    char curChar = id[i];
-    if (false == LexUtil::isIdentifyChar(curChar))
-    {
-      return false;
-    }
-  }
-  return true;
-}
-
-uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  uint32 getRet1 = eGramIsNothing;
-  uint32 errRet1 = getCVQualifier(index,lastIndex, getRet1);
+//  uint32 getRet1 = eGramIsNothing;
+  uint32 errRet1 = handleCVQualifier(index,lastIndex,curBlock/*, getRet1*/);
   if(eGrmErrNoError != errRet1)
   {
     //it's reasonable to get nothing here
     return eGrmErrNoError;
   }
   
-  uint32 getRet2 = eGramIsNothing;
-  uint32 errRet2 = getCVQualifier(index + 1,lastIndex, getRet2);
+//  uint32 getRet2 = eGramIsNothing;
+  uint32 errRet2 = handleCVQualifier(index + 1,lastIndex, curBlock);
   if(eGrmErrNoError != errRet2)
   {
     //it's reasonable to get nothing here
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
-  if(getRet1 == getRet2)
-  {
-    return eGrmErrDoubleCVQualifier;
-  }
+//  if(getRet1 == getRet2)
+//  {
+//    JZFUNC_END_LOG();
+//    return eGrmErrDoubleCVQualifier;
+//  }
   //should add more code to attach CV-qualifier to the following block
+  JZFUNC_END_LOG();
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expDoubleSquareBrackets = expect("[[", index);
   if(eGrmErrNoError == expDoubleSquareBrackets)
@@ -355,51 +117,62 @@ uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock
   return eGrmErrNotAttri;
 }
 
-uint32 GrammarAnalyzer::handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 attRet = handleAttributes(index, lastIndex, curBlock);
-  if(eGrmErrNotAttri != attRet && eGrmErrNoError != attRet)
+  int32 nexIndex = index;
+  int32 tryLast = lastIndex;
+  uint32 attRet = handleAttributes(index, tryLast, curBlock);
+  if(eGrmErrNoError == attRet)
   {
-    return attRet;
+    nexIndex = tryLast + 1;
   }
-  uint32 decSpecifierSeqRet = handleDeclSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+  uint32 decSpecifierSeqRet = handleDeclSpecifierSeq(nexIndex, tryLast, curBlock);
   if (eGrmErrNotDecSpecifierSeq != decSpecifierSeqRet && eGrmErrNoError != decSpecifierSeqRet)
   {
+    JZFUNC_END_LOG();
     return decSpecifierSeqRet;
   }
-  uint32 declatorRet = handleDeclator(lastIndex + 1, lastIndex, curBlock);
+  else
+  {
+    nexIndex = tryLast + 1;
+  }
+  uint32 declatorRet = handleDeclarator(nexIndex, tryLast, curBlock);
   if(eGrmErrNoError != declatorRet)
   {
+    JZFUNC_END_LOG();
     return declatorRet;
   }
 
   //also = delete and = default in cpp11
-  return handleFunctionBody(lastIndex + 1 , lastIndex, curBlock);
-
+  uint32 bodyRet = handleFunctionBody(tryLast + 1, tryLast, curBlock);
+  if (eGrmErrNoError == bodyRet)
+  {
+    lastIndex = tryLast;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+  JZFUNC_END_LOG();
+  return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 specifierRet = handleDeclSpecifier(index, lastIndex, curBlock);
   if (eGrmErrNoError != specifierRet)
   {
+    JZFUNC_END_LOG();
     return specifierRet;
   }
   uint32 attRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
   if(eGrmErrNotAttri == attRet)
   {
     uint32 nextRet = handleDeclSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNotDecSpecifierSeq == nextRet)
-    {
-      return eGrmErrNoError;
-    }
-    else
-    {
-      return nextRet;
-    }
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
   }
   else if(eGrmErrNoError == attRet)
   {
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
   else
@@ -410,28 +183,32 @@ uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, Gramma
   }
 }
 
-uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 ret = eGramIsNothing;
-  uint32 storageClassSpecRet = getStorageClassSpecifier(index, lastIndex , ret);
+//  uint32 ret = eGramIsNothing;
+  uint32 storageClassSpecRet = handleStorageClassSpecifier(index, lastIndex , curBlock);
   if(eGrmErrNoError == storageClassSpecRet)
   {
     JZWRITE_DEBUG("shoulde add this property into seq");
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
   else if (eGrmErrNotStorageClassSpecifier != storageClassSpecRet)
   {
+    JZFUNC_END_LOG();
     return storageClassSpecRet;
   }
 
-  uint32 funcSpecifierRet = getFunctionSpecifier(index, lastIndex , ret);
+  uint32 funcSpecifierRet = handleFunctionSpecifier(index, lastIndex , curBlock);
   if(eGrmErrNoError == funcSpecifierRet)
   {
     JZWRITE_DEBUG("shoulde add this property into seq");
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
   else if (eGrmErrNotFunctionSpecifier != funcSpecifierRet)
   {
+    JZFUNC_END_LOG();
     return funcSpecifierRet;
   }
 
@@ -440,6 +217,7 @@ uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBl
   {
     lastIndex = index;
     //ret = eGramIsFriend;
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
@@ -448,6 +226,7 @@ uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBl
   {
     lastIndex = index;
     //ret = eGramIsTypedef;
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
@@ -456,6 +235,7 @@ uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBl
   {
     lastIndex = index;
     //ret = eGramIsConstExpr;
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
@@ -465,10 +245,11 @@ uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBl
     JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
+  JZFUNC_END_LOG();
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 trailingRet = handleTrailingTypeSpecifier(index, lastIndex, curBlock);
   if (eGrmErrNoError == trailingRet)
@@ -477,8 +258,9 @@ uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBl
   }
   
   uint32 enumRet = handleEnumSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == trailingRet)
+  if (eGrmErrNoError == enumRet)
   {
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
@@ -490,7 +272,7 @@ uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 simpleRet = handleSimpleTypeSpecifier(index, lastIndex, curBlock);
   if (eGrmErrNoError == simpleRet)
@@ -514,8 +296,8 @@ uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, G
     return eGrmErrNoError;
   }
 
-  uint32 cvType = eGramIsNothing;
-  uint32 cvRet = getCVQualifier(index, lastIndex, cvType);
+//  uint32 cvType = eGramIsNothing;
+  uint32 cvRet = handleCVQualifier(index, lastIndex, curBlock);
   if (eGrmErrNoError == cvRet)
   {
     return eGrmErrNoError;
@@ -523,7 +305,7 @@ uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, G
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   //let's skip :: and nested name at first
 
@@ -616,189 +398,223 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  //should be same as handle enum, but I don't sur why I am traced into this .
-  return handleEnum(index, lastIndex, curBlock);
-}
-
-uint32 GrammarAnalyzer::handleDeclator(int index, int& lastIndex, GrammarBlock* curBlock)
-{
+  JZWRITE_DEBUG("====================================================== now begin ============")
+  JZFUNC_BEGIN_LOG();
   uint32 ptrRet = handlePtrDeclarator(index, lastIndex, curBlock);
   if (eGrmErrNoError == ptrRet)
   {
+    JZFUNC_END_LOG();
     return ptrRet;
   }
 
 //this part is cpp 11 standard
 
-//  uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
-//  if (eGrmErrNoError == noPtrRet)
-//  {
-//    uint32 parametersRet = handleParameterAndQualifiers(lastIndex + 1, lastIndex, curBlock);
-//    if (eGrmErrNoError == parametersRet)
-//    {
-//      uint32 trailingRet = handleTrailingReturenType(lastIndex + 1, lastIndex, curBlock);
-//      if (eGrmErrNoError == trailingRet)
-//      {
-//        return eGrmErrNoError;
-//      }
-//    }
-//  }
+  uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
+  if (eGrmErrNoError == noPtrRet)
+  {
+    uint32 parametersRet = handleParametersAndQualifiers(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == parametersRet)
+    {
+      uint32 trailingRet = handleTrailingReturenType(lastIndex + 1, lastIndex, curBlock);
+      if (eGrmErrNoError == trailingRet)
+      {
+        JZFUNC_END_LOG();
+        return eGrmErrNoError;
+      }
+    }
+  }
 
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
+  JZFUNC_BEGIN_LOG();
+  int32 tryB = index - 1;
+  bool loopIn = false;
+  while(INVOKE(NonPtrDeclarator, tryB + 1, tryB, curBlock, returner, NOT_OPT))
+  {
+    JZWRITE_DEBUG("cur index: %d", tryB);
+    loopIn = true;
+  }
+  if (loopIn)
+  {
+
+    int32 tryB1 = tryB;
+    bool retB1 = INVOKE(ParametersAndQualifiers, tryB1 + 1, tryB1, curBlock, returner, NOT_OPT);
+    if (retB1)
+    {
+      lastIndex = tryB1;
+      JZFUNC_END_LOG();
+      return eGrmErrNoError;
+    }
+
+    int32 tryB2 = tryB;
+
+    bool retB2 = EXPECT(tryB2 + 1, tryB2, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(ConstantExpression, tryB2 + 1, tryB2, curBlock, returner, IS_OPT) &&
+      EXPECT(tryB2 + 1, tryB2, "]", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(Attributes, tryB2 + 1, tryB2, curBlock, returner, IS_OPT);
+    if (retB2)
+    {
+      lastIndex = tryB2;
+      JZFUNC_END_LOG();
+      return eGrmErrNoError;
+    }
+
+    lastIndex = tryB;
+    return eGrmErrNoError;
+  }
+
+  int32 tryA = index;
+  //if we match declarator here, we don't go futher to parameters
+  bool retA = INVOKE(DeclaratorId, index, tryA, curBlock, returner, NOT_OPT) &&
+    INVOKE(Attributes, tryA + 1, tryA, curBlock, returner, IS_OPT);
+  if (retA)
+  {
+    lastIndex = tryA;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+
+  int32 tryD = index;
+  bool retD = EXPECT(index, tryD, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(PtrDeclarator, tryD + 1, tryD, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryD + 1, tryD, ")", NOT_OPT, NOT_IN_ONE_LINE);
+  if (retD)
+  {
+    lastIndex = tryD;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+
+  JZFUNC_END_LOG();
+  return eGrmErrUnknown;
+}
+
+
+uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  JZFUNC_BEGIN_LOG();
   uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
   if (eGrmErrNoError == noPtrRet)
   {
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
   uint32 ptrOperatorRet = handlePtrOperator(index, lastIndex, curBlock);
   if (eGrmErrNoError == ptrOperatorRet)
   {
-    return handleNonPtrDeclarator(lastIndex + 1, lastIndex, curBlock);
+    JZFUNC_END_LOG();
+    return handlePtrDeclarator(lastIndex + 1, lastIndex, curBlock);
   }
-  return eGrmErrNoError;
+  JZFUNC_END_LOG();
+  return eGrmErrUnknown;
 }
 
 
-uint32 GrammarAnalyzer::handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 typeNameRet = handleTypeName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == typeNameRet)
+  int32 tryA = index - 1;
+  bool inLoop = false;
+  while(INVOKE(NestNameSpecifier, tryA + 1, tryA, curBlock, returner, NOT_OPT))
   {
-    uint32 ret = expect("::", lastIndex + 1);
-    if (eGrmErrNoError == ret)
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    lastIndex = tryA;
+    int32 tryA1 = tryA;
+    bool retA1 = INVOKE(Identifier, tryA1 + 1, tryA1, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryA1 + 1, tryA1, "::", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retA1)
     {
-      lastIndex = lastIndex + 1;
+      lastIndex = tryA1;
       return eGrmErrNoError;
     }
-  }
 
-  uint32 namespaceRet = handleNameSpaceName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == namespaceRet)
-  {
-    uint32 ret = expect("::", lastIndex + 1);
-    if (eGrmErrNoError == ret)
+    int32 tryA2 = tryA;
+    bool retA2 = EXPECT(tryA2 + 1, tryA2, "template", IS_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(SimpleTemplateId, tryA2 + 1, tryA2, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryA2 + 1, tryA1, "::", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retA2)
     {
-      lastIndex = lastIndex + 1;
+      lastIndex = tryA2;
       return eGrmErrNoError;
     }
+    return eGrmErrNoError;
   }
 
-  //cpp 11 mark
-  
-//  uint32 decltypeSpecifierRet = handleDecltypeSpecifier(index, lastIndex, curBlock);
-//  if (eGrmErrNoError == decltypeSpecifierRet)
-//  {
-//    uint32 ret = expect("::", index + 1);
-//    if (eGrmErrNoError == ret)
-//    {
-//      lastIndex = index + 1;
-//      return eGrmErrNoError;
-//    }
-//  }
+  int32 tryB = index;
+  bool retB = INVOKE(TypeName, tryB, tryB, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryB + 1, tryB, "::", NOT_OPT, NOT_IN_ONE_LINE);
 
-  uint32 nestedNameRet = handleNestNameSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == typeNameRet)
+  if (retB)
   {
-    uint32 idRet = handleIdentifier(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == idRet)
-    {
-      uint32 ret = expect("::", lastIndex + 1);
-      if (eGrmErrNoError == ret)
-      {
-        lastIndex = lastIndex + 1;
-        return eGrmErrNoError;
-      }
-    }
+    lastIndex = tryB;
+    return eGrmErrNoError;
+  }
 
-//    ok, let skip template part at first
-
-//    uint32 expTemplateRet = expect("template", lastIndex + 1);
-//    if (eGrmErrNoError == expTemplateRet)
-//    {
-//      uint32 simpleTemplateIdRet = handleSimpleTemplateId(lastIndex + 2, lastIndex, curBlock);
-//      if (eGrmErrNoError == simpleTemplateIdRet)
-//      {
-//        uint32 ret = expect("::", lastIndex + 1);
-//        if (eGrmErrNoError == ret)
-//        {
-//          lastIndex = lastIndex + 1;
-//          return eGrmErrNoError;
-//        }
-//      }
-//    }
+  int32 tryC = index;
+  bool retC = INVOKE(NamespaceName, tryC, tryC, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryC + 1, tryC, "::", NOT_OPT, NOT_IN_ONE_LINE);
+  if (retC)
+  {
+    lastIndex = tryC;
+    return eGrmErrNoError;
   }
 
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 starExp = expect("*", index);
-  if (eGrmErrNoError == starExp)
+  int tryLastA = index;
+  bool retA = EXPECT(index, tryLastA, "*", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Attributes, tryLastA + 1, tryLastA, curBlock, returner, IS_OPT) &&
+    INVOKE(CVQualifier, tryLastA + 1, tryLastA, curBlock, returner, IS_OPT);
+  if (retA)
   {
-    uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
-    if(eGrmErrNoError == attRet || eGrmErrNotAttri == attRet){
-      uint32 ret = eGramIsNothing;
-      return getCVQualifier(lastIndex + 1,lastIndex, ret);
-    }
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
   }
 
-  uint32 doubleAndExp = expect("&&", index);
-  if (eGrmErrNoError == doubleAndExp)
+  int tryLastB = index;
+  bool retB = EXPECT(index, tryLastB, "&&", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Attributes, tryLastB + 1, tryLastB, curBlock, returner, IS_OPT);
+  if (retB)
   {
-    uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
-    if(eGrmErrNoError == attRet || eGrmErrNotAttri == attRet){
-      return eGrmErrNoError;
-    }
-    
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
   }
 
-  uint32 andExp = expect("&", index);
-  if (eGrmErrNoError == andExp)
+  int tryLastC = index;
+  bool retC = EXPECT(index, tryLastC, "&", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Attributes, tryLastC + 1, tryLastC, curBlock, returner, IS_OPT);
+  if (retC)
   {
-    uint32 attRet = handleAttributes(index + 1, lastIndex, curBlock);
-    if(eGrmErrNoError == attRet || eGrmErrNotAttri == attRet){
-      return eGrmErrNoError;
-    }
+    lastIndex = tryLastC;
+    return eGrmErrNoError;
   }
-  uint32 expNameSpc = expect("::", index);
-  uint32 nestRet = eGrmErrUnknown;
-  if (expNameSpc == eGrmErrNoError)
-  {
-    nestRet = handleNestNameSpecifier(index + 1, lastIndex, curBlock);
-  }
-  else
-  {
-    nestRet = handleNestNameSpecifier(index, lastIndex, curBlock);
-  }
-  if (eGrmErrNoError == nestRet)
-  {
-    uint32 iStarExp = expect("*", lastIndex + 1 );
-    if (eGrmErrNoError != iStarExp)
-    {
-      return iStarExp;
-    }
-    lastIndex = lastIndex + 1;
 
-    uint32 attRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == attRet || eGrmErrNotAttri == attRet)
-    {
-      uint32 ret = eGramIsNothing;
-      uint32 cvRet = getCVQualifier(lastIndex + 1, lastIndex, ret);
-      return cvRet;
-    }
+  int tryLastD = index;
+  bool retD = EXPECT(index, tryLastD, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLastD + 1, tryLastC, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastD + 1, tryLastD, "*", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Attributes, tryLastC + 1, tryLastC, curBlock, returner, IS_OPT) &&
+    INVOKE(CVQualifier, tryLastC + 1, tryLastC, curBlock, returner, IS_OPT);
+  if (retD)
+  {
+    lastIndex = tryLastD;
+    return eGrmErrNoError;
   }
 
   return eGrmErrUnknown;
 }
-uint32 GrammarAnalyzer::handleDeclatorId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleDeclaratorId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 dotRet = expect("...", index);
   if (eGrmErrNoError == dotRet)
@@ -846,8 +662,9 @@ uint32 GrammarAnalyzer::handleDeclatorId(int index, int& lastIndex, GrammarBlock
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
+//  JZFUNC_BEGIN_LOG();
   if (mRecList.size() <= index)
   {
     return eGrmErrFileEnd;
@@ -857,15 +674,19 @@ uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock
 
   if (true == isLegalVarIdentify(id, curBlock))
   {
+    lastIndex = index;
+    JZWRITE_DEBUG("id is: %s" , id.c_str());
+//    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
   else
   {
+//    JZFUNC_END_LOG();
     return eGrmErrDoubleDefinedVar;
   }
 }
 
-uint32 GrammarAnalyzer::handleNameSpaceName(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 orgRet = handleOriginalNamespaceName(index, lastIndex, curBlock);
   if (eGrmErrNoError == orgRet)
@@ -882,28 +703,23 @@ uint32 GrammarAnalyzer::handleNameSpaceName(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleNamespaceAlias(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   return handleIdentifier(index, lastIndex, curBlock);
 }
 
-uint32 GrammarAnalyzer::handleNamespaceAlias(int index, int& lastIndex, GrammarBlock* curBlock)
-{
-  return handleIdentifier(index, lastIndex, curBlock);
-}
-
-uint32 GrammarAnalyzer::handleTypedefName(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTypedefName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
 
   return handleIdentifier(index, lastIndex, curBlock);
 }
 
-uint32 GrammarAnalyzer::handleEnumName(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleEnumName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   return handleIdentifier(index, lastIndex, curBlock);
 }
 
-uint32 GrammarAnalyzer::handleClassName(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleClassName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 { 
   uint32 idRet = handleIdentifier(index, lastIndex, curBlock);
   if (idRet == eGrmErrNoError)
@@ -919,7 +735,7 @@ uint32 GrammarAnalyzer::handleClassName(int index, int& lastIndex, GrammarBlock*
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTypeName(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTypeName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 classNameRet = handleClassName(index, lastIndex, curBlock);
   if (eGrmErrNoError == classNameRet)
@@ -948,7 +764,7 @@ uint32 GrammarAnalyzer::handleTypeName(int index, int& lastIndex, GrammarBlock* 
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 unqualifiedIdRet = handleUnqualifiedId(index, lastIndex, curBlock);
   if (eGrmErrNoError == unqualifiedIdRet)
@@ -963,7 +779,7 @@ uint32 GrammarAnalyzer::handleIdExpression(int index, int& lastIndex, GrammarBlo
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleUnqualifiedId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleUnqualifiedId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 idRet = handleIdentifier(index, lastIndex, curBlock);
   if (idRet == eGrmErrNoError)
@@ -1011,7 +827,7 @@ uint32 GrammarAnalyzer::handleUnqualifiedId(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 doubleExp = expect("::", index);
   if (eGrmErrNoError == doubleExp)
@@ -1074,7 +890,7 @@ uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBloc
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 keyExp = expect("decltype", index);
   if (eGrmErrNoError != keyExp)
@@ -1102,7 +918,7 @@ uint32 GrammarAnalyzer::handleDecltypeSpecifier(int index, int& lastIndex, Gramm
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 assRet = handleAssignmentExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == assRet)
@@ -1118,7 +934,7 @@ uint32 GrammarAnalyzer::handleExpression(int index, int& lastIndex, GrammarBlock
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 condRet = handleConditionalExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == condRet)
@@ -1134,8 +950,8 @@ uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, Gr
   uint32 logicRet = handleLogicOrExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == logicRet)
   {
-    uint32 ret = eGramIsNothing;
-    uint32 expAssignmentRet = getAssignmentOperator(lastIndex + 1, lastIndex, ret);
+//    uint32 ret = eGramIsNothing;
+    uint32 expAssignmentRet = handleAssignmentOperator(lastIndex + 1, lastIndex, curBlock);
     if (eGrmErrNoError == expAssignmentRet)
     {
       return handleInitializerClause(lastIndex + 1, lastIndex, curBlock);
@@ -1145,7 +961,7 @@ uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 logicRet = handleLogicOrExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == logicRet)
@@ -1178,7 +994,7 @@ uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, G
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleLogicOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleLogicOrExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 nextRet = handleLogicAndExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == nextRet)
@@ -1193,7 +1009,7 @@ uint32 GrammarAnalyzer::handleLogicOrExpression(int index, int& lastIndex, Gramm
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleLogicAndExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleLogicAndExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 inRet = handleInclusiveOrExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == inRet)
@@ -1211,7 +1027,7 @@ uint32 GrammarAnalyzer::handleLogicAndExpression(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleInclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleInclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 nextRet = handleExclusiveOrExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == nextRet)
@@ -1226,7 +1042,7 @@ uint32 GrammarAnalyzer::handleInclusiveOrExpression(int index, int& lastIndex, G
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleExclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleExclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 nextRet = handleAndExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == nextRet)
@@ -1241,7 +1057,7 @@ uint32 GrammarAnalyzer::handleExclusiveOrExpression(int index, int& lastIndex, G
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleAndExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleAndExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 nextRet = handleEqualityExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == nextRet)
@@ -1256,7 +1072,7 @@ uint32 GrammarAnalyzer::handleAndExpression(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleEqualityExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleEqualityExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 nextRet = handleRelationalExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == nextRet)
@@ -1278,7 +1094,7 @@ uint32 GrammarAnalyzer::handleEqualityExpression(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleRelationalExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleRelationalExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 shiftRet = handleShiftExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == shiftRet)
@@ -1312,7 +1128,7 @@ uint32 GrammarAnalyzer::handleRelationalExpression(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleShiftExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleShiftExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 addRet = handleAdditiveExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == addRet)
@@ -1335,7 +1151,7 @@ uint32 GrammarAnalyzer::handleShiftExpression(int index, int& lastIndex, Grammar
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleAdditiveExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleAdditiveExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 mulRet = handleMultiplicativeExpression(index, lastIndex,curBlock);
   if (eGrmErrNoError == mulRet)
@@ -1358,7 +1174,7 @@ uint32 GrammarAnalyzer::handleAdditiveExpression(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleMultiplicativeExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleMultiplicativeExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 pmRet = handlePmExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == pmRet)
@@ -1386,7 +1202,7 @@ uint32 GrammarAnalyzer::handleMultiplicativeExpression(int index, int& lastIndex
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handlePmExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handlePmExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 castRet = handleCastExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == castRet)
@@ -1408,7 +1224,7 @@ uint32 GrammarAnalyzer::handlePmExpression(int index, int& lastIndex, GrammarBlo
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleCastExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleCastExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 unArryRet = handleUnaryExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == unArryRet)
@@ -1432,7 +1248,7 @@ uint32 GrammarAnalyzer::handleCastExpression(int index, int& lastIndex, GrammarB
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTypeId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTypeId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 typeSpecifierRet = handleTypeSpecifierSeq(index, lastIndex, curBlock);
   if (eGrmErrNoError == typeSpecifierRet)
@@ -1446,7 +1262,7 @@ uint32 GrammarAnalyzer::handleTypeId(int index, int& lastIndex, GrammarBlock* cu
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleTypeSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTypeSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 typeSpeRet = handleTypeSpecifier(index, lastIndex, curBlock);
   if (typeSpeRet == eGrmErrNoError)
@@ -1470,7 +1286,7 @@ uint32 GrammarAnalyzer::handleTypeSpecifierSeq(int index, int& lastIndex, Gramma
   return eGrmErrNotTypeSpecifierSeq;
 }
 
-uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 ptrRet = handlePtrAbstractDeclarator(index, lastIndex, curBlock);
   if (eGrmErrNoError == ptrRet)
@@ -1481,7 +1297,7 @@ uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, Gram
   uint32 noPtrRet = handleNoptrAbstractDeclarator(index, lastIndex, curBlock);
   if (eGrmErrNoError == noPtrRet)
   {
-    uint32 paramterRet = handleParameterAndQualifiers(lastIndex + 1, lastIndex ,curBlock);
+    uint32 paramterRet = handleParametersAndQualifiers(lastIndex + 1, lastIndex ,curBlock);
     if (eGrmErrNoError == paramterRet)
     {
       return handleTrailingReturenType(lastIndex + 1, lastIndex ,curBlock);
@@ -1489,7 +1305,7 @@ uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, Gram
   }
   else
   {
-    uint32 paramterRet = handleParameterAndQualifiers(index, lastIndex ,curBlock);
+    uint32 paramterRet = handleParametersAndQualifiers(index, lastIndex ,curBlock);
     if (eGrmErrNoError == paramterRet)
     {
       return handleTrailingReturenType(lastIndex + 1, lastIndex ,curBlock);
@@ -1498,7 +1314,7 @@ uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handlePtrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handlePtrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 noptrRet = handleNoptrAbstractDeclarator(index, lastIndex, curBlock);
   if (eGrmErrNoError == noptrRet)
@@ -1515,9 +1331,9 @@ uint32 GrammarAnalyzer::handlePtrAbstractDeclarator(int index, int& lastIndex, G
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleNoptrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleNoptrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 paramRet = handleParameterAndQualifiers(index, lastIndex, curBlock);
+  uint32 paramRet = handleParametersAndQualifiers(index, lastIndex, curBlock);
   if (eGrmErrNoError == paramRet)
   {
     uint32 nextRet = handleNoptrAbstractDeclarator(lastIndex + 1 , lastIndex, curBlock);
@@ -1558,12 +1374,12 @@ uint32 GrammarAnalyzer::handleNoptrAbstractDeclarator(int index, int& lastIndex,
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleConstantExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleConstantExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   return handleConditionalExpression(index, lastIndex, curBlock);
 }
 
-uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 postfixRet = handlePostfixExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == postfixRet)
@@ -1583,9 +1399,9 @@ uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, Grammar
     return handleCastExpression(index + 1, lastIndex, curBlock);
   }
 
-  uint32 getRet = eGramIsNothing;
-  uint32 getOptRet = getUnaryOperator(index, lastIndex, getRet);
-  if (eGrmErrNoError == getOptRet)
+//  uint32 getRet = eGramIsNothing;
+  uint32 handleOptRet = handleUnaryOperator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == handleOptRet)
   {
     return handleCastExpression(index + 1, lastIndex, curBlock);
   }
@@ -1669,7 +1485,7 @@ uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, Grammar
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleNoexceptExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleNoexceptExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 keyRet = expect("noexcept",index);
   if (eGrmErrNoError == keyRet)
@@ -1692,7 +1508,7 @@ uint32 GrammarAnalyzer::handleNoexceptExpression(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 prmRet = handlePrimaryExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == prmRet)
@@ -1931,7 +1747,7 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handlePseudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handlePseudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expWave = expect("~", index);
   if (eGrmErrNoError == expWave)
@@ -1986,7 +1802,7 @@ uint32 GrammarAnalyzer::handlePseudoDestructorName(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTypenameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTypenameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expRet = expect("typename", index);
   if (eGrmErrNoError != expRet)
@@ -2023,7 +1839,7 @@ uint32 GrammarAnalyzer::handleTypenameSpecifier(int index, int& lastIndex, Gramm
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expLeft = expect("{", index);
   if (eGrmErrNoError == expLeft)
@@ -2047,12 +1863,12 @@ uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarB
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleExpressionList(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleExpressionList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   return handleInitializerList(index, lastIndex ,curBlock);
 }
 
-uint32 GrammarAnalyzer::handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 clauseRet = handleInitializerClause(index, lastIndex, curBlock);
   if (eGrmErrNoError == clauseRet)
@@ -2076,7 +1892,7 @@ uint32 GrammarAnalyzer::handleInitializerList(int index, int& lastIndex, Grammar
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 thisExp = expect("this", index);
   if (eGrmErrNoError == thisExp)
@@ -2084,11 +1900,10 @@ uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, Gramm
     lastIndex = index;
     return thisExp;
   }
-  uint32 litRet = eGramIsNothing;
-  uint32 literalExp = getLiteral(index, lastIndex, litRet);
+//  uint32 litRet = eGramIsNothing;
+  uint32 literalExp = handleLiteral(index, lastIndex, curBlock);
   if (eGrmErrNoError == literalExp)
   {
-    lastIndex = index;
     return eGrmErrNoError;
   }
 
@@ -2124,7 +1939,7 @@ uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, Gramm
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleDeleteExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 offset = eGrmErrNoError == expect("::", index) ? 1:0;
   uint32 deleteExp = expect("delete", index + offset);
@@ -2146,7 +1961,7 @@ uint32 GrammarAnalyzer::handleDeleteExpression(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 assignmentRet = handleAssignmentExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == assignmentRet)
@@ -2161,7 +1976,7 @@ uint32 GrammarAnalyzer::handleInitializerClause(int index, int& lastIndex, Gramm
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expThrow = expect("throw", index);
   if (eGrmErrNoError == expThrow)
@@ -2173,7 +1988,7 @@ uint32 GrammarAnalyzer::handleThrowExpression(int index, int& lastIndex, Grammar
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 operatorExp = expect("operator", index);
   if (eGrmErrNoError == operatorExp)
@@ -2183,7 +1998,7 @@ uint32 GrammarAnalyzer::handleConversionFunctionId(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleConversionTypeId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleConversionTypeId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 typeSpRet = handleTypeSpecifierSeq(index, lastIndex, curBlock);
   if (eGrmErrNoError == typeSpRet)
@@ -2194,7 +2009,7 @@ uint32 GrammarAnalyzer::handleConversionTypeId(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleConversionDeclarator(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleConversionDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 ptrRet = handlePtrOperator(index, lastIndex, curBlock);
   if (eGrmErrNoError == ptrRet)
@@ -2205,7 +2020,7 @@ uint32 GrammarAnalyzer::handleConversionDeclarator(int index, int& lastIndex, Gr
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleLiteralOperatorId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleLiteralOperatorId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expOpe = expect("operator", index);
   if (eGrmErrNoError == expOpe)
@@ -2220,13 +2035,13 @@ uint32 GrammarAnalyzer::handleLiteralOperatorId(int index, int& lastIndex, Gramm
   return eGrmErrNoError;
 }
 
-uint32 GrammarAnalyzer::handleOperatorFunctionId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleOperatorFunctionId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expOperator = expect("operator", index);
   if (eGrmErrNoError == expOperator)
   {
-    uint32 ret = eGramIsNothing;
-    uint32 opRet = getOverloadableOperator(index + 1, lastIndex, ret);
+//    uint32 ret = eGramIsNothing;
+    uint32 opRet = handleOverloadableOperator(index + 1, lastIndex, curBlock);
     if (eGrmErrNoError == opRet)
     {
       uint32 leftExp = expect("<", lastIndex + 1);
@@ -2252,7 +2067,7 @@ uint32 GrammarAnalyzer::handleOperatorFunctionId(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 tmpName = handleTemplateName(index, lastIndex, curBlock);
   if (eGrmErrNoError == tmpName)
@@ -2273,7 +2088,7 @@ uint32 GrammarAnalyzer::handleSimpleTemplateId(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 nexTemp = handleSimpleTemplateId(index, lastIndex, curBlock);
   if (eGrmErrNoError == nexTemp)
@@ -2315,12 +2130,12 @@ uint32 GrammarAnalyzer::handleTemplateId(int index, int& lastIndex, GrammarBlock
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTemplateName(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTemplateName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   return handleIdentifier(index, lastIndex, curBlock);
 }
 
-uint32 GrammarAnalyzer::handleTemplateArgumentList(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTemplateArgumentList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 tmpArg = handleTemplateArgument(index, lastIndex, curBlock);
   if (eGrmErrNoError == tmpArg)
@@ -2340,7 +2155,7 @@ uint32 GrammarAnalyzer::handleTemplateArgumentList(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTemplateArgument(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleTemplateArgument(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 constExpRet = handleConstantExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == constExpRet)
@@ -2362,23 +2177,951 @@ uint32 GrammarAnalyzer::handleTemplateArgument(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock)
+uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 tryRet = handleFunctionTryBlock(index, lastIndex, curBlock);
   if (eGrmErrNoError == tryRet)
   {
+    JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
 
   uint32 ctorInitializerRet = handleCtorInitializer(index, lastIndex, curBlock);
   if (eGrmErrNoError == ctorInitializerRet)
   {
+    JZFUNC_END_LOG();
     return handleCompoundStatement(lastIndex + 1, lastIndex, curBlock);
   }
   else
   {
+    JZFUNC_END_LOG();
     return handleCompoundStatement(index, lastIndex, curBlock);
   }
   return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  uint32 expLeft = expect("{", tryLast);
+  if (eGrmErrNoError == expLeft)
+  {
+    uint32 statRet = handleStatementSeq(tryLast + 1,tryLast, curBlock);
+    uint32 expRight = expect("}", tryLast + 1);
+    if (eGrmErrNoError == expRight)
+    {
+      lastIndex = tryLast + 1;
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrUnknown;
+}
+uint32 GrammarAnalyzer::handleStatementSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 statRet = handleStatement(index, lastIndex, curBlock);
+  if (eGrmErrNoError == statRet)
+  {
+    uint32 nextRet = handleStatementSeq(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleParametersAndQualifiers(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 expLeft = expect("(", index);
+  if (eGrmErrNoError == expLeft)
+  {
+    uint32 expRight = expect(")", index + 1);
+    if (eGrmErrNoError == expRight)
+    {
+      lastIndex = index + 1;
+      handleAttributes(lastIndex + 1, lastIndex, curBlock);
+      handleCVQualifierSeq(lastIndex + 1, lastIndex, curBlock);
+//        uint32 ret = eGramIsNothing;
+      handleRefQualifier(lastIndex + 1, lastIndex, curBlock);
+      handleExceptionSpeciafier(lastIndex + 1, lastIndex, curBlock);
+      return eGrmErrNoError;
+    }
+    uint32 parameClauseRet = handleParameterDeclarationClause(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == parameClauseRet)
+    {
+      uint32 expRight = expect(")", lastIndex + 1);
+      if (eGrmErrNoError == expRight)
+      {
+        lastIndex ++;
+        handleAttributes(lastIndex + 1, lastIndex, curBlock);
+        handleCVQualifierSeq(lastIndex + 1, lastIndex, curBlock);
+//        uint32 ret = eGramIsNothing;
+        handleRefQualifier(lastIndex + 1, lastIndex, curBlock);
+        handleExceptionSpeciafier(lastIndex + 1, lastIndex, curBlock);
+        return eGrmErrNoError;
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleParameterDeclarationClause(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  lastIndex = index;
+  uint32 listRet = handleParameterDeclarationList(index, lastIndex, curBlock);
+  if (eGrmErrNoError == listRet)
+  {
+    uint32 expComma = expect(",", lastIndex + 1);
+    if (eGrmErrNoError == expComma)
+    {
+      uint32 expDot = expect("...", lastIndex + 2);
+      if (eGrmErrNoError == expDot)
+      {
+        lastIndex += 2;
+        return eGrmErrNoError;
+      }
+    }
+    else
+    {
+      uint32 expDot = expect("...", lastIndex + 1);
+      if (eGrmErrNoError == expDot)
+      {
+        lastIndex += 1;
+      }
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrNoError;
+}
+
+uint32 GrammarAnalyzer::handleParameterDeclarationList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 declarationRet = handleParameterDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == declarationRet)
+  {
+    uint32 expComma = expect(",", lastIndex + 1);
+    if (eGrmErrNoError == expComma)
+    {
+      return handleParameterDeclarationList(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleParameterDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 handleAttRet = handleAttributes(index , lastIndex, curBlock);
+  uint32 declSpecifierRet = eGrmErrUnknown;
+  if (eGrmErrNoError == handleAttRet)
+  {
+    declSpecifierRet = handleDeclSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+  }
+  else
+  {
+    declSpecifierRet = handleDeclSpecifierSeq(index, lastIndex, curBlock);
+  }
+
+  if (eGrmErrNoError == declSpecifierRet)
+  {
+    uint32 declaRet = handleDeclarator(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == declaRet)
+    {
+      uint32 expEqual = expect("=", lastIndex + 1);
+      if (eGrmErrNoError == expEqual)
+      {
+        return handleInitializerClause(lastIndex + 2, lastIndex, curBlock);
+      }
+      return eGrmErrNoError;
+    }
+
+    uint32 abstractRet = handleAbstractDeclarator(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == abstractRet)
+    {
+      uint32 expEqual = expect("=", lastIndex + 1);
+      if (eGrmErrNoError == expEqual)
+      {
+        return handleInitializerClause(lastIndex + 2, lastIndex, curBlock);
+      }
+      return eGrmErrNoError;
+    }
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  //I will move this on at first
+  uint32 handleLabelRet = handleLabeledStatement(index, lastIndex, curBlock);
+  if (eGrmErrNoError == handleLabelRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 declarationStateRet = handleDeclarationStatement(index, lastIndex, curBlock);
+  if (eGrmErrNoError == declarationStateRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 attRet = handleAttributes(index, lastIndex, curBlock);
+  uint32 toIndex = index;
+  if (eGrmErrNoError == attRet)
+  {
+    toIndex = lastIndex + 1;
+  }
+
+  uint32 expStat = handleExpressionStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == expStat)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 compoundStat = handleCompoundStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == compoundStat)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 selectionStat = handleSelectionStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == expStat)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 iterationRet = handleIterationStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == iterationRet)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 jumpStat = handleJumpStatement(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == jumpStat)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 tryState = handleTryBlock(toIndex, lastIndex, curBlock);
+  if (eGrmErrNoError == tryState)
+  {
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleExpressionStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 expRet = handleExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == expRet)
+  {
+    return expect(";", lastIndex + 1);
+  }
+  else
+  {
+    return expect(";", index );
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  JZFUNC_BEGIN_LOG();
+  uint32 handleHead = handleEnumHead(index, lastIndex, curBlock);
+  if (eGrmErrNoError == handleHead)
+  {
+    uint32 expLeft = expect("{", lastIndex + 1);
+    if (eGrmErrNoError == expLeft)
+    {
+      uint32 listRet = handleEnumeratorList(lastIndex + 2, lastIndex, curBlock);
+      if (eGrmErrNoError == listRet)
+      {
+        uint32 offset = expect(",", lastIndex + 1) == eGrmErrNoError ? 1:0;
+        uint32 expRight = expect("}", lastIndex + 1 + offset);
+        if (eGrmErrNoError == expRight)
+        {
+          lastIndex += offset;
+          lastIndex++;
+          JZFUNC_END_LOG();
+          return eGrmErrNoError;
+        }
+      }
+    }
+  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEnumHead(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+//  uint32 keyRet = eGramIsNothing;
+  uint32 handleRet = handleEnumKey(index, lastIndex, curBlock);
+  if (eGrmErrNoError == handleRet)
+  {
+    handleAttributes(lastIndex + 1, lastIndex, curBlock);
+    uint32 nestedNameRet = handleNestNameSpecifier(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == nestedNameRet)
+    {
+      uint32 idRet = handleIdentifier(lastIndex + 1, lastIndex, curBlock);
+      if (eGrmErrNoError == idRet)
+      {
+        handleEnumBase(lastIndex + 1, lastIndex, curBlock);
+          JZFUNC_END_LOG();
+        return eGrmErrNoError;
+      }
+    }
+    else
+    {
+      handleIdentifier(lastIndex + 1, lastIndex, curBlock);
+      handleEnumBase(lastIndex + 1, lastIndex, curBlock);
+      JZFUNC_END_LOG();
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEnumBase(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 expOpt = expect(":", index);
+  if (eGrmErrNoError == expOpt)
+  {
+    return handleTypeSpecifierSeq(index + 1, lastIndex, curBlock);
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEnumeratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  JZFUNC_BEGIN_LOG();
+  uint32 defRet = handleEnumeratorDefinition(index, lastIndex, curBlock);
+  if (eGrmErrNoError == defRet)
+  {
+    uint32 expComma = expect(",", lastIndex + 1);
+    if (eGrmErrNoError == expComma)
+    {
+      handleEnumeratorList(lastIndex + 2, lastIndex, curBlock);
+    }
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEnumeratorDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+//  uint32 expEnumerator = handleEnumerator(index, lastIndex, curBlock);
+//  if (eGrmErrNoError == expEnumerator)
+//  {
+//    uint32 eqExp = expect("=", lastIndex + 1);
+//    if (eGrmErrNoError == eqExp)
+//    {
+//      return handleConstantExpression(lastIndex + 2, lastIndex, curBlock);
+//    }
+//    return eGrmErrNoError;
+//  }
+//  return eGrmErrUnknown;
+//  
+//
+//  Let's zuosi
+//
+  GrammarReturnerBase base;
+  int32 trylast = index;
+
+  bool ret = INVOKE(Enumerator, index, trylast, curBlock, &base, false) ;
+  if (ret)
+  {
+    lastIndex = trylast;
+    bool continueRet = EXPECT(trylast + 1, trylast, "=", false, false) &&
+    INVOKE(ConstantExpression, trylast + 1, trylast, curBlock, &base,false) ;
+    if (continueRet)
+    {
+      lastIndex = trylast;
+    }
+  }
+
+  if (ret)
+  {
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+  else
+  {
+    JZFUNC_END_LOG();
+    return eGrmErrUnknown;
+  }
+}
+
+uint32 GrammarAnalyzer::handleEnumerator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  return handleIdentifier(index, lastIndex, curBlock);
+}
+
+uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 classHead = handleClassHead(index, lastIndex, curBlock);
+  if (eGrmErrNoError == classHead)
+  {
+    uint32 expRet = expect("{", lastIndex + 1, curBlock);
+    if (eGrmErrNoError == expRet)
+    {
+      uint32 memberRet =handleMemberSpecification(lastIndex + 1, lastIndex, curBlock);
+      uint32 expRight = expect("}", lastIndex + 1, curBlock);
+      if (eGrmErrNoError == expRight)
+      {
+        lastIndex ++;
+        return eGrmErrNoError;
+      }
+    }
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleClassHead(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+//  uint32 keyType = eGramIsNothing;
+  uint32 keyRet = handleClassKey(index, lastIndex, curBlock);
+  if (eGrmErrNoError == keyRet)
+  {
+    handleAttributes(lastIndex + 1, lastIndex, curBlock);
+    uint32 headnameRet = handleClassHeadName(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == headnameRet)
+    {
+      handleClassVirtSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+    }
+    handleBaseClause(lastIndex + 1, lastIndex, curBlock);
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleClassHeadName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 nestedNameRet = handleNestNameSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrUnknown == nestedNameRet)
+  {
+    return handleClassName(lastIndex + 1, lastIndex, curBlock);
+  }
+  else
+  {
+    return handleClassName(index, lastIndex, curBlock);
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleClassVirtSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+//  uint32 ret = eGramIsNothing;
+  uint32 handleRet = handleVirtSpecifier(index, lastIndex, curBlock);
+  if (eGramIsNothing == handleRet)
+  {
+    handleClassVirtSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBaseClause(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 exp1 = expect(":", index);
+  if (eGrmErrNoError == exp1)
+  {
+    return handleBaseSpecifierList(index + 1, lastIndex, curBlock);
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBaseSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 attRet = handleAttributes(index, lastIndex, curBlock);
+  if (eGrmErrNoError == attRet )
+  {
+    uint32 baseRet = handleBaseTypeSpecifier(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == baseRet)
+    {
+      return eGrmErrNoError;
+    }
+
+//    uint32 ret = eGramIsNothing;
+    uint32 expVir = expect("virtual", lastIndex + 1);
+    if (eGrmErrNoError == expVir)
+    {
+      handleAccessSpecifier(lastIndex + 2, lastIndex, curBlock);
+      return handleBaseTypeSpecifier(lastIndex + 1, lastIndex, curBlock);
+    }
+
+    uint32 accessRet = handleAccessSpecifier(lastIndex + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == accessRet)
+    {
+      uint32 offset = expect("virtual", lastIndex + 1) ? 1:0;
+      return handleBaseTypeSpecifier(lastIndex + 1 + offset, lastIndex, curBlock);
+    }
+  }
+  return eGrmErrUnknown;
+}
+uint32 GrammarAnalyzer::handleBaseSpecifierList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 specRet = handleBaseSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == specRet)
+  {
+    uint32 expComma = expect(",", lastIndex + 1);
+    if (eGrmErrNoError == expComma)
+    {
+      return handleBaseSpecifierList(lastIndex + 2, lastIndex, curBlock);
+    }
+
+    uint32 expDot = expect("...", lastIndex + 1);
+    if (eGrmErrNoError == expDot)
+    {
+      lastIndex ++;
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBaseTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  return handleClassOrDecltype(index, lastIndex, curBlock);
+}
+
+uint32 GrammarAnalyzer::handleClassOrDecltype(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 decRet = handleDecltypeSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == decRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 offset = expect("::", index) == eGrmErrNoError ? 1:0;
+  uint32 nestedNameRet = handleNestNameSpecifier(index + 1 + offset, lastIndex, curBlock);
+  if (eGrmErrNoError == nestedNameRet)
+  {
+    return handleClassName(lastIndex + 1, lastIndex, curBlock);
+  }
+  else
+  {
+    return handleClassName(index + offset + 1, lastIndex, curBlock);
+  }
+  
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleDeclarationSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 declaraRet = handleDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == declaraRet)
+  {
+    if (lastIndex + 1 == mRecList.size())
+    {
+      return eGrmErrNoError;
+    }
+    return handleDeclarationSeq(lastIndex + 1, lastIndex,  curBlock);
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 blockRet = handleBlockDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == blockRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 functionRet = handleFuncDefinition(index, lastIndex, curBlock);
+  if (eGrmErrNoError == functionRet)
+  {
+    return eGrmErrNoError;
+  }
+  uint32 templateRet = handleTemplateDecaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == templateRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 explicitInsRet = handleExplicitInstantiation(index, lastIndex, curBlock);
+  if (eGrmErrNoError == explicitInsRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 explicitSpecRet = handleExplicitSpecification(index, lastIndex, curBlock);
+  if (eGrmErrNoError == explicitSpecRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 linkageRet = handleLinkageSpecification(index, lastIndex, curBlock);
+  if (eGrmErrNoError == linkageRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 namespaceRet = handleNamespaceDefinition(index, lastIndex, curBlock);
+  if (eGrmErrNoError == namespaceRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 emptyRet = handleEmptyDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == emptyRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 attRet = handleAttibuteDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == attRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleEmptyDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 expRet = expect(";", index);
+  if (eGrmErrNoError == expRet)
+  {
+    lastIndex = index;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBlockDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  uint32 simpleRet = handleSimpleDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == simpleRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 asmRet = handleAsmDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == asmRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 namespaceRet = handleNamespaceAliasDefinition(index, lastIndex, curBlock);
+  if (eGrmErrNoError == namespaceRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 usingDeclRet = handleUsingDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == usingDeclRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 usingDireRet = handleUsingDirective(index, lastIndex, curBlock);
+  if (eGrmErrNoError == usingDireRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 static_assertRet = handleStatic_assertDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == static_assertRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 aliasDeclRet = handleAliasDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == aliasDeclRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 opaqueRet = handleOpaqueEnumDeclaration(index, lastIndex, curBlock);
+  if (eGrmErrNoError == opaqueRet)
+  {
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int tryLastA = lastIndex;
+  int tryLastB = lastIndex;
+  int tryLastC = lastIndex;
+  int tryIndex = index;
+  uint32 attRet = handleAttributes(index, tryLastA, curBlock);
+  if (eGrmErrNoError == attRet)
+  {
+    tryIndex = tryLastA + 1;
+    lastIndex = tryLastA;
+  }
+
+  uint32 declSeqRet = handleDeclSpecifierSeq(tryIndex, tryLastB, curBlock);
+  if (eGrmErrNoError == declSeqRet)
+  {
+    tryIndex = tryLastB + 1;
+    lastIndex = tryLastB;
+  }
+
+  uint32 initRet = handleInitDeclaratorList(tryIndex,tryLastC, curBlock);
+  if (eGrmErrNoError == initRet)
+  {
+    JZWRITE_DEBUG("get true for initRet tryIndex %d, trylastC:  %d", tryIndex, tryLastC);
+    lastIndex = tryLastC;
+    tryIndex = tryLastC + 1;
+  }
+
+  uint32 expEnd = expect(";", tryIndex);
+  if (eGrmErrNoError == expEnd)
+  {
+    lastIndex = tryIndex;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+    
+  JZFUNC_END_LOG();
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleInitDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int tryLastA = index;
+  bool retA = INVOKE(InitDeclarator, index, tryLastA, curBlock, returner, false);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    int tryLastB = tryLastA;
+    bool retB = 
+      EXPECT(tryLastB + 1, tryLastB, ",", false, false) &&
+      INVOKE(InitDeclaratorList, tryLastB + 1, tryLastB, curBlock, returner, false);
+    if (retB)
+    {
+      JZWRITE_DEBUG("get true for , initDeclaratorList, tryLastB %d", tryLastB );
+      lastIndex = tryLastB;
+    }
+    JZWRITE_DEBUG("get true for , initDeclaratorList, tryIndex %d", tryLastA );
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleInitDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = 
+    INVOKE(Declarator, index, tryLast, curBlock, returner, false) &&
+    INVOKE(Initializer, tryLast + 1, tryLast, curBlock, returner, true);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    JZFUNC_END_LOG();
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = lastIndex;
+  bool retA = 
+    INVOKE(BraceOrEqualInitializer, index, tryLastA, curBlock, returner, false);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = lastIndex;
+  bool retB = 
+    EXPECT(index, tryLastB, "(", false, false) &&
+    INVOKE(ExpressionList, tryLastB + 1, tryLastB, curBlock, returner, false) &&
+    EXPECT(tryLastB + 1, tryLastB, ")", false, false) ;
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleBraceOrEqualInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = lastIndex;
+  bool retA = INVOKE(BracedInitList, index, tryLastA, curBlock, returner, false);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = lastIndex;
+  bool retB = 
+    EXPECT(index, tryLastB, "=", false, false)&&
+    INVOKE(InitializerClause, tryLastB + 1, tryLastB, curBlock, returner, false);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleOpaqueEnumDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(EnumKey, tryLast, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(Attributes, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(Identifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(EnumBase, tryLast + 1, tryLast, curBlock, returner, IS_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+
+uint32 GrammarAnalyzer::handleNamespaceAliasDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "=", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(QualifiedNamespaceSpecifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ";", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleQualifiedNamespaceSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(NamespaceName, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+
+uint32 GrammarAnalyzer::handleNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryA = index;
+  bool retA = INVOKE(NamedNamespaceDefinition, index, tryA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryB = index;
+  bool retB = INVOKE(UnnamedNamespaceDefinition, index, tryB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleNamedNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryA = index;
+  bool retA = INVOKE(OriginalNamespaceDefinition, index, tryA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryB = index;
+  bool retB = INVOKE(ExtensionNamespaceDefinition, index, tryB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleOriginalNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(Identifier, index, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleNamespaceBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(DeclarationSeq, index, lastIndex, curBlock, returner, IS_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+  }
+  return eGrmErrNoError;
+ 
+}
+
+uint32 GrammarAnalyzer::handleExtensionNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(OriginalNamespaceName, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleUnnamedNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+   
 }
 

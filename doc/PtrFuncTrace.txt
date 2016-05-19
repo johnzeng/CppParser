@@ -1,0 +1,5 @@
+int (*hello())(int a, int b);
+
+type-specifier nonptr-declarator parameters-and-qualifiers
+
+
