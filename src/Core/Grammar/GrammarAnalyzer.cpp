@@ -2208,17 +2208,16 @@ uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlo
 
 uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expLeft = expect("{", index);
+  int32 tryLast = index;
+  uint32 expLeft = expect("{", tryLast);
   if (eGrmErrNoError == expLeft)
   {
-    uint32 statRet = handleStatementSeq(index + 1,lastIndex, curBlock);
-    if (eGrmErrNoError == statRet)
+    uint32 statRet = handleStatementSeq(tryLast + 1,tryLast, curBlock);
+    uint32 expRight = expect("}", tryLast + 1);
+    if (eGrmErrNoError == expRight)
     {
-      uint32 expRight = expect("}", lastIndex + 1);
-      if (eGrmErrNoError == expRight)
-      {
-        return eGrmErrNoError;
-      }
+      lastIndex = tryLast + 1;
+      return eGrmErrNoError;
     }
   }
   return eGrmErrUnknown;
@@ -2358,8 +2357,6 @@ uint32 GrammarAnalyzer::handleParameterDeclaration(int index, int& lastIndex, Gr
 
 uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  lastIndex = index;
-  return eGrmErrNoError;
   //I will move this on at first
   uint32 handleLabelRet = handleLabeledStatement(index, lastIndex, curBlock);
   if (eGrmErrNoError == handleLabelRet)
