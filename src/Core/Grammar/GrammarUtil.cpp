@@ -82,6 +82,7 @@ void GrammarUtil::init()
   mKeyWordSet.insert("long");
   mKeyWordSet.insert("unsigned");
   mKeyWordSet.insert("class");
+  mKeyWordSet.insert("union");
   mKeyWordSet.insert("enum");
   mKeyWordSet.insert("static");
   mKeyWordSet.insert("struct");
@@ -105,6 +106,7 @@ void GrammarUtil::init()
   mKeyWordSet.insert("auto");
   mKeyWordSet.insert("NULL");
   mKeyWordSet.insert("template");
+  mKeyWordSet.insert("register");
   
   mLoopBreakKey.insert(";");
   mLoopBreakKey.insert(")");
