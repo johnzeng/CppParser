@@ -107,9 +107,9 @@ void GrammarUtil::init()
   mKeyWordSet.insert("template");
   
   mLoopBreakKey.insert(";");
-//  mLoopBreakKey.insert(")");
-//  mLoopBreakKey.insert("}");
-//  mLoopBreakKey.insert("]");
+  mLoopBreakKey.insert(")");
+  mLoopBreakKey.insert("}");
+  mLoopBreakKey.insert("]");
 }
 
 void GrammarUtil::insertOperatorToPreprocessOpSet(const string& op,uint32 priority, uint32 mark,int opNum, int associativity)

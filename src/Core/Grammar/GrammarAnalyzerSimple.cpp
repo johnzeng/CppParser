@@ -63,20 +63,29 @@ bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBloc
   return true;
 }
 
-bool GrammarAnalyzer::invoke(handler han, const string& file, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt)
+bool GrammarAnalyzer::invoke(handler han, const string& func, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt)
 {
-  JZWRITE_DEBUG("invoked by %s:%d:%d", file.c_str(), line, index);
-  if (false == mLoopBreaker.insert(file, line, index))
+//  JZWRITE_DEBUG("invoked by %s:%d:%d", func.c_str(), line, index);
+  if (true == GrmUtilPtr->isLoopBreakerKey(mRecList[index].word))
+  {
+    if (isOpt)
+    {
+      lastIndex = index - 1;
+      return true;
+    }
+    return false;
+  }
+  if (false == mLoopBreaker.insert(func, line, index))
   {
     return false;
   }
   int32 tryLast = lastIndex;
   uint32 invokeRet = (this->*han)(index, tryLast, curBlock, ret);
-  mLoopBreaker.remomve(file, line, index);
+  mLoopBreaker.remomve(func, line, index);
   if (eGrmErrNoError == invokeRet)
   {
     lastIndex = tryLast;
-    JZWRITE_DEBUG("true for %s:%d:%d", file.c_str(), line, index);
+    JZWRITE_DEBUG("true for %s:%d:%d", func.c_str(), line, index);
     return true;
   }
   else
@@ -84,10 +93,10 @@ bool GrammarAnalyzer::invoke(handler han, const string& file, const int line, co
     if (isOpt)
     {
       lastIndex = index - 1;
-      JZWRITE_DEBUG("true for %s:%d:%d", file.c_str(), line, index);
+      JZWRITE_DEBUG("true for %s:%d:%d", func.c_str(), line, index);
       return true;
     }
-    JZWRITE_DEBUG("false for %s:%d:%d", file.c_str(), line, index);
+    JZWRITE_DEBUG("false for %s:%d:%d", func.c_str(), line, index);
     return false;
   }
 }
@@ -96,10 +105,6 @@ bool GrammarAnalyzer::invoke(const string& file, const int line, const int index
 {
   JZWRITE_DEBUG("invoked by %s:%d:%d", file.c_str(), line, index);
   if (mRecList.size() <= index)
-  {
-    return false;
-  }
-  if (true == GrmUtilPtr->isLoopBreakerKey(mRecList[index].word))
   {
     return false;
   }
