@@ -25,6 +25,10 @@ uint32 LexBase::analyzeAFile(const string& fileName)
 	JZWRITE_DEBUG("now analyze file : %s", fileName.c_str());
 	uint64 bufSize;
 	unsigned char* buff = JZGetFileData(fileName.c_str(), &bufSize);
+  if (NULL == buff)
+  {
+    return eLexUnknowError;
+  }
 
   map<long,long> lineOffsetMap;
 	const char* buffWithOutBackSlant = LexUtil::eraseLineSeperator((const char*)buff,&bufSize, lineOffsetMap);

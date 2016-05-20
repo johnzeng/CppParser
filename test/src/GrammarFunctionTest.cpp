@@ -27,13 +27,11 @@ TEST(GrammarAnalyzer, FunctionBasic0)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-//  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
   uint32 ret = grammar.doAnalyze();
   JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(eGrmErrNoError, ret);
 
-  JZSetLoggerLevel(JZ_LOG_TEST);
   
 }
 
@@ -60,7 +58,7 @@ TEST(GrammarAnalyzer, FunctionBasic1)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-  JZSetLoggerLevel(JZ_LOG_DEBUG);
+//  JZSetLoggerLevel(JZ_LOG_DEBUG);
   uint32 ret = grammar.doAnalyze();
 
   JZSetLoggerLevel(JZ_LOG_TEST);
@@ -92,7 +90,7 @@ TEST(GrammarAnalyzer, FunctionBasic2)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-  JZSetLoggerLevel(JZ_LOG_DEBUG);
+//  JZSetLoggerLevel(JZ_LOG_DEBUG);
   uint32 ret = grammar.doAnalyze();
 
   JZSetLoggerLevel(JZ_LOG_TEST);

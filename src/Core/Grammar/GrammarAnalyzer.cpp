@@ -2586,6 +2586,7 @@ uint32 GrammarAnalyzer::handleClassHead(int index, int& lastIndex, GrammarBlock*
       handleClassVirtSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
     }
     handleBaseClause(lastIndex + 1, lastIndex, curBlock);
+    return eGrmErrNoError;
   }
   return eGrmErrUnknown;
 }
