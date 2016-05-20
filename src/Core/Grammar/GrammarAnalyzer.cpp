@@ -281,11 +281,11 @@ uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, G
   
 //let's move it later
 
-//  uint32 elaboratedRet = handleElaboratedTypeSpecifier(index, lastIndex, curBlock);
-//  if (eGrmErrNoError == elaboratedRet)
-//  {
-//    return eGrmErrNoError;
-//  }
+  uint32 elaboratedRet = handleElaboratedTypeSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == elaboratedRet)
+  {
+    return eGrmErrNoError;
+  }
 
 //let's move it later
 

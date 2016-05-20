@@ -1,0 +1,10 @@
+class test;
+
+class-key class-name ;
+
+class-key:
+  elaborated-type-specifier:
+    trailing-type-specifier:
+      type-specifier:
+        decl-specifier:
+          simple-declaration:
