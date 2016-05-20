@@ -50,11 +50,6 @@ uint32 GrammarAnalyzer::handleDeclarationStatement(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleMemberSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleUsingDirective(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   
@@ -73,7 +68,7 @@ uint32 GrammarAnalyzer::handleAliasDeclaration(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTemplateDecaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+uint32 GrammarAnalyzer::handleTemplateDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   
   return eGrmErrUnknown;

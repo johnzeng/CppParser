@@ -17,6 +17,9 @@ public:
   GrammarBlock *getTopBlock();
 protected:
 
+  uint32 handleMemberDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleMemberDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleMemberDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleBraceOrEqualInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleExceptionSpeciafier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleParameterDeclarationList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
@@ -74,7 +77,7 @@ protected:
   uint32 handleInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleConversionTypeId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleConversionDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
-  uint32 handleFuncDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleFunctionDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleTrailingTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
@@ -136,7 +139,7 @@ protected:
   uint32 handleStatic_assertDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleAliasDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleOpaqueEnumDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
-  uint32 handleTemplateDecaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleTemplateDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleExplicitInstantiation(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleExplicitSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleLinkageSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
@@ -156,6 +159,7 @@ protected:
   uint32 handleAccessSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handlePureSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleVirtSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
+  uint32 handleVirtSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleAssignmentOperator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
   uint32 handleExternLiteral(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret = NULL);
