@@ -14,4 +14,10 @@ enum-specifier:
         function-declaration
         member-declaration
 
+simple-declaration --> should be defined in this type
+  attribute-specifier-seq decl-specifier-seq init-declarator-list
+    
+  decl-specifier
+    trailling-type-specifier -> enum hello
+    enum-specifier -> enum hello {}
 

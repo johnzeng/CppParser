@@ -156,30 +156,29 @@ uint32 GrammarAnalyzer::handleFunctionDefinition(int index, int& lastIndex, Gram
 
 uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 specifierRet = handleDeclSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError != specifierRet)
+  int32 tryLast = index;
+  bool retA = INVOKE(DeclSpecifier, index, tryLast, curBlock, returner, NOT_OPT);
+  if (retA)
   {
-    JZFUNC_END_LOG();
-    return specifierRet;
-  }
-  uint32 attRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
-  if(eGrmErrNotAttri == attRet)
-  {
-    uint32 nextRet = handleDeclSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
-    JZFUNC_END_LOG();
+    int32 tryLastA = tryLast;
+    bool retA = INVOKE(Attributes, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+    if (retA)
+    {
+      lastIndex = tryLastA;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastB = tryLast;
+    bool retB = INVOKE(DeclSpecifierSeq, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+    if (retB)
+    {
+      lastIndex = tryLastB;
+      return eGrmErrNoError;
+    }
+    lastIndex = tryLast;
     return eGrmErrNoError;
   }
-  else if(eGrmErrNoError == attRet)
-  {
-    JZFUNC_END_LOG();
-    return eGrmErrNoError;
-  }
-  else
-  {
-    //not sure about this ret
-    JZFUNC_END_LOG();
-    return attRet;
-  }
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
@@ -250,12 +249,6 @@ uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 trailingRet = handleTrailingTypeSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == trailingRet)
-  {
-    return eGrmErrNoError;
-  }
-  
   uint32 enumRet = handleEnumSpecifier(index, lastIndex, curBlock);
   if (eGrmErrNoError == enumRet)
   {
@@ -268,6 +261,13 @@ uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBl
   {
     return eGrmErrNoError;
   }
+
+  uint32 trailingRet = handleTrailingTypeSpecifier(index, lastIndex, curBlock);
+  if (eGrmErrNoError == trailingRet)
+  {
+    return eGrmErrNoError;
+  }
+  
   return eGrmErrUnknown;
 }
 
