@@ -1,5 +1,5 @@
 class Test;
-//class Test{
-//  public:
-//    int tester();
-//}
+class Test{
+  public:
+    int tester();
+};

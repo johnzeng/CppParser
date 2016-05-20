@@ -2561,7 +2561,7 @@ uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarB
     uint32 expRet = expect("{", lastIndex + 1, curBlock);
     if (eGrmErrNoError == expRet)
     {
-      uint32 memberRet =handleMemberSpecification(lastIndex + 1, lastIndex, curBlock);
+      uint32 memberRet =handleMemberSpecification(lastIndex + 2, lastIndex, curBlock);
       uint32 expRight = expect("}", lastIndex + 1, curBlock);
       if (eGrmErrNoError == expRight)
       {
