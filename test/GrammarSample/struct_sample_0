@@ -1,0 +1,3 @@
+struct hello{
+  int b;
+};
