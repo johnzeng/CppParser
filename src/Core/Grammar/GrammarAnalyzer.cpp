@@ -3934,3 +3934,80 @@ uint32 GrammarAnalyzer::handleTemplateParameter(int index, int& lastIndex, Gramm
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleTypeParameter(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = EXPECT(index, tryLastA, "class", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastA + 1, tryLastA, "...", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLastA + 1, tryLastA, curBlock, returner, IS_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = index;
+  bool retB = EXPECT(index, tryLastB, "class", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLastB + 1, tryLastB, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLastB + 1, tryLastB, "=", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeId, tryLastB + 1, tryLastB, curBlock, returner, IS_OPT) ;
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastC = index;
+  bool retC = EXPECT(index, tryLastC, "typename", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastC + 1, tryLastC, "...", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLastC + 1, tryLastC, curBlock, returner, IS_OPT);
+  if (retC)
+  {
+    lastIndex = tryLastC;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastD = index;
+  bool retD = EXPECT(index, tryLastD, "typename", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLastD + 1, tryLastD, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLastD + 1, tryLastD, "=", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeId, tryLastD + 1, tryLastD, curBlock, returner, IS_OPT) ;
+  if (retD)
+  {
+    lastIndex = tryLastD;
+    return eGrmErrNoError;
+  }
+
+
+  int32 tryLastE = index;
+  bool retE = EXPECT(index, tryLastE, "template", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastE + 1, tryLastE, "<", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TemplateParameterList, tryLastE + 1, tryLastE, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastE + 1, tryLastE, ">", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastE + 1, tryLastE, "class", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastE + 1, tryLastE, "...", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLastE + 1, tryLastE, curBlock, returner, IS_OPT);
+  if (retE)
+  {
+    lastIndex = tryLastE;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastF = index;
+  bool retF = EXPECT(index, tryLastF, "template", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastF + 1, tryLastF, "<", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TemplateParameterList, tryLastF + 1, tryLastF, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastF + 1, tryLastF, ">", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastF + 1, tryLastF, "class", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLastF + 1, tryLastF, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLastF + 1, tryLastF, "=", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeId, tryLastF + 1, tryLastF, curBlock, returner, IS_OPT) ;
+  if (retF)
+  {
+    lastIndex = tryLastF;
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+
