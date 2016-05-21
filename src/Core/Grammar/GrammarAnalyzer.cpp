@@ -3726,3 +3726,11 @@ uint32 GrammarAnalyzer::handleForRangeDeclaration(int index, int& lastIndex, Gra
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleForRangeInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = INVOKE(Expression, index, tryLastA, curBlock, returner, NOT_OPT) &&
+    INVOKE(BracedInitList, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+  return eGrmErrUnknown;
+}
+

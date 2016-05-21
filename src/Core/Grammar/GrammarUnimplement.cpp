@@ -65,8 +65,3 @@ uint32 GrammarAnalyzer::handleExplicitInstantiation(int index, int& lastIndex, G
   return eGrmErrUnknown;
 }
 
-
-uint32 GrammarAnalyzer::handleForRangeInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return eGrmErrUnknown;
-}
