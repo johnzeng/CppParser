@@ -1,6 +1,6 @@
-//namespace JZNamespace{
-//  class test{
-//    long int b;
-//  };
-//};
+namespace JZNamespace{
+  class test{
+    long int b;
+  };
+};
 using namespace JZNamespace;

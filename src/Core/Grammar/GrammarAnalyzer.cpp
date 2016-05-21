@@ -3073,7 +3073,7 @@ uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, G
 uint32 GrammarAnalyzer::handleNamespaceBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
-  bool ret = INVOKE(DeclarationSeq, index, lastIndex, curBlock, returner, IS_OPT);
+  bool ret = INVOKE(DeclarationSeq, index, tryLast , curBlock, returner, IS_OPT);
   if (ret)
   {
     lastIndex = tryLast;
