@@ -17,6 +17,9 @@ public:
   GrammarBlock *getTopBlock();
 protected:
 
+  uint32 handleForInitStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleForRangeDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleForRangeInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleCondition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleElaboratedTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleMemberDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
