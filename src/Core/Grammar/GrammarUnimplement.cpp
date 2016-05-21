@@ -37,13 +37,3 @@ uint32 GrammarAnalyzer::handleAliasDeclaration(int index, int& lastIndex, Gramma
   
   return eGrmErrUnknown;
 }
-
-uint32 GrammarAnalyzer::handleExplicitSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return eGrmErrUnknown;
-}
-
-uint32 GrammarAnalyzer::handleExplicitInstantiation(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return eGrmErrUnknown;
-}

@@ -4011,3 +4011,32 @@ uint32 GrammarAnalyzer::handleTypeParameter(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleExplicitSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "template", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "<", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, ">", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Declaration, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleExplicitInstantiation(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "extern", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "template", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Declaration, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
