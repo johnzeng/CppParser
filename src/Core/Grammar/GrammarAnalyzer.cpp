@@ -9,36 +9,27 @@ uint32 GrammarAnalyzer::doAnalyze()
   int index = 0;
   int listSize = mRecList.size();
   int32 lastIndex = 0;
-  return handleDeclarationSeq(0,lastIndex , &mTopBlock);
+  uint32 ret = handleDeclarationSeq(0,lastIndex , &mTopBlock);
+  if (eGrmErrNoError == ret)
+  {
+    return lastIndex == mRecList.size();
+  }
+  return ret;
+
 }
 
 uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
 //  uint32 getRet1 = eGramIsNothing;
   uint32 errRet1 = handleCVQualifier(index,lastIndex,curBlock/*, getRet1*/);
-  if(eGrmErrNoError != errRet1)
+  if(eGrmErrNoError == errRet1)
   {
-    //it's reasonable to get nothing here
+    handleCVQualifierSeq(lastIndex + 1, lastIndex, curBlock);
     return eGrmErrNoError;
   }
   
-//  uint32 getRet2 = eGramIsNothing;
-  uint32 errRet2 = handleCVQualifier(index + 1,lastIndex, curBlock);
-  if(eGrmErrNoError != errRet2)
-  {
-    //it's reasonable to get nothing here
-    JZFUNC_END_LOG();
-    return eGrmErrNoError;
-  }
-
-//  if(getRet1 == getRet2)
-//  {
-//    JZFUNC_END_LOG();
-//    return eGrmErrDoubleCVQualifier;
-//  }
-  //should add more code to attach CV-qualifier to the following block
   JZFUNC_END_LOG();
-  return eGrmErrNoError;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
@@ -157,8 +148,8 @@ uint32 GrammarAnalyzer::handleFunctionDefinition(int index, int& lastIndex, Gram
 uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
-  bool retA = INVOKE(DeclSpecifier, index, tryLast, curBlock, returner, NOT_OPT);
-  if (retA)
+  bool ret = INVOKE(DeclSpecifier, index, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
   {
     int32 tryLastA = tryLast;
     bool retA = INVOKE(Attributes, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
@@ -2712,7 +2703,8 @@ uint32 GrammarAnalyzer::handleDeclarationSeq(int index, int& lastIndex, GrammarB
     {
       return eGrmErrNoError;
     }
-    return handleDeclarationSeq(lastIndex + 1, lastIndex,  curBlock);
+    handleDeclarationSeq(lastIndex + 1, lastIndex,  curBlock);
+    return eGrmErrNoError;
   }
   return eGrmErrUnknown;
 }

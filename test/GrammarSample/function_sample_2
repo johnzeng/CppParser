@@ -1,1 +1,9 @@
 const void test(){}
+inline void test1(){}
+extern "C" {
+  volatile int vo;
+  const int* b;
+};
+extern "C++" {
+};
+
