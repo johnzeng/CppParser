@@ -3834,3 +3834,41 @@ uint32 GrammarAnalyzer::handleNewInitializer(int index, int& lastIndex, GrammarB
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleNoptrNewDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastB = index;
+  bool retB = EXPECT(tryLastB, tryLastB, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Expression, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastB + 1, tryLastB, "]", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Attributes, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastA = index - 1;
+  bool inLoop = false;
+  while(INVOKE(NoptrNewDeclarator, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT))
+  {
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    int32 tryLastB = tryLastA;
+    bool retB = EXPECT(tryLastB + 1, tryLastB, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(ConstantExpression, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryLastB + 1, tryLastB, "]", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(Attributes, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+    if (retB)
+    {
+      lastIndex = tryLastB;
+      return eGrmErrNoError;
+    }
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+

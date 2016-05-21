@@ -59,8 +59,3 @@ uint32 GrammarAnalyzer::handleExplicitInstantiation(int index, int& lastIndex, G
 {
   return eGrmErrUnknown;
 }
-
-uint32 GrammarAnalyzer::handleNoptrNewDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return eGrmErrUnknown;
-}
