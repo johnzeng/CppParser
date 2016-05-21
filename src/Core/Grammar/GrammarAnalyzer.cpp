@@ -3426,3 +3426,42 @@ uint32 GrammarAnalyzer::handleVirtSpecifierSeq(int index, int& lastIndex, Gramma
   }
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleLabeledStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = INVOKE(Attributes, index, tryLastA, curBlock, returner, IS_OPT) &&
+    INVOKE(Identifier, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastA + 1, tryLastA, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Statement, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = index;
+  bool retB = INVOKE(Attributes, index, tryLastB, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLastB + 1, tryLastB, "case", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ConstantExpression, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastB + 1, tryLastB, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Statement, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+
+  int tryLastC = index;
+  bool retC = INVOKE(Attributes, index, tryLastC, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLastC + 1, tryLastC, "default", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Statement, tryLastC + 1, tryLastC, curBlock, returner, NOT_OPT);
+  if (retC)
+  {
+    lastIndex = tryLastC;
+    return eGrmErrNoError;
+  }
+
+    
+  return eGrmErrUnknown;
+}
