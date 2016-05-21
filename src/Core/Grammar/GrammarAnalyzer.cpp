@@ -34,27 +34,30 @@ uint32 GrammarAnalyzer::handleCVQualifierSeq(int index, int& lastIndex, GrammarB
 
 uint32 GrammarAnalyzer::handleAttributes(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expDoubleSquareBrackets = expect("[[", index);
-  if(eGrmErrNoError == expDoubleSquareBrackets)
+  uint32 expDoubleSquareBrackets1 = expect("[", index);
+  uint32 expDoubleSquareBrackets2 = expect("[", index + 1);
+  if(eGrmErrNoError == expDoubleSquareBrackets1 && eGrmErrNoError == expDoubleSquareBrackets2)
   {
     uint32 i = 1;
-    uint32 expNextDoubleBrackets = expect("]]", index + i);
-    if(eGrmErrNoError == expNextDoubleBrackets)
+    uint32 expNextDoubleBrackets1 = expect("]", index + i);
+    uint32 expNextDoubleBrackets2 = expect("]", index + i + 1);
+    if(eGrmErrNoError == expNextDoubleBrackets1 && eGrmErrNoError == expNextDoubleBrackets2)
     {
       return eGrmErrUnexpDblSqlBracket;
     }
 
     do
     {
-      if(expNextDoubleBrackets == eGrmErrFileEnd)
+      if(expNextDoubleBrackets1 == eGrmErrFileEnd || expNextDoubleBrackets2 == eGrmErrFileEnd)
       {
         return eGrmErrExpectNextDblSqBracket;
       }
       i++;
-      expNextDoubleBrackets = expect("]]", index + i);
+      expNextDoubleBrackets1 = expect("]", index + i);
+      expNextDoubleBrackets2 = expect("]", index + i + 1);
     }
-    while(expNextDoubleBrackets != eGrmErrNoError);
-    lastIndex = index + i;
+    while(expNextDoubleBrackets1 != eGrmErrNoError || expNextDoubleBrackets2 != eGrmErrNoError);
+    lastIndex = index + i + 1;
 
     uint32 nextAttRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
 

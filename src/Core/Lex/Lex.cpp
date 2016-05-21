@@ -23,8 +23,8 @@ Lex::Lex(){
 	mPatternTable->insertPattern('^',  (LexPatternHandler)(&Lex::handleUpponSharp));
 	mPatternTable->insertPattern(':',  (LexPatternHandler)(&Lex::handleColon));
 
-	mPatternTable->insertPattern('[',  (LexPatternHandler)(&Lex::handleLeftSqualBracket));
-	mPatternTable->insertPattern(']',  (LexPatternHandler)(&Lex::handleRightSqualBracket));
+//	mPatternTable->insertPattern('[',  (LexPatternHandler)(&Lex::handleLeftSqualBracket));
+//	mPatternTable->insertPattern(']',  (LexPatternHandler)(&Lex::handleRightSqualBracket));
 }
 
 uint32 Lex::handlePoint()
@@ -216,38 +216,38 @@ uint32 Lex::handleSlant()
 	return ret;
 }
 
-uint32 Lex::handleLeftSqualBracket()
-{
-	uint32 beginIndex = getLastIndex();
-	uint32 ret = eLexNoError;
-	char nextChar = 0;
-	ret = readChar(&nextChar);
-	string toSave = "[";
-	if ('[' == nextChar)
-	{
-		consumeChar(&nextChar);
-		toSave += nextChar;
-	}
-	uint32 endIndex = getLastIndex();
-	saveWord(toSave,beginIndex,endIndex);
-	return ret;
-  
-}
+//uint32 Lex::handleLeftSqualBracket()
+//{
+//	uint32 beginIndex = getLastIndex();
+//	uint32 ret = eLexNoError;
+//	char nextChar = 0;
+//	ret = readChar(&nextChar);
+//	string toSave = "[";
+//	if ('[' == nextChar)
+//	{
+//		consumeChar(&nextChar);
+//		toSave += nextChar;
+//	}
+//	uint32 endIndex = getLastIndex();
+//	saveWord(toSave,beginIndex,endIndex);
+//	return ret;
+//  
+//}
 
-uint32 Lex::handleRightSqualBracket()
-{
-	uint32 beginIndex = getLastIndex();
-	uint32 ret = eLexNoError;
-	char nextChar = 0;
-	ret = readChar(&nextChar);
-	string toSave = "]";
-	if (']' == nextChar)
-	{
-		consumeChar(&nextChar);
-		toSave += nextChar;
-	}
-	uint32 endIndex = getLastIndex();
-	saveWord(toSave,beginIndex,endIndex);
-	return ret;
-  
-}
+//uint32 Lex::handleRightSqualBracket()
+//{
+//	uint32 beginIndex = getLastIndex();
+//	uint32 ret = eLexNoError;
+//	char nextChar = 0;
+//	ret = readChar(&nextChar);
+//	string toSave = "]";
+//	if (']' == nextChar)
+//	{
+//		consumeChar(&nextChar);
+//		toSave += nextChar;
+//	}
+//	uint32 endIndex = getLastIndex();
+//	saveWord(toSave,beginIndex,endIndex);
+//	return ret;
+//  
+//}
