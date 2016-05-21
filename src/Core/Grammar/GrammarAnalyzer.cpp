@@ -3872,3 +3872,65 @@ uint32 GrammarAnalyzer::handleNoptrNewDeclarator(int index, int& lastIndex, Gram
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleTemplateDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "template", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "<", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TemplateParameterList, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ">", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Declaration, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+
+uint32 GrammarAnalyzer::handleDeclarationStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  return handleBlockDeclaration(index, lastIndex, curBlock, returner);
+}
+
+uint32 GrammarAnalyzer::handleTemplateParameterList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(TemplateParameter, index, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    int32 tryLastA = tryLast;
+    bool retA = EXPECT(tryLastA + 1, tryLastA, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(TemplateParameterList, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+    if (retA)
+    {
+      lastIndex = tryLastA;
+      return eGrmErrNoError;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTemplateParameter(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = INVOKE(TypeParameter, index, tryLastA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = index;
+  bool retB = INVOKE(ParameterDeclaration, index, tryLastB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+

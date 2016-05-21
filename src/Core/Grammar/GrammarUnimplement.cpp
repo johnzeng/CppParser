@@ -20,11 +20,6 @@ uint32 GrammarAnalyzer::handleTryBlock(int index, int& lastIndex, GrammarBlock* 
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleDeclarationStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  return eGrmErrUnknown;
-}
-
 uint32 GrammarAnalyzer::handleUsingDirective(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   
@@ -43,19 +38,17 @@ uint32 GrammarAnalyzer::handleAliasDeclaration(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTemplateDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  
-  return eGrmErrUnknown;
-}
-
-
 uint32 GrammarAnalyzer::handleExplicitSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleExplicitInstantiation(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTypeParameter(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   return eGrmErrUnknown;
 }
