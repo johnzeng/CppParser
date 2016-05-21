@@ -1,0 +1,4 @@
+typedef int hello;
+typedef struct a{
+  int b;
+} astr;

@@ -68,6 +68,7 @@ bool GrammarAnalyzer::invoke(handler han, const string& func, const int line, co
 //  JZWRITE_DEBUG("invoked by %s:%d:%d", func.c_str(), line, index);
   if (
       &GrammarAnalyzer::handleEmptyDeclaration != han &&
+      &GrammarAnalyzer::handleExpressionStatement != han &&
       true == GrmUtilPtr->isLoopBreakerKey(mRecList[index].word)
       )
   {

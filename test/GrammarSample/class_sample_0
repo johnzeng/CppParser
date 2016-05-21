@@ -1,0 +1,9 @@
+class Test;
+class Test{
+  public:
+    int tester();
+  private:
+    int c;
+  protected:
+    virtual int virt() = 0;
+};

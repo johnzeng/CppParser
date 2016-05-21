@@ -123,7 +123,7 @@ TEST(GrammarAnalyzer, EnumAttributes)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
+//  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
   uint32 ret = grammar.doAnalyze();
   ASSERT_EQ(eGrmErrNoError, ret);
   JZSetLoggerLevel(JZ_LOG_TEST);
@@ -161,7 +161,7 @@ TEST(GrammarAnalyzer, EnumName)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
+//  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
   uint32 ret = grammar.doAnalyze();
   ASSERT_EQ(eGrmErrNoError, ret);
   JZSetLoggerLevel(JZ_LOG_TEST);
