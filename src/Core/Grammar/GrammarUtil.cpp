@@ -79,6 +79,7 @@ void GrammarUtil::init()
    ********************************************************/
   
   mKeyWordSet.insert("int");
+  mKeyWordSet.insert("operator");
   mKeyWordSet.insert("long");
   mKeyWordSet.insert("unsigned");
   mKeyWordSet.insert("class");
