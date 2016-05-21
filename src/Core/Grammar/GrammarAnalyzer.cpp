@@ -4056,3 +4056,21 @@ uint32 GrammarAnalyzer::handleAliasDeclaration(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleStatic_assertDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "static_assert", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ConstantExpression, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(StringLiteral, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, ";", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+

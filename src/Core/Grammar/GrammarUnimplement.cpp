@@ -25,9 +25,3 @@ uint32 GrammarAnalyzer::handleUsingDirective(int index, int& lastIndex, GrammarB
   
   return eGrmErrUnknown;
 }
-
-uint32 GrammarAnalyzer::handleStatic_assertDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  
-  return eGrmErrUnknown;
-}
