@@ -19,9 +19,3 @@ uint32 GrammarAnalyzer::handleTryBlock(int index, int& lastIndex, GrammarBlock* 
 {
   return eGrmErrUnknown;
 }
-
-uint32 GrammarAnalyzer::handleUsingDirective(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  
-  return eGrmErrUnknown;
-}

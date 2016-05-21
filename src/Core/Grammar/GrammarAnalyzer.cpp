@@ -4074,3 +4074,21 @@ uint32 GrammarAnalyzer::handleStatic_assertDeclaration(int index, int& lastIndex
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleUsingDirective(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(Attributes, index, tryLast, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "using", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(NamespaceName, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ";", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
