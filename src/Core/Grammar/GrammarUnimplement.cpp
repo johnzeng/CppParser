@@ -31,9 +31,3 @@ uint32 GrammarAnalyzer::handleStatic_assertDeclaration(int index, int& lastIndex
   
   return eGrmErrUnknown;
 }
-
-uint32 GrammarAnalyzer::handleAliasDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
-{
-  
-  return eGrmErrUnknown;
-}
