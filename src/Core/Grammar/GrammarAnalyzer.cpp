@@ -4140,3 +4140,18 @@ uint32 GrammarAnalyzer::handleHandlerSeq(int index, int& lastIndex, GrammarBlock
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleFunctionTryBlock(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "try", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(CtorInitializer, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(CompoundStatement, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(HandlerSeq, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
