@@ -15,4 +15,6 @@ int main()
   c = true;
   int *aptr = NULL;
   aptr = nullptr;
+  aptr = &a;
+  a = *aptr;
 }
