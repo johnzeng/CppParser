@@ -4092,3 +4092,33 @@ uint32 GrammarAnalyzer::handleUsingDirective(int index, int& lastIndex, GrammarB
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleTryBlock(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "try", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(CompoundStatement, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(HandlerSeq, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleHandlerSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "catch", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ExceptionDeclaration, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(CompoundStatement, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) ;
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
