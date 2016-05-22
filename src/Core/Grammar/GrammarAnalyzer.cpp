@@ -4217,3 +4217,90 @@ uint32 GrammarAnalyzer::handleTrailingTypeSpecifierSeq(int index, int& lastIndex
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleExceptionSpeciafier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = INVOKE(DynamicExceptionSpecification, index, tryLastA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = index;
+  bool retB = INVOKE(NoexceptSpecification, index, tryLastB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleDynamicExceptionSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "throw", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeIdList, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleNoexceptSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(tryLast, tryLast, "noexcept", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    int32 tryLastA = tryLast;
+    bool retA = EXPECT(tryLastA + 1, tryLastA, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(ConstantExpression, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryLastA + 1, tryLastA, ")", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retA)
+    {
+      lastIndex = tryLastA;
+      return eGrmErrNoError;
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTypeIdList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = INVOKE(TypeId, index, tryLastA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    bool retA1 = EXPECT(tryLastA + 1, tryLastA, "...", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retA1)
+    {
+      lastIndex = tryLastA;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastB = tryLastA - 1;
+    bool inLoop = false;
+    while (EXPECT(tryLastB + 1, tryLastB, ",", NOT_OPT, NOT_IN_ONE_LINE) && 
+        INVOKE(TypeId, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT))
+    {
+      inLoop = true;
+    }
+    if (inLoop)
+    {
+      EXPECT(tryLastB + 1, tryLastB, "...", IS_OPT, NOT_IN_ONE_LINE);
+      lastIndex = tryLastB;
+    }
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
