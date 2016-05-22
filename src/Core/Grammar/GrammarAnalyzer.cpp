@@ -1503,240 +1503,228 @@ uint32 GrammarAnalyzer::handleNoexceptExpression(int index, int& lastIndex, Gram
 
 uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 prmRet = handlePrimaryExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == prmRet)
+  int32 tryLastLoop = index - 1;
+  bool inLoop = false;
+  while (INVOKE(PostfixExpression, tryLastLoop + 1, tryLastLoop, curBlock, returner, NOT_OPT))
   {
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    lastIndex = tryLastLoop;
+
+    int32 tryLastLoop001 = tryLastLoop;
+    bool retLoop001 = EXPECT(tryLastLoop001 + 1, tryLastLoop001, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(Expression, tryLastLoop001 + 1, tryLastLoop001, curBlock, returner, NOT_OPT) &&
+      EXPECT(tryLastLoop001 + 1, tryLastLoop001, "]", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retLoop001)
+    {
+      lastIndex = tryLastLoop001;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastLoop002 = tryLastLoop;
+    bool retLoop002 = EXPECT(tryLastLoop002 + 1, tryLastLoop002, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(BracedInitList, tryLastLoop002 + 1, tryLastLoop002, curBlock, returner, IS_OPT) &&
+      EXPECT(tryLastLoop002 + 1, tryLastLoop002, "]", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retLoop002)
+    {
+      lastIndex = tryLastLoop002;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastLoop003 = tryLastLoop;
+    bool retLoop003 = EXPECT(tryLastLoop003 + 1, tryLastLoop003, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(ExpressionList, tryLastLoop003 + 1, tryLastLoop003, curBlock, returner, IS_OPT) &&
+      EXPECT(tryLastLoop003 + 1, tryLastLoop003, ")", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retLoop003)
+    {
+      lastIndex = tryLastLoop003;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastLoop004 = tryLastLoop;
+    bool retLoop004 = EXPECT(tryLastLoop004 + 1, tryLastLoop004, "++", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retLoop004)
+    {
+      lastIndex = tryLastLoop004;
+      return eGrmErrNoError;
+    }
+    
+    int32 tryLastLoop005 = tryLastLoop;
+    bool retLoop005 = EXPECT(tryLastLoop005 + 1, tryLastLoop005, "--", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retLoop005)
+    {
+      lastIndex = tryLastLoop005;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastLoop006 = tryLastLoop;
+    bool retLoop006 = EXPECT(tryLastLoop006 + 1, tryLastLoop006, ".", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(PseudoDestructorName, tryLastLoop006 + 1, tryLastLoop006, curBlock, returner, NOT_OPT);
+    if (retLoop006)
+    {
+      lastIndex = tryLastLoop006;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastLoop007 = tryLastLoop;
+    bool retLoop007 = EXPECT(tryLastLoop007 + 1, tryLastLoop007, "->", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(PseudoDestructorName, tryLastLoop007 + 1, tryLastLoop007, curBlock, returner, NOT_OPT);
+    if (retLoop007)
+    {
+      lastIndex = tryLastLoop007;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastLoop008 = tryLastLoop;
+    bool retLoop008 = EXPECT(tryLastLoop008 + 1, tryLastLoop008, "->", NOT_OPT, NOT_IN_ONE_LINE) &&
+      EXPECT(tryLastLoop008 + 1, tryLastLoop008, "template", IS_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(IdExpression, tryLastLoop008 + 1, tryLastLoop008, curBlock, returner, NOT_OPT);
+    if (retLoop008)
+    {
+      lastIndex = tryLastLoop008;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastLoop009 = tryLastLoop;
+    bool retLoop009 = EXPECT(tryLastLoop009 + 1, tryLastLoop009, ".", NOT_OPT, NOT_IN_ONE_LINE) &&
+      EXPECT(tryLastLoop009 + 1, tryLastLoop009, "template", IS_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(IdExpression, tryLastLoop009 + 1, tryLastLoop009, curBlock, returner, NOT_OPT);
+    if (retLoop009)
+    {
+      lastIndex = tryLastLoop009;
+      return eGrmErrNoError;
+    }
+    return eGrmErrNoError;
+  }
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(PrimaryExpression, index, tryLast001, curBlock, returner, NOT_OPT );
+  if (ret001)
+  {
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
+  }
+  
+  int32 tryLast002 = index;
+  bool ret002 = INVOKE(SimpleTypeSpecifier, index, tryLast002, curBlock, returner, NOT_OPT ) &&
+    EXPECT(tryLast002 + 1,tryLast002, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ExpressionList, tryLast002 + 1, tryLast002, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLast002 + 1,tryLast002, ")", NOT_OPT, NOT_IN_ONE_LINE); 
+  if (ret002)
+  {
+    lastIndex = tryLast002;
     return eGrmErrNoError;
   }
 
-  uint32 leftSeqRet = expect("[", index);
-  if (eGrmErrNoError == leftSeqRet)
+  int32 tryLast003 = index;
+  bool ret003 = INVOKE(TypenameSpecifier, index, tryLast003, curBlock, returner, NOT_OPT ) &&
+    EXPECT(tryLast003 + 1,tryLast003, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ExpressionList, tryLast003 + 1, tryLast003, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLast003 + 1,tryLast003, ")", NOT_OPT, NOT_IN_ONE_LINE); 
+  if (ret003)
   {
-    uint32 expRet = handleExpression(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == expRet)
-    {
-      uint32 rightSeqRet = expect("]", lastIndex + 1);
-      if (eGrmErrNoError == rightSeqRet)
-      {
-        uint32 nextPostRet = handlePostfixExpression(lastIndex + 2, lastIndex, curBlock);
-        if (nextPostRet == eGrmErrNoError)
-        {
-          return eGrmErrNoError;
-        }
-//        if (nextPostRet == eGrmErrNotPostfixExpress)
-//        {
-//          return eGrmErrNoError
-//        }
-
-      }
-    }
-
-    uint32 bracedRet = handleBracedInitList(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == bracedRet /*|| eGrmErrNotBraceInitList*/)
-    {
-      uint32 rightSeqRet = expect("]", lastIndex + 1);
-      if (eGrmErrNoError == rightSeqRet)
-      {
-        uint32 nextPostRet = handlePostfixExpression(lastIndex + 2, lastIndex, curBlock);
-        if (nextPostRet == eGrmErrNoError)
-        {
-          return eGrmErrNoError;
-        }
-//        if (nextPostRet == eGrmErrNotPostfixExpress)
-//        {
-//          return eGrmErrNoError
-//        }
-
-      }
-    }
-  }
-
-  uint32 expLeftBracket = expect("(", index, curBlock);
-  if (eGrmErrNoError == expLeftBracket)
-  {
-    uint32 expressListRet = handleExpressionList(index + 1,lastIndex, curBlock);
-    if (eGrmErrNoError == expressListRet /* || eGrmErrNotExpressList == expressListRet*/)
-    {
-      uint32 expRightBracket = expect(")", lastIndex + 1, curBlock);
-      if (eGrmErrNoError == expRightBracket)
-      {
-        lastIndex ++;
-        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
-        return eGrmErrNoError;
-      }
-    }
-  }
-
-  uint32 simpleRet = handleSimpleTypeSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == simpleRet)
-  {
-    uint32 expLeftBracket = expect("(", lastIndex + 1, curBlock);
-    if (eGrmErrNoError == expLeftBracket)
-    {
-      uint32 expressListRet = handleExpressionList(lastIndex + 2,lastIndex, curBlock);
-      if (eGrmErrNoError == expressListRet /* || eGrmErrNotExpressList == expressListRet*/)
-      {
-        uint32 expRightBracket = expect(")", lastIndex + 1, curBlock);
-        if (eGrmErrNoError == expRightBracket)
-        {
-          lastIndex ++;
-          return eGrmErrNoError;
-        }
-      }
-    }
-
-    return handleBracedInitList(lastIndex + 1, lastIndex, curBlock);
-  }
-
-  uint32 typenameRet = handleTypenameSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == typenameRet)
-  {
-    uint32 expLeftBracket = expect("(", lastIndex + 1, curBlock);
-    if (eGrmErrNoError == expLeftBracket)
-    {
-      uint32 expressListRet = handleExpressionList(lastIndex + 2,lastIndex, curBlock);
-      if (eGrmErrNoError == expressListRet /* || eGrmErrNotExpressList == expressListRet*/)
-      {
-        uint32 expRightBracket = expect(")", lastIndex + 1, curBlock);
-        if (eGrmErrNoError == expRightBracket)
-        {
-          lastIndex ++;
-          return eGrmErrNoError;
-        }
-      }
-    }
-    return handleBracedInitList(lastIndex + 1, lastIndex, curBlock);
-  }
-
-  uint32 expDot = expect(".", index);
-  if (eGrmErrNoError == expDot)
-  {
-    uint32 expTep = expect("template", index + 1);
-    if (eGrmErrNoError == expTep)
-    {
-      uint32 idExpRet = handleIdExpression(index + 2, lastIndex, curBlock);
-      if (idExpRet == eGrmErrNoError)
-      {
-        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
-        return eGrmErrNoError;
-      }
-    }
-    else
-    {
-      uint32 idExpRet = handleIdExpression(index + 1, lastIndex, curBlock);
-      if (idExpRet == eGrmErrNoError)
-      {
-        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
-        return eGrmErrNoError;
-      }
-    }
-
-    return handlePseudoDestructorName(index + 1, lastIndex, curBlock);
-  }
-
-  uint32 expArray = expect("->", index);
-  if (eGrmErrNoError == expArray)
-  {
-    uint32 expTep = expect("template", index + 1);
-    if (eGrmErrNoError == expTep)
-    {
-      uint32 idExpRet = handleIdExpression(index + 2, lastIndex, curBlock);
-      if (idExpRet == eGrmErrNoError)
-      {
-        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
-        return eGrmErrNoError;
-      }
-    }
-    else
-    {
-      uint32 idExpRet = handleIdExpression(index + 1, lastIndex, curBlock);
-      if (idExpRet == eGrmErrNoError)
-      {
-        uint32 nextRet = handlePostfixExpression(lastIndex + 1, lastIndex, curBlock);
-        return eGrmErrNoError;
-      }
-      
-    }
-    return handlePseudoDestructorName(index + 1, lastIndex, curBlock);
-  }
-
-  uint32 plusExp = expect("++", index);
-  if (eGrmErrNoError == plusExp)
-  {
-    handlePostfixExpression(index + 1, lastIndex, curBlock);
+    lastIndex = tryLast003;
     return eGrmErrNoError;
   }
 
-  uint32 minuseExp = expect("--", index);
-  if (eGrmErrNoError == minuseExp)
+  int32 tryLast004 = index;
+  bool ret004 = INVOKE(SimpleTypeSpecifier, index, tryLast004, curBlock, returner, NOT_OPT ) &&
+    INVOKE(BracedInitList, tryLast004 + 1, tryLast004, curBlock, returner, NOT_OPT); 
+  if (ret004)
   {
-    handlePostfixExpression(index + 1, lastIndex, curBlock);
+    lastIndex = tryLast004;
     return eGrmErrNoError;
   }
 
-  uint32 expDynamic = expect("dynamic_cast",index);
-  uint32 expStatic = expect("static_cast",index);
-  uint32 expRein = expect("reinterpret_cast",index);
-  uint32 expConstCast = expect("const_cast",index);
-  if (expDynamic == eGrmErrNoError || expStatic == eGrmErrNoError || eGrmErrNoError == expRein || eGrmErrNoError == expConstCast)
+  int32 tryLast005 = index;
+  bool ret005 = INVOKE(TypenameSpecifier, index, tryLast005, curBlock, returner, NOT_OPT ) &&
+    INVOKE(BracedInitList, tryLast005 + 1, tryLast005, curBlock, returner, NOT_OPT) ;
+  if (ret005)
   {
-    uint32 leftSharp = expect("<", index + 1);
-    if (eGrmErrNoError == leftSharp)
-    {
-      uint32 typeIdRet = handleTypeId(index + 2, lastIndex , curBlock);
-      if (eGrmErrNoError == typeIdRet)
-      {
-        uint32 expRightSharp = expect(">", lastIndex + 1);
-        if (eGrmErrNoError == expRightSharp)
-        {
-          uint32 expLeftBracket = expect("(", lastIndex + 2);
-          if (eGrmErrNoError == expLeftBracket)
-          {
-            uint32 innerExpressRet = handleExpression(lastIndex + 3, lastIndex, curBlock);
-            if (eGrmErrNoError == innerExpressRet)
-            {
-              uint32 rightBracketRet = expect(")", lastIndex + 1);
-              if (eGrmErrNoError == rightBracketRet)
-              {
-                return eGrmErrNoError;
-              }
-            }
-          }
-        }
-      }
-    }
+    lastIndex = tryLast005;
+    return eGrmErrNoError;
   }
 
-  uint32 typeidRet = expect("typeid", index);
-  if (eGrmErrNoError == typeidRet)
-  {
-    uint32 innerLeftBraceRet = expect("(", index +1);
-    if (eGrmErrNoError == innerLeftBraceRet)
-    {
-      uint32 expressionRet = handleExpression(index + 2, lastIndex, curBlock);
-      if (eGrmErrNoError == expressionRet)
-      {
-        uint32 rightRet = expect(")", lastIndex + 1);
-        if (eGrmErrNoError == rightRet)
-        {
-          lastIndex ++;
-          return eGrmErrNoError;
-        }
-      }
 
-      uint32 typeIdRet = handleTypeId(index + 1, lastIndex, curBlock);
-      if (eGrmErrNoError == typeIdRet)
-      {
-        uint32 rightRet = expect(")", lastIndex + 1);
-        if (eGrmErrNoError == rightRet)
-        {
-          lastIndex ++;
-          return eGrmErrNoError;
-        }
-        
-      }
-    }
+  int32 tryLastA = index;
+  bool retA = EXPECT(index, tryLastA, "dynamic_cast", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastA + 1, tryLastA, "<", NOT_OPT, NOT_OPT) &&
+    INVOKE(TypeId, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastA + 1, tryLastA, ">", NOT_OPT, NOT_OPT) &&
+    EXPECT(tryLastA + 1, tryLastA, "(", NOT_OPT, NOT_OPT) &&
+    INVOKE(Expression, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastA + 1, tryLastA, ")", NOT_OPT, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
   }
+
+  int32 tryLastB = index;
+  bool retB = EXPECT(index, tryLastB, "static_cast", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastB + 1, tryLastB, "<", NOT_OPT, NOT_OPT) &&
+    INVOKE(TypeId, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastB + 1, tryLastB, ">", NOT_OPT, NOT_OPT) &&
+    EXPECT(tryLastB + 1, tryLastB, "(", NOT_OPT, NOT_OPT) &&
+    INVOKE(Expression, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastB + 1, tryLastB, ")", NOT_OPT, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastC = index;
+  bool retC = EXPECT(index, tryLastC, "reinterpret_cast", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastC + 1, tryLastC, "<", NOT_OPT, NOT_OPT) &&
+    INVOKE(TypeId, tryLastC + 1, tryLastC, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastC + 1, tryLastC, ">", NOT_OPT, NOT_OPT) &&
+    EXPECT(tryLastC + 1, tryLastC, "(", NOT_OPT, NOT_OPT) &&
+    INVOKE(Expression, tryLastC + 1, tryLastC, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastC + 1, tryLastC, ")", NOT_OPT, NOT_OPT);
+  if (retC)
+  {
+    lastIndex = tryLastC;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastD = index;
+  bool retD = EXPECT(index, tryLastD, "const_cast", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastD + 1, tryLastD, "<", NOT_OPT, NOT_OPT) &&
+    INVOKE(TypeId, tryLastD + 1, tryLastD, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastD + 1, tryLastD, ">", NOT_OPT, NOT_OPT) &&
+    EXPECT(tryLastD + 1, tryLastD, "(", NOT_OPT, NOT_OPT) &&
+    INVOKE(Expression, tryLastD + 1, tryLastD, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastD + 1, tryLastD, ")", NOT_OPT, NOT_OPT);
+  if (retD)
+  {
+    lastIndex = tryLastD;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastE = index;
+  bool retE = EXPECT(index, tryLastE, "typeid", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastE + 1, tryLastE, "(", NOT_OPT, NOT_OPT) &&
+    INVOKE(Expression, tryLastE + 1, tryLastE, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastE + 1, tryLastE, ")", NOT_OPT, NOT_OPT);
+  if (retE)
+  {
+    lastIndex = tryLastE;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastF = index;
+  bool retF = EXPECT(index, tryLastF, "typeid", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLastF + 1, tryLastF, "(", NOT_OPT, NOT_OPT) &&
+    INVOKE(TypeId, tryLastF + 1, tryLastF, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastF + 1, tryLastF, ")", NOT_OPT, NOT_OPT);
+  if (retF)
+  {
+    lastIndex = tryLastF;
+    return eGrmErrNoError;
+  }
+
   return eGrmErrUnknown;
 }
 
