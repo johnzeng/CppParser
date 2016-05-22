@@ -11,4 +11,8 @@ int main()
   b/=3;
   b*=3;
   b%=3;
+  bool c = false;
+  c = true;
+  int *aptr = NULL;
+  aptr = nullptr;
 }
