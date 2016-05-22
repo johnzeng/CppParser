@@ -17,6 +17,13 @@ public:
   GrammarBlock *getTopBlock();
 protected:
 
+  uint32 handleCaptureList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleCapture(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleCaptureDefault(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleLambdaIntroducer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleLambdaCapture(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleLambdaExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleLambdaDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleDynamicExceptionSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleNoexceptSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleExceptionDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);

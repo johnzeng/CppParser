@@ -1921,13 +1921,11 @@ uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, Gramm
     }
   }
 
-//  mark for lambda
-
-//  uint32 lambdaExp = handleLambdaExpression(index, lastIndex, curBlock);
-//  if (eGrmErrNoError == lambdaExp)
-//  {
-//    return eGrmErrNoError;
-//  }
+  uint32 lambdaExp = handleLambdaExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == lambdaExp)
+  {
+    return eGrmErrNoError;
+  }
 
   return eGrmErrUnknown;
 }
