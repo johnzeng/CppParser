@@ -410,7 +410,7 @@ uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock
     uint32 parametersRet = handleParametersAndQualifiers(lastIndex + 1, lastIndex, curBlock);
     if (eGrmErrNoError == parametersRet)
     {
-      uint32 trailingRet = handleTrailingReturenType(lastIndex + 1, lastIndex, curBlock);
+      uint32 trailingRet = handleTrailingReturnType(lastIndex + 1, lastIndex, curBlock);
       if (eGrmErrNoError == trailingRet)
       {
         JZFUNC_END_LOG();
@@ -1293,7 +1293,7 @@ uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, Gram
     uint32 paramterRet = handleParametersAndQualifiers(lastIndex + 1, lastIndex ,curBlock);
     if (eGrmErrNoError == paramterRet)
     {
-      return handleTrailingReturenType(lastIndex + 1, lastIndex ,curBlock);
+      return handleTrailingReturnType(lastIndex + 1, lastIndex ,curBlock);
     }
   }
   else
@@ -1301,7 +1301,7 @@ uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, Gram
     uint32 paramterRet = handleParametersAndQualifiers(index, lastIndex ,curBlock);
     if (eGrmErrNoError == paramterRet)
     {
-      return handleTrailingReturenType(lastIndex + 1, lastIndex ,curBlock);
+      return handleTrailingReturnType(lastIndex + 1, lastIndex ,curBlock);
     }
   }
   return eGrmErrUnknown;
@@ -2231,7 +2231,7 @@ uint32 GrammarAnalyzer::handleParametersAndQualifiers(int index, int& lastIndex,
       handleCVQualifierSeq(lastIndex + 1, lastIndex, curBlock);
 //        uint32 ret = eGramIsNothing;
       handleRefQualifier(lastIndex + 1, lastIndex, curBlock);
-      handleExceptionSpeciafier(lastIndex + 1, lastIndex, curBlock);
+      handleExceptionSpecification(lastIndex + 1, lastIndex, curBlock);
       return eGrmErrNoError;
     }
     uint32 parameClauseRet = handleParameterDeclarationClause(index + 1, lastIndex, curBlock);
@@ -2245,7 +2245,7 @@ uint32 GrammarAnalyzer::handleParametersAndQualifiers(int index, int& lastIndex,
         handleCVQualifierSeq(lastIndex + 1, lastIndex, curBlock);
 //        uint32 ret = eGramIsNothing;
         handleRefQualifier(lastIndex + 1, lastIndex, curBlock);
-        handleExceptionSpeciafier(lastIndex + 1, lastIndex, curBlock);
+        handleExceptionSpecification(lastIndex + 1, lastIndex, curBlock);
         return eGrmErrNoError;
       }
     }
@@ -4179,7 +4179,7 @@ uint32 GrammarAnalyzer::handleExceptionDeclaration(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleTrailingReturenType(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+uint32 GrammarAnalyzer::handleTrailingReturnType(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
   bool ret = EXPECT(index, tryLast, "->", NOT_OPT, NOT_IN_ONE_LINE) &&
@@ -4215,7 +4215,7 @@ uint32 GrammarAnalyzer::handleTrailingTypeSpecifierSeq(int index, int& lastIndex
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleExceptionSpeciafier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+uint32 GrammarAnalyzer::handleExceptionSpecification(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLastA = index;
   bool retA = INVOKE(DynamicExceptionSpecification, index, tryLastA, curBlock, returner, NOT_OPT);
@@ -4300,5 +4300,149 @@ uint32 GrammarAnalyzer::handleTypeIdList(int index, int& lastIndex, GrammarBlock
     return eGrmErrNoError;
   }
 
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleCapture(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = EXPECT(index, tryLastA, "this", NOT_OPT, NOT_IN_ONE_LINE);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = index;
+  bool retB = EXPECT(index, tryLastB, "&", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleCaptureDefault(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "&", NOT_OPT, NOT_IN_ONE_LINE) ||
+    EXPECT(index, tryLast, "=", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = index + 1;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleCaptureList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(Capture, index, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    bool retA = EXPECT(tryLast + 1, tryLast, "...", NOT_OPT, NOT_IN_ONE_LINE);
+    if (retA)
+    {
+      lastIndex = tryLast;
+      return eGrmErrNoError;
+    }
+    
+    bool inLoop = false;
+    int32 tryLastB = tryLast - 1;
+    while(EXPECT(tryLastB + 1, tryLastB, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(Capture, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT))
+    {
+      inLoop = true;
+    }
+    if (inLoop)
+    {
+      lastIndex = tryLastB;
+      bool retB = EXPECT(tryLastB + 1, tryLastB, "...", NOT_OPT, NOT_IN_ONE_LINE);
+      if (retB)
+      {
+        lastIndex = tryLastB;
+        return eGrmErrNoError;
+      }
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleLambdaDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ParameterDeclarationClause, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "mutable", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ExceptionSpecification , tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(Attributes, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(TrailingReturnType, tryLast + 1, tryLast, curBlock, returner, IS_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleLambdaCapture(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLastA = index;
+  bool retA = INVOKE(CaptureDefault, index, tryLastA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    int32 tryLastA1 = tryLastA;
+    bool retA1 = EXPECT(tryLastA1 + 1, tryLastA1, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(CaptureList, tryLastA1 + 1, tryLastA1, curBlock, returner, NOT_OPT);
+    if (retA1)
+    {
+      lastIndex = tryLastA1;
+      return eGrmErrNoError;
+    }
+    return eGrmErrNoError;
+  }
+
+  int32 tryLastB = index;
+  bool retB = INVOKE(CaptureList, index, tryLastB, curBlock, returner, NOT_OPT);
+  if (retB)
+  {
+    lastIndex = tryLastB;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleLambdaIntroducer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(LambdaCapture, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "]", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleLambdaExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(LambdaIntroducer, index, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(LambdaDeclarator, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(CompoundStatement, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
   return eGrmErrUnknown;
 }
