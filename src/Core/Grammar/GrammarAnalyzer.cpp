@@ -929,12 +929,6 @@ uint32 GrammarAnalyzer::handleExpression(int index, int& lastIndex, GrammarBlock
 
 uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 condRet = handleConditionalExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == condRet)
-  {
-    return eGrmErrNoError;
-  }
-
   uint32 throwRet = handleThrowExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == throwRet)
   {
@@ -950,6 +944,13 @@ uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, Gr
       return handleInitializerClause(lastIndex + 1, lastIndex, curBlock);
     }
   }
+  
+  uint32 condRet = handleConditionalExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == condRet)
+  {
+    return eGrmErrNoError;
+  }
+
 
   return eGrmErrUnknown;
 }
