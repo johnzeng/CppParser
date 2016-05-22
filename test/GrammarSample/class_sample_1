@@ -1,4 +1,6 @@
 class test{
   test operator+ (int b);
   test operator() (int b);
+
+  explicit void init(const string hello);
 };
