@@ -4155,3 +4155,29 @@ uint32 GrammarAnalyzer::handleFunctionTryBlock(int index, int& lastIndex, Gramma
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleExceptionDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = INVOKE(Attributes, index, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(TypeSpecifierSeq, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  if (ret)
+  {
+    int32 tryLastA = tryLast;
+    bool retA = INVOKE(Declarator, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) ;
+    if (retA)
+    {
+      lastIndex = tryLastA;
+      return eGrmErrNoError;
+    }
+
+    int32 tryLastB = tryLast;
+    bool retB = INVOKE(AbstractDeclarator, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+    if (retB)
+    {
+      lastIndex = tryLastB;
+      return eGrmErrNoError;
+    }
+  }
+  return eGrmErrUnknown;
+}
+
