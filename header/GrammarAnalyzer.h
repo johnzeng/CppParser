@@ -18,6 +18,7 @@ public:
 protected:
 
   uint32 handleExceptionDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
+  uint32 handleHandler(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleHandlerSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleTypeParameter(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleNewPlacement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);

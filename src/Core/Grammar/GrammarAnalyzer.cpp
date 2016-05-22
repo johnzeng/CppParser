@@ -4106,7 +4106,7 @@ uint32 GrammarAnalyzer::handleTryBlock(int index, int& lastIndex, GrammarBlock* 
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleHandlerSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+uint32 GrammarAnalyzer::handleHandler(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
   bool ret = EXPECT(index, tryLast, "catch", NOT_OPT, NOT_IN_ONE_LINE) &&
@@ -4122,3 +4122,21 @@ uint32 GrammarAnalyzer::handleHandlerSeq(int index, int& lastIndex, GrammarBlock
 
   return eGrmErrUnknown;
 }
+
+uint32 GrammarAnalyzer::handleHandlerSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index - 1;
+  bool inLoop = false;
+  while(INVOKE(Handler, tryLast + 1, tryLast, curBlock, returner, NOT_OPT))
+  {
+    inLoop = true;
+  };
+  if (inLoop)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+}
+
