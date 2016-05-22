@@ -4181,3 +4181,39 @@ uint32 GrammarAnalyzer::handleExceptionDeclaration(int index, int& lastIndex, Gr
   return eGrmErrUnknown;
 }
 
+uint32 GrammarAnalyzer::handleTrailingReturenType(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "->", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TrailingTypeSpecifierSeq, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(AbstractDeclarator, tryLast + 1, tryLast, curBlock, returner,  IS_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
+uint32 GrammarAnalyzer::handleTrailingTypeSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+{
+  int32 tryLast = index - 1;
+  bool inLoop = false;
+  while (INVOKE(TrailingTypeSpecifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT))
+  {
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    lastIndex = tryLast;
+    int32 tryLastA = tryLast;
+    bool retA = INVOKE(Attributes, tryLastA + 1, tryLastA, curBlock, returner, IS_OPT);
+    if (retA)
+    {
+      lastIndex = tryLastA;
+    }
+    return eGrmErrNoError;
+  }
+  return eGrmErrUnknown;
+}
+
