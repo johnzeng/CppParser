@@ -5,5 +5,7 @@ extern "C" {
   const int* b;
 };
 extern "C++" {
+  int testC(...);
+  int testB(int a, ...);
 };
 
