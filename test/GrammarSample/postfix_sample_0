@@ -5,4 +5,6 @@ void main()
   child f = const_cast<b>(b);
   child g = reinterpret_cast<b>(b);
   child h = static_cast<b>(b);
+  int ** c;
+  c[1][1] = 0;
 }
