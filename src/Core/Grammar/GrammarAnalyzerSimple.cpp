@@ -65,10 +65,11 @@ bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBloc
 
 bool GrammarAnalyzer::invoke(handler han, const string& func, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt)
 {
-//  JZWRITE_DEBUG("invoked by %s:%d:%d", func.c_str(), line, index);
+  JZWRITE_DEBUG("invoked by %s:%d:%d", func.c_str(), line, index);
   if (
       &GrammarAnalyzer::handleEmptyDeclaration != han &&
       &GrammarAnalyzer::handleExpressionStatement != han &&
+      &GrammarAnalyzer::handleStatement != han &&
       true == GrmUtilPtr->isLoopBreakerKey(mRecList[index].word)
       )
   {
