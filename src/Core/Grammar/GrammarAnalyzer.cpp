@@ -1512,91 +1512,116 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
   }
   if (inLoop)
   {
+
+    bool inDo = false;
+    do{
+      inDo = false;
+      int32 tryLastLoop001 = tryLastLoop;
+      bool retLoop001 = EXPECT(tryLastLoop001 + 1, tryLastLoop001, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(Expression, tryLastLoop001 + 1, tryLastLoop001, curBlock, returner, NOT_OPT) &&
+        EXPECT(tryLastLoop001 + 1, tryLastLoop001, "]", NOT_OPT, NOT_IN_ONE_LINE);
+      if (retLoop001)
+      {
+        lastIndex = tryLastLoop001;
+        tryLastLoop = tryLastLoop001;
+        inDo = true;
+        continue;
+      }
+
+      int32 tryLastLoop002 = tryLastLoop;
+      bool retLoop002 = EXPECT(tryLastLoop002 + 1, tryLastLoop002, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(BracedInitList, tryLastLoop002 + 1, tryLastLoop002, curBlock, returner, IS_OPT) &&
+        EXPECT(tryLastLoop002 + 1, tryLastLoop002, "]", NOT_OPT, NOT_IN_ONE_LINE);
+      if (retLoop002)
+      {
+        lastIndex = tryLastLoop002;
+        tryLastLoop = tryLastLoop002;
+        inDo = true;
+        continue;
+      }
+
+      int32 tryLastLoop003 = tryLastLoop;
+      bool retLoop003 = EXPECT(tryLastLoop003 + 1, tryLastLoop003, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(ExpressionList, tryLastLoop003 + 1, tryLastLoop003, curBlock, returner, IS_OPT) &&
+        EXPECT(tryLastLoop003 + 1, tryLastLoop003, ")", NOT_OPT, NOT_IN_ONE_LINE);
+      if (retLoop003)
+      {
+        lastIndex = tryLastLoop003;
+        tryLastLoop = tryLastLoop003;
+        inDo = true;
+        continue;
+      }
+
+      int32 tryLastLoop004 = tryLastLoop;
+      bool retLoop004 = EXPECT(tryLastLoop004 + 1, tryLastLoop004, "++", NOT_OPT, NOT_IN_ONE_LINE);
+      if (retLoop004)
+      {
+        lastIndex = tryLastLoop004;
+        tryLastLoop = tryLastLoop004;
+        inDo = true;
+        continue;
+      }
+      
+      int32 tryLastLoop005 = tryLastLoop;
+      bool retLoop005 = EXPECT(tryLastLoop005 + 1, tryLastLoop005, "--", NOT_OPT, NOT_IN_ONE_LINE);
+      if (retLoop005)
+      {
+        lastIndex = tryLastLoop005;
+        tryLastLoop = tryLastLoop005;
+        inDo = true;
+        continue;
+      }
+
+      int32 tryLastLoop006 = tryLastLoop;
+      bool retLoop006 = EXPECT(tryLastLoop006 + 1, tryLastLoop006, ".", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(PseudoDestructorName, tryLastLoop006 + 1, tryLastLoop006, curBlock, returner, NOT_OPT);
+      if (retLoop006)
+      {
+        lastIndex = tryLastLoop006;
+        tryLastLoop = tryLastLoop006;
+        inDo = true;
+        continue;
+      }
+
+      int32 tryLastLoop007 = tryLastLoop;
+      bool retLoop007 = EXPECT(tryLastLoop007 + 1, tryLastLoop007, "->", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(PseudoDestructorName, tryLastLoop007 + 1, tryLastLoop007, curBlock, returner, NOT_OPT);
+      if (retLoop007)
+      {
+        lastIndex = tryLastLoop007;
+        tryLastLoop = tryLastLoop007;
+        inDo = true;
+        continue;
+      }
+
+      int32 tryLastLoop008 = tryLastLoop;
+      bool retLoop008 = EXPECT(tryLastLoop008 + 1, tryLastLoop008, "->", NOT_OPT, NOT_IN_ONE_LINE) &&
+        EXPECT(tryLastLoop008 + 1, tryLastLoop008, "template", IS_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(IdExpression, tryLastLoop008 + 1, tryLastLoop008, curBlock, returner, NOT_OPT);
+      if (retLoop008)
+      {
+        lastIndex = tryLastLoop008;
+        tryLastLoop = tryLastLoop008;
+        inDo = true;
+        continue;
+      }
+
+      int32 tryLastLoop009 = tryLastLoop;
+      bool retLoop009 = EXPECT(tryLastLoop009 + 1, tryLastLoop009, ".", NOT_OPT, NOT_IN_ONE_LINE) &&
+        EXPECT(tryLastLoop009 + 1, tryLastLoop009, "template", IS_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(IdExpression, tryLastLoop009 + 1, tryLastLoop009, curBlock, returner, NOT_OPT);
+      if (retLoop009)
+      {
+        lastIndex = tryLastLoop009;
+        tryLastLoop = tryLastLoop009;
+        inDo = true;
+        continue;
+      }
+
+    }while(inDo);
+
     lastIndex = tryLastLoop;
 
-    int32 tryLastLoop001 = tryLastLoop;
-    bool retLoop001 = EXPECT(tryLastLoop001 + 1, tryLastLoop001, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(Expression, tryLastLoop001 + 1, tryLastLoop001, curBlock, returner, NOT_OPT) &&
-      EXPECT(tryLastLoop001 + 1, tryLastLoop001, "]", NOT_OPT, NOT_IN_ONE_LINE);
-    if (retLoop001)
-    {
-      lastIndex = tryLastLoop001;
-      return eGrmErrNoError;
-    }
-
-    int32 tryLastLoop002 = tryLastLoop;
-    bool retLoop002 = EXPECT(tryLastLoop002 + 1, tryLastLoop002, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(BracedInitList, tryLastLoop002 + 1, tryLastLoop002, curBlock, returner, IS_OPT) &&
-      EXPECT(tryLastLoop002 + 1, tryLastLoop002, "]", NOT_OPT, NOT_IN_ONE_LINE);
-    if (retLoop002)
-    {
-      lastIndex = tryLastLoop002;
-      return eGrmErrNoError;
-    }
-
-    int32 tryLastLoop003 = tryLastLoop;
-    bool retLoop003 = EXPECT(tryLastLoop003 + 1, tryLastLoop003, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(ExpressionList, tryLastLoop003 + 1, tryLastLoop003, curBlock, returner, IS_OPT) &&
-      EXPECT(tryLastLoop003 + 1, tryLastLoop003, ")", NOT_OPT, NOT_IN_ONE_LINE);
-    if (retLoop003)
-    {
-      lastIndex = tryLastLoop003;
-      return eGrmErrNoError;
-    }
-
-    int32 tryLastLoop004 = tryLastLoop;
-    bool retLoop004 = EXPECT(tryLastLoop004 + 1, tryLastLoop004, "++", NOT_OPT, NOT_IN_ONE_LINE);
-    if (retLoop004)
-    {
-      lastIndex = tryLastLoop004;
-      return eGrmErrNoError;
-    }
-    
-    int32 tryLastLoop005 = tryLastLoop;
-    bool retLoop005 = EXPECT(tryLastLoop005 + 1, tryLastLoop005, "--", NOT_OPT, NOT_IN_ONE_LINE);
-    if (retLoop005)
-    {
-      lastIndex = tryLastLoop005;
-      return eGrmErrNoError;
-    }
-
-    int32 tryLastLoop006 = tryLastLoop;
-    bool retLoop006 = EXPECT(tryLastLoop006 + 1, tryLastLoop006, ".", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(PseudoDestructorName, tryLastLoop006 + 1, tryLastLoop006, curBlock, returner, NOT_OPT);
-    if (retLoop006)
-    {
-      lastIndex = tryLastLoop006;
-      return eGrmErrNoError;
-    }
-
-    int32 tryLastLoop007 = tryLastLoop;
-    bool retLoop007 = EXPECT(tryLastLoop007 + 1, tryLastLoop007, "->", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(PseudoDestructorName, tryLastLoop007 + 1, tryLastLoop007, curBlock, returner, NOT_OPT);
-    if (retLoop007)
-    {
-      lastIndex = tryLastLoop007;
-      return eGrmErrNoError;
-    }
-
-    int32 tryLastLoop008 = tryLastLoop;
-    bool retLoop008 = EXPECT(tryLastLoop008 + 1, tryLastLoop008, "->", NOT_OPT, NOT_IN_ONE_LINE) &&
-      EXPECT(tryLastLoop008 + 1, tryLastLoop008, "template", IS_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(IdExpression, tryLastLoop008 + 1, tryLastLoop008, curBlock, returner, NOT_OPT);
-    if (retLoop008)
-    {
-      lastIndex = tryLastLoop008;
-      return eGrmErrNoError;
-    }
-
-    int32 tryLastLoop009 = tryLastLoop;
-    bool retLoop009 = EXPECT(tryLastLoop009 + 1, tryLastLoop009, ".", NOT_OPT, NOT_IN_ONE_LINE) &&
-      EXPECT(tryLastLoop009 + 1, tryLastLoop009, "template", IS_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(IdExpression, tryLastLoop009 + 1, tryLastLoop009, curBlock, returner, NOT_OPT);
-    if (retLoop009)
-    {
-      lastIndex = tryLastLoop009;
-      return eGrmErrNoError;
-    }
     return eGrmErrNoError;
   }
   int32 tryLast001 = index;
