@@ -3446,7 +3446,7 @@ uint32 GrammarAnalyzer::handleLabeledStatement(int index, int& lastIndex, Gramma
     EXPECT(tryLastB + 1, tryLastB, "case", NOT_OPT, NOT_IN_ONE_LINE) &&
     INVOKE(ConstantExpression, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT) &&
     EXPECT(tryLastB + 1, tryLastB, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(Statement, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+    INVOKE(StatementSeq, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
   if (retB)
   {
     lastIndex = tryLastB;
@@ -3456,7 +3456,7 @@ uint32 GrammarAnalyzer::handleLabeledStatement(int index, int& lastIndex, Gramma
   int tryLastC = index;
   bool retC = INVOKE(Attributes, index, tryLastC, curBlock, returner, IS_OPT) &&
     EXPECT(tryLastC + 1, tryLastC, "default", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(Statement, tryLastC + 1, tryLastC, curBlock, returner, NOT_OPT);
+    INVOKE(StatementSeq, tryLastC + 1, tryLastC, curBlock, returner, NOT_OPT);
   if (retC)
   {
     lastIndex = tryLastC;
@@ -3467,7 +3467,7 @@ uint32 GrammarAnalyzer::handleLabeledStatement(int index, int& lastIndex, Gramma
   bool retA = INVOKE(Attributes, index, tryLastA, curBlock, returner, IS_OPT) &&
     INVOKE(Identifier, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
     EXPECT(tryLastA + 1, tryLastA, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(Statement, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+    INVOKE(StatementSeq, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
   if (retA)
   {
     lastIndex = tryLastA;

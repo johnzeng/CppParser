@@ -1,7 +1,21 @@
 void main(){
 
+//test:
+
   switch(c)
   {
+    case 0:
+      {
+        c ++;
+      }
+      break;
+    case 1:
+      {
+        ;
+      }
+      break;
+    default:
+      return false;
   }
 
 }
