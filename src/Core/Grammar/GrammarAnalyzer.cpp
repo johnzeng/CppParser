@@ -3441,17 +3441,6 @@ uint32 GrammarAnalyzer::handleVirtSpecifierSeq(int index, int& lastIndex, Gramma
 
 uint32 GrammarAnalyzer::handleLabeledStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  int32 tryLastA = index;
-  bool retA = INVOKE(Attributes, index, tryLastA, curBlock, returner, IS_OPT) &&
-    INVOKE(Identifier, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
-    EXPECT(tryLastA + 1, tryLastA, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(Statement, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
-  if (retA)
-  {
-    lastIndex = tryLastA;
-    return eGrmErrNoError;
-  }
-
   int32 tryLastB = index;
   bool retB = INVOKE(Attributes, index, tryLastB, curBlock, returner, IS_OPT) &&
     EXPECT(tryLastB + 1, tryLastB, "case", NOT_OPT, NOT_IN_ONE_LINE) &&
@@ -3474,6 +3463,16 @@ uint32 GrammarAnalyzer::handleLabeledStatement(int index, int& lastIndex, Gramma
     return eGrmErrNoError;
   }
 
+  int32 tryLastA = index;
+  bool retA = INVOKE(Attributes, index, tryLastA, curBlock, returner, IS_OPT) &&
+    INVOKE(Identifier, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLastA + 1, tryLastA, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Statement, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+  if (retA)
+  {
+    lastIndex = tryLastA;
+    return eGrmErrNoError;
+  }
     
   return eGrmErrUnknown;
 }
