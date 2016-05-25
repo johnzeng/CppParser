@@ -393,7 +393,6 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
 
 uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  JZWRITE_DEBUG("====================================================== now begin ============")
   JZFUNC_BEGIN_LOG();
   uint32 ptrRet = handlePtrDeclarator(index, lastIndex, curBlock);
   if (eGrmErrNoError == ptrRet)
@@ -1198,47 +1197,59 @@ uint32 GrammarAnalyzer::handleMultiplicativeExpression(int index, int& lastIndex
 
 uint32 GrammarAnalyzer::handlePmExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 castRet = handleCastExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == castRet)
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(CastExpression, index, tryLast001, curBlock, returner, NOT_OPT);
+  if (ret001)
   {
-    uint32 exp1 = expect(".*", lastIndex + 1);
-    if (exp1 == eGrmErrNoError)
-    {
-      return handlePmExpression(lastIndex + 2, lastIndex, curBlock);
-    }
-
-    uint32 exp2 = expect("->*", lastIndex + 1);
-    if (exp2 == eGrmErrNoError)
-    {
-      return handlePmExpression(lastIndex + 2, lastIndex, curBlock);
-    }
-
-    return eGrmErrNoError;
+    lastIndex = tryLast001;
   }
-  return eGrmErrUnknown;
+  else
+  {
+    return eGrmErrUnknown;
+  }
+
+  int32 tryLast002 = tryLast001;
+  int32 tryLast003 = tryLast001;
+  while(
+      (EXPECT(tryLast002 + 1, tryLast002, ".*", NOT_OPT, NOT_IN_ONE_LINE) && INVOKE(CastExpression, tryLast002 + 1, tryLast002, curBlock, returner, NOT_OPT)) ||
+      (EXPECT(tryLast003 + 1, tryLast003, "->*", NOT_OPT, NOT_IN_ONE_LINE) && INVOKE(CastExpression, tryLast003 + 1, tryLast003, curBlock, returner, NOT_OPT))
+      )
+  {
+    if (tryLast003 > tryLast002)
+    {
+      tryLast002 = tryLast003;
+    }
+    else if (tryLast002 >  tryLast003)
+    {
+      tryLast003 = tryLast002;
+    }
+    lastIndex = tryLast002;
+  }
+  return eGrmErrNoError;
+
 }
 
 uint32 GrammarAnalyzer::handleCastExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 unArryRet = handleUnaryExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == unArryRet)
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(UnaryExpression, index, tryLast001, curBlock, returner, NOT_OPT) ;
+  if (ret001)
   {
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
 
-  uint32 leftExp = expect("(", index);
-  if (leftExp == eGrmErrNoError)
+  int32 tryLast002 = index;
+  bool ret002 = EXPECT(index, tryLast002, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeId, tryLast002 + 1, tryLast002, curBlock, returner, NOT_OPT)&&
+    EXPECT(tryLast002 + 1, tryLast002, ")", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(CastExpression, tryLast002 + 1, tryLast002, curBlock, returner, NOT_OPT) ;
+  if (ret002)
   {
-    uint32 typeRet = handleTypeId(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == typeRet)
-    {
-      uint32 rightExp = expect(")", lastIndex + 1);
-      if (rightExp == eGrmErrNoError)
-      {
-        return handleCastExpression(lastIndex + 2, lastIndex, curBlock);
-      }
-    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
   }
+
   return eGrmErrUnknown;
 }
 
@@ -1375,107 +1386,108 @@ uint32 GrammarAnalyzer::handleConstantExpression(int index, int& lastIndex, Gram
 
 uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 sizeofExp = expect("sizeof", index);
-  if (eGrmErrNoError == sizeofExp)
+  int32 tryLast001 = index;
+  bool ret001 = EXPECT(index, tryLast001, "sizeof", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast001 + 1, tryLast001, "...", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast001 + 1, tryLast001, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLast001 + 1, tryLast001, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast001 + 1, tryLast001, ")", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret001)
   {
-    uint32 expNextRet = handleUnaryExpression(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == expNextRet)
-    {
-      return eGrmErrNoError;
-    }
-
-    uint32 expLeft = expect("(", index + 1);
-    if (eGrmErrNoError == expLeft)
-    {
-      uint32 typeRet = handleTypeId(index + 2, lastIndex, curBlock);
-      if (eGrmErrNoError == typeRet)
-      {
-        uint32 expRight = expect(")", lastIndex + 1);
-        if (eGrmErrNoError == expRight)
-        {
-          lastIndex ++;
-          return eGrmErrNoError;
-        }
-      }
-    }
-
-    uint32 expDot = expect("...", index + 1);
-    if (eGrmErrNoError == expDot)
-    {
-      uint32 idRet = handleIdentifier(index + 2, lastIndex, curBlock);
-      if (eGrmErrNoError == idRet)
-      {
-        uint32 expRight = expect(")", lastIndex + 1);
-        if (eGrmErrNoError == expRight)
-        {
-          lastIndex ++;
-          return eGrmErrNoError;
-        }
-      }
-    }
-  }
-
-  uint32 expAlignof = expect("alignof", index);
-  if(eGrmErrNoError == expAlignof)
-  {
-    uint32 expLeft = expect("(", index + 1);
-    if (eGrmErrNoError == expLeft)
-    {
-      uint32 typeRet = handleTypeId(index + 2, lastIndex, curBlock);
-      if (eGrmErrNoError == typeRet)
-      {
-        uint32 expRight = expect(")", lastIndex + 1);
-        if (eGrmErrNoError == expRight)
-        {
-          lastIndex ++;
-          return eGrmErrNoError;
-        }
-      }
-    }
-  }
-
-  uint32 plusExp = expect("++", index);
-  if (eGrmErrNoError == plusExp)
-  {
-    return handleCastExpression(index + 1, lastIndex, curBlock);
-  }
-
-  uint32 minusExp = expect("--", index);
-  if (eGrmErrNoError == minusExp)
-  {
-    return handleCastExpression(index + 1, lastIndex, curBlock);
-  }
-
-  uint32 newExpRet = handleNewExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == newExpRet)
-  {
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
 
-  uint32 deleteRet = handleDeleteExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == deleteRet)
+  int32 tryLast002 = index;
+  bool ret002 = EXPECT(index, tryLast002, "sizeof", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(UnaryExpression, tryLast002 + 1, tryLast002, curBlock, returner, NOT_OPT);
+  if (ret002)
   {
+    lastIndex = tryLast002;
     return eGrmErrNoError;
   }
 
-  uint32 postfixRet = handlePostfixExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == postfixRet)
+  int32 tryLast003 = index;
+  bool ret003 = EXPECT(index, tryLast003, "sizeof", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast003 + 1, tryLast003, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeId, tryLast003 + 1, tryLast003, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast003 + 1, tryLast003, ")", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret003)
   {
+    lastIndex = tryLast003;
     return eGrmErrNoError;
   }
 
-//  uint32 getRet = eGramIsNothing;
-  uint32 handleOptRet = handleUnaryOperator(index, lastIndex, curBlock);
-  if (eGrmErrNoError == handleOptRet)
+  int32 tryLast004 = index;
+  bool ret004 = EXPECT(index, tryLast004, "alignof", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast004 + 1, tryLast004, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeId, tryLast004 + 1, tryLast004, curBlock, returner, NOT_OPT) &&
+    EXPECT(tryLast004 + 1, tryLast004, ")", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret004)
   {
-    return handleCastExpression(index + 1, lastIndex, curBlock);
-  }
-
-  uint32 noexceptRet = handleNoexceptExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == noexceptRet)
-  {
+    lastIndex = tryLast004;
     return eGrmErrNoError;
   }
+
+  int32 tryLast005 = index;
+  bool ret005 = EXPECT(index, tryLast005, "++", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(CastExpression, tryLast005 + 1, tryLast005, curBlock, returner, NOT_OPT);
+  if (ret005)
+  {
+    lastIndex = tryLast005;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast006 = index;
+  bool ret006 = EXPECT(index, tryLast006, "--", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(CastExpression, tryLast006 + 1, tryLast006, curBlock, returner, NOT_OPT);
+  if (ret006)
+  {
+    lastIndex = tryLast006;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast007 = index;
+  bool ret007 = INVOKE(NewExpression, tryLast007 , tryLast007, curBlock, returner, NOT_OPT);
+  if (ret007)
+  {
+    lastIndex = tryLast007;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast008 = index;
+  bool ret008 = INVOKE(DeleteExpression, tryLast008 , tryLast008, curBlock, returner, NOT_OPT);
+  if (ret008)
+  {
+    lastIndex = tryLast008;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast009 = index;
+  bool ret009 = INVOKE(NoexceptExpression, tryLast009 , tryLast009, curBlock, returner, NOT_OPT);
+  if (ret009)
+  {
+    lastIndex = tryLast009;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast0010 = index;
+  bool ret0010 = INVOKE(PostfixExpression, tryLast0010 , tryLast0010, curBlock, returner, NOT_OPT);
+  if (ret0010)
+  {
+    lastIndex = tryLast0010;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast0011 = index;
+  bool ret0011 = INVOKE(UnaryOperator, index, tryLast0011, curBlock, returner, NOT_OPT) &&
+    INVOKE(CastExpression, tryLast0011 + 1, tryLast0011, curBlock, returner, NOT_OPT);
+  if (ret0011)
+  {
+    lastIndex = tryLast0011;
+    return eGrmErrNoError;
+  }
+
   return eGrmErrUnknown;
 }
 
@@ -2184,24 +2196,23 @@ uint32 GrammarAnalyzer::handleTemplateArgument(int index, int& lastIndex, Gramma
 
 uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 tryRet = handleFunctionTryBlock(index, lastIndex, curBlock);
-  if (eGrmErrNoError == tryRet)
+  int32 tryLast001 = index;
+  bool ret001 =  INVOKE(FunctionTryBlock, index, tryLast001, curBlock, returner, NOT_OPT);
+  if (ret001)
   {
-    JZFUNC_END_LOG();
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
 
-  uint32 ctorInitializerRet = handleCtorInitializer(index, lastIndex, curBlock);
-  if (eGrmErrNoError == ctorInitializerRet)
+  int32 tryLast002 = index;
+  bool ret002 =  INVOKE(CtorInitializer, index, tryLast002, curBlock, returner, IS_OPT) &&
+    INVOKE(CompoundStatement, tryLast002 +  1, tryLast002, curBlock, returner, NOT_OPT);
+  if (ret002)
   {
-    JZFUNC_END_LOG();
-    return handleCompoundStatement(lastIndex + 1, lastIndex, curBlock);
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
   }
-  else
-  {
-    JZFUNC_END_LOG();
-    return handleCompoundStatement(index, lastIndex, curBlock);
-  }
+
   return eGrmErrUnknown;
 }
 
@@ -2434,14 +2445,13 @@ uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock*
 
 uint32 GrammarAnalyzer::handleExpressionStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expRet = handleExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == expRet)
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(Expression, index, tryLast001, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLast001 + 1, tryLast001, ";", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret001)
   {
-    return expect(";", lastIndex + 1);
-  }
-  else
-  {
-    return expect(";", index );
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
   }
   return eGrmErrUnknown;
 }
