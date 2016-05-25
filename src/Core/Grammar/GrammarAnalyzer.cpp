@@ -1375,31 +1375,6 @@ uint32 GrammarAnalyzer::handleConstantExpression(int index, int& lastIndex, Gram
 
 uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 postfixRet = handlePostfixExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == postfixRet)
-  {
-    return eGrmErrNoError;
-  }
-
-  uint32 plusExp = expect("++", index);
-  if (eGrmErrNoError == plusExp)
-  {
-    return handleCastExpression(index + 1, lastIndex, curBlock);
-  }
-
-  uint32 minusExp = expect("--", index);
-  if (eGrmErrNoError == minusExp)
-  {
-    return handleCastExpression(index + 1, lastIndex, curBlock);
-  }
-
-//  uint32 getRet = eGramIsNothing;
-  uint32 handleOptRet = handleUnaryOperator(index, lastIndex, curBlock);
-  if (eGrmErrNoError == handleOptRet)
-  {
-    return handleCastExpression(index + 1, lastIndex, curBlock);
-  }
-
   uint32 sizeofExp = expect("sizeof", index);
   if (eGrmErrNoError == sizeofExp)
   {
@@ -1459,10 +1434,16 @@ uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, Grammar
     }
   }
 
-  uint32 noexceptRet = handleNoexceptExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == noexceptRet)
+  uint32 plusExp = expect("++", index);
+  if (eGrmErrNoError == plusExp)
   {
-    return eGrmErrNoError;
+    return handleCastExpression(index + 1, lastIndex, curBlock);
+  }
+
+  uint32 minusExp = expect("--", index);
+  if (eGrmErrNoError == minusExp)
+  {
+    return handleCastExpression(index + 1, lastIndex, curBlock);
   }
 
   uint32 newExpRet = handleNewExpression(index, lastIndex, curBlock);
@@ -1473,6 +1454,25 @@ uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, Grammar
 
   uint32 deleteRet = handleDeleteExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == deleteRet)
+  {
+    return eGrmErrNoError;
+  }
+
+  uint32 postfixRet = handlePostfixExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == postfixRet)
+  {
+    return eGrmErrNoError;
+  }
+
+//  uint32 getRet = eGramIsNothing;
+  uint32 handleOptRet = handleUnaryOperator(index, lastIndex, curBlock);
+  if (eGrmErrNoError == handleOptRet)
+  {
+    return handleCastExpression(index + 1, lastIndex, curBlock);
+  }
+
+  uint32 noexceptRet = handleNoexceptExpression(index, lastIndex, curBlock);
+  if (eGrmErrNoError == noexceptRet)
   {
     return eGrmErrNoError;
   }
