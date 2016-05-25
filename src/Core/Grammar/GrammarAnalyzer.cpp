@@ -2359,56 +2359,73 @@ uint32 GrammarAnalyzer::handleParameterDeclaration(int index, int& lastIndex, Gr
 
 uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  //I will move this on at first
-  uint32 handleLabelRet = handleLabeledStatement(index, lastIndex, curBlock);
-  if (eGrmErrNoError == handleLabelRet)
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(Attributes, index, tryLast001, curBlock, returner, IS_OPT) &&
+    INVOKE(JumpStatement, tryLast001 + 1, tryLast001, curBlock, returner, NOT_OPT);
+  if (ret001)
   {
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
 
-  uint32 declarationStateRet = handleDeclarationStatement(index, lastIndex, curBlock);
-  if (eGrmErrNoError == declarationStateRet)
+  int32 tryLast003 = index;
+  bool ret003 = INVOKE(Attributes, index, tryLast003, curBlock, returner, IS_OPT) &&
+    INVOKE(CompoundStatement, tryLast003 + 1, tryLast003, curBlock, returner, NOT_OPT);
+  if (ret003)
   {
+    lastIndex = tryLast003;
     return eGrmErrNoError;
   }
 
-  uint32 attRet = handleAttributes(index, lastIndex, curBlock);
-  uint32 toIndex = index;
-  if (eGrmErrNoError == attRet)
+  int32 tryLast004 = index;
+  bool ret004 = INVOKE(Attributes, index, tryLast004, curBlock, returner, IS_OPT) &&
+    INVOKE(SelectionStatement, tryLast004 + 1, tryLast004, curBlock, returner, NOT_OPT);
+  if (ret004)
   {
-    toIndex = lastIndex + 1;
-  }
-
-  uint32 expStat = handleExpressionStatement(toIndex, lastIndex, curBlock);
-  if (eGrmErrNoError == expStat)
-  {
+    lastIndex = tryLast004;
     return eGrmErrNoError;
   }
 
-  uint32 compoundStat = handleCompoundStatement(toIndex, lastIndex, curBlock);
-  if (eGrmErrNoError == compoundStat)
+  int32 tryLast005 = index;
+  bool ret005 = INVOKE(Attributes, index, tryLast005, curBlock, returner, IS_OPT) &&
+    INVOKE(IterationStatement, tryLast005 + 1, tryLast005, curBlock, returner, NOT_OPT);
+  if (ret005)
   {
+    lastIndex = tryLast005;
     return eGrmErrNoError;
   }
 
-  uint32 selectionStat = handleSelectionStatement(toIndex, lastIndex, curBlock);
-  if (eGrmErrNoError == expStat)
+  int32 tryLast006 = index;
+  bool ret006 = INVOKE(Attributes, index, tryLast006, curBlock, returner, IS_OPT) &&
+    INVOKE(TryBlock, tryLast006 + 1, tryLast006, curBlock, returner, NOT_OPT);
+  if (ret006)
   {
+    lastIndex = tryLast006;
     return eGrmErrNoError;
   }
-  uint32 iterationRet = handleIterationStatement(toIndex, lastIndex, curBlock);
-  if (eGrmErrNoError == iterationRet)
+
+  int32 tryLast002 = index;
+  bool ret002 = INVOKE(Attributes, index, tryLast002, curBlock, returner, IS_OPT) &&
+    INVOKE(ExpressionStatement, tryLast002 + 1, tryLast002, curBlock, returner, NOT_OPT);
+  if (ret002)
   {
+    lastIndex = tryLast002;
     return eGrmErrNoError;
   }
-  uint32 jumpStat = handleJumpStatement(toIndex, lastIndex, curBlock);
-  if (eGrmErrNoError == jumpStat)
+
+  int32 tryLast007 = index;
+  bool ret007 = INVOKE(LabeledStatement, tryLast007 + 1, tryLast007, curBlock, returner, NOT_OPT);
+  if (ret007)
   {
+    lastIndex = tryLast007;
     return eGrmErrNoError;
   }
-  uint32 tryState = handleTryBlock(toIndex, lastIndex, curBlock);
-  if (eGrmErrNoError == tryState)
+
+  int32 tryLast008 = index;
+  bool ret008 = INVOKE(DeclarationStatement, tryLast008 + 1, tryLast008, curBlock, returner, NOT_OPT);
+  if (ret008)
   {
+    lastIndex = tryLast008;
     return eGrmErrNoError;
   }
 
