@@ -5,7 +5,7 @@ extern "C" {
   const int* b;
 };
 extern "C++" {
-  int testC(...);
+  register int testC(...);
   int testB(int a, ...);
 };
 
