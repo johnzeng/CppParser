@@ -9,8 +9,8 @@ int main(int argc, char* argv[])
   bool d = f < g || g > e;
   int f = a + b * c / d % e;
   int g= (char) c;
-  d -> e;
-  f . g;
+  d -> e -> e;
+  f . g. g;
   d ->* e;
   f .*g;
   return 0;

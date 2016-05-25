@@ -1253,7 +1253,7 @@ uint32 GrammarAnalyzer::handleTypeId(int index, int& lastIndex, GrammarBlock* cu
       return eGrmErrNoError;
     }
   }
-  return eGrmErrNoError;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleTypeSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
@@ -1624,55 +1624,6 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
 
     return eGrmErrNoError;
   }
-  int32 tryLast001 = index;
-  bool ret001 = INVOKE(PrimaryExpression, index, tryLast001, curBlock, returner, NOT_OPT );
-  if (ret001)
-  {
-    lastIndex = tryLast001;
-    return eGrmErrNoError;
-  }
-  
-  int32 tryLast002 = index;
-  bool ret002 = INVOKE(SimpleTypeSpecifier, index, tryLast002, curBlock, returner, NOT_OPT ) &&
-    EXPECT(tryLast002 + 1,tryLast002, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(ExpressionList, tryLast002 + 1, tryLast002, curBlock, returner, IS_OPT) &&
-    EXPECT(tryLast002 + 1,tryLast002, ")", NOT_OPT, NOT_IN_ONE_LINE); 
-  if (ret002)
-  {
-    lastIndex = tryLast002;
-    return eGrmErrNoError;
-  }
-
-  int32 tryLast003 = index;
-  bool ret003 = INVOKE(TypenameSpecifier, index, tryLast003, curBlock, returner, NOT_OPT ) &&
-    EXPECT(tryLast003 + 1,tryLast003, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(ExpressionList, tryLast003 + 1, tryLast003, curBlock, returner, IS_OPT) &&
-    EXPECT(tryLast003 + 1,tryLast003, ")", NOT_OPT, NOT_IN_ONE_LINE); 
-  if (ret003)
-  {
-    lastIndex = tryLast003;
-    return eGrmErrNoError;
-  }
-
-  int32 tryLast004 = index;
-  bool ret004 = INVOKE(SimpleTypeSpecifier, index, tryLast004, curBlock, returner, NOT_OPT ) &&
-    INVOKE(BracedInitList, tryLast004 + 1, tryLast004, curBlock, returner, NOT_OPT); 
-  if (ret004)
-  {
-    lastIndex = tryLast004;
-    return eGrmErrNoError;
-  }
-
-  int32 tryLast005 = index;
-  bool ret005 = INVOKE(TypenameSpecifier, index, tryLast005, curBlock, returner, NOT_OPT ) &&
-    INVOKE(BracedInitList, tryLast005 + 1, tryLast005, curBlock, returner, NOT_OPT) ;
-  if (ret005)
-  {
-    lastIndex = tryLast005;
-    return eGrmErrNoError;
-  }
-
-
   int32 tryLastA = index;
   bool retA = EXPECT(index, tryLastA, "dynamic_cast", NOT_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLastA + 1, tryLastA, "<", NOT_OPT, NOT_OPT) &&
@@ -1750,6 +1701,55 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
     lastIndex = tryLastF;
     return eGrmErrNoError;
   }
+
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(PrimaryExpression, index, tryLast001, curBlock, returner, NOT_OPT );
+  if (ret001)
+  {
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
+  }
+  
+  int32 tryLast002 = index;
+  bool ret002 = INVOKE(SimpleTypeSpecifier, index, tryLast002, curBlock, returner, NOT_OPT ) &&
+    EXPECT(tryLast002 + 1,tryLast002, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ExpressionList, tryLast002 + 1, tryLast002, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLast002 + 1,tryLast002, ")", NOT_OPT, NOT_IN_ONE_LINE); 
+  if (ret002)
+  {
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast003 = index;
+  bool ret003 = INVOKE(TypenameSpecifier, index, tryLast003, curBlock, returner, NOT_OPT ) &&
+    EXPECT(tryLast003 + 1,tryLast003, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ExpressionList, tryLast003 + 1, tryLast003, curBlock, returner, IS_OPT) &&
+    EXPECT(tryLast003 + 1,tryLast003, ")", NOT_OPT, NOT_IN_ONE_LINE); 
+  if (ret003)
+  {
+    lastIndex = tryLast003;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast004 = index;
+  bool ret004 = INVOKE(SimpleTypeSpecifier, index, tryLast004, curBlock, returner, NOT_OPT ) &&
+    INVOKE(BracedInitList, tryLast004 + 1, tryLast004, curBlock, returner, NOT_OPT); 
+  if (ret004)
+  {
+    lastIndex = tryLast004;
+    return eGrmErrNoError;
+  }
+
+  int32 tryLast005 = index;
+  bool ret005 = INVOKE(TypenameSpecifier, index, tryLast005, curBlock, returner, NOT_OPT ) &&
+    INVOKE(BracedInitList, tryLast005 + 1, tryLast005, curBlock, returner, NOT_OPT) ;
+  if (ret005)
+  {
+    lastIndex = tryLast005;
+    return eGrmErrNoError;
+  }
+
 
   return eGrmErrUnknown;
 }

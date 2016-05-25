@@ -18,5 +18,5 @@ int main()
   aptr = &a;
   a = *aptr;
   b = sizeof(int);
-  a = alignof(1);
+  a = alignof(int);
 }
