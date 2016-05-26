@@ -9,6 +9,8 @@ enum ReturnerType{
   eDeclarationSeq,
   eDeclaration,
   eEnumeratorDefinition,
+  eDeclarator,
+  eSimpleTypeSpecifier,
 };
 
 class GrammarReturnerBase

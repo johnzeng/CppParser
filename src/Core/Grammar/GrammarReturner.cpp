@@ -9,6 +9,8 @@ void GrammarReturnerBase::initMap()
   sNameMap[eDeclarationSeq] = "eDeclarationSeq";
   sNameMap[eDeclaration] = "eDeclaration";
   sNameMap[eEnumeratorDefinition] = "eEnumeratorDefinition";
+  sNameMap[eDeclarator] = "eDeclarator";
+  sNameMap[eSimpleTypeSpecifier] = "eSimpleTypeSpecifier";
 
 }
 
