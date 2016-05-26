@@ -272,34 +272,91 @@ uint32 GrammarAnalyzer::handleTypeSpecifier(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleTrailingTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 simpleRet = handleSimpleTypeSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == simpleRet)
+  GrammarReturnerBase *base001 = new GrammarReturnerBase(eTrailingTypeSpecifier, "");
+  int32 trylast001 = index;
+  if (INVOKE(SimpleTypeSpecifier, index, trylast001, curBlock, base001, NOT_OPT))
   {
+    lastIndex = trylast001;
+    if (returner)
+    {
+      returner->addChild(base001);
+    }
+    else{
+      delete base001;
+    }
     return eGrmErrNoError;
   }
-  
-//let's move it later
+  delete base001;
+  base001 = NULL;
 
-  uint32 elaboratedRet = handleElaboratedTypeSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == elaboratedRet)
+  GrammarReturnerBase *base002 = new GrammarReturnerBase(eTrailingTypeSpecifier, "");
+  int32 trylast002 = index;
+  if (INVOKE(ElaboratedTypeSpecifier, index, trylast002, curBlock, base002, NOT_OPT))
   {
+    lastIndex = trylast002;
+    if (returner)
+    {
+      returner->addChild(base002);
+    }
+    else{
+      delete base002;
+    }
     return eGrmErrNoError;
   }
+  delete base002;
+  base002 = NULL;
 
-//let's move it later
-
-  uint32 typeNameRet = handleTypenameSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == typeNameRet)
+  GrammarReturnerBase *base003 = new GrammarReturnerBase(eTrailingTypeSpecifier, "");
+  int32 trylast003 = index;
+  if (INVOKE(ElaboratedTypeSpecifier, index, trylast003, curBlock, base003, NOT_OPT))
   {
+    lastIndex = trylast003;
+    if (returner)
+    {
+      returner->addChild(base003);
+    }
+    else{
+      delete base003;
+    }
     return eGrmErrNoError;
   }
+  delete base003;
+  base003 = NULL;
 
-//  uint32 cvType = eGramIsNothing;
-  uint32 cvRet = handleCVQualifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == cvRet)
+  GrammarReturnerBase *base004 = new GrammarReturnerBase(eTrailingTypeSpecifier, "");
+  int32 trylast004 = index;
+  if (INVOKE(TypenameSpecifier, index, trylast004, curBlock, base004, NOT_OPT))
   {
+    lastIndex = trylast004;
+    if (returner)
+    {
+      returner->addChild(base004);
+    }
+    else{
+      delete base004;
+    }
     return eGrmErrNoError;
   }
+  delete base004;
+  base004 = NULL;
+
+  GrammarReturnerBase *base005 = new GrammarReturnerBase(eTrailingTypeSpecifier, "");
+  int32 trylast005 = index;
+  if (INVOKE(CVQualifier, index, trylast005, curBlock, base005, NOT_OPT))
+  {
+    lastIndex = trylast005;
+    if (returner)
+    {
+      returner->addChild(base005);
+    }
+    else{
+      delete base005;
+    }
+    return eGrmErrNoError;
+  }
+  delete base005;
+  base005 = NULL;
+
   return eGrmErrUnknown;
 }
 
@@ -580,6 +637,10 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
           if (returner)
           {
             returner->addChild(base016);
+          }
+          else
+          {
+            delete base016;
           }
           return eGrmErrNoError;
         }
@@ -3267,53 +3328,150 @@ uint32 GrammarAnalyzer::handleEmptyDeclaration(int index, int& lastIndex, Gramma
 
 uint32 GrammarAnalyzer::handleBlockDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 simpleRet = handleSimpleDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == simpleRet)
+  int32 tryLast002 = index;
+  GrammarReturnerBase* base002 = new GrammarReturnerBase(eBlockDeclaration, "");
+  if (INVOKE(AsmDeclaration, index, tryLast002, curBlock, base002, NOT_OPT))
   {
+    if (returner)
+    {
+      returner->addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
     return eGrmErrNoError;
   }
+  delete base002;
+  base002 = NULL;
 
-  uint32 asmRet = handleAsmDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == asmRet)
+  int32 tryLast003 = index;
+  GrammarReturnerBase* base003 = new GrammarReturnerBase(eBlockDeclaration, "");
+  if (INVOKE(NamespaceAliasDefinition, index, tryLast003, curBlock, base003, NOT_OPT))
   {
+    if (returner)
+    {
+      returner->addChild(base003);
+    }
+    else
+    {
+      delete base003;
+    }
+    lastIndex = tryLast003;
     return eGrmErrNoError;
   }
+  delete base003;
+  base003 = NULL;
 
-  uint32 namespaceRet = handleNamespaceAliasDefinition(index, lastIndex, curBlock);
-  if (eGrmErrNoError == namespaceRet)
+  int32 tryLast004 = index;
+  GrammarReturnerBase* base004 = new GrammarReturnerBase(eBlockDeclaration, "");
+  if (INVOKE(UsingDeclaration, index, tryLast004, curBlock, base004, NOT_OPT))
   {
+    if (returner)
+    {
+      returner->addChild(base004);
+    }
+    else
+    {
+      delete base004;
+    }
+    lastIndex = tryLast004;
     return eGrmErrNoError;
   }
+  delete base004;
+  base004 = NULL;
 
-  uint32 usingDeclRet = handleUsingDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == usingDeclRet)
+  int32 tryLast005 = index;
+  GrammarReturnerBase* base005 = new GrammarReturnerBase(eBlockDeclaration, "");
+  if (INVOKE(UsingDirective, index, tryLast005, curBlock, base005, NOT_OPT))
   {
+    if (returner)
+    {
+      returner->addChild(base005);
+    }
+    else
+    {
+      delete base005;
+    }
+    lastIndex = tryLast005;
     return eGrmErrNoError;
   }
+  delete base005;
+  base005 = NULL;
+  
+  int32 tryLast006 = index;
+  GrammarReturnerBase* base006 = new GrammarReturnerBase(eBlockDeclaration, "");
+  if (INVOKE(Static_assertDeclaration, index, tryLast006, curBlock, base006, NOT_OPT))
+  {
+    if (returner)
+    {
+      returner->addChild(base006);
+    }
+    else
+    {
+      delete base006;
+    }
+    lastIndex = tryLast006;
+    return eGrmErrNoError;
+  }
+  delete base006;
+  base006 = NULL;
+ 
+  int32 tryLast007 = index;
+  GrammarReturnerBase* base007 = new GrammarReturnerBase(eBlockDeclaration, "");
+  if (INVOKE(AliasDeclaration, index, tryLast007, curBlock, base007, NOT_OPT))
+  {
+    if (returner)
+    {
+      returner->addChild(base007);
+    }
+    else
+    {
+      delete base007;
+    }
+    lastIndex = tryLast007;
+    return eGrmErrNoError;
+  }
+  delete base007;
+  base007 = NULL;
+ 
 
-  uint32 usingDireRet = handleUsingDirective(index, lastIndex, curBlock);
-  if (eGrmErrNoError == usingDireRet)
+  int32 tryLast001 = index;
+  GrammarReturnerBase* base001 = new GrammarReturnerBase(eBlockDeclaration, "");
+  if (INVOKE(SimpleDeclaration, index, tryLast001, curBlock, base001, NOT_OPT))
   {
+    if (returner)
+    {
+      returner->addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
-
-  uint32 static_assertRet = handleStatic_assertDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == static_assertRet)
+  delete base001;
+  base001 = NULL;
+ 
+  int32 tryLast008 = index;
+  GrammarReturnerBase* base008 = new GrammarReturnerBase(eBlockDeclaration, "");
+  if (INVOKE(OpaqueEnumDeclaration, index, tryLast008, curBlock, base008, NOT_OPT))
   {
+    if (returner)
+    {
+      returner->addChild(base008);
+    }
+    else
+    {
+      delete base008;
+    }
+    lastIndex = tryLast008;
     return eGrmErrNoError;
   }
-
-  uint32 aliasDeclRet = handleAliasDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == aliasDeclRet)
-  {
-    return eGrmErrNoError;
-  }
-
-  uint32 opaqueRet = handleOpaqueEnumDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == opaqueRet)
-  {
-    return eGrmErrNoError;
-  }
+  delete base008;
+  base008 = NULL;
   return eGrmErrUnknown;
 }
 
