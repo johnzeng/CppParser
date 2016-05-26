@@ -2425,7 +2425,7 @@ uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock*
   }
 
   int32 tryLast007 = index;
-  bool ret007 = INVOKE(LabeledStatement, tryLast007 + 1, tryLast007, curBlock, returner, NOT_OPT);
+  bool ret007 = INVOKE(LabeledStatement, tryLast007 , tryLast007, curBlock, returner, NOT_OPT);
   if (ret007)
   {
     lastIndex = tryLast007;
@@ -2433,7 +2433,7 @@ uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock*
   }
 
   int32 tryLast008 = index;
-  bool ret008 = INVOKE(DeclarationStatement, tryLast008 + 1, tryLast008, curBlock, returner, NOT_OPT);
+  bool ret008 = INVOKE(DeclarationStatement, tryLast008 , tryLast008, curBlock, returner, NOT_OPT);
   if (ret008)
   {
     lastIndex = tryLast008;
