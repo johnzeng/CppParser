@@ -6,6 +6,8 @@ using namespace std;
 
 enum ReturnerType{
   eGrmTop,
+  eDeclarationSeq,
+  eDeclaration,
   eEnumeratorDefinition,
 };
 

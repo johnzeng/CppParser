@@ -2744,14 +2744,20 @@ uint32 GrammarAnalyzer::handleClassOrDecltype(int index, int& lastIndex, Grammar
 
 uint32 GrammarAnalyzer::handleDeclarationSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 declaraRet = handleDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == declaraRet)
+  bool inLoop = false ;
+  int32 tryLast = index - 1;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eDeclarationSeq, "");
+  while (INVOKE(Declaration, tryLast + 1, tryLast, curBlock, base, NOT_OPT))
   {
-    if (lastIndex + 1 == mRecList.size())
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    lastIndex = tryLast;
+    if (returner)
     {
-      return eGrmErrNoError;
+      returner->addChild(base);
     }
-    handleDeclarationSeq(lastIndex + 1, lastIndex,  curBlock);
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
@@ -2759,15 +2765,29 @@ uint32 GrammarAnalyzer::handleDeclarationSeq(int index, int& lastIndex, GrammarB
 
 uint32 GrammarAnalyzer::handleDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 blockRet = handleBlockDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == blockRet)
+  GrammarReturnerBase *base001 = new GrammarReturnerBase(eDeclaration, "");
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(BlockDeclaration, index, tryLast001, curBlock, base001, NOT_OPT );
+  if (ret001)
   {
+    lastIndex = tryLast001;
+    if (returner)
+    {
+      returner->addChild(base001);
+    }
     return eGrmErrNoError;
   }
 
-  uint32 functionRet = handleFunctionDefinition(index, lastIndex, curBlock);
-  if (eGrmErrNoError == functionRet)
+  GrammarReturnerBase *base002 = new GrammarReturnerBase(eDeclaration, "");
+  int32 tryLast002 = index;
+  bool ret002 = INVOKE(FunctionDefinition, index, tryLast002, curBlock, base002, NOT_OPT );
+  if (ret002)
   {
+    lastIndex = tryLast002;
+    if (returner)
+    {
+      returner->addChild(base002);
+    }
     return eGrmErrNoError;
   }
   uint32 templateRet = handleTemplateDeclaration(index, lastIndex, curBlock);
