@@ -79,6 +79,12 @@ void GrammarUtil::init()
    ********************************************************/
   
   mKeyWordSet.insert("int");
+  mKeyWordSet.insert("dynamic_cast");
+  mKeyWordSet.insert("case");
+  mKeyWordSet.insert("static_assert");
+  mKeyWordSet.insert("static_cast");
+  mKeyWordSet.insert("const_cast");
+  mKeyWordSet.insert("reinterpret_cast");
   mKeyWordSet.insert("operator");
   mKeyWordSet.insert("long");
   mKeyWordSet.insert("unsigned");
@@ -92,6 +98,8 @@ void GrammarUtil::init()
   mKeyWordSet.insert("float");
   mKeyWordSet.insert("bool");
   mKeyWordSet.insert("void");
+  mKeyWordSet.insert("try");
+  mKeyWordSet.insert("catch");
   mKeyWordSet.insert("const");
   mKeyWordSet.insert("volatile");
   mKeyWordSet.insert("typedef");
@@ -102,14 +110,20 @@ void GrammarUtil::init()
   mKeyWordSet.insert("else");
   mKeyWordSet.insert("while");
   mKeyWordSet.insert("for");
+  mKeyWordSet.insert("switch");
   mKeyWordSet.insert("goto");
   mKeyWordSet.insert("return");
   mKeyWordSet.insert("auto");
   mKeyWordSet.insert("NULL");
   mKeyWordSet.insert("template");
   mKeyWordSet.insert("register");
+  mKeyWordSet.insert(";");
+  mKeyWordSet.insert("(");
+  mKeyWordSet.insert(")");
+  mKeyWordSet.insert(",");
+  mKeyWordSet.insert(".");
   
-  mLoopBreakKey.insert(";");
+//  mLoopBreakKey.insert(";");
   mLoopBreakKey.insert(")");
   mLoopBreakKey.insert("}");
   mLoopBreakKey.insert("]");
