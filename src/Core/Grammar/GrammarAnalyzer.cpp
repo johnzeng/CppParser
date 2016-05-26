@@ -560,25 +560,25 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
     base015 = NULL;
   }
 
-  int32 tryLast016 = index;
-  GrammarReturnerBase *base016 = new GrammarReturnerBase(eSimpleTypeSpecifier,"");
-  bool ret016 = EXPECT(index, tryLast016, "::", IS_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(NestNameSpecifier, tryLast016 + 1, tryLast016, curBlock, base016, IS_OPT) &&
-    INVOKE(TypeName, tryLast016 + 1, tryLast016, curBlock, base016, NOT_OPT);
-  if ( ret016 )
-  {
-    lastIndex = tryLast016;
-    if (returner)
-    {
-      returner->addChild(base016);
-    }
-    return eGrmErrNoError;
-  }
-  else
-  {
-    delete base016;
-    base016 = NULL;
-  }
+//  int32 tryLast016 = index;
+//  GrammarReturnerBase *base016 = new GrammarReturnerBase(eSimpleTypeSpecifier,"");
+//  bool ret016 = EXPECT(index, tryLast016, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+//    INVOKE(NestNameSpecifier, tryLast016 + 1, tryLast016, curBlock, base016, IS_OPT) &&
+//    INVOKE(TypeName, tryLast016 + 1, tryLast016, curBlock, base016, NOT_OPT);
+//  if ( ret016 )
+//  {
+//    lastIndex = tryLast016;
+//    if (returner)
+//    {
+//      returner->addChild(base016);
+//    }
+//    return eGrmErrNoError;
+//  }
+//  else
+//  {
+//    delete base016;
+//    base016 = NULL;
+//  }
 
   int32 tryLast017 = index;
   GrammarReturnerBase *base017 = new GrammarReturnerBase(eSimpleTypeSpecifier,"");
