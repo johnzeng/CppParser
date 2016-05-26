@@ -6,11 +6,13 @@ map<int32, string> GrammarReturnerBase::sNameMap;
 void GrammarReturnerBase::initMap()
 {
   sNameMap[eGrmTop] = "eGrmTop";
+  sNameMap[eTypeId] = "eTypeId";
   sNameMap[eDeclarationSeq] = "eDeclarationSeq";
   sNameMap[eDeclaration] = "eDeclaration";
   sNameMap[eEnumeratorDefinition] = "eEnumeratorDefinition";
   sNameMap[eDeclarator] = "eDeclarator";
   sNameMap[eSimpleTypeSpecifier] = "eSimpleTypeSpecifier";
+  sNameMap[eTypeSpecifierSeq] = "eTypeSpecifierSeq";
 
 }
 

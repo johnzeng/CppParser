@@ -11,6 +11,8 @@ enum ReturnerType{
   eEnumeratorDefinition,
   eDeclarator,
   eSimpleTypeSpecifier,
+  eTypeSpecifierSeq,
+  eTypeId,
 };
 
 class GrammarReturnerBase

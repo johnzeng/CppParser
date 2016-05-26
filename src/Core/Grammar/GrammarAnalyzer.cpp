@@ -1484,37 +1484,56 @@ uint32 GrammarAnalyzer::handleCastExpression(int index, int& lastIndex, GrammarB
 
 uint32 GrammarAnalyzer::handleTypeId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 typeSpecifierRet = handleTypeSpecifierSeq(index, lastIndex, curBlock);
-  if (eGrmErrNoError == typeSpecifierRet)
+  int32 tryLast = index;
+  GrammarReturnerBase * base = new GrammarReturnerBase(eTypeId, "");
+  bool ret = INVOKE(TypeSpecifierSeq, index, tryLast, curBlock, base, NOT_OPT) &&
+    INVOKE(AbstractDeclarator, tryLast + 1, tryLast, curBlock, base, IS_OPT);
+  if (ret)
   {
-    uint32 abstrRet = handleAbstractDeclarator(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == abstrRet || eGrmErrNotAbstractDeclarator == abstrRet)
+    if (returner)
     {
-      return eGrmErrNoError;
+      returner->addChild(base);
     }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
   }
+  else
+  {
+    delete base;
+  }
+  
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleTypeSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 typeSpeRet = handleTypeSpecifier(index, lastIndex, curBlock);
-  if (typeSpeRet == eGrmErrNoError)
+  int32 tryLast = index - 1;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eTypeSpecifierSeq, "");
+  bool inLoop = false;
+  while (INVOKE(TypeSpecifier, tryLast + 1, tryLast, curBlock, base, NOT_OPT))
   {
-    uint32 attRet = handleAttributes(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == attRet)
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    if (returner)
     {
-      return eGrmErrNoError;
+      returner->addChild(base);
     }
-    else if (eGrmErrNotAttri == attRet)
+    else
     {
-      uint32 seqRet = handleTypeSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
-      if (seqRet == eGrmErrNotTypeSpecifierSeq)
-      {
-        return eGrmErrNoError;
-      }
+      delete base;
     }
-    return attRet;
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  else
+  {
+    delete base;
   }
 
   return eGrmErrNotTypeSpecifierSeq;
