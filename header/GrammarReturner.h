@@ -13,6 +13,7 @@ enum ReturnerType{
   eSimpleTypeSpecifier,
   eTypeSpecifierSeq,
   eTypeId,
+  eTypeName,
 };
 
 class GrammarReturnerBase
@@ -22,6 +23,10 @@ public:
   ~GrammarReturnerBase();
 
   void addChild(GrammarReturnerBase* child);
+
+  GrammarReturnerBase* getChild(int index) const;
+  int32 getType() const;
+  const string& getKey() const;
 
   void printAllChild(int tabNum);
 private:

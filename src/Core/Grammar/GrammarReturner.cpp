@@ -7,6 +7,7 @@ void GrammarReturnerBase::initMap()
 {
   sNameMap[eGrmTop] = "eGrmTop";
   sNameMap[eTypeId] = "eTypeId";
+  sNameMap[eTypeName] = "eTypeName";
   sNameMap[eDeclarationSeq] = "eDeclarationSeq";
   sNameMap[eDeclaration] = "eDeclaration";
   sNameMap[eEnumeratorDefinition] = "eEnumeratorDefinition";
@@ -57,5 +58,27 @@ void GrammarReturnerBase::printAllChild(int tabNum)
 
   for (int i = 0; i < mChildren.size(); i++) {
     mChildren[i]->printAllChild(tabNum + 1);
+  }
+}
+
+int32 GrammarReturnerBase::getType() const
+{
+  return mRetType;
+}
+
+const string& GrammarReturnerBase::getKey() const
+{
+  return mKey;
+}
+
+GrammarReturnerBase* GrammarReturnerBase::getChild(int32 index) const
+{
+  if (index < mChildren.size())
+  {
+    return mChildren[index];
+  }
+  else
+  {
+    return NULL;
   }
 }

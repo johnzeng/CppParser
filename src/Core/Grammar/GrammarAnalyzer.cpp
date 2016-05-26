@@ -560,25 +560,35 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
     base015 = NULL;
   }
 
-//  int32 tryLast016 = index;
-//  GrammarReturnerBase *base016 = new GrammarReturnerBase(eSimpleTypeSpecifier,"");
-//  bool ret016 = EXPECT(index, tryLast016, "::", IS_OPT, NOT_IN_ONE_LINE) &&
-//    INVOKE(NestNameSpecifier, tryLast016 + 1, tryLast016, curBlock, base016, IS_OPT) &&
-//    INVOKE(TypeName, tryLast016 + 1, tryLast016, curBlock, base016, NOT_OPT);
-//  if ( ret016 )
-//  {
-//    lastIndex = tryLast016;
-//    if (returner)
-//    {
-//      returner->addChild(base016);
-//    }
-//    return eGrmErrNoError;
-//  }
-//  else
-//  {
-//    delete base016;
-//    base016 = NULL;
-//  }
+  int32 tryLast016 = index;
+  GrammarReturnerBase *base016 = new GrammarReturnerBase(eSimpleTypeSpecifier,"");
+  bool ret016 = EXPECT(index, tryLast016, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast016 + 1, tryLast016, curBlock, base016, IS_OPT) &&
+    INVOKE(TypeName, tryLast016 + 1, tryLast016, curBlock, base016, NOT_OPT);
+  if ( ret016 )
+  {
+    int i = 0;
+    GrammarReturnerBase* child = NULL;
+    while(NULL != ( child = base016->getChild(i) ))
+    {
+      if (child->getType() == eTypeName)
+      {
+        const string& key = child->getKey();
+        if (curBlock->getDataDef(key))
+        {
+          lastIndex = tryLast016;
+          if (returner)
+          {
+            returner->addChild(base016);
+          }
+          return eGrmErrNoError;
+        }
+      }
+      i++;
+    }
+  }
+  delete base016;
+  base016 = NULL;
 
   int32 tryLast017 = index;
   GrammarReturnerBase *base017 = new GrammarReturnerBase(eSimpleTypeSpecifier,"");
@@ -958,31 +968,95 @@ uint32 GrammarAnalyzer::handleClassName(int index, int& lastIndex, GrammarBlock*
 
 uint32 GrammarAnalyzer::handleTypeName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 classNameRet = handleClassName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == classNameRet)
+  GrammarReturnerBase *base001 = new GrammarReturnerBase(eTypeName, "");
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(ClassName, index, tryLast001, curBlock,base001, NOT_OPT);
+  if (ret001)
   {
+    if (returner)
+    {
+      returner->addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
-
-  uint32 enumNameRet = handleEnumName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == enumNameRet)
+  else
   {
-    return eGrmErrNoError;
+    delete base001;
+    base001 = NULL;
   }
 
-  uint32 typedefName = handleTypedefName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == typedefName)
+  GrammarReturnerBase *base002 = new GrammarReturnerBase(eTypeName, "");
+  int32 tryLast002 = index;
+  bool ret002 = INVOKE(EnumName, index, tryLast002, curBlock,base002, NOT_OPT);
+  if (ret002)
   {
+    if (returner)
+    {
+      returner->addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
     return eGrmErrNoError;
   }
-
-  uint32 simpleTmpRet = handleSimpleTemplateId(index, lastIndex, curBlock);
-  if (eGrmErrNoError == simpleTmpRet)
+  else
   {
-    return eGrmErrNoError;
+    delete base002;
+    base002 = NULL;
   }
 
-  return eGrmErrNoError;
+  GrammarReturnerBase *base003 = new GrammarReturnerBase(eTypeName, "");
+  int32 tryLast003 = index;
+  bool ret003 = INVOKE(TypedefName, index, tryLast003, curBlock,base003, NOT_OPT);
+  if (ret003)
+  {
+    if (returner)
+    {
+      returner->addChild(base003);
+    }
+    else
+    {
+      delete base003;
+    }
+    lastIndex = tryLast003;
+    return eGrmErrNoError;
+  }
+  else
+  {
+    delete base003;
+    base003 = NULL;
+  }
+
+  GrammarReturnerBase *base004 = new GrammarReturnerBase(eTypeName, "");
+  int32 tryLast004 = index;
+  bool ret004 = INVOKE(SimpleTemplateId, index, tryLast004, curBlock,base004, NOT_OPT);
+  if (ret004)
+  {
+    if (returner)
+    {
+      returner->addChild(base004);
+    }
+    else
+    {
+      delete base004;
+    }
+    lastIndex = tryLast004;
+    return eGrmErrNoError;
+  }
+  else
+  {
+    delete base004;
+    base004 = NULL;
+  }
+
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleIdExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
