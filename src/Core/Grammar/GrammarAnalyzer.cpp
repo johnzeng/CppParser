@@ -12,6 +12,7 @@ uint32 GrammarAnalyzer::doAnalyze()
   GrammarReturnerBase *base = new GrammarReturnerBase(eGrmTop, "");
   bool ret = INVOKE(DeclarationSeq, 0, lastIndex, &mTopBlock, base, NOT_OPT);
   //should do some analyze
+  base->printAllChild(0);
   delete base;
   if (ret)
   {

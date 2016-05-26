@@ -18,7 +18,13 @@ public:
   ~GrammarReturnerBase();
 
   void addChild(GrammarReturnerBase* child);
+
+  void printAllChild(int tabNum);
 private:
+
+  void initMap();
+  static map<int32, string> sNameMap;
+
   int32 mRetType;
   string mKey;
   vector<GrammarReturnerBase*> mChildren;

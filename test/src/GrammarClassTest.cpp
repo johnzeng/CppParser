@@ -26,7 +26,7 @@ TEST(GrammarAnalyzer, Class0)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-  JZSetLoggerLevel(JZ_LOG_DEBUG);
+//  JZSetLoggerLevel(JZ_LOG_DEBUG);
   uint32 ret = grammar.doAnalyze();
   JZSetLoggerLevel(JZ_LOG_TEST);
 
@@ -57,7 +57,7 @@ TEST(GrammarAnalyzer, Class1)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-  JZSetLoggerLevel(JZ_LOG_DEBUG);
+//  JZSetLoggerLevel(JZ_LOG_DEBUG);
   uint32 ret = grammar.doAnalyze();
   JZSetLoggerLevel(JZ_LOG_TEST);
 
