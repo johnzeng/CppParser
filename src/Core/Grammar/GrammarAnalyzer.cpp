@@ -9,12 +9,15 @@ uint32 GrammarAnalyzer::doAnalyze()
   int index = 0;
   int listSize = mRecList.size();
   int32 lastIndex = 0;
-  uint32 ret = handleDeclarationSeq(0,lastIndex , &mTopBlock);
-  if (eGrmErrNoError == ret)
+  GrammarReturnerBase *base = new GrammarReturnerBase(eGrmTop, "");
+  bool ret = INVOKE(DeclarationSeq, 0, lastIndex, &mTopBlock, base, NOT_OPT);
+  //should do some analyze
+  delete base;
+  if (ret)
   {
     return lastIndex == mRecList.size();
   }
-  return ret;
+  return eGrmErrUnknown;
 
 }
 
@@ -2557,15 +2560,15 @@ uint32 GrammarAnalyzer::handleEnumeratorDefinition(int index, int& lastIndex, Gr
 //
 //  Let's zuosi
 //
-  GrammarReturnerBase base;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eEnumeratorDefinition,"");
   int32 trylast = index;
 
-  bool ret = INVOKE(Enumerator, index, trylast, curBlock, &base, false) ;
+  bool ret = INVOKE(Enumerator, index, trylast, curBlock, base, false) ;
   if (ret)
   {
     lastIndex = trylast;
     bool continueRet = EXPECT(trylast + 1, trylast, "=", false, false) &&
-    INVOKE(ConstantExpression, trylast + 1, trylast, curBlock, &base,false) ;
+    INVOKE(ConstantExpression, trylast + 1, trylast, curBlock, base,false) ;
     if (continueRet)
     {
       lastIndex = trylast;
@@ -2574,14 +2577,14 @@ uint32 GrammarAnalyzer::handleEnumeratorDefinition(int index, int& lastIndex, Gr
 
   if (ret)
   {
+    if (returner)
+    {
+      returner->addChild(base);
+    }
     JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
-  else
-  {
-    JZFUNC_END_LOG();
-    return eGrmErrUnknown;
-  }
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEnumerator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
