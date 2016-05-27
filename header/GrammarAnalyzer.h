@@ -18,6 +18,7 @@ public:
   GrammarBlock *getTopBlock();
 protected:
 
+  uint32 handleLiteralOperatorId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleCaptureList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleCapture(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleCaptureDefault(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
@@ -86,7 +87,6 @@ protected:
   uint32 handleNestNameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleOperatorFunctionId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleConversionFunctionId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
-  uint32 handleLiteralOperatorId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
   uint32 handleAssignmentExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);

@@ -10,6 +10,11 @@ void GrammarReturnerBase::initMap()
   sNameMap[eBlockDeclaration] = "eBlockDeclaration";
   sNameMap[eTrailingTypeSpecifier] = "eTrailingTypeSpecifier";
   sNameMap[eTypeName] = "eTypeName";
+  sNameMap[eTemplateName] = "eTemplateName";
+  sNameMap[eLiteralOperatorId] = "eLiteralOperatorId";
+  sNameMap[eIdExpression] = "eIdExpression";
+  sNameMap[eDeclaratorId] = "eDeclaratorId";
+  sNameMap[ePtrOperator] = "ePtrOperator";
   sNameMap[eNestNameSpecifier] = "eNestNameSpecifier";
   sNameMap[ePtrDeclarator] = "ePtrDeclarator";
   sNameMap[eCompoundStatement] = "eCompoundStatement";
