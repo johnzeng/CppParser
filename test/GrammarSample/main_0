@@ -1,0 +1,22 @@
+int main()
+{
+  int a = 1 + 1;
+  int b = -1;
+  a++;
+  ++a;
+  --b;
+  b--;
+  a+=1;
+  b-=3;
+  b/=3;
+  b*=3;
+  b%=3;
+  bool c = false;
+  c = true;
+  int *aptr = NULL;
+  aptr = nullptr;
+  aptr = &a;
+  a = *aptr;
+  b = sizeof(int);
+  a = alignof(int);
+}

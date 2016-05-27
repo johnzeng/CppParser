@@ -1,4 +1,16 @@
+class tester;
+
 class test{
   test operator+ (int b);
   test operator() (int b);
+
+  explicit void init(const string hello);
+  friend tester;
+  friend void testercall();
+
+  class newTest{
+
+  };
 };
+
+::Test::test::tester::testercall();

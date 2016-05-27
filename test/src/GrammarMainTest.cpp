@@ -4,12 +4,13 @@
 #include "GrammarAnalyzer.h"
 #include "JZLogger.h"
 
-TEST(GrammarAnalyzer, Class0)
+//basic function declaration
+TEST(GrammarAnalyzer, Main0)
 {
   int argc = 2;
   char argv0[128] = {0},argv1[128] = {0};
   strcpy(argv0,"tester");
-  strcpy(argv1,"./test/GrammarSample/class_sample_0");
+  strcpy(argv1,"./test/GrammarSample/main_0");
   char* argv[2] = {argv0,argv1};
 
 	//analyze command line input
@@ -26,7 +27,6 @@ TEST(GrammarAnalyzer, Class0)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-//  JZSetLoggerLevel(JZ_LOG_DEBUG);
   uint32 ret = grammar.doAnalyze();
   JZSetLoggerLevel(JZ_LOG_TEST);
 
@@ -35,12 +35,12 @@ TEST(GrammarAnalyzer, Class0)
   
 }
 
-TEST(GrammarAnalyzer, Class1)
+TEST(GrammarAnalyzer, Main1)
 {
   int argc = 2;
   char argv0[128] = {0},argv1[128] = {0};
   strcpy(argv0,"tester");
-  strcpy(argv1,"./test/GrammarSample/class_sample_1");
+  strcpy(argv1,"./test/GrammarSample/main_1");
   char* argv[2] = {argv0,argv1};
 
 	//analyze command line input
@@ -57,7 +57,6 @@ TEST(GrammarAnalyzer, Class1)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
-//  JZSetLoggerLevel(JZ_LOG_DEBUG);
   uint32 ret = grammar.doAnalyze();
   JZSetLoggerLevel(JZ_LOG_TEST);
 

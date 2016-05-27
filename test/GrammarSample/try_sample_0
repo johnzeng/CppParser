@@ -1,0 +1,19 @@
+void mythrow()
+{
+   throw ExceptionClass("my throw");
+}
+
+void maint()
+{
+  try{
+    mythrow();
+  }
+  catch( int a )
+  {
+    printf("catch int");
+  }
+  catch(...)
+  {
+    printf("catch");
+  }
+}

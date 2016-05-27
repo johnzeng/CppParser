@@ -1,0 +1,19 @@
+void main(){
+  ;
+  for(int i = 0; i< 1; i++)
+  {
+    int c = i;
+    c ++;
+  }
+
+  do{
+    int i = 1;
+    i++;
+  }while(true);
+
+  if(true)
+  {
+    return false;
+  }
+
+}

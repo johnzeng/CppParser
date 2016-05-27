@@ -4,3 +4,5 @@ namespace JZNamespace{
   };
 };
 using namespace JZNamespace;
+
+JZNamespace::test::b = 1;

@@ -1,0 +1,10 @@
+void main()
+{
+  base b;
+  child e = dynamic_cast<int>(b);
+  child f = const_cast<int>(b);
+  child g = reinterpret_cast<int>(b);
+  child h = static_cast<int>(b);
+  int ** c;
+  c[1][1] = 0;
+}
