@@ -1466,64 +1466,101 @@ uint32 GrammarAnalyzer::handleUnqualifiedId(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 doubleExp = expect("::", index);
-  if (eGrmErrNoError == doubleExp)
+  GrammarReturnerBase * base003 = new GrammarReturnerBase(eQualifiedId, "");
+  int32 tryLast003 = index;
+  bool ret003 = EXPECT(index, tryLast003, "::", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(OperatorFunctionId, tryLast003 + 1, tryLast003, curBlock, base003, NOT_OPT);
+  if (ret003)
   {
-    uint32 idRet = handleIdentifier(index + 1, lastIndex, curBlock);
-    if (idRet == eGrmErrNoError)
+    if (returner)
     {
-      return eGrmErrNoError;
+      returner -> addChild(base003);
     }
-    uint32 opFuncId = handleOperatorFunctionId(index + 1, lastIndex, curBlock);
-    if (opFuncId == eGrmErrNoError)
+    else
     {
-      return eGrmErrNoError;
+      delete base003;
     }
-  //cpp 11 standard
-
-    uint32 literalOpId = handleLiteralOperatorId(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == literalOpId)
-    {
-      return eGrmErrNoError;
-    }
-
-    uint32 tempId = handleTemplateId(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == tempId)
-    {
-      return eGrmErrNoError;
-    }
-
-    uint32 nestedRet = handleNestNameSpecifier(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == nestedRet)
-    {
-      uint32 expTemplate = expect("template", lastIndex + 1);
-      if (eGrmErrNoError == expTemplate)
-      {
-        return handleUnqualifiedId(lastIndex + 2, lastIndex, curBlock);
-      }
-      else
-      {
-        return handleUnqualifiedId(lastIndex + 1, lastIndex, curBlock);
-      }
-        
-    }
+    lastIndex = tryLast003;
+    return eGrmErrNoError;
   }
-  else
+  delete base003;
+
+  GrammarReturnerBase * base004 = new GrammarReturnerBase(eQualifiedId, "");
+  int32 tryLast004 = index;
+  bool ret004 = EXPECT(index, tryLast004, "::", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(LiteralOperatorId, tryLast004 + 1, tryLast004, curBlock, base004, NOT_OPT);
+  if (ret004)
   {
-    uint32 nestedRet = handleNestNameSpecifier(index , lastIndex, curBlock);
-    if (eGrmErrNoError == nestedRet)
+    if (returner)
     {
-      uint32 expTemplate = expect("template", lastIndex + 1);
-      if (eGrmErrNoError == expTemplate)
-      {
-        return handleUnqualifiedId(lastIndex + 2, lastIndex, curBlock);
-      }
-      else
-      {
-        return handleUnqualifiedId(lastIndex + 1, lastIndex, curBlock);
-      }
+      returner -> addChild(base004);
     }
+    else
+    {
+      delete base004;
+    }
+    lastIndex = tryLast004;
+    return eGrmErrNoError;
   }
+  delete base004;
+
+  GrammarReturnerBase * base005 = new GrammarReturnerBase(eQualifiedId, "");
+  int32 tryLast005 = index;
+  bool ret005 = EXPECT(index, tryLast005, "::", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TemplateId, tryLast005 + 1, tryLast005, curBlock, base005, NOT_OPT);
+  if (ret005)
+  {
+    if (returner)
+    {
+      returner -> addChild(base005);
+    }
+    else
+    {
+      delete base005;
+    }
+    lastIndex = tryLast005;
+    return eGrmErrNoError;
+  }
+  delete base005;
+
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(eQualifiedId, "");
+  int32 tryLast002 = index;
+  bool ret002 = EXPECT(index, tryLast002, "::", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Identifier, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT);
+  if (ret002)
+  {
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+  delete base002;
+
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eQualifiedId, "");
+  int32 tryLast001 = index;
+  bool ret001 = EXPECT(index, tryLast001, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
+  {
+    if (returner)
+    {
+      returner -> addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
+  }
+  delete base001;
+  
   return eGrmErrUnknown;
 }
 
