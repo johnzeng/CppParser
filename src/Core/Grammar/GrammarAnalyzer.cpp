@@ -722,11 +722,15 @@ uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock
   bool ret001 = INVOKE(PtrDeclarator, index, trylast001, curBlock, base001, NOT_OPT);
   if (ret001)
   {
-    lastIndex = trylast001;
     if (returner)
     {
       returner->addChild(base001);
     }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = trylast001;
     return eGrmErrNoError;
   }
   else
@@ -1154,17 +1158,40 @@ uint32 GrammarAnalyzer::handleEnumName(int index, int& lastIndex, GrammarBlock* 
 
 uint32 GrammarAnalyzer::handleClassName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 { 
-  uint32 idRet = handleIdentifier(index, lastIndex, curBlock);
-  if (idRet == eGrmErrNoError)
+  int32 tryLast001 = index;
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eClassName, "");
+  if (INVOKE(Identifier, index, tryLast001, curBlock, base001, NOT_OPT))
   {
+    if (returner)
+    {
+      returner->addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
+  delete base001;
 
-  uint32 tmpIdRet = handleSimpleTemplateId(index, lastIndex, curBlock);
-  if (eGrmErrNoError == tmpIdRet)
+  int32 tryLast002 = index;
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(eClassName, "");
+  if (INVOKE(SimpleTemplateId, index, tryLast002, curBlock, base002, NOT_OPT))
   {
-    return tmpIdRet;
+    if (returner)
+    {
+      returner->addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
   }
+  delete base002;
+
   return eGrmErrUnknown;
 }
 
@@ -1312,8 +1339,6 @@ uint32 GrammarAnalyzer::handleUnqualifiedId(int index, int& lastIndex, GrammarBl
   {
     return eGrmErrNoError;
   }
-
-  //cpp 11 standard
 
   uint32 literalOpId = handleLiteralOperatorId(index, lastIndex, curBlock);
   if (eGrmErrNoError == literalOpId)
@@ -2620,21 +2645,26 @@ uint32 GrammarAnalyzer::handleOperatorFunctionId(int index, int& lastIndex, Gram
 
 uint32 GrammarAnalyzer::handleSimpleTemplateId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 tmpName = handleTemplateName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == tmpName)
+  int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eSimpleTemplateId, "");
+  bool ret = INVOKE(TemplateName, index, tryLast, curBlock, base, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, "<", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TemplateArgumentList, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ">", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
   {
-    uint32 expLeft = expect("<", lastIndex + 1);
-    if (eGrmErrNoError == expLeft)
+    if (returner)
     {
-      lastIndex ++;
-      uint32 argListRet = handleTemplateArgumentList(lastIndex + 2, lastIndex, curBlock);
-      uint32 expRight = expect(">", lastIndex + 1);
-      if (eGrmErrNoError == expRight)
-      {
-        return expRight;
-      }
+      returner -> addChild(base);
     }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
   }
+  delete base;
   
   return eGrmErrUnknown;
 }
@@ -2695,6 +2725,7 @@ uint32 GrammarAnalyzer::handleTemplateName(int index, int& lastIndex, GrammarBlo
     {
       delete base;
     }
+    lastIndex = tryLast;
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
@@ -3207,15 +3238,24 @@ uint32 GrammarAnalyzer::handleClassHead(int index, int& lastIndex, GrammarBlock*
 
 uint32 GrammarAnalyzer::handleClassHeadName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 nestedNameRet = handleNestNameSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrUnknown == nestedNameRet)
+  int32 trylast = index;
+  GrammarReturnerBase * base = new GrammarReturnerBase(eClassHeadName, "");
+  bool ret = INVOKE(NestNameSpecifier, index, trylast, curBlock, base, IS_OPT) &&
+    INVOKE(ClassName, trylast + 1, trylast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    return handleClassName(lastIndex + 1, lastIndex, curBlock);
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = trylast;
+    return eGrmErrNoError;
   }
-  else
-  {
-    return handleClassName(index, lastIndex, curBlock);
-  }
+  delete base;
   return eGrmErrUnknown;
 }
 
