@@ -16,6 +16,7 @@ enum ReturnerType{
   eBlockDeclaration,
   eTrailingTypeSpecifier,
   eTypeName,
+  eIdentifier,
   eClassName,
   eClassHeadName,
   eSimpleTemplateId,

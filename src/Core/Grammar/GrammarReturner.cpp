@@ -10,6 +10,7 @@ void GrammarReturnerBase::initMap()
   sNameMap[eBlockDeclaration] = "eBlockDeclaration";
   sNameMap[eTrailingTypeSpecifier] = "eTrailingTypeSpecifier";
   sNameMap[eTypeName] = "eTypeName";
+  sNameMap[eIdentifier] = "eIdentifier";
   sNameMap[eSimpleTemplateId] = "eSimpleTemplateId";
   sNameMap[eClassHeadName] = "eClassHeadName";
   sNameMap[eClassName] = "eClassName";
@@ -70,6 +71,10 @@ void GrammarReturnerBase::printAllChild(int tabNum)
   }
 
   toPrint += sNameMap[mRetType];
+  if (mKey != "")
+  {
+    toPrint += ":" + mKey;
+  }
   
   printf("%s\n", toPrint.c_str());
 

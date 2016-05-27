@@ -1113,8 +1113,11 @@ uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock
   if (true == isLegalVarIdentify(id, curBlock))
   {
     lastIndex = index;
-    JZWRITE_DEBUG("id is: %s" , id.c_str());
-//    JZFUNC_END_LOG();
+    if (returner)
+    {
+      GrammarReturnerBase* base = new GrammarReturnerBase(eIdentifier, id);
+      returner -> addChild(base);
+    }
     return eGrmErrNoError;
   }
   else
