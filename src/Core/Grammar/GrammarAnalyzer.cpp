@@ -828,20 +828,41 @@ uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, Gramma
 uint32 GrammarAnalyzer::handlePtrDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   JZFUNC_BEGIN_LOG();
-  uint32 noPtrRet = handleNonPtrDeclarator(index,lastIndex, curBlock);
-  if (eGrmErrNoError == noPtrRet)
+  GrammarReturnerBase *base001 = new GrammarReturnerBase(ePtrDeclarator, "");
+  int32 tryLast001 = index;
+  if (INVOKE(NonPtrDeclarator, index, tryLast001, curBlock, base001, NOT_OPT))
   {
-    JZFUNC_END_LOG();
+    if (returner)
+    {
+      returner -> addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
+  delete base001;
 
-  uint32 ptrOperatorRet = handlePtrOperator(index, lastIndex, curBlock);
-  if (eGrmErrNoError == ptrOperatorRet)
+  GrammarReturnerBase *base002 = new GrammarReturnerBase(ePtrDeclarator, "");
+  int32 tryLast002 = index;
+  if (INVOKE(PtrOperator, index, tryLast002, curBlock, base002, NOT_OPT) &&
+      INVOKE(PtrDeclarator, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT))
   {
-    JZFUNC_END_LOG();
-    return handlePtrDeclarator(lastIndex + 1, lastIndex, curBlock);
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
   }
-  JZFUNC_END_LOG();
+  delete base002;
+
   return eGrmErrUnknown;
 }
 
@@ -2660,14 +2681,24 @@ uint32 GrammarAnalyzer::handleFunctionBody(int index, int& lastIndex, GrammarBlo
 uint32 GrammarAnalyzer::handleCompoundStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
+  GrammarReturnerBase* base = new GrammarReturnerBase(eCompoundStatement, "");
   bool ret = EXPECT(index, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(StatementSeq, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(StatementSeq, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
     EXPECT(tryLast + 1, tryLast, "}",  NOT_OPT, NOT_IN_ONE_LINE);
   if (ret)
   {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     lastIndex = tryLast;
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 uint32 GrammarAnalyzer::handleStatementSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)

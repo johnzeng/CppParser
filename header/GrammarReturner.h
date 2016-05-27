@@ -16,6 +16,8 @@ enum ReturnerType{
   eBlockDeclaration,
   eTrailingTypeSpecifier,
   eTypeName,
+  ePtrDeclarator,
+  eCompoundStatement,
   eFunctionBody,
   eFunctionDefinition,
   eCVQualifierSeq,

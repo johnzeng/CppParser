@@ -10,6 +10,8 @@ void GrammarReturnerBase::initMap()
   sNameMap[eBlockDeclaration] = "eBlockDeclaration";
   sNameMap[eTrailingTypeSpecifier] = "eTrailingTypeSpecifier";
   sNameMap[eTypeName] = "eTypeName";
+  sNameMap[ePtrDeclarator] = "ePtrDeclarator";
+  sNameMap[eCompoundStatement] = "eCompoundStatement";
   sNameMap[eFunctionBody] = "eFunctionBody";
   sNameMap[eFunctionDefinition] = "eFunctionDefinition";
   sNameMap[eCVQualifierSeq] = "eCVQualifierSeq";
