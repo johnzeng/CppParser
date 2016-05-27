@@ -14,6 +14,7 @@ enum ReturnerType{
   eTypeSpecifierSeq,
   eTypeId,
   eDeclSpecifierSeq,
+  eDeclSpecifier,
   eUnqualifiedId,
   eQualifiedId,
   eBlockDeclaration,

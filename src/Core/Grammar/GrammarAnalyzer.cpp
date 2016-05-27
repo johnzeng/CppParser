@@ -227,66 +227,99 @@ uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, Gramma
 
 uint32 GrammarAnalyzer::handleDeclSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-//  uint32 ret = eGramIsNothing;
-  uint32 storageClassSpecRet = handleStorageClassSpecifier(index, lastIndex , curBlock);
-  if(eGrmErrNoError == storageClassSpecRet)
+  int32 tryLast005 = index;
+  bool ret005 = EXPECT(index, tryLast005, "typedef", NOT_OPT, NOT_IN_ONE_LINE );
+  if (ret005)
   {
-    JZWRITE_DEBUG("shoulde add this property into seq");
-    JZFUNC_END_LOG();
-    return eGrmErrNoError;
-  }
-  else if (eGrmErrNotStorageClassSpecifier != storageClassSpecRet)
-  {
-    JZFUNC_END_LOG();
-    return storageClassSpecRet;
-  }
-
-  uint32 funcSpecifierRet = handleFunctionSpecifier(index, lastIndex , curBlock);
-  if(eGrmErrNoError == funcSpecifierRet)
-  {
-    JZWRITE_DEBUG("shoulde add this property into seq");
-    JZFUNC_END_LOG();
-    return eGrmErrNoError;
-  }
-  else if (eGrmErrNotFunctionSpecifier != funcSpecifierRet)
-  {
-    JZFUNC_END_LOG();
-    return funcSpecifierRet;
-  }
-
-  uint32 expFriend = expect("friend", index);
-  if (eGrmErrNoError == expFriend)
-  {
-    lastIndex = index;
-    //ret = eGramIsFriend;
-    JZFUNC_END_LOG();
+    if(returner)
+    {
+      GrammarReturnerBase *base005 = new GrammarReturnerBase(eDeclSpecifier, "typedef");
+      returner -> addChild(base005);
+    }
+    lastIndex = tryLast005;
     return eGrmErrNoError;
   }
 
-  uint32 expTypeDef = expect("typedef", index);
-  if (eGrmErrNoError == expTypeDef)
+  int32 tryLast006 = index;
+  bool ret006 = EXPECT(index, tryLast006, "constexpr", NOT_OPT, NOT_IN_ONE_LINE );
+  if (ret006)
   {
-    lastIndex = index;
-    //ret = eGramIsTypedef;
-    JZFUNC_END_LOG();
+    if(returner)
+    {
+      GrammarReturnerBase *base006 = new GrammarReturnerBase(eDeclSpecifier, "constexpr");
+      returner -> addChild(base006);
+    }
+    lastIndex = tryLast006;
     return eGrmErrNoError;
   }
 
-  uint32 expContExpr = expect("constexpr", index);
-  if (eGrmErrNoError == expTypeDef)
+  int32 tryLast004 = index;
+  bool ret004 = EXPECT(index, tryLast004, "friend", NOT_OPT, NOT_IN_ONE_LINE );
+  if (ret004)
   {
-    lastIndex = index;
-    //ret = eGramIsConstExpr;
-    JZFUNC_END_LOG();
+    if(returner)
+    {
+      GrammarReturnerBase *base004 = new GrammarReturnerBase(eDeclSpecifier, "friend");
+      returner -> addChild(base004);
+    }
+    lastIndex = tryLast004;
     return eGrmErrNoError;
   }
 
-  uint32 typeSpeciRet = handleTypeSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == typeSpeciRet)
+  int32 tryLast001 = index;
+  GrammarReturnerBase *base001 = new GrammarReturnerBase(eDeclSpecifier, "");
+  bool ret001 = INVOKE(StorageClassSpecifier, index, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
   {
-    JZFUNC_END_LOG();
+    if(returner)
+    {
+      returner -> addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
+  delete base001;
+
+  int32 tryLast002 = index;
+  GrammarReturnerBase *base002 = new GrammarReturnerBase(eDeclSpecifier, "");
+  bool ret002 = INVOKE(FunctionSpecifier, index, tryLast002, curBlock, base002, NOT_OPT);
+  if (ret002)
+  {
+    if(returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+  delete base002;
+
+  int32 tryLast003 = index;
+  GrammarReturnerBase *base003 = new GrammarReturnerBase(eDeclSpecifier, "");
+  bool ret003 = INVOKE(TypeSpecifier, index, tryLast003, curBlock, base003, NOT_OPT);
+  if (ret003)
+  {
+    if(returner)
+    {
+      returner -> addChild(base003);
+    }
+    else
+    {
+      delete base003;
+    }
+    lastIndex = tryLast003;
+    return eGrmErrNoError;
+  }
+  delete base003;
+
   JZFUNC_END_LOG();
   return eGrmErrUnknown;
 }
