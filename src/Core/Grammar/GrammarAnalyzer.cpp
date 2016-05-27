@@ -1057,46 +1057,51 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
 }
 uint32 GrammarAnalyzer::handleDeclaratorId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  int32 tryLast001 = index;
-  GrammarReturnerBase *base001 = new GrammarReturnerBase(eDeclaratorId, "");
-  bool ret001 = EXPECT(index, tryLast001, "...", IS_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(IdExpression, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT);
-  if (ret001)
+  uint32 dotRet = expect("...", index);
+  if (eGrmErrNoError == dotRet)
   {
-    if (returner)
+    uint32 idExpRet = handleIdExpression(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == idExpRet)
     {
-      returner->addChild(base001);
+      return eGrmErrNoError;
     }
-    else
-    {
-      delete base001;
-    }
-    lastIndex = tryLast001;
-    return eGrmErrNoError;
   }
-  delete base001;
+  else
+  {
+    uint32 idExpRet = handleIdExpression(index , lastIndex, curBlock);
+    if (eGrmErrNoError == idExpRet)
+    {
+      return eGrmErrNoError;
+    }
+  }
 
-  int32 tryLast002 = index;
-  GrammarReturnerBase *base002 = new GrammarReturnerBase(eDeclaratorId, "");
-  bool ret002 = EXPECT(index, tryLast002, "::", IS_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(NestNameSpecifier, tryLast002 + 1, tryLast002, curBlock, base002, IS_OPT);
-    INVOKE(ClassName, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT);
-  if (ret002)
+  uint32 doubleExp = expect("::", index);
+  if (eGrmErrNoError == doubleExp)
   {
-    if (returner)
+    uint32 nestRet = handleNestNameSpecifier(index + 1, lastIndex, curBlock);
+    if (eGrmErrNoError == nestRet)
     {
-      returner->addChild(base002);
+      return handleClassName(index + 2, lastIndex, curBlock);
     }
     else
     {
-      delete base002;
+      return handleClassName(index + 1, lastIndex , curBlock);
     }
-    lastIndex = tryLast002;
-    return eGrmErrNoError;
   }
-  delete base002;
-  
-  return eGrmErrUnknown;
+  else
+ {
+  uint32 nestRet = handleNestNameSpecifier(index, lastIndex , curBlock);
+  if (eGrmErrNoError == nestRet)
+   {
+    return handleClassName(index + 1, lastIndex, curBlock);
+   }
+   else
+   {
+    return handleClassName(index, lastIndex , curBlock);
+   }
+ }
+   return eGrmErrUnknown;
+
 }
 
 uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
