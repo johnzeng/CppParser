@@ -193,28 +193,35 @@ uint32 GrammarAnalyzer::handleFunctionDefinition(int index, int& lastIndex, Gram
 
 uint32 GrammarAnalyzer::handleDeclSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  int32 tryLast = index;
-  bool ret = INVOKE(DeclSpecifier, index, tryLast, curBlock, returner, NOT_OPT);
-  if (ret)
+  int32 tryLast = index - 1;
+  GrammarReturnerBase * base = new GrammarReturnerBase(eDeclSpecifierSeq, "");
+  bool inLoop = false;
+  while(INVOKE(DeclSpecifier, tryLast + 1, tryLast, curBlock, base, NOT_OPT))
   {
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    lastIndex = tryLast;
+
     int32 tryLastA = tryLast;
-    bool retA = INVOKE(Attributes, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+    bool retA = INVOKE(Attributes, tryLastA + 1, tryLastA, curBlock, base, NOT_OPT);
     if (retA)
     {
       lastIndex = tryLastA;
-      return eGrmErrNoError;
+    }
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
     }
 
-    int32 tryLastB = tryLast;
-    bool retB = INVOKE(DeclSpecifierSeq, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
-    if (retB)
-    {
-      lastIndex = tryLastB;
-      return eGrmErrNoError;
-    }
-    lastIndex = tryLast;
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 

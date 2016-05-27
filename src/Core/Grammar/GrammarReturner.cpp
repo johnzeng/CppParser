@@ -7,6 +7,7 @@ void GrammarReturnerBase::initMap()
 {
   sNameMap[eGrmTop] = "eGrmTop";
   sNameMap[eTypeId] = "eTypeId";
+  sNameMap[eDeclSpecifierSeq] = "eDeclSpecifierSeq";
   sNameMap[eUnqualifiedId] = "eUnqualifiedId";
   sNameMap[eQualifiedId] = "eQualifiedId";
   sNameMap[eBlockDeclaration] = "eBlockDeclaration";
