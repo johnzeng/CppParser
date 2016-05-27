@@ -13,6 +13,7 @@ enum ReturnerType{
   eSimpleTypeSpecifier,
   eTypeSpecifierSeq,
   eTypeId,
+  eUnqualifiedId,
   eBlockDeclaration,
   eTrailingTypeSpecifier,
   eTypeName,

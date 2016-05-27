@@ -1333,48 +1333,134 @@ uint32 GrammarAnalyzer::handleIdExpression(int index, int& lastIndex, GrammarBlo
 
 uint32 GrammarAnalyzer::handleUnqualifiedId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 opFuncId = handleOperatorFunctionId(index, lastIndex, curBlock);
-  if (opFuncId == eGrmErrNoError)
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eUnqualifiedId, "");
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(OperatorFunctionId, index, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
   {
-    return eGrmErrNoError;
-  }
-  uint32 conversionFuncIdRet = handleConversionFunctionId(index, lastIndex, curBlock);
-  if (eGrmErrNoError == conversionFuncIdRet)
-  {
-    return eGrmErrNoError;
-  }
-
-  uint32 literalOpId = handleLiteralOperatorId(index, lastIndex, curBlock);
-  if (eGrmErrNoError == literalOpId)
-  {
-    return eGrmErrNoError;
-  }
-
-  uint32 tempId = handleTemplateId(index, lastIndex, curBlock);
-  if (eGrmErrNoError == tempId)
-  {
-    return eGrmErrNoError;
-  }
-
-  uint32 waveExp = expect("~", index);
-  if (eGrmErrNoError == waveExp)
-  {
-    uint32 classRet = handleClassName(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == classRet)
+    if (returner)
     {
-      return eGrmErrNoError;
+      returner -> addChild(base001);
     }
     else
     {
-      return handleDecltypeSpecifier(index + 1, lastIndex, curBlock);
+      delete base001;
     }
-  }
-
-  uint32 idRet = handleIdentifier(index, lastIndex, curBlock);
-  if (idRet == eGrmErrNoError)
-  {
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
+  delete base001;
+
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(eUnqualifiedId, "");
+  int32 tryLast002 = index;
+  bool ret002 = INVOKE(ConversionFunctionId, index, tryLast002, curBlock, base002, NOT_OPT);
+  if (ret002)
+  {
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+  delete base002;
+
+  GrammarReturnerBase * base003 = new GrammarReturnerBase(eUnqualifiedId, "");
+  int32 tryLast003 = index;
+  bool ret003 = INVOKE(LiteralOperatorId, index, tryLast003, curBlock, base003, NOT_OPT);
+  if (ret003)
+  {
+    if (returner)
+    {
+      returner -> addChild(base003);
+    }
+    else
+    {
+      delete base003;
+    }
+    lastIndex = tryLast003;
+    return eGrmErrNoError;
+  }
+  delete base003;
+
+  GrammarReturnerBase * base004 = new GrammarReturnerBase(eUnqualifiedId, "");
+  int32 tryLast004 = index;
+  bool ret004 = INVOKE(TemplateId, index, tryLast004, curBlock, base004, NOT_OPT);
+  if (ret004)
+  {
+    if (returner)
+    {
+      returner -> addChild(base004);
+    }
+    else
+    {
+      delete base004;
+    }
+    lastIndex = tryLast004;
+    return eGrmErrNoError;
+  }
+  delete base004;
+
+  GrammarReturnerBase * base005 = new GrammarReturnerBase(eUnqualifiedId, "");
+  int32 tryLast005 = index;
+  bool ret005 = EXPECT(index, tryLast005, "~", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(ClassName, tryLast005 + 1, tryLast005, curBlock, base005, NOT_OPT);
+  if (ret005)
+  {
+    if (returner)
+    {
+      returner -> addChild(base005);
+    }
+    else
+    {
+      delete base005;
+    }
+    lastIndex = tryLast005;
+    return eGrmErrNoError;
+  }
+  delete base005;
+
+  GrammarReturnerBase * base006 = new GrammarReturnerBase(eUnqualifiedId, "");
+  int32 tryLast006 = index;
+  bool ret006 = EXPECT(index, tryLast006, "~", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(DecltypeSpecifier, tryLast006 + 1, tryLast006, curBlock, base006, NOT_OPT);
+  if (ret006)
+  {
+    if (returner)
+    {
+      returner -> addChild(base006);
+    }
+    else
+    {
+      delete base006;
+    }
+    lastIndex = tryLast006;
+    return eGrmErrNoError;
+  }
+  delete base006;
+
+  GrammarReturnerBase * base007 = new GrammarReturnerBase(eUnqualifiedId, "");
+  int32 tryLast007 = index;
+  bool ret007 = INVOKE(Identifier, tryLast007, tryLast007, curBlock, base007, NOT_OPT);
+  if (ret007)
+  {
+    if (returner)
+    {
+      returner -> addChild(base007);
+    }
+    else
+    {
+      delete base007;
+    }
+    lastIndex = tryLast007;
+    return eGrmErrNoError;
+  }
+  delete base007;
+
   return eGrmErrUnknown;
 }
 
