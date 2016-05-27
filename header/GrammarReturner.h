@@ -16,6 +16,10 @@ enum ReturnerType{
   eBlockDeclaration,
   eTrailingTypeSpecifier,
   eTypeName,
+  eFunctionBody,
+  eFunctionDefinition,
+  eCVQualifierSeq,
+  eSimpleDeclaration,
 };
 
 class GrammarReturnerBase

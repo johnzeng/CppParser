@@ -10,6 +10,10 @@ void GrammarReturnerBase::initMap()
   sNameMap[eBlockDeclaration] = "eBlockDeclaration";
   sNameMap[eTrailingTypeSpecifier] = "eTrailingTypeSpecifier";
   sNameMap[eTypeName] = "eTypeName";
+  sNameMap[eFunctionBody] = "eFunctionBody";
+  sNameMap[eFunctionDefinition] = "eFunctionDefinition";
+  sNameMap[eCVQualifierSeq] = "eCVQualifierSeq";
+  sNameMap[eSimpleDeclaration] = "eSimpleDeclaration";
   sNameMap[eDeclarationSeq] = "eDeclarationSeq";
   sNameMap[eDeclaration] = "eDeclaration";
   sNameMap[eEnumeratorDefinition] = "eEnumeratorDefinition";
@@ -23,10 +27,6 @@ GrammarReturnerBase::GrammarReturnerBase(int32 type, string key):
   mRetType(type),
   mKey(key)
 {
-  if (0 == sNameMap.size())
-  {
-    initMap();
-  }
 }
 
 GrammarReturnerBase::~GrammarReturnerBase()
@@ -49,6 +49,10 @@ void GrammarReturnerBase::addChild(GrammarReturnerBase* child)
 
 void GrammarReturnerBase::printAllChild(int tabNum)
 {
+  if (0 == sNameMap.size())
+  {
+    initMap();
+  }
   string toPrint = "";
   for (int i = 0; i < tabNum; i++) {
     toPrint += "|\t";

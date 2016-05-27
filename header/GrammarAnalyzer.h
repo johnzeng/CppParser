@@ -4,7 +4,8 @@
 #include "LexData.h"
 #include "GrammarData.h"
 #include "LoopBreaker.h"
-#include "GrammarReturner.h"
+
+class GrammarReturnerBase;
 
 
 class GrammarAnalyzer {
