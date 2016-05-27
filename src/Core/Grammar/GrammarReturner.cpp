@@ -10,6 +10,7 @@ void GrammarReturnerBase::initMap()
   sNameMap[eBlockDeclaration] = "eBlockDeclaration";
   sNameMap[eTrailingTypeSpecifier] = "eTrailingTypeSpecifier";
   sNameMap[eTypeName] = "eTypeName";
+  sNameMap[eNestNameSpecifier] = "eNestNameSpecifier";
   sNameMap[ePtrDeclarator] = "ePtrDeclarator";
   sNameMap[eCompoundStatement] = "eCompoundStatement";
   sNameMap[eFunctionBody] = "eFunctionBody";
@@ -89,4 +90,12 @@ GrammarReturnerBase* GrammarReturnerBase::getChild(int32 index) const
   {
     return NULL;
   }
+}
+
+void GrammarReturnerBase::mergeChild(GrammarReturnerBase* node)
+{
+  for (int i = 0; i < node->mChildren.size(); i++) {
+    addChild(node->getChild(i));
+  }
+  node->mChildren.clear();
 }

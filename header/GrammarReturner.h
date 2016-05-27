@@ -16,6 +16,7 @@ enum ReturnerType{
   eBlockDeclaration,
   eTrailingTypeSpecifier,
   eTypeName,
+  eNestNameSpecifier,
   ePtrDeclarator,
   eCompoundStatement,
   eFunctionBody,
@@ -31,6 +32,7 @@ public:
   ~GrammarReturnerBase();
 
   void addChild(GrammarReturnerBase* child);
+  void mergeChild(GrammarReturnerBase* node);
 
   GrammarReturnerBase* getChild(int index) const;
   int32 getType() const;

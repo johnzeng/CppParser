@@ -871,7 +871,8 @@ uint32 GrammarAnalyzer::handleNestNameSpecifier(int index, int& lastIndex, Gramm
 {
   int32 tryA = index - 1;
   bool inLoop = false;
-  while(INVOKE(NestNameSpecifier, tryA + 1, tryA, curBlock, returner, NOT_OPT))
+  GrammarReturnerBase* base = new GrammarReturnerBase(eNestNameSpecifier, "");
+  while(INVOKE(NestNameSpecifier, tryA + 1, tryA, curBlock, base, NOT_OPT))
   {
     inLoop = true;
   }
@@ -879,25 +880,50 @@ uint32 GrammarAnalyzer::handleNestNameSpecifier(int index, int& lastIndex, Gramm
   {
     lastIndex = tryA;
     int32 tryA1 = tryA;
-    bool retA1 = INVOKE(Identifier, tryA1 + 1, tryA1, curBlock, returner, NOT_OPT) &&
+    GrammarReturnerBase *base1 = new GrammarReturnerBase(eNestNameSpecifier,"");
+    bool retA1 = INVOKE(Identifier, tryA1 + 1, tryA1, curBlock, base1, NOT_OPT) &&
       EXPECT(tryA1 + 1, tryA1, "::", NOT_OPT, NOT_IN_ONE_LINE);
     if (retA1)
     {
+      if (returner)
+      {
+        base->mergeChild(base1);
+        returner->addChild(base);
+      }
+      delete base1;
       lastIndex = tryA1;
       return eGrmErrNoError;
     }
+    delete base1;
 
     int32 tryA2 = tryA;
+    GrammarReturnerBase *base2 = new GrammarReturnerBase(eNestNameSpecifier, "");
     bool retA2 = EXPECT(tryA2 + 1, tryA2, "template", IS_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(SimpleTemplateId, tryA2 + 1, tryA2, curBlock, returner, NOT_OPT) &&
+      INVOKE(SimpleTemplateId, tryA2 + 1, tryA2, curBlock, base2, NOT_OPT) &&
       EXPECT(tryA2 + 1, tryA1, "::", NOT_OPT, NOT_IN_ONE_LINE);
     if (retA2)
     {
+      if (returner)
+      {
+        base -> mergeChild(base2);
+        returner -> addChild(base2);
+      }
+      delete base2;
       lastIndex = tryA2;
       return eGrmErrNoError;
     }
+    delete base2;
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     return eGrmErrNoError;
   }
+  delete base;
 
   int32 tryB = index;
   bool retB = INVOKE(TypeName, tryB, tryB, curBlock, returner, NOT_OPT) &&
