@@ -7,6 +7,20 @@ void GrammarReturnerBase::initMap()
 {
   sNameMap[eGrmTop] = "eGrmTop";
   sNameMap[eTypeId] = "eTypeId";
+  sNameMap[eLiteral] = "eLiteral";
+  sNameMap[eExternLiteral] = "eExternLiteral";
+  sNameMap[eClassKey] = "eClassKey";
+  sNameMap[eEnumKey] = "eEnumKey";
+  sNameMap[eOverloadableOperator] = "eOverloadableOperator";
+  sNameMap[eAssignmentOperator] = "eAssignmentOperator";
+  sNameMap[eVirtSpecifier] = "eVirtSpecifier";
+  sNameMap[ePureSpecifier] = "ePureSpecifier";
+  sNameMap[eAccessSpecifier] = "eAccessSpecifier";
+  sNameMap[eUnaryOperator] = "eUnaryOperator";
+  sNameMap[eCVQualifier] = "eCVQualifier";
+  sNameMap[eStorageClassSpecifier] = "eStorageClassSpecifier";
+  sNameMap[eFunctionSpecifier] = "eFunctionSpecifier";
+  sNameMap[eRefQualifier] = "eRefQualifier";
   sNameMap[eDeclSpecifierSeq] = "eDeclSpecifierSeq";
   sNameMap[eDeclSpecifier] = "eDeclSpecifier";
   sNameMap[eUnqualifiedId] = "eUnqualifiedId";

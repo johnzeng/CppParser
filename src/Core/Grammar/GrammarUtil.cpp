@@ -79,6 +79,11 @@ void GrammarUtil::init()
    ********************************************************/
   
   mKeyWordSet.insert("int");
+  mKeyWordSet.insert("new");
+  mKeyWordSet.insert("delete");
+  mKeyWordSet.insert("inline");
+  mKeyWordSet.insert("explicit");
+  mKeyWordSet.insert("virtual");
   mKeyWordSet.insert("dynamic_cast");
   mKeyWordSet.insert("case");
   mKeyWordSet.insert("static_assert");
@@ -102,6 +107,8 @@ void GrammarUtil::init()
   mKeyWordSet.insert("catch");
   mKeyWordSet.insert("const");
   mKeyWordSet.insert("volatile");
+  mKeyWordSet.insert("override");
+  mKeyWordSet.insert("final");
   mKeyWordSet.insert("typedef");
   mKeyWordSet.insert("private");
   mKeyWordSet.insert("public");
@@ -115,7 +122,10 @@ void GrammarUtil::init()
   mKeyWordSet.insert("return");
   mKeyWordSet.insert("auto");
   mKeyWordSet.insert("NULL");
+  mKeyWordSet.insert("mutable");
   mKeyWordSet.insert("template");
+  mKeyWordSet.insert("thread_local");
+  mKeyWordSet.insert("extern");
   mKeyWordSet.insert("register");
   mKeyWordSet.insert("+");
   mKeyWordSet.insert("-");
