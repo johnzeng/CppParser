@@ -7,6 +7,9 @@ void GrammarReturnerBase::initMap()
 {
   sNameMap[eGrmTop] = "eGrmTop";
   sNameMap[eTypeId] = "eTypeId";
+  sNameMap[eClassSpecifier] = "eClassSpecifier";
+  sNameMap[eTypeSpecifier] = "eTypeSpecifier";
+  sNameMap[eLinkageSpecification] = "eLinkageSpecification";
   sNameMap[eLiteral] = "eLiteral";
   sNameMap[eExternLiteral] = "eExternLiteral";
   sNameMap[eClassKey] = "eClassKey";
@@ -85,7 +88,7 @@ void GrammarReturnerBase::printAllChild(int tabNum)
   }
   string toPrint = "";
   for (int i = 0; i < tabNum; i++) {
-    toPrint += "|\t";
+    toPrint += "|  ";
   }
 
   toPrint += sNameMap[mRetType];
