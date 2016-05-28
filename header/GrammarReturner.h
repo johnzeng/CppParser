@@ -14,6 +14,8 @@ enum ReturnerType{
   eTypeSpecifierSeq,
   eVirtSpecifier,
   eTypeId,
+  eMemberSpecification,
+  eClassHead,
   eClassSpecifier,
   eTypeSpecifier,
   eLinkageSpecification,
