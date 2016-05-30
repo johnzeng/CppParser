@@ -1294,18 +1294,68 @@ uint32 GrammarAnalyzer::handleNamespaceName(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleNamespaceAlias(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  return handleIdentifier(index, lastIndex, curBlock);
+  GrammarReturnerBase *base = new GrammarReturnerBase(eNamespaceAlias, "");
+  int32 tryLast = index;
+  if (INVOKE(Identifier, index, tryLast, curBlock, base, NOT_OPT))
+  {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  delete base;
+
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleTypedefName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
+  GrammarReturnerBase *base = new GrammarReturnerBase(eTypedefName, "");
+  int32 tryLast = index;
+  if (INVOKE(Identifier, index, tryLast, curBlock, base, NOT_OPT))
+  {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  delete base;
 
-  return handleIdentifier(index, lastIndex, curBlock);
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEnumName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  return handleIdentifier(index, lastIndex, curBlock);
+  GrammarReturnerBase *base = new GrammarReturnerBase(eEnumName, "");
+  int32 tryLast = index;
+  if (INVOKE(Identifier, index, tryLast, curBlock, base, NOT_OPT))
+  {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  delete base;
+
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleClassName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
@@ -1714,30 +1764,28 @@ uint32 GrammarAnalyzer::handleQualifiedId(int index, int& lastIndex, GrammarBloc
 
 uint32 GrammarAnalyzer::handleDecltypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 keyExp = expect("decltype", index);
-  if (eGrmErrNoError != keyExp)
+  GrammarReturnerBase * base = new GrammarReturnerBase(eDecltypeSpecifier, "");
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "decltype", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Expression, tryLast + 1, tryLast, curBlock, base, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret)
   {
-    return eGrmErrUnknown;
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
   }
-  uint32 leftExp = expect("(", index + 1);
-  if (eGrmErrNoError != leftExp)
-  {
-    return eGrmErrUnknown;
-  }
+  delete base;
 
-  uint32 expRet = handleExpression(index + 2 , lastIndex, curBlock);
-  if (eGrmErrNoError != expRet)
-  {
-    return eGrmErrUnknown;
-  }
-
-  uint32 rightExp = expect(")", lastIndex + 1);
-  if (eGrmErrNoError != rightExp)
-  {
-    lastIndex ++;
-    return eGrmErrUnknown;
-  }
-  return eGrmErrNoError;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
