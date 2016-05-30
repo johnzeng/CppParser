@@ -14,6 +14,7 @@ enum ReturnerType{
   eTypeSpecifierSeq,
   eVirtSpecifier,
   eTypeId,
+  eNamespaceName,
   eNonPtrDeclarator,
   eMemberSpecification,
   eClassHead,

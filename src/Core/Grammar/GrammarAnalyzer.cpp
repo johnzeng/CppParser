@@ -1255,17 +1255,39 @@ uint32 GrammarAnalyzer::handleIdentifier(int index, int& lastIndex, GrammarBlock
 
 uint32 GrammarAnalyzer::handleNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 orgRet = handleOriginalNamespaceName(index, lastIndex, curBlock);
-  if (eGrmErrNoError == orgRet)
+  GrammarReturnerBase *base01 = new GrammarReturnerBase(eNamespaceName, "");
+  int32 tryLast01 = index;
+  if (INVOKE(OriginalNamespaceName, index, tryLast01, curBlock, base01, NOT_OPT))
   {
+    if (returner)
+    {
+      returner -> addChild(base01);
+    }
+    else
+    {
+      delete base01;
+    }
+    lastIndex = tryLast01;
     return eGrmErrNoError;
   }
+  delete base01;
 
-  uint32 namespcAlias = handleNamespaceAlias(index, lastIndex, curBlock);
-  if (eGrmErrNoError == namespcAlias)
+  GrammarReturnerBase *base02 = new GrammarReturnerBase(eNamespaceName, "");
+  int32 tryLast02 = index;
+  if (INVOKE(NamespaceAlias, index, tryLast02, curBlock, base02, NOT_OPT))
   {
+    if (returner)
+    {
+      returner -> addChild(base02);
+    }
+    else
+    {
+      delete base02;
+    }
+    lastIndex = tryLast02;
     return eGrmErrNoError;
   }
+  delete base02;
 
   return eGrmErrUnknown;
 }
