@@ -1923,20 +1923,35 @@ uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, G
 
 uint32 GrammarAnalyzer::handleLogicalOrExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 nextRet = handleLogicAndExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == nextRet)
+  int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eLogicalOrExpression, "");
+  bool ret = INVOKE(LogicalAndExpression, index, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    uint32 orRet = expect("||", lastIndex + 1);
-    if (eGrmErrNoError == orRet )
+    int32 tryLastA = tryLast;
+    while (EXPECT(tryLastA + 1, tryLastA, "||", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(LogicalAndExpression, tryLastA + 1, tryLastA, curBlock, base, NOT_OPT))  
     {
-      return handleLogicalOrExpression(lastIndex + 2, lastIndex, curBlock);
+      tryLast = tryLastA;
+    }
+
+    lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
     }
     return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 
-uint32 GrammarAnalyzer::handleLogicAndExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
+uint32 GrammarAnalyzer::handleLogicalAndExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 inRet = handleInclusiveOrExpression(index, lastIndex, curBlock);
   if (eGrmErrNoError == inRet)
@@ -1944,7 +1959,7 @@ uint32 GrammarAnalyzer::handleLogicAndExpression(int index, int& lastIndex, Gram
     uint32 expAnd = expect("&&", lastIndex + 1);
     if (eGrmErrNoError == expAnd)
     {
-      return handleLogicAndExpression(lastIndex + 2, lastIndex, curBlock);
+      return handleLogicalAndExpression(lastIndex + 2, lastIndex, curBlock);
     }
     else
     {

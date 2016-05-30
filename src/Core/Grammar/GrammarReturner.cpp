@@ -7,6 +7,7 @@ void GrammarReturnerBase::initMap()
 {
   sNameMap[eGrmTop] = "eGrmTop";
   sNameMap[eTypeId] = "eTypeId";
+  sNameMap[eLogicalOrExpression] = "eLogicalOrExpression";
   sNameMap[eConditionalExpression] = "eConditionalExpression";
   sNameMap[eAssignmentExpression] = "eAssignmentExpression";
   sNameMap[eExpression] = "eExpression";
