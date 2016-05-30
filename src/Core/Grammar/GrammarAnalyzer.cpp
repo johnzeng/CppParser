@@ -839,7 +839,8 @@ uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, Gramma
   JZFUNC_BEGIN_LOG();
   int32 tryB = index - 1;
   bool loopIn = false;
-  while(INVOKE(NonPtrDeclarator, tryB + 1, tryB, curBlock, returner, NOT_OPT))
+  GrammarReturnerBase * baseB = new GrammarReturnerBase(eNonPtrDeclarator, "");
+  while(INVOKE(NonPtrDeclarator, tryB + 1, tryB, curBlock, baseB, NOT_OPT))
   {
     JZWRITE_DEBUG("cur index: %d", tryB);
     loopIn = true;
@@ -848,52 +849,106 @@ uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, Gramma
   {
 
     int32 tryB1 = tryB;
-    bool retB1 = INVOKE(ParametersAndQualifiers, tryB1 + 1, tryB1, curBlock, returner, NOT_OPT);
+    GrammarReturnerBase * baseB1 = new GrammarReturnerBase(eNonPtrDeclarator, "");
+    bool retB1 = INVOKE(ParametersAndQualifiers, tryB1 + 1, tryB1, curBlock, baseB1, NOT_OPT);
     if (retB1)
     {
       lastIndex = tryB1;
+      if (returner)
+      {
+        baseB -> mergeChild(baseB1);
+        returner -> addChild(baseB1);
+      }
+      else
+      {
+        delete baseB1;
+        delete baseB;
+      }
       JZFUNC_END_LOG();
       return eGrmErrNoError;
     }
+    delete baseB1;
 
     int32 tryB2 = tryB;
 
+    GrammarReturnerBase * baseB2 = new GrammarReturnerBase(eNonPtrDeclarator, "");
     bool retB2 = EXPECT(tryB2 + 1, tryB2, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(ConstantExpression, tryB2 + 1, tryB2, curBlock, returner, IS_OPT) &&
+      INVOKE(ConstantExpression, tryB2 + 1, tryB2, curBlock, baseB2, IS_OPT) &&
       EXPECT(tryB2 + 1, tryB2, "]", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(Attributes, tryB2 + 1, tryB2, curBlock, returner, IS_OPT);
+      INVOKE(Attributes, tryB2 + 1, tryB2, curBlock, baseB2, IS_OPT);
     if (retB2)
     {
       lastIndex = tryB2;
+      if (returner)
+      {
+        baseB -> mergeChild(baseB2);
+        returner -> addChild(baseB);
+      }
+      else
+      {
+        delete baseB;
+        delete baseB2;
+      }
       JZFUNC_END_LOG();
       return eGrmErrNoError;
+    }
+    delete baseB2;
+
+    if (returner)
+    {
+      returner -> addChild(baseB);
+    }
+    else
+    {
+      delete baseB;
     }
 
     lastIndex = tryB;
     return eGrmErrNoError;
   }
+  delete baseB;
 
   int32 tryA = index;
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eNonPtrDeclarator, "");
   //if we match declarator here, we don't go futher to parameters
-  bool retA = INVOKE(DeclaratorId, index, tryA, curBlock, returner, NOT_OPT) &&
-    INVOKE(Attributes, tryA + 1, tryA, curBlock, returner, IS_OPT);
+  bool retA = INVOKE(DeclaratorId, index, tryA, curBlock, baseA, NOT_OPT) &&
+    INVOKE(Attributes, tryA + 1, tryA, curBlock, baseA, IS_OPT);
   if (retA)
   {
     lastIndex = tryA;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
+  delete baseA;
 
   int32 tryD = index;
+  GrammarReturnerBase * baseD = new GrammarReturnerBase(eNonPtrDeclarator, "");
   bool retD = EXPECT(index, tryD, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(PtrDeclarator, tryD + 1, tryD, curBlock, returner, NOT_OPT) &&
+    INVOKE(PtrDeclarator, tryD + 1, tryD, curBlock, baseD, NOT_OPT) &&
     EXPECT(tryD + 1, tryD, ")", NOT_OPT, NOT_IN_ONE_LINE);
   if (retD)
   {
     lastIndex = tryD;
+    if (returner)
+    {
+      returner -> addChild(baseD);
+    }
+    else
+    {
+      delete baseD;
+    }
     JZFUNC_END_LOG();
     return eGrmErrNoError;
   }
+  delete baseD;
 
   JZFUNC_END_LOG();
   return eGrmErrUnknown;
