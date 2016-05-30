@@ -1879,33 +1879,44 @@ uint32 GrammarAnalyzer::handleAssignmentExpression(int index, int& lastIndex, Gr
 
 uint32 GrammarAnalyzer::handleConditionalExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 logicRet = handleLogicalOrExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == logicRet)
+  int32 tryLast001 = index;
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eConditionalExpression, "");
+  bool ret001 = INVOKE(LogicalOrExpression, index, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
   {
-    uint32 expAsk = expect("?", lastIndex + 1);
-    if (eGrmErrNoError == expAsk)
+    int32 tryLast002 = tryLast001;
+    GrammarReturnerBase * base002 = new GrammarReturnerBase(eConditionalExpression, "");
+    bool ret002 = EXPECT(tryLast002 + 1, tryLast002, "?", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(Expression, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT)&&
+      EXPECT(tryLast002 + 1, tryLast002, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(AssignmentExpression, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT);
+    if (ret002)
     {
-      uint32 expExpress = handleExpression(lastIndex + 2, lastIndex, curBlock);
-      if (eGrmErrNoError != expExpress)
+      if (returner)
       {
-        return expExpress;
+        base001 -> mergeChild(base002);
+        returner -> addChild( base001 );
+        
       }
-      uint32 expRet = expect(":", lastIndex + 1);
-      if (eGrmErrNoError != expRet)
+      else
       {
-        return expRet;
+        delete base002;
+        delete base001;
       }
-      uint32 assignExp = handleAssignmentExpression(lastIndex + 2, lastIndex, curBlock);
-      if (eGrmErrNoError == assignExp)
-      {
-        return assignExp;
-      }
+      lastIndex = tryLast002;
       return eGrmErrNoError;
+    }
+    delete base002;
+    if (returner)
+    {
+      returner -> addChild( base001 );
     }
     else
     {
-      return eGrmErrNoError;
+      delete base001;
     }
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
   }
   return eGrmErrUnknown;
 }
