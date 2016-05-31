@@ -2573,7 +2573,7 @@ uint32 GrammarAnalyzer::handleNoptrAbstractDeclarator(int index, int& lastIndex,
       }
     }
   }
-  return eGrmErrNoError;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleConstantExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
