@@ -2054,38 +2054,73 @@ uint32 GrammarAnalyzer::handleExclusiveOrExpression(int index, int& lastIndex, G
 
 uint32 GrammarAnalyzer::handleAndExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 nextRet = handleEqualityExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == nextRet)
+  int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eAndExpression, "");
+  bool ret = INVOKE(EqualityExpression, index, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    uint32 orRet = expect("&", lastIndex + 1);
-    if (eGrmErrNoError == orRet )
+    int32 tryLastA = tryLast;
+    while (EXPECT(tryLastA + 1, tryLastA, "&", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(EqualityExpression, tryLastA + 1, tryLastA, curBlock, base, NOT_OPT))  
     {
-      return handleAndExpression(lastIndex + 2, lastIndex, curBlock);
+      tryLast = tryLastA;
+    }
+
+    lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
     }
     return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEqualityExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 nextRet = handleRelationalExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == nextRet)
+  int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eEqualityExpression, "");
+  bool ret = INVOKE(RelationalExpression, index, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    uint32 eqRet = expect("==", lastIndex + 1);
-    if (eGrmErrNoError == eqRet)
+    int32 tryLastA = tryLast;
+    int32 tryLastB = tryLast;
+    while (
+        (EXPECT(tryLastA + 1, tryLastA, "==", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(RelationalExpression, tryLastA + 1, tryLastA, curBlock, base, NOT_OPT)) ||
+        (EXPECT(tryLastB + 1, tryLastB, "!=", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(RelationalExpression, tryLastB + 1, tryLastB, curBlock, base, NOT_OPT))
+        )
     {
-      return handleEqualityExpression(lastIndex + 2, lastIndex, curBlock);
+      if (tryLastA > tryLastB)
+      {
+        tryLast = tryLastA;
+      }
+      else
+      {
+        tryLast = tryLastB;
+      }
     }
 
-    uint32 nqRet = expect("!=", lastIndex + 1);
-    if (eGrmErrNoError == nqRet)
+    lastIndex = tryLast;
+    if (returner)
     {
-      return handleEqualityExpression(lastIndex + 2, lastIndex, curBlock);
+      returner -> addChild(base);
     }
-
+    else
+    {
+      delete base;
+    }
     return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 

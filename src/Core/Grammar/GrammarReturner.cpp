@@ -11,6 +11,7 @@ void GrammarReturnerBase::initMap()
   sNameMap[eInclusiveOrExpression] = "eInclusiveOrExpression";
   sNameMap[eLogicalOrExpression] = "eLogicalOrExpression";
   sNameMap[eLogicalAndExpression] = "eLogicalAndExpression";
+  sNameMap[eEqualityExpression] = "eEqualityExpression";
   sNameMap[eAndExpression] = "eAndExpression";
   sNameMap[eConditionalExpression] = "eConditionalExpression";
   sNameMap[eAssignmentExpression] = "eAssignmentExpression";

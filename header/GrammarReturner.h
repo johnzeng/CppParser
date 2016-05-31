@@ -14,6 +14,7 @@ enum ReturnerType{
   eTypeSpecifierSeq,
   eVirtSpecifier,
   eTypeId,
+  eEqualityExpression,
   eExclusiveOrExpression,
   eInclusiveOrExpression,
   eLogicalOrExpression,
