@@ -3458,7 +3458,24 @@ uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarB
 
 uint32 GrammarAnalyzer::handleExpressionList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  return handleInitializerList(index, lastIndex ,curBlock);
+  int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eExpressionList, "{}");
+  bool ret = INVOKE(InitializerList, index, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
+  {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  delete base;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
