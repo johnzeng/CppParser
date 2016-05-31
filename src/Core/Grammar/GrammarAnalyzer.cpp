@@ -2852,27 +2852,29 @@ uint32 GrammarAnalyzer::handleUnaryExpression(int index, int& lastIndex, Grammar
   return eGrmErrUnknown;
 }
 
-//======mark
 uint32 GrammarAnalyzer::handleNoexceptExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 keyRet = expect("noexcept",index);
-  if (eGrmErrNoError == keyRet)
+  GrammarReturnerBase *base = new GrammarReturnerBase(eNoexceptExpression, "");
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "noexcept", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Expression, tryLast + 1, tryLast, curBlock, base, NOT_OPT) &&
+    EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE) ;
+  if (ret)
   {
-    uint32 leftRet = expect("(", index + 1);
-    if (eGrmErrNoError == leftRet)
+    if (returner)
     {
-      uint32 expRet = handleExpression(index + 2, lastIndex, curBlock);
-      if (eGrmErrNoError == expRet)
-      {
-        uint32 expRight = expect(")", lastIndex + 1);
-        if (eGrmErrNoError == expRight)
-        {
-          lastIndex ++;
-          return eGrmErrNoError;
-        }
-      }
+      returner -> addChild(base);
     }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 
@@ -3271,56 +3273,92 @@ uint32 GrammarAnalyzer::handlePostfixExpression(int index, int& lastIndex, Gramm
 
 uint32 GrammarAnalyzer::handlePseudoDestructorName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expWave = expect("~", index);
-  if (eGrmErrNoError == expWave)
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(ePseudoDestructorName, "");
+  int32 tryLast001 = index;
+  bool ret001 = EXPECT(index, tryLast001, "~", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(DecltypeSpecifier, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
   {
-    return handleDecltypeSpecifier(index + 1, lastIndex, curBlock);
-  }
-
-  uint32 expDouble = expect("::", index);
-  uint32 offset = (eGrmErrNoError == expDouble) ? 1: 0;
-  uint32 nextIndex = index +  offset;
-  uint32 nestRet = handleNestNameSpecifier(nextIndex, lastIndex, curBlock);
-  if (eGrmErrNoError == nestRet)
-  {
-    nextIndex = lastIndex + 1;
-    uint32 tmpRet = expect("template", lastIndex + 1);
-    if (eGrmErrNoError == tmpRet)
+    if (returner)
     {
-      uint32 smpRet = handleSimpleTemplateId(lastIndex + 2, lastIndex, curBlock);
-      if (eGrmErrNoError == smpRet)
-      {
-        uint32 expNexDouble = expect("::", lastIndex + 1);
-        if (eGrmErrNoError == expNexDouble)
-        {
-          uint32 expNextWave = expect("~", lastIndex + 2);
-          return handleTypeName(lastIndex + 3, lastIndex, curBlock);
-        }
-      }
+      returner -> addChild(base001);
     }
-  }
-  uint32 expWaveNext = expect("~", nextIndex);
-  if (eGrmErrNoError == expWaveNext)
-  {
-    return handleTypeName(nextIndex + 1, lastIndex, curBlock);
-  }
-  else
-  {
-    uint32 typeRet = handleTypeName(nextIndex, lastIndex, curBlock);
-    if (eGrmErrNoError == typeRet)
+    else
     {
-      uint32 expNexDouble = expect("::", lastIndex + 1);
-      if (expNexDouble == eGrmErrNoError)
-      {
-        uint32 expWaveRet = expect("~", lastIndex + 2);
-        if (eGrmErrNoError == expWaveRet)
-        {
-          return handleTypeName(lastIndex + 3, lastIndex, curBlock);
-        }
-      }
+      delete base001;
     }
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
   }
+  delete base001;
 
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(ePseudoDestructorName, "");
+  int32 tryLast002 = index;
+  bool ret002 = EXPECT(index, tryLast002, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast002 + 1, tryLast002, curBlock, base002, IS_OPT) &&
+    INVOKE(TypeName, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT) &&
+    EXPECT(tryLast002 + 1, tryLast002, "::", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast002 + 1, tryLast002, "~", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeName, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT);
+  if (ret002)
+  {
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+  delete base002;
+
+  GrammarReturnerBase * base003 = new GrammarReturnerBase(ePseudoDestructorName, "");
+  int32 tryLast003 = index;
+  bool ret003 = EXPECT(index, tryLast003, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast003 + 1, tryLast003, curBlock, base003, NOT_OPT) &&
+    EXPECT(tryLast003 + 1, tryLast003, "template", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(SimpleTemplateId, tryLast003 + 1, tryLast003, curBlock, base003, NOT_OPT) &&
+    EXPECT(tryLast003 + 1, tryLast003, "::", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast003 + 1, tryLast003, "~", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeName, tryLast003 + 1, tryLast003, curBlock, base003, NOT_OPT);
+  if (ret003)
+  {
+    if (returner)
+    {
+      returner -> addChild(base003);
+    }
+    else
+    {
+      delete base003;
+    }
+    lastIndex = tryLast003;
+    return eGrmErrNoError;
+  }
+  delete base003;
+
+  GrammarReturnerBase * base004 = new GrammarReturnerBase(ePseudoDestructorName, "");
+  int32 tryLast004 = index;
+  bool ret004 = EXPECT(index, tryLast004, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast004 + 1, tryLast004, curBlock, base004, IS_OPT) &&
+    EXPECT(tryLast004 + 1, tryLast004, "~", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast004 + 1, tryLast004, curBlock, base004, NOT_OPT);
+  if (ret004)
+  {
+    if (returner)
+    {
+      returner -> addChild(base004);
+    }
+    else
+    {
+      delete base004;
+    }
+    lastIndex = tryLast004;
+    return eGrmErrNoError;
+  }
+  delete base004;
   return eGrmErrUnknown;
 }
 

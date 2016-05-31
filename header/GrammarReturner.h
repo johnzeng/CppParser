@@ -14,6 +14,8 @@ enum ReturnerType{
   eTypeSpecifierSeq,
   eVirtSpecifier,
   eTypeId,
+  ePseudoDestructorName,
+  eNoexceptExpression,
   ePostfixExpression,
   eUnaryExpression,
   eConstantExpression,
