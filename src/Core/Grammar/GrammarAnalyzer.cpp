@@ -3418,25 +3418,41 @@ uint32 GrammarAnalyzer::handleTypenameSpecifier(int index, int& lastIndex, Gramm
 
 uint32 GrammarAnalyzer::handleBracedInitList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expLeft = expect("{", index);
-  if (eGrmErrNoError == expLeft)
+  int32 tryLast001 = index;
+  bool ret001 = EXPECT(index, tryLast001, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast001 + 1, tryLast001, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret001)
   {
-    uint32 initList = handleInitializerList(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == initList)
+    if (returner)
     {
-      uint32 commaRet = expect(",", lastIndex + 1);
-      if (eGrmErrNoError == commaRet)
-      {
-        lastIndex ++;
-      }
+      GrammarReturnerBase *base001 = new GrammarReturnerBase(eBracedInitList, "{}");
+      returner -> addChild(base001);
     }
-  }
-  uint32 expRight = expect("}", lastIndex + 1);
-  if (eGrmErrNoError)
-  {
-    lastIndex ++;
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
+
+  int32 tryLast002 = index;
+  GrammarReturnerBase *base002 = new GrammarReturnerBase(eBracedInitList, "{}");
+  bool ret002 = EXPECT(index, tryLast002, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(InitializerList, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT) &&
+    EXPECT(tryLast002 + 1, tryLast002, ",", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast002 + 1, tryLast002, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret002)
+  {
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+  delete base002;
+
   return eGrmErrUnknown;
 }
 
