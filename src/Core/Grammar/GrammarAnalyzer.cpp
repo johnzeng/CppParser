@@ -2535,44 +2535,80 @@ uint32 GrammarAnalyzer::handlePtrAbstractDeclarator(int index, int& lastIndex, G
 
 uint32 GrammarAnalyzer::handleNoptrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 paramRet = handleParametersAndQualifiers(index, lastIndex, curBlock);
-  if (eGrmErrNoError == paramRet)
+  int32 tryLast001 = index - 1;
+  bool inLoop = false;
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eNoptrAbstractDeclarator, "");
+  while(INVOKE(NoptrAbstractDeclarator, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT  ))
   {
-    uint32 nextRet = handleNoptrAbstractDeclarator(lastIndex + 1 , lastIndex, curBlock);
+    inLoop = true;
+  }
+
+  int32 tryLast001A = tryLast001;
+  GrammarReturnerBase * base001A = new GrammarReturnerBase(eNoptrAbstractDeclarator, "");
+  bool ret001A = INVOKE(ParametersAndQualifiers, tryLast001A + 1, tryLast001A, curBlock, base001A, NOT_OPT);
+  if (ret001A)
+  {
+    if (returner)
+    {
+      base001 -> mergeChild(base001A);
+      delete base001A;
+      returner -> addChild(base001);
+    }
+    else
+    {
+      delete base001A;
+      delete base001;
+    }
+    lastIndex = tryLast001A;
     return eGrmErrNoError;
   }
 
-  uint32 leftSeqBracket = expect("[", index);
-  if (eGrmErrNoError == leftSeqBracket)
+  int32 tryLast001B = tryLast001;
+  GrammarReturnerBase * base001B = new GrammarReturnerBase(eNoptrAbstractDeclarator, "");
+  bool ret001B = EXPECT(tryLast001B + 1, tryLast001B, "[", NOT_OPT, NOT_OPT) &&
+    INVOKE(ParametersAndQualifiers, tryLast001B + 1, tryLast001B, curBlock, base001B, NOT_OPT) &&
+    EXPECT(tryLast001B + 1, tryLast001B, "]", NOT_OPT, NOT_OPT) &&
+    INVOKE(Attributes, tryLast001B + 1, tryLast001B, curBlock, base001B, IS_OPT);
+  if (ret001B)
   {
-    uint32 constRet = handleConstantExpression(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == constRet)
+    if (returner)
     {
-      uint32 rightSeqBreacket = expect("]", lastIndex + 1);
-      if (eGrmErrNoError == rightSeqBreacket)
-      {
-        lastIndex++;
-        handleAttributes(lastIndex + 1, lastIndex, curBlock);
-        uint32 nextRet = handleNoptrAbstractDeclarator(lastIndex + 1,lastIndex, curBlock);
-        return eGrmErrNoError;
-      }
+      base001 -> mergeChild(base001B);
+      delete base001B;
+      returner -> addChild(base001);
     }
+    else
+    {
+      delete base001B;
+      delete base001;
+    }
+    lastIndex = tryLast001B;
+    return eGrmErrNoError;
   }
 
-  uint32 expLeftBracket = expect("(", index);
-  if (eGrmErrNoError == expLeftBracket)
+  if (false == inLoop)
   {
-    uint32 ptrRet = handlePtrAbstractDeclarator(index + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == ptrRet)
+    int32 tryLast002 = index;
+    GrammarReturnerBase * base002 = new GrammarReturnerBase(eNoptrAbstractDeclarator, "");
+    bool ret002 = EXPECT(tryLast002 , tryLast002, "(", NOT_OPT, NOT_OPT) &&
+      INVOKE(PtrAbstractDeclarator, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT) &&
+      EXPECT(tryLast002 + 1, tryLast002, ")", NOT_OPT, NOT_OPT);
+    if (ret002)
     {
-      uint32 ret = expect(")", lastIndex + 1);
-      if (ret == eGrmErrNoError)
+      if (returner)
       {
-        lastIndex ++;
-        return eGrmErrNoError;
+        returner -> addChild(base002);
       }
+      else
+      {
+        delete base002;
+      }
+      lastIndex = tryLast002;
+      return eGrmErrNoError;
     }
+    delete base002;
   }
+
   return eGrmErrUnknown;
 }
 
