@@ -2434,49 +2434,102 @@ uint32 GrammarAnalyzer::handleTypeSpecifierSeq(int index, int& lastIndex, Gramma
 
   return eGrmErrNotTypeSpecifierSeq;
 }
-//=============mark
+
 uint32 GrammarAnalyzer::handleAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 ptrRet = handlePtrAbstractDeclarator(index, lastIndex, curBlock);
-  if (eGrmErrNoError == ptrRet)
+  int32 tryLast003 = index;
+  bool ret003 = EXPECT(index, tryLast003, "...", NOT_OPT,NOT_IN_ONE_LINE);
+  if (ret003)
   {
+    if (returner)
+    {
+      GrammarReturnerBase * base003 = new GrammarReturnerBase(eAbstractDeclarator, "...");
+      returner -> addChild( base003 );
+    }
+    lastIndex = tryLast003;
     return eGrmErrNoError;
   }
 
-  uint32 noPtrRet = handleNoptrAbstractDeclarator(index, lastIndex, curBlock);
-  if (eGrmErrNoError == noPtrRet)
+  int32 tryLast001 = index;
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eAbstractDeclarator, "");
+  bool ret001 = INVOKE(PtrAbstractDeclarator, index, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
   {
-    uint32 paramterRet = handleParametersAndQualifiers(lastIndex + 1, lastIndex ,curBlock);
-    if (eGrmErrNoError == paramterRet)
+    if (returner)
     {
-      return handleTrailingReturnType(lastIndex + 1, lastIndex ,curBlock);
+      returner -> addChild( base001 );
     }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
   }
-  else
+  delete base001;
+
+  int32 tryLast002 = index;
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(eAbstractDeclarator, "");
+  bool ret002 = INVOKE(NoptrAbstractDeclarator, index, tryLast002, curBlock, base002, IS_OPT) &&
+    INVOKE(ParametersAndQualifiers, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT) &&
+    INVOKE(TrailingReturnType, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT);
+  if (ret002)
   {
-    uint32 paramterRet = handleParametersAndQualifiers(index, lastIndex ,curBlock);
-    if (eGrmErrNoError == paramterRet)
+    if (returner)
     {
-      return handleTrailingReturnType(lastIndex + 1, lastIndex ,curBlock);
+      returner -> addChild( base002 );
     }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
   }
+  delete base002;
+
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handlePtrAbstractDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 noptrRet = handleNoptrAbstractDeclarator(index, lastIndex, curBlock);
-  if (eGrmErrNoError == noptrRet)
+  int32 tryLast001 = index;
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(ePtrAbstractDeclarator, "");
+  bool ret001 = INVOKE(NoptrAbstractDeclarator, index, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
   {
+    if (returner)
+    {
+      returner -> addChild( base001 );
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
+  delete base001;
 
-  uint32 ptrOptRet = handlePtrOperator(index, lastIndex, curBlock);
-  if (eGrmErrNoError == ptrOptRet)
+  int32 tryLast002 = index;
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(ePtrAbstractDeclarator, "");
+  bool ret002 = INVOKE(PtrOperator, index, tryLast002, curBlock, base002, NOT_OPT) &&
+    INVOKE(PtrAbstractDeclarator, tryLast002 + 1, tryLast002, curBlock, base002, IS_OPT);
+  if (ret002)
   {
-    uint32 ptrRet = handlePtrAbstractDeclarator(lastIndex + 1, lastIndex, curBlock);
-    return ptrRet;
+    if (returner)
+    {
+      returner -> addChild( base002 );
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
   }
+  delete base002;
+
   return eGrmErrUnknown;
 }
 
