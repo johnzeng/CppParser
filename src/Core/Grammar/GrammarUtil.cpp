@@ -79,6 +79,7 @@ void GrammarUtil::init()
    ********************************************************/
   
   mKeyWordSet.insert("int");
+  mKeyWordSet.insert("typename");
   mKeyWordSet.insert("noexcept");
   mKeyWordSet.insert("new");
   mKeyWordSet.insert("delete");

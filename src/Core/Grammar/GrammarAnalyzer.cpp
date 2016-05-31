@@ -3364,38 +3364,55 @@ uint32 GrammarAnalyzer::handlePseudoDestructorName(int index, int& lastIndex, Gr
 
 uint32 GrammarAnalyzer::handleTypenameSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expRet = expect("typename", index);
-  if (eGrmErrNoError != expRet)
+  GrammarReturnerBase *base = new GrammarReturnerBase(eTypenameSpecifier, "");
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, "typename", NOT_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast + 1, tryLast, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast + 1, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    return eGrmErrNotTypenameSpecifier;
-  }
-
-  uint32 offset = expect("::", index + 1) == eGrmErrNoError ? 1:0;
-  uint32 nestedRet = handleNestNameSpecifier(index + 1 + offset, lastIndex, curBlock);
-  if (eGrmErrNoError != nestedRet)
-  {
-    return eGrmErrNotTypenameSpecifier;
-  }
-  uint32 tmpRet = expect("template", lastIndex + 1);
-  if (eGrmErrNoError == tmpRet)
-  {
-    return handleSimpleTemplateId(lastIndex + 2, lastIndex, curBlock);
-  }
-  else
-  {
-    uint32 simpRet = handleSimpleTemplateId(lastIndex + 1, lastIndex,  curBlock);
-    if (eGrmErrNoError == simpRet)
+    int32 tryLast001 = tryLast;
+    GrammarReturnerBase *base001 = new GrammarReturnerBase(eTypenameSpecifier, "");
+    bool ret1 = INVOKE(Identifier, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT);
+    if (ret1)
     {
+      if (returner)
+      {
+        base -> mergeChild(base001);
+        returner -> addChild(base);
+      }
+      else
+      {
+        delete base;
+      }
+      delete base001;
+      lastIndex = tryLast001;
       return eGrmErrNoError;
     }
+    delete base001;
 
-    uint32 idRet = handleIdentifier(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == idRet)
+    int32 tryLast002 = tryLast;
+    GrammarReturnerBase *base002 = new GrammarReturnerBase(eTypenameSpecifier, "");
+    bool ret2 = EXPECT(tryLast002 + 1, tryLast002, "template", IS_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(SimpleTemplateId, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT);
+    if (ret2)
     {
+      if (returner)
+      {
+        base -> mergeChild(base002);
+        returner -> addChild(base);
+      }
+      else
+      {
+        delete base;
+      }
+      delete base002;
+      lastIndex = tryLast002;
       return eGrmErrNoError;
     }
+    delete base002;
   }
-  
+  delete base;
   return eGrmErrUnknown;
 }
 
