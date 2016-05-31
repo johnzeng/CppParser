@@ -2009,17 +2009,6 @@ uint32 GrammarAnalyzer::handleInclusiveOrExpression(int index, int& lastIndex, G
   delete base;
 
   return eGrmErrUnknown;
-//  uint32 nextRet = handleExclusiveOrExpression(index, lastIndex, curBlock);
-//  if (eGrmErrNoError == nextRet)
-//  {
-//    uint32 orRet = expect("|", lastIndex + 1);
-//    if (eGrmErrNoError == orRet )
-//    {
-//      return handleInclusiveOrExpression(lastIndex + 2, lastIndex, curBlock);
-//    }
-//    return eGrmErrNoError;
-//  }
-//  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleExclusiveOrExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
@@ -2106,6 +2095,8 @@ uint32 GrammarAnalyzer::handleEqualityExpression(int index, int& lastIndex, Gram
       {
         tryLast = tryLastB;
       }
+      tryLastA = tryLast;
+      tryLastB = tryLast;
     }
 
     lastIndex = tryLast;
@@ -2151,6 +2142,11 @@ uint32 GrammarAnalyzer::handleRelationalExpression(int index, int& lastIndex, Gr
       max = tryLastD > max ? tryLastD : max;
 
       tryLast = max;
+
+      tryLastA = tryLast;
+      tryLastB = tryLast;
+      tryLastC = tryLast;
+      tryLastD = tryLast;
     }
 
     lastIndex = tryLast;
@@ -2193,6 +2189,8 @@ uint32 GrammarAnalyzer::handleShiftExpression(int index, int& lastIndex, Grammar
       {
         tryLast = tryLastB;
       }
+      tryLastA = tryLast;
+      tryLastB = tryLast;
     }
 
     lastIndex = tryLast;
@@ -2235,6 +2233,8 @@ uint32 GrammarAnalyzer::handleAdditiveExpression(int index, int& lastIndex, Gram
       {
         tryLast = tryLastB;
       }
+      tryLastA = tryLast;
+      tryLastB = tryLast;
     }
 
     lastIndex = tryLast;
@@ -2255,29 +2255,44 @@ uint32 GrammarAnalyzer::handleAdditiveExpression(int index, int& lastIndex, Gram
 
 uint32 GrammarAnalyzer::handleMultiplicativeExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 pmRet = handlePmExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == pmRet)
+  int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eMultiplicativeExpression, "");
+  bool ret = INVOKE(PmExpression, index, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    
-    uint32 exp1 = expect("*", lastIndex + 1);
-    if (exp1 == eGrmErrNoError)
+    int32 tryLastA = tryLast;
+    int32 tryLastB = tryLast;
+    int32 tryLastC = tryLast;
+    while (
+        (EXPECT(tryLastA + 1, tryLastA, "*", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(PmExpression, tryLastA + 1, tryLastA, curBlock, base, NOT_OPT)) ||
+        (EXPECT(tryLastB + 1, tryLastB, "/", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(PmExpression, tryLastB + 1, tryLastB, curBlock, base, NOT_OPT)) ||
+        (EXPECT(tryLastC + 1, tryLastC, "%", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(PmExpression, tryLastC + 1, tryLastC, curBlock, base, NOT_OPT))
+        )
     {
-      return handleMultiplicativeExpression(lastIndex + 2, lastIndex, curBlock);
+      int32 max = tryLastA > tryLastB ? tryLastA : tryLastB;
+      max = tryLastC > max ? tryLastC : max;
+      tryLast = max;
+      tryLastA = tryLast;
+      tryLastB = tryLast;
+      tryLastC = tryLast;
     }
 
-    uint32 exp2 = expect("/", lastIndex + 1);
-    if (exp2 == eGrmErrNoError)
+    lastIndex = tryLast;
+    if (returner)
     {
-      return handleMultiplicativeExpression(lastIndex + 2, lastIndex, curBlock);
+      returner -> addChild(base);
     }
-
-    uint32 exp3 = expect("%", lastIndex + 1);
-    if (exp3 == eGrmErrNoError)
+    else
     {
-      return handleMultiplicativeExpression(lastIndex + 2, lastIndex, curBlock);
+      delete base;
     }
     return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 
