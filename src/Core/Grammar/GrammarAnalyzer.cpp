@@ -3477,28 +3477,33 @@ uint32 GrammarAnalyzer::handleExpressionList(int index, int& lastIndex, GrammarB
   delete base;
   return eGrmErrUnknown;
 }
-
+//==mark
 uint32 GrammarAnalyzer::handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 clauseRet = handleInitializerClause(index, lastIndex, curBlock);
-  if (eGrmErrNoError == clauseRet)
+  int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eInitializerList, "");
+  bool ret = INVOKE(InitializerClause, tryLast, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    uint32 tripleDot = expect("...", lastIndex + 1);
-    if (eGrmErrNoError == tripleDot)
+    lastIndex = tryLast;
+    while(EXPECT(tryLast + 1, tryLast, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(InitializerClause, tryLast + 1, tryLast, curBlock, base, NOT_OPT))
     {
-      lastIndex++;
+      lastIndex = tryLast;
+    }
+    EXPECT(lastIndex + 1, lastIndex, "...", NOT_OPT, NOT_IN_ONE_LINE);
+    if (returner)
+    {
+      returner -> addChild(base);
     }
     else
     {
-      uint32 CommaRet = expect(",", lastIndex + 1);
-      if (eGrmErrNoError == CommaRet)
-      {
-        handleInitializerList(lastIndex + 2, lastIndex, curBlock);
-        return eGrmErrNoError;
-      }
+      delete base;
     }
     return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 
