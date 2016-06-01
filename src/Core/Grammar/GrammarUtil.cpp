@@ -96,6 +96,7 @@ void GrammarUtil::init()
   mKeyWordSet.insert("operator");
   mKeyWordSet.insert("long");
   mKeyWordSet.insert("unsigned");
+  mKeyWordSet.insert("throw");
   mKeyWordSet.insert("class");
   mKeyWordSet.insert("union");
   mKeyWordSet.insert("enum");
