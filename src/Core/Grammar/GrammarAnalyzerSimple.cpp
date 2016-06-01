@@ -69,15 +69,6 @@ bool GrammarAnalyzer::invoke(handler han, const string& func, const int line, co
   {
     return false;
   }
-  if (true == GrmUtilPtr->isLoopBreakerKey(mRecList[index].word))
-  {
-    if (isOpt)
-    {
-      lastIndex = index - 1;
-      return true;
-    }
-    return false;
-  }
   if (false == mLoopBreaker.insert(func, line, index))
   {
     return false;

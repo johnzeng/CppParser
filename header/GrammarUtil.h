@@ -188,7 +188,6 @@ private:
 	StringSet mDoubleMeanWord;
 	OpTypeMarkMap mOpMarkMap;
 	StringSet mKeyWordSet;
-  StringSet mLoopBreakKey;
 };
 
 #endif /* end of include guard: GRAMAUTIL_H */
