@@ -4303,74 +4303,154 @@ uint32 GrammarAnalyzer::handleParameterDeclaration(int index, int& lastIndex, Gr
 uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast001 = index;
-  bool ret001 = INVOKE(Attributes, index, tryLast001, curBlock, returner, IS_OPT) &&
-    INVOKE(JumpStatement, tryLast001 + 1, tryLast001, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase* base001 = new GrammarReturnerBase(eStatement, "");
+  bool ret001 = INVOKE(Attributes, index, tryLast001, curBlock, base001, IS_OPT) &&
+    INVOKE(JumpStatement, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT);
   if (ret001)
   {
+    if (returner)
+    {
+      returner -> addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
     lastIndex = tryLast001;
     return eGrmErrNoError;
   }
+  delete base001;
 
   int32 tryLast003 = index;
-  bool ret003 = INVOKE(Attributes, index, tryLast003, curBlock, returner, IS_OPT) &&
-    INVOKE(CompoundStatement, tryLast003 + 1, tryLast003, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase* base003 = new GrammarReturnerBase(eStatement, "");
+  bool ret003 = INVOKE(Attributes, index, tryLast003, curBlock, base003, IS_OPT) &&
+    INVOKE(CompoundStatement, tryLast003 + 1, tryLast003, curBlock, base003, NOT_OPT);
   if (ret003)
   {
+    if (returner)
+    {
+      returner -> addChild(base003);
+    }
+    else
+    {
+      delete base003;
+    }
     lastIndex = tryLast003;
     return eGrmErrNoError;
   }
+  delete base003;
 
   int32 tryLast004 = index;
-  bool ret004 = INVOKE(Attributes, index, tryLast004, curBlock, returner, IS_OPT) &&
-    INVOKE(SelectionStatement, tryLast004 + 1, tryLast004, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase* base004 = new GrammarReturnerBase(eStatement, "");
+  bool ret004 = INVOKE(Attributes, index, tryLast004, curBlock, base004, IS_OPT) &&
+    INVOKE(SelectionStatement, tryLast004 + 1, tryLast004, curBlock, base004, NOT_OPT);
   if (ret004)
   {
+    if (returner)
+    {
+      returner -> addChild(base004);
+    }
+    else
+    {
+      delete base004;
+    }
     lastIndex = tryLast004;
     return eGrmErrNoError;
   }
+  delete base004;
 
   int32 tryLast005 = index;
-  bool ret005 = INVOKE(Attributes, index, tryLast005, curBlock, returner, IS_OPT) &&
-    INVOKE(IterationStatement, tryLast005 + 1, tryLast005, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase* base005 = new GrammarReturnerBase(eStatement, "");
+  bool ret005 = INVOKE(Attributes, index, tryLast005, curBlock, base005, IS_OPT) &&
+    INVOKE(IterationStatement, tryLast005 + 1, tryLast005, curBlock, base005, NOT_OPT);
   if (ret005)
   {
     lastIndex = tryLast005;
+    if (returner)
+    {
+      returner -> addChild(base005);
+    }
+    else
+    {
+      delete base005;
+    }
     return eGrmErrNoError;
   }
+  delete base005;
 
   int32 tryLast006 = index;
-  bool ret006 = INVOKE(Attributes, index, tryLast006, curBlock, returner, IS_OPT) &&
-    INVOKE(TryBlock, tryLast006 + 1, tryLast006, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase* base006 = new GrammarReturnerBase(eStatement, "");
+  bool ret006 = INVOKE(Attributes, index, tryLast006, curBlock, base006, IS_OPT) &&
+    INVOKE(TryBlock, tryLast006 + 1, tryLast006, curBlock, base006, NOT_OPT);
   if (ret006)
   {
     lastIndex = tryLast006;
+    if (returner)
+    {
+      returner -> addChild(base006);
+    }
+    else
+    {
+      delete base006;
+    }
     return eGrmErrNoError;
   }
+  delete base006;
 
   int32 tryLast002 = index;
-  bool ret002 = INVOKE(Attributes, index, tryLast002, curBlock, returner, IS_OPT) &&
-    INVOKE(ExpressionStatement, tryLast002 + 1, tryLast002, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase* base002 = new GrammarReturnerBase(eStatement, "");
+  bool ret002 = INVOKE(Attributes, index, tryLast002, curBlock, base002, IS_OPT) &&
+    INVOKE(ExpressionStatement, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT);
   if (ret002)
   {
     lastIndex = tryLast002;
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
     return eGrmErrNoError;
   }
+  delete base002;
 
   int32 tryLast007 = index;
+  GrammarReturnerBase* base007 = new GrammarReturnerBase(eStatement, "");
   bool ret007 = INVOKE(LabeledStatement, tryLast007 , tryLast007, curBlock, returner, NOT_OPT);
   if (ret007)
   {
+    if (returner)
+    {
+      returner -> addChild(base007);
+    }
+    else
+    {
+      delete base007;
+    }
     lastIndex = tryLast007;
     return eGrmErrNoError;
   }
+  delete base007;
 
   int32 tryLast008 = index;
+  GrammarReturnerBase* base008 = new GrammarReturnerBase(eStatement, "");
   bool ret008 = INVOKE(DeclarationStatement, tryLast008 , tryLast008, curBlock, returner, NOT_OPT);
   if (ret008)
   {
     lastIndex = tryLast008;
+    if (returner)
+    {
+      returner -> addChild(base008);
+    }
+    else
+    {
+      delete base008;
+    }
     return eGrmErrNoError;
   }
+  delete base008;
 
   return eGrmErrUnknown;
 }
