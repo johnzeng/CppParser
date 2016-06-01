@@ -4458,13 +4458,23 @@ uint32 GrammarAnalyzer::handleStatement(int index, int& lastIndex, GrammarBlock*
 uint32 GrammarAnalyzer::handleExpressionStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast001 = index;
-  bool ret001 = INVOKE(Expression, index, tryLast001, curBlock, returner, IS_OPT) &&
+  GrammarReturnerBase* base = new GrammarReturnerBase(eExpressionStatement, "");
+  bool ret001 = INVOKE(Expression, index, tryLast001, curBlock, base, IS_OPT) &&
     EXPECT(tryLast001 + 1, tryLast001, ";", NOT_OPT, NOT_IN_ONE_LINE);
   if (ret001)
   {
     lastIndex = tryLast001;
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 

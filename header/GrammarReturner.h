@@ -15,6 +15,7 @@ enum ReturnerType{
   eVirtSpecifier,
   eTypeId,
   eStatement,
+  eExpressionStatement,
   eParameterDeclaration,
   eLambdaDeclarator,
   eLambdaCapture,
