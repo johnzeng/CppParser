@@ -1,5 +1,6 @@
-**日志将继续在有道云维护[我的devlog](http://note.youdao.com/yws/public/redirect/share?id=61ec3b3371f2d0852c799484a066d543&type=false)**
-
+**日志将继续在有道云维护**
+[devlog part1](http://note.youdao.com/yws/public/redirect/share?id=61ec3b3371f2d0852c799484a066d543&type=false)
+[devlog part2](http://note.youdao.com/yws/public/redirect/share?id=85bd1c5e254d8545bf91ae3d027624ab&type=false)
 #Develop Daily
 This file only contain the daily log. Nothing useful
 
