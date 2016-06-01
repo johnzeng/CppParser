@@ -4176,20 +4176,33 @@ uint32 GrammarAnalyzer::handleParameterDeclarationClause(int index, int& lastInd
 
 uint32 GrammarAnalyzer::handleParameterDeclarationList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 declarationRet = handleParameterDeclaration(index, lastIndex, curBlock);
-  if (eGrmErrNoError == declarationRet)
+  GrammarReturnerBase* base = new GrammarReturnerBase(eParameterDeclarationList, "");
+  int32 tryLast = index;
+  bool ret = INVOKE(ParameterDeclaration, index, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    uint32 expComma = expect(",", lastIndex + 1);
-    if (eGrmErrNoError == expComma)
+    lastIndex = tryLast;
+    while (EXPECT(tryLast + 1, tryLast, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(ParameterDeclaration, tryLast + 1, tryLast, curBlock, base, NOT_OPT) )
     {
-      return handleParameterDeclarationList(lastIndex + 2, lastIndex, curBlock);
+      lastIndex = tryLast;
     }
-
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 
+//==mark
 uint32 GrammarAnalyzer::handleParameterDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 handleAttRet = handleAttributes(index , lastIndex, curBlock);
@@ -6580,74 +6593,135 @@ uint32 GrammarAnalyzer::handleCaptureList(int index, int& lastIndex, GrammarBloc
 uint32 GrammarAnalyzer::handleLambdaDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eLambdaDeclarator, "");
   bool ret = EXPECT(index, tryLast, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(ParameterDeclarationClause, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(ParameterDeclarationClause, tryLast + 1, tryLast, curBlock, base, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLast + 1, tryLast, "mutable", IS_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(ExceptionSpecification , tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
-    INVOKE(Attributes, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
-    INVOKE(TrailingReturnType, tryLast + 1, tryLast, curBlock, returner, IS_OPT);
+    INVOKE(ExceptionSpecification , tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
+    INVOKE(Attributes, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
+    INVOKE(TrailingReturnType, tryLast + 1, tryLast, curBlock, base, IS_OPT);
   if (ret)
   {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     lastIndex = tryLast;
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleLambdaCapture(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLastA = index;
-  bool retA = INVOKE(CaptureDefault, index, tryLastA, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase *baseA = new GrammarReturnerBase(eLambdaCapture, "");
+  bool retA = INVOKE(CaptureDefault, index, tryLastA, curBlock, baseA, NOT_OPT);
   if (retA)
   {
     lastIndex = tryLastA;
     int32 tryLastA1 = tryLastA;
+    GrammarReturnerBase *baseA1 = new GrammarReturnerBase(eLambdaCapture, "");
     bool retA1 = EXPECT(tryLastA1 + 1, tryLastA1, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(CaptureList, tryLastA1 + 1, tryLastA1, curBlock, returner, NOT_OPT);
+      INVOKE(CaptureList, tryLastA1 + 1, tryLastA1, curBlock, baseA1, NOT_OPT);
     if (retA1)
     {
       lastIndex = tryLastA1;
-      return eGrmErrNoError;
+      if (returner)
+      {
+        baseA -> mergeChild(baseA1);
+        returner -> addChild(baseA);
+      }
+      else
+      {
+        delete baseA1;
+      }
+    }
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
     }
     return eGrmErrNoError;
   }
+  delete baseA;
 
   int32 tryLastB = index;
-  bool retB = INVOKE(CaptureList, index, tryLastB, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase *baseB = new GrammarReturnerBase(eLambdaCapture, "");
+  bool retB = INVOKE(CaptureList, index, tryLastB, curBlock, baseB, NOT_OPT);
   if (retB)
   {
     lastIndex = tryLastB;
+    if (returner)
+    {
+      returner-> addChild(baseB);
+    }
+    else
+    {
+      delete baseB;
+    }
     return eGrmErrNoError;
   }
+  delete baseB;
+
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleLambdaIntroducer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
+  GrammarReturnerBase *base = new GrammarReturnerBase(eLambdaIntroducer, "");
   bool ret = EXPECT(index, tryLast, "[", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(LambdaCapture, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
+    INVOKE(LambdaCapture, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
     EXPECT(tryLast + 1, tryLast, "]", NOT_OPT, NOT_IN_ONE_LINE);
   if (ret)
   {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     lastIndex = tryLast;
     return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleLambdaExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
-  bool ret = INVOKE(LambdaIntroducer, index, tryLast, curBlock, returner, NOT_OPT) &&
-    INVOKE(LambdaDeclarator, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
-    INVOKE(CompoundStatement, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase *base = new GrammarReturnerBase(eLambdaExpression, "");
+  bool ret = INVOKE(LambdaIntroducer, index, tryLast, curBlock, base, NOT_OPT) &&
+    INVOKE(LambdaDeclarator, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
+    INVOKE(CompoundStatement, tryLast + 1, tryLast, curBlock, base, NOT_OPT);
   if (ret)
   {
+    if (returner)
+    {
+      base -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     lastIndex = tryLast;
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
