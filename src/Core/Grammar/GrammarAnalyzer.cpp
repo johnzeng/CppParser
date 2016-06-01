@@ -3477,7 +3477,7 @@ uint32 GrammarAnalyzer::handleExpressionList(int index, int& lastIndex, GrammarB
   delete base;
   return eGrmErrUnknown;
 }
-//==mark
+
 uint32 GrammarAnalyzer::handleInitializerList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
@@ -3509,46 +3509,91 @@ uint32 GrammarAnalyzer::handleInitializerList(int index, int& lastIndex, Grammar
 
 uint32 GrammarAnalyzer::handlePrimaryExpression(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 thisExp = expect("this", index);
-  if (eGrmErrNoError == thisExp)
+  int32 tryLast001 = index;
+  if (EXPECT(index, tryLast001, "this", NOT_OPT, NOT_IN_ONE_LINE)) 
   {
-    lastIndex = index;
-    return thisExp;
-  }
-//  uint32 litRet = eGramIsNothing;
-  uint32 literalExp = handleLiteral(index, lastIndex, curBlock);
-  if (eGrmErrNoError == literalExp)
-  {
-    return eGrmErrNoError;
-  }
-
-  uint32 idExpRet = handleIdExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == idExpRet)
-  {
-    return eGrmErrNoError;
-  }
-
-  uint32 leftExp = expect("(", index);
-  if (eGrmErrNoError == leftExp)
-  {
-    uint32 expRet = handleExpression(index + 1, lastIndex, curBlock);
-    if (expRet == eGrmErrNoError)
+    if (returner)
     {
-      uint32 rightExp = expect(")", lastIndex + 1);
-      if (eGrmErrNoError == rightExp)
-      {
-        lastIndex ++;
-        return eGrmErrNoError;
-      }
+      GrammarReturnerBase * base = new GrammarReturnerBase(ePrimaryExpression, "this");
+      returner -> addChild(base);
     }
-  }
-
-  uint32 lambdaExp = handleLambdaExpression(index, lastIndex, curBlock);
-  if (eGrmErrNoError == lambdaExp)
-  {
+    lastIndex = tryLast001;
     return eGrmErrNoError;
   }
 
+  int32 tryLast002 = index;
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(ePrimaryExpression, "");
+  bool ret002 = EXPECT(index, tryLast002, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(Expression, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT) &&
+    EXPECT(tryLast002 + 1, tryLast002, ")", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret002)
+  {
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+  delete base002;
+
+  int32 tryLast003 = index;
+  GrammarReturnerBase * base003 = new GrammarReturnerBase(ePrimaryExpression, "");
+  bool ret003 = INVOKE(Literal, tryLast003, tryLast003, curBlock, base003, NOT_OPT);
+  if (ret003)
+  {
+    if (returner)
+    {
+      returner -> addChild(base003);
+    }
+    else
+    {
+      delete base003;
+    }
+    lastIndex = tryLast003;
+    return eGrmErrNoError;
+  }
+  delete base003;
+
+  int32 tryLast004 = index;
+  GrammarReturnerBase * base004 = new GrammarReturnerBase(ePrimaryExpression, "");
+  bool ret004 = INVOKE(IdExpression, index, tryLast004, curBlock, base004, NOT_OPT);
+  if (ret004)
+  {
+    if (returner)
+    {
+      returner -> addChild(base004);
+    }
+    else
+    {
+      delete base004;
+    }
+    lastIndex = tryLast004;
+    return eGrmErrNoError;
+  }
+  delete base004;
+
+  int32 tryLast005 = index;
+  GrammarReturnerBase * base005 = new GrammarReturnerBase(ePrimaryExpression, "");
+  bool ret005 = INVOKE(LambdaExpression, index, tryLast005, curBlock, base005, NOT_OPT);
+  if (ret005)
+  {
+    if (returner)
+    {
+      returner -> addChild(base005);
+    }
+    else
+    {
+      delete base005;
+    }
+    lastIndex = tryLast005;
+    return eGrmErrNoError;
+  }
+  delete base005;
   return eGrmErrUnknown;
 }
 
