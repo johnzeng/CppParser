@@ -4480,28 +4480,48 @@ uint32 GrammarAnalyzer::handleExpressionStatement(int index, int& lastIndex, Gra
 
 uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  JZFUNC_BEGIN_LOG();
-  uint32 handleHead = handleEnumHead(index, lastIndex, curBlock);
-  if (eGrmErrNoError == handleHead)
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eEnumSpecifier, "");
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(EnumHead, index, tryLast001, curBlock, base001, NOT_OPT) &&
+    EXPECT(tryLast001 + 1, tryLast001, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(EnumeratorList, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT) &&
+    EXPECT(tryLast001 + 1, tryLast001, ",", IS_OPT, NOT_IN_ONE_LINE) &&
+    EXPECT(tryLast001 + 1, tryLast001, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret001)
   {
-    uint32 expLeft = expect("{", lastIndex + 1);
-    if (eGrmErrNoError == expLeft)
+    if (returner)
     {
-      uint32 listRet = handleEnumeratorList(lastIndex + 2, lastIndex, curBlock);
-      if (eGrmErrNoError == listRet)
-      {
-        uint32 offset = expect(",", lastIndex + 1) == eGrmErrNoError ? 1:0;
-        uint32 expRight = expect("}", lastIndex + 1 + offset);
-        if (eGrmErrNoError == expRight)
-        {
-          lastIndex += offset;
-          lastIndex++;
-          JZFUNC_END_LOG();
-          return eGrmErrNoError;
-        }
-      }
+      returner -> addChild(base001);
     }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
   }
+  delete base001;
+
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(eEnumSpecifier, "");
+  int32 tryLast002 = index;
+  bool ret002 = INVOKE(EnumHead, index, tryLast002, curBlock, base002, NOT_OPT) &&
+    EXPECT(tryLast002 + 1, tryLast002, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(EnumeratorList, tryLast002 + 1, tryLast002, curBlock, base002, IS_OPT) &&
+    EXPECT(tryLast002 + 1, tryLast002, "}", NOT_OPT, NOT_IN_ONE_LINE);
+  if (ret002)
+  {
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+  delete base002;
 
   return eGrmErrUnknown;
 }
