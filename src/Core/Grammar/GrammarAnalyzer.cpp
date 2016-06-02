@@ -4932,27 +4932,64 @@ uint32 GrammarAnalyzer::handleBaseSpecifierList(int index, int& lastIndex, Gramm
 
 uint32 GrammarAnalyzer::handleBaseTypeSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  return handleClassOrDecltype(index, lastIndex, curBlock);
+  GrammarReturnerBase * base = new GrammarReturnerBase(eBaseTypeSpecifier, "");
+  int32 tryLast = index;
+  if (INVOKE(ClassOrDecltype, index, tryLast, curBlock, base, NOT_OPT))
+  {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
+  }
+  delete base;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleClassOrDecltype(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 decRet = handleDecltypeSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == decRet)
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(eClassOrDecltype, "");
+  int32 tryLast002 = index;
+  bool ret002 = EXPECT(index, tryLast002, "::", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(NestNameSpecifier, tryLast002 + 1, tryLast002, curBlock, base002, IS_OPT) &&
+    INVOKE(ClassName, tryLast002 + 1, tryLast002, curBlock, base002, IS_OPT);
+  if (ret002)
   {
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
     return eGrmErrNoError;
   }
+  delete base002;
 
-  uint32 offset = expect("::", index) == eGrmErrNoError ? 1:0;
-  uint32 nestedNameRet = handleNestNameSpecifier(index + 1 + offset, lastIndex, curBlock);
-  if (eGrmErrNoError == nestedNameRet)
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eClassOrDecltype, "");
+  int32 tryLast001 = index;
+  bool ret001 = INVOKE(DecltypeSpecifier, index, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
   {
-    return handleClassName(lastIndex + 1, lastIndex, curBlock);
+    if (returner)
+    {
+      returner -> addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
   }
-  else
-  {
-    return handleClassName(index + offset + 1, lastIndex, curBlock);
-  }
+  delete base001;
   
   return eGrmErrUnknown;
 }
