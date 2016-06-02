@@ -14,6 +14,8 @@ enum ReturnerType{
   eTypeSpecifierSeq,
   eVirtSpecifier,
   eTypeId,
+  eBaseSpecifier,
+  eBaseSpecifierList,
   eClassVirtSpecifierSeq,
   eClassVirtSpecifier,
   eBaseClause,

@@ -4839,50 +4839,94 @@ uint32 GrammarAnalyzer::handleBaseClause(int index, int& lastIndex, GrammarBlock
 
 uint32 GrammarAnalyzer::handleBaseSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 attRet = handleAttributes(index, lastIndex, curBlock);
-  if (eGrmErrNoError == attRet )
+  GrammarReturnerBase * base001 = new GrammarReturnerBase(eBaseSpecifier, "");
+  int32 tryLast001 = index ;
+  bool ret001 = INVOKE(Attributes, index, tryLast001, curBlock, base001, IS_OPT) &&
+    INVOKE(AccessSpecifier, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT) &&
+    EXPECT(tryLast001 + 1, tryLast001, "virtual", IS_OPT, NOT_OPT) &&
+    INVOKE(BaseTypeSpecifier, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT);
+
+  if (ret001)
   {
-    uint32 baseRet = handleBaseTypeSpecifier(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == baseRet)
+    if (returner)
     {
-      return eGrmErrNoError;
+      returner -> addChild(base001);
     }
-
-//    uint32 ret = eGramIsNothing;
-    uint32 expVir = expect("virtual", lastIndex + 1);
-    if (eGrmErrNoError == expVir)
+    else
     {
-      handleAccessSpecifier(lastIndex + 2, lastIndex, curBlock);
-      return handleBaseTypeSpecifier(lastIndex + 1, lastIndex, curBlock);
+      delete base001;
     }
-
-    uint32 accessRet = handleAccessSpecifier(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == accessRet)
-    {
-      uint32 offset = expect("virtual", lastIndex + 1) ? 1:0;
-      return handleBaseTypeSpecifier(lastIndex + 1 + offset, lastIndex, curBlock);
-    }
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
   }
+  delete base001;
+
+  GrammarReturnerBase * base002 = new GrammarReturnerBase(eBaseSpecifier, "");
+  int32 tryLast002 = index ;
+  bool ret002 = INVOKE(Attributes, index, tryLast002, curBlock, base002, IS_OPT) &&
+    EXPECT(tryLast002 + 1, tryLast002, "virtual", NOT_OPT, NOT_OPT) &&
+    INVOKE(AccessSpecifier, tryLast002 + 1, tryLast002, curBlock, base002, IS_OPT) &&
+    INVOKE(BaseTypeSpecifier, tryLast002 + 1, tryLast002, curBlock, base002, NOT_OPT);
+
+  if (ret002)
+  {
+    if (returner)
+    {
+      returner -> addChild(base002);
+    }
+    else
+    {
+      delete base002;
+    }
+    lastIndex = tryLast002;
+    return eGrmErrNoError;
+  }
+  delete base002;
+
+  GrammarReturnerBase * base003 = new GrammarReturnerBase(eBaseSpecifier, "");
+  int32 tryLast003 = index ;
+  bool ret003 = INVOKE(Attributes, index, tryLast003, curBlock, base003, IS_OPT) &&
+    INVOKE(BaseTypeSpecifier, tryLast003 + 1, tryLast003, curBlock, base003, NOT_OPT);
+  if (ret003)
+  {
+    if (returner)
+    {
+      returner -> addChild(base003);
+    }
+    else
+    {
+      delete base003;
+    }
+    lastIndex = tryLast003;
+    return eGrmErrNoError;
+  }
+  delete base003;
+
   return eGrmErrUnknown;
 }
 uint32 GrammarAnalyzer::handleBaseSpecifierList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 specRet = handleBaseSpecifier(index, lastIndex, curBlock);
-  if (eGrmErrNoError == specRet)
+  GrammarReturnerBase *base = new GrammarReturnerBase(eBaseSpecifierList, "");
+  int32 tryLast = index;
+  bool ret = INVOKE(BaseSpecifier, index, tryLast, curBlock,base, NOT_OPT);
+  if (ret)
   {
-    uint32 expComma = expect(",", lastIndex + 1);
-    if (eGrmErrNoError == expComma)
+    do{
+      lastIndex = tryLast;
+    }while (EXPECT(tryLast + 1, tryLast, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(BaseSpecifier, tryLast + 1, tryLast, curBlock, base, NOT_OPT));
+    if (returner)
     {
-      return handleBaseSpecifierList(lastIndex + 2, lastIndex, curBlock);
+      returner -> addChild(base);
     }
-
-    uint32 expDot = expect("...", lastIndex + 1);
-    if (eGrmErrNoError == expDot)
+    else
     {
-      lastIndex ++;
+      delete base;
     }
     return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 
