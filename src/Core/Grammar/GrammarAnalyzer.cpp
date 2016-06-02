@@ -4643,7 +4643,25 @@ uint32 GrammarAnalyzer::handleEnumeratorDefinition(int index, int& lastIndex, Gr
 
 uint32 GrammarAnalyzer::handleEnumerator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  return handleIdentifier(index, lastIndex, curBlock);
+  int32 tryLast = index;
+  GrammarReturnerBase * base = new GrammarReturnerBase(eEnumerator, "");
+  bool ret = INVOKE(Identifier, index, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
+  {
+    lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    return eGrmErrNoError;
+  }
+  delete base;
+
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
@@ -4749,6 +4767,7 @@ uint32 GrammarAnalyzer::handleClassHeadName(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
+//==makr
 uint32 GrammarAnalyzer::handleClassVirtSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
 //  uint32 ret = eGramIsNothing;
