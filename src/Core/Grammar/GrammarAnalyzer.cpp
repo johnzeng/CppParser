@@ -4508,77 +4508,112 @@ uint32 GrammarAnalyzer::handleEnumSpecifier(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleEnumHead(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-//  uint32 keyRet = eGramIsNothing;
-  uint32 handleRet = handleEnumKey(index, lastIndex, curBlock);
-  if (eGrmErrNoError == handleRet)
+  GrammarReturnerBase * base = new GrammarReturnerBase(eEnumHead, "");
+  int32 tryLast = index;
+  bool ret = INVOKE(EnumKey, index, tryLast, curBlock, base, NOT_OPT) &&
+    INVOKE(Attributes, tryLast + 1, tryLast, curBlock, base, IS_OPT);
+  if (ret)
   {
-    handleAttributes(lastIndex + 1, lastIndex, curBlock);
-    uint32 nestedNameRet = handleNestNameSpecifier(lastIndex + 1, lastIndex, curBlock);
-    if (eGrmErrNoError == nestedNameRet)
+    GrammarReturnerBase *baseA = new GrammarReturnerBase(eEnumHead, "");
+    int32 tryLastA = tryLast;
+    bool retA = INVOKE(NestNameSpecifier, tryLastA + 1, tryLastA, curBlock, baseA, NOT_OPT) &&
+      INVOKE(Identifier, tryLastA + 1, tryLastA, curBlock, baseA, NOT_OPT) &&
+      INVOKE(EnumBase, tryLastA + 1, tryLastA, curBlock, baseA, IS_OPT);
+    if (retA)
     {
-      uint32 idRet = handleIdentifier(lastIndex + 1, lastIndex, curBlock);
-      if (eGrmErrNoError == idRet)
+      if (returner)
       {
-        handleEnumBase(lastIndex + 1, lastIndex, curBlock);
-          JZFUNC_END_LOG();
-        return eGrmErrNoError;
+        base -> mergeChild(baseA);
+        returner -> addChild(base);
       }
-    }
-    else
-    {
-      handleIdentifier(lastIndex + 1, lastIndex, curBlock);
-      handleEnumBase(lastIndex + 1, lastIndex, curBlock);
-      JZFUNC_END_LOG();
+      else
+      {
+        delete base;
+      }
+      delete baseA;
+      lastIndex = tryLastA;
       return eGrmErrNoError;
     }
+    delete baseA;
+
+    GrammarReturnerBase *baseB = new GrammarReturnerBase(eEnumHead, "");
+    int32 tryLastB = tryLast;
+    bool retB = INVOKE(Identifier, tryLastB + 1, tryLastB, curBlock, baseB, IS_OPT) &&
+      INVOKE(EnumBase, tryLastB + 1, tryLastB, curBlock, baseB, IS_OPT);
+    //always true
+    if (retB)
+    {
+      if (returner)
+      {
+        base -> mergeChild(baseB);
+        returner -> addChild(base);
+      }
+      else
+      {
+        delete base;
+      }
+      delete baseB;
+      lastIndex = tryLastB;
+      return eGrmErrNoError;
+    }
+    delete baseB;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEnumBase(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expOpt = expect(":", index);
-  if (eGrmErrNoError == expOpt)
+  GrammarReturnerBase *base = new GrammarReturnerBase(eEnumBase, "");
+  int32 tryLast = index;
+  bool ret = EXPECT(index, tryLast, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(TypeSpecifierSeq, tryLast + 1, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    return handleTypeSpecifierSeq(index + 1, lastIndex, curBlock);
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEnumeratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  JZFUNC_BEGIN_LOG();
-  uint32 defRet = handleEnumeratorDefinition(index, lastIndex, curBlock);
-  if (eGrmErrNoError == defRet)
+  GrammarReturnerBase * base = new GrammarReturnerBase(eEnumeratorList, "");
+  int32 tryLast = index;
+  bool ret = INVOKE(EnumeratorDefinition, index, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    uint32 expComma = expect(",", lastIndex + 1);
-    if (eGrmErrNoError == expComma)
+    lastIndex = tryLast;
+    while (EXPECT(tryLast + 1, tryLast, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+        INVOKE(EnumeratorDefinition, tryLast + 1, tryLast, curBlock, base, NOT_OPT))
     {
-      handleEnumeratorList(lastIndex + 2, lastIndex, curBlock);
+      lastIndex = tryLast;
     }
-    JZFUNC_END_LOG();
+    if (returner)
+    {
+      returner-> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleEnumeratorDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-//  uint32 expEnumerator = handleEnumerator(index, lastIndex, curBlock);
-//  if (eGrmErrNoError == expEnumerator)
-//  {
-//    uint32 eqExp = expect("=", lastIndex + 1);
-//    if (eGrmErrNoError == eqExp)
-//    {
-//      return handleConstantExpression(lastIndex + 2, lastIndex, curBlock);
-//    }
-//    return eGrmErrNoError;
-//  }
-//  return eGrmErrUnknown;
-//  
-//
-//  Let's zuosi
-//
   GrammarReturnerBase *base = new GrammarReturnerBase(eEnumeratorDefinition,"");
   int32 trylast = index;
 
