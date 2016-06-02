@@ -4787,26 +4787,53 @@ uint32 GrammarAnalyzer::handleClassHeadName(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
-//==makr
 uint32 GrammarAnalyzer::handleClassVirtSpecifierSeq(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-//  uint32 ret = eGramIsNothing;
-  uint32 handleRet = handleVirtSpecifier(index, lastIndex, curBlock);
-  if (eGramIsNothing == handleRet)
+  GrammarReturnerBase * base = new GrammarReturnerBase(eClassVirtSpecifierSeq, "");
+  int32 tryLast = index - 1;
+  bool inLoop = false;
+  while (INVOKE(ClassVirtSpecifier, tryLast + 1, tryLast, curBlock, base, NOT_OPT))
   {
-    handleClassVirtSpecifierSeq(lastIndex + 1, lastIndex, curBlock);
+    inLoop = true;
+  }
+  if (inLoop)
+  {
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleBaseClause(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 exp1 = expect(":", index);
-  if (eGrmErrNoError == exp1)
+  GrammarReturnerBase * base = new GrammarReturnerBase(eBaseClause, "");
+  int32 tryLast = index - 1;
+  bool ret = EXPECT(index, tryLast, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(BaseSpecifierList, tryLast + 1, tryLast, curBlock, base, NOT_OPT);
+  if (ret)
   {
-    return handleBaseSpecifierList(index + 1, lastIndex, curBlock);
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    lastIndex = tryLast;
+    return eGrmErrNoError;
   }
+  delete base;
+
   return eGrmErrUnknown;
 }
 

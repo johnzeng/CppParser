@@ -347,6 +347,37 @@ uint32 GrammarAnalyzer::handlePureSpecifier(int index, int& lastIndex, GrammarBl
 
 }
 
+uint32 GrammarAnalyzer::handleClassVirtSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
+{
+  uint32 expExplicit = expect("explicit", index);
+  if (eGrmErrNoError == expExplicit)
+  {
+    lastIndex = index;
+    if (ret)
+    {
+      GrammarReturnerBase* base = new GrammarReturnerBase(eClassVirtSpecifier, "explicit");
+      ret -> addChild(base);
+    }
+    return eGrmErrNoError;
+  }
+
+  uint32 expFinal = expect("final", index);
+  if (eGrmErrNoError == expFinal)
+  {
+    lastIndex = index;
+    if (ret)
+    {
+      GrammarReturnerBase* base = new GrammarReturnerBase(eVirtSpecifier, "final");
+      ret -> addChild(base);
+    }
+//    ret = eGramIsFinal;
+    return eGrmErrNoError;
+  }
+
+  return eGrmErrUnknown;
+  
+}
+
 uint32 GrammarAnalyzer::handleVirtSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret)
 {
   uint32 expOverride = expect("override", index);
