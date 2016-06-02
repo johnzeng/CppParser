@@ -4915,6 +4915,9 @@ uint32 GrammarAnalyzer::handleBaseSpecifierList(int index, int& lastIndex, Gramm
       lastIndex = tryLast;
     }while (EXPECT(tryLast + 1, tryLast, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
         INVOKE(BaseSpecifier, tryLast + 1, tryLast, curBlock, base, NOT_OPT));
+
+    EXPECT(lastIndex + 1, lastIndex, "...", IS_OPT, NOT_IN_ONE_LINE);
+
     if (returner)
     {
       returner -> addChild(base);
@@ -5189,10 +5192,14 @@ uint32 GrammarAnalyzer::handleDeclaration(int index, int& lastIndex, GrammarBloc
 
 uint32 GrammarAnalyzer::handleEmptyDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  uint32 expRet = expect(";", index);
+  uint32 expRet = EXPECT(index, lastIndex, ";", NOT_OPT, NOT_IN_ONE_LINE);
   if (eGrmErrNoError == expRet)
   {
-    lastIndex = index;
+    if (returner)
+    {
+      GrammarReturnerBase *base = new GrammarReturnerBase(eEmptyDeclaration, ";");
+      returner -> addChild(base);
+    }
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
@@ -5375,22 +5382,26 @@ uint32 GrammarAnalyzer::handleSimpleDeclaration(int index, int& lastIndex, Gramm
 uint32 GrammarAnalyzer::handleInitDeclaratorList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int tryLastA = index;
-  bool retA = INVOKE(InitDeclarator, index, tryLastA, curBlock, returner, false);
+  GrammarReturnerBase * base = new GrammarReturnerBase(eInitDeclaratorList, "");
+  bool retA = INVOKE(InitDeclarator, index, tryLastA, curBlock, base, NOT_OPT);
   if (retA)
   {
-    lastIndex = tryLastA;
-    int tryLastB = tryLastA;
-    bool retB = 
-      EXPECT(tryLastB + 1, tryLastB, ",", false, false) &&
-      INVOKE(InitDeclaratorList, tryLastB + 1, tryLastB, curBlock, returner, false);
-    if (retB)
+    do{
+      lastIndex = tryLastA;
+    }while(
+      EXPECT(tryLastA + 1, tryLastA, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(InitDeclarator, tryLastA + 1, tryLastA, curBlock, base, NOT_OPT) );
+    if (returner)
     {
-      JZWRITE_DEBUG("get true for , initDeclaratorList, tryLastB %d", tryLastB );
-      lastIndex = tryLastB;
+      returner -> addChild(base);
     }
-    JZWRITE_DEBUG("get true for , initDeclaratorList, tryIndex %d", tryLastA );
+    else
+    {
+      delete base;
+    }
     return eGrmErrNoError;
   }
+  delete base;
 
   return eGrmErrUnknown;
 }
