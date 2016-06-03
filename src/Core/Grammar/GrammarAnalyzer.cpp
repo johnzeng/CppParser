@@ -5412,7 +5412,7 @@ uint32 GrammarAnalyzer::handleInitDeclarator(int index, int& lastIndex, GrammarB
   GrammarReturnerBase * base = new GrammarReturnerBase(eInitDeclarator, "");
   bool ret = 
     INVOKE(Declarator, index, tryLast, curBlock, base, NOT_OPT) &&
-    INVOKE(Initializer, tryLast + 1, tryLast, curBlock, base, NOT_OPT);
+    INVOKE(Initializer, tryLast + 1, tryLast, curBlock, base, IS_OPT);
   if (ret)
   {
     if (returner)
