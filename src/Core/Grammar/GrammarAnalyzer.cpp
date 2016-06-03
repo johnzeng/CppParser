@@ -5193,7 +5193,7 @@ uint32 GrammarAnalyzer::handleDeclaration(int index, int& lastIndex, GrammarBloc
 uint32 GrammarAnalyzer::handleEmptyDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   uint32 expRet = EXPECT(index, lastIndex, ";", NOT_OPT, NOT_IN_ONE_LINE);
-  if (eGrmErrNoError == expRet)
+  if (expRet)
   {
     if (returner)
     {
