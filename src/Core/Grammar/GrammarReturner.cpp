@@ -7,6 +7,14 @@ void GrammarReturnerBase::initMap()
 {
   sNameMap[eGrmTop] = "eGrmTop";
   sNameMap[eTypeId] = "eTypeId";
+  sNameMap[eUsingDeclaration] = "eUsingDeclaration";
+  sNameMap[eAsmDeclaration] = "eAsmDeclaration";
+  sNameMap[eUnnamedNamespaceDefinition] = "eUnnamedNamespaceDefinition";
+  sNameMap[eExtensionNamespaceDefinition] = "eExtensionNamespaceDefinition";
+  sNameMap[eNamespaceBody] = "eNamespaceBody";
+  sNameMap[eOriginalNamespaceName] = "eOriginalNamespaceName";
+  sNameMap[eOriginalNamespaceDefinition] = "eOriginalNamespaceDefinition";
+  sNameMap[eNamedNamespaceDefinition] = "eNamedNamespaceDefinition";
   sNameMap[eNamespaceDefinition] = "eNamespaceDefinition";
   sNameMap[eQualifiedNamespaceSpecifier] = "eQualifiedNamespaceSpecifier";
   sNameMap[eNamespaceAliasDefinition] = "eNamespaceAliasDefinition";

@@ -5638,35 +5638,60 @@ uint32 GrammarAnalyzer::handleNamespaceDefinition(int index, int& lastIndex, Gra
 uint32 GrammarAnalyzer::handleNamedNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryA = index;
-  bool retA = INVOKE(OriginalNamespaceDefinition, index, tryA, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eNamedNamespaceDefinition, "");
+  bool retA = INVOKE(OriginalNamespaceDefinition, index, tryA, curBlock, baseA, NOT_OPT);
   if (retA)
   {
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     lastIndex = tryA;
     return eGrmErrNoError;
   }
+  delete baseA;
 
   int32 tryB = index;
-  bool retB = INVOKE(ExtensionNamespaceDefinition, index, tryB, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * baseB = new GrammarReturnerBase(eNamedNamespaceDefinition, "");
+  bool retB = INVOKE(ExtensionNamespaceDefinition, index, tryB, curBlock, baseB, NOT_OPT);
   if (retB)
   {
     lastIndex = tryB;
+    if (returner)
+    {
+      returner -> addChild(baseB);
+    }
+    else
+    {
+      delete baseB;
+    }
     return eGrmErrNoError;
   }
+  delete baseB;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleOriginalNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eOriginalNamespaceDefinition, "");
   bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(Identifier, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(Identifier, tryLast + 1, tryLast, curBlock, baseA, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, baseA, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
   if (ret)
   {
     lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
@@ -5675,10 +5700,15 @@ uint32 GrammarAnalyzer::handleOriginalNamespaceDefinition(int index, int& lastIn
 uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
-  bool ret = INVOKE(Identifier, index, tryLast, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eOriginalNamespaceName, "");
+  bool ret = INVOKE(Identifier, index, tryLast, curBlock, baseA, NOT_OPT);
   if (ret)
   {
     lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
@@ -5687,11 +5717,27 @@ uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, G
 uint32 GrammarAnalyzer::handleNamespaceBody(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
-  bool ret = INVOKE(DeclarationSeq, index, tryLast , curBlock, returner, IS_OPT);
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eNamespaceBody, "");
+  bool ret = INVOKE(DeclarationSeq, index, tryLast , curBlock, returner, NOT_OPT);
   if (ret)
   {
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     lastIndex = tryLast;
   }
+  else
+  {
+    delete baseA;
+  }
+
+  //Actually DeclarationSeq is OPT, but I set it to NOT_OPT so I won't attach an empty base
+
   return eGrmErrNoError;
  
 }
@@ -5700,31 +5746,50 @@ uint32 GrammarAnalyzer::handleExtensionNamespaceDefinition(int index, int& lastI
 {
   
   int32 tryLast = index;
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eExtensionNamespaceDefinition, "");
   bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(OriginalNamespaceName, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(OriginalNamespaceName, tryLast + 1, tryLast, curBlock, baseA, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, baseA, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
   if (ret)
   {
     lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     return eGrmErrNoError;
   }
+  delete baseA;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleUnnamedNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eUnnamedNamespaceDefinition, "");
   bool ret = EXPECT(tryLast, tryLast, "inline", IS_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLast + 1, tryLast, "namespace", NOT_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(NamespaceBody, tryLast + 1, tryLast, curBlock, baseA, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
   if (ret)
   {
     lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
@@ -5734,16 +5799,26 @@ uint32 GrammarAnalyzer::handleUnnamedNamespaceDefinition(int index, int& lastInd
 uint32 GrammarAnalyzer::handleAsmDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eAsmDeclaration, "");
   bool retA = EXPECT(tryLast, tryLast, "asm", NOT_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLast + 1, tryLast, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(StringLiteral, tryLast + 1, tryLast, curBlock, returner, NOT_OPT) &&
+    INVOKE(StringLiteral, tryLast + 1, tryLast, curBlock, baseA, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE);
     EXPECT(tryLast + 1, tryLast, ";", NOT_OPT, NOT_IN_ONE_LINE);
   if (retA)
   {
     lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     return eGrmErrNoError;
   }
+  delete baseA;
     
   return eGrmErrUnknown;
 }
@@ -5751,28 +5826,48 @@ uint32 GrammarAnalyzer::handleAsmDeclaration(int index, int& lastIndex, GrammarB
 uint32 GrammarAnalyzer::handleUsingDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLastA = index;
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eUsingDeclaration, "");
   bool retA = EXPECT(tryLastA, tryLastA, "using", NOT_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLastA + 1, tryLastA, "typename", IS_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLastA + 1, tryLastA, "::", IS_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(NestNameSpecifier, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
-    INVOKE(UnqualifiedId, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT) &&
+    INVOKE(NestNameSpecifier, tryLastA + 1, tryLastA, curBlock, baseA, NOT_OPT) &&
+    INVOKE(UnqualifiedId, tryLastA + 1, tryLastA, curBlock, baseA, NOT_OPT) &&
     EXPECT(tryLastA + 1, tryLastA, ";", NOT_OPT, NOT_IN_ONE_LINE);
   if (retA)
   {
     lastIndex = tryLastA;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     return eGrmErrNoError;
   }
+  delete baseA;
 
   int32 tryLastB = index;
+  GrammarReturnerBase * baseB = new GrammarReturnerBase(eUsingDeclaration, "");
   bool retB = EXPECT(tryLastB, tryLastB, "using", NOT_OPT, NOT_IN_ONE_LINE) &&
     EXPECT(tryLastB + 1, tryLastB, "::", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(UnqualifiedId, tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT) &&
+    INVOKE(UnqualifiedId, tryLastB + 1, tryLastB, curBlock, baseB, NOT_OPT) &&
     EXPECT(tryLastB + 1, tryLastB, ";", NOT_OPT, NOT_IN_ONE_LINE);
   if (retB)
   {
     lastIndex = tryLastB;
+    if (returner)
+    {
+      returner->addChild(baseB);
+    }
+    else
+    {
+      delete baseB;
+    }
     return eGrmErrNoError;
   }
+  delete baseB;
   return eGrmErrUnknown;
 }
 
