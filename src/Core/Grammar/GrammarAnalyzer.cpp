@@ -5572,14 +5572,24 @@ uint32 GrammarAnalyzer::handleNamespaceAliasDefinition(int index, int& lastIndex
 uint32 GrammarAnalyzer::handleQualifiedNamespaceSpecifier(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
+  GrammarReturnerBase * base = new GrammarReturnerBase(eQualifiedNamespaceSpecifier, "");
   bool ret = EXPECT(index, tryLast, "::", IS_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(NestNameSpecifier, tryLast + 1, tryLast, curBlock, returner, IS_OPT) &&
-    INVOKE(NamespaceName, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+    INVOKE(NestNameSpecifier, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
+    INVOKE(NamespaceName, tryLast + 1, tryLast, curBlock, base, NOT_OPT);
   if (ret)
   {
     lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
@@ -5587,20 +5597,41 @@ uint32 GrammarAnalyzer::handleQualifiedNamespaceSpecifier(int index, int& lastIn
 uint32 GrammarAnalyzer::handleNamespaceDefinition(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryA = index;
-  bool retA = INVOKE(NamedNamespaceDefinition, index, tryA, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eNamespaceDefinition, "");
+  bool retA = INVOKE(NamedNamespaceDefinition, index, tryA, curBlock, baseA, NOT_OPT);
   if (retA)
   {
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     lastIndex = tryA;
     return eGrmErrNoError;
   }
+  delete baseA;
 
   int32 tryB = index;
-  bool retB = INVOKE(UnnamedNamespaceDefinition, index, tryB, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * baseB = new GrammarReturnerBase(eNamespaceDefinition, "");
+  bool retB = INVOKE(UnnamedNamespaceDefinition, index, tryB, curBlock, baseB, NOT_OPT);
   if (retB)
   {
+    if (returner)
+    {
+      returner -> addChild(baseB);
+    }
+    else
+    {
+      delete baseB;
+    }
     lastIndex = tryB;
     return eGrmErrNoError;
   }
+  delete baseB;
+
   return eGrmErrUnknown;
 }
 

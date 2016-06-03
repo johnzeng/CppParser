@@ -14,6 +14,8 @@ enum ReturnerType{
   eTypeSpecifierSeq,
   eVirtSpecifier,
   eTypeId,
+  eNamespaceDefinition,
+  eQualifiedNamespaceSpecifier,
   eNamespaceAliasDefinition,
   eOpaqueEnumDeclaration,
   eBraceOrEqualInitializer,
