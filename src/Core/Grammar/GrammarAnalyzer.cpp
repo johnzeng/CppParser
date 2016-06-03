@@ -7068,6 +7068,7 @@ uint32 GrammarAnalyzer::handleNewDeclarator(int index, int& lastIndex, GrammarBl
   return eGrmErrUnknown;
 }
 
+//===mark
 uint32 GrammarAnalyzer::handleNewInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLastB = index;
@@ -7146,7 +7147,23 @@ uint32 GrammarAnalyzer::handleTemplateDeclaration(int index, int& lastIndex, Gra
 
 uint32 GrammarAnalyzer::handleDeclarationStatement(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  return handleBlockDeclaration(index, lastIndex, curBlock, returner);
+  GrammarReturnerBase * base = new GrammarReturnerBase(eDeclarationStatement, "");
+  int32 tryLast = index;
+  if (INVOKE(BlockDeclaration, index, tryLast, curBlock, base, NOT_OPT))
+  {
+    lastIndex = tryLast;
+    if (returner )
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
+    return eGrmErrNoError;
+  }
+  delete base;
+  return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleTemplateParameterList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
