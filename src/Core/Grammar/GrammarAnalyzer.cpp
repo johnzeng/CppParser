@@ -5927,90 +5927,169 @@ uint32 GrammarAnalyzer::handleLinkageSpecification(int index, int& lastIndex, Gr
 uint32 GrammarAnalyzer::handleCtorInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eCtorInitializer, "");
   bool ret = EXPECT(tryLast, tryLast, ":", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(MemInitializerList, tryLast + 1, tryLast, curBlock, returner, NOT_OPT);
+    INVOKE(MemInitializerList, tryLast + 1, tryLast, curBlock, baseA, NOT_OPT);
   if (ret)
   {
     lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     return eGrmErrNoError;
   }
+  delete baseA;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleAttibuteDeclaration(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index; 
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eAttibuteDeclaration, "");
   bool ret = INVOKE(Attributes, tryLast, tryLast, curBlock, returner, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, ";", NOT_OPT, NOT_IN_ONE_LINE);
   if (ret)
   {
     lastIndex = tryLast;
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     return eGrmErrNoError;
   }
+  delete baseA;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleMemInitializerId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLastA = index;
-  bool retA = INVOKE(ClassOrDecltype, index, tryLastA, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * baseA = new GrammarReturnerBase(eMemInitializerId, "");
+  bool retA = INVOKE(ClassOrDecltype, index, tryLastA, curBlock, baseA, NOT_OPT);
   if (retA)
   {
+    if (returner)
+    {
+      returner -> addChild(baseA);
+    }
+    else
+    {
+      delete baseA;
+    }
     lastIndex = tryLastA;
     return eGrmErrNoError;
   }
+  delete baseA;
 
   int32 tryLastB = index;
-  bool retB = INVOKE(Identifier, index, tryLastB, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * baseB = new GrammarReturnerBase(eMemInitializerId, "");
+  bool retB = INVOKE(Identifier, index, tryLastB, curBlock, baseB, NOT_OPT);
   if (retB)
   {
     lastIndex = tryLastB;
+    if (returner)
+    {
+      returner -> addChild(baseB);
+    }
+    else
+    {
+      delete baseB;
+    }
     return eGrmErrNoError;
   }
+  delete baseB;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleMemInitializerList(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
-  bool retA = INVOKE(MemInitializer, index, tryLast, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * base = new GrammarReturnerBase(eMemInitializerList, "");
+  bool retA = INVOKE(MemInitializer, index, tryLast, curBlock, base, NOT_OPT);
   if (retA)
   {
-    int32 tryLastA = tryLast;
-    bool retA1 = EXPECT(tryLastA + 1, tryLastA, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(MemInitializerList, tryLastA + 1, tryLastA, curBlock, returner, NOT_OPT);
+    do
+    {
+      lastIndex = tryLast;
+    } 
+    while (EXPECT(tryLast + 1, tryLast, ",", NOT_OPT, NOT_IN_ONE_LINE) &&
+      INVOKE(MemInitializerList, tryLast + 1, tryLast, curBlock, base, NOT_OPT));
 
-    EXPECT(tryLastA + 1, tryLastA, "...", IS_OPT, NOT_IN_ONE_LINE);
+    EXPECT(lastIndex + 1, lastIndex , "...", IS_OPT, NOT_IN_ONE_LINE);
+    if (returner)
+    {
+      returner -> addChild(base);
+    }
+    else
+    {
+      delete base;
+    }
 
     return eGrmErrNoError;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
 uint32 GrammarAnalyzer::handleMemInitializer(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
-  bool ret = INVOKE(MemInitializerId, index, tryLast, curBlock, returner, NOT_OPT);
+  GrammarReturnerBase * base = new GrammarReturnerBase(eMemInitializer, "");
+  bool ret = INVOKE(MemInitializerId, index, tryLast, curBlock, base, NOT_OPT);
   if (ret)
   {
     int32 tryLastA = tryLast;
+    GrammarReturnerBase * baseA = new GrammarReturnerBase(eMemInitializer, "");
     bool retA = EXPECT(tryLastA + 1, tryLastA, "(", NOT_OPT, NOT_IN_ONE_LINE) &&
-      INVOKE(ExpressionList,tryLastA + 1, tryLastA, curBlock, returner, IS_OPT) &&
+      INVOKE(ExpressionList,tryLastA + 1, tryLastA, curBlock, baseA, IS_OPT) &&
       EXPECT(tryLastA + 1, tryLastA, ")", NOT_OPT, NOT_IN_ONE_LINE);
     if (retA)
     {
+      if (returner)
+      {
+        base -> mergeChild(baseA);
+        returner-> addChild(base);
+      }
+      else
+      {
+        delete base;
+      }
+      delete baseA;
       lastIndex = tryLastA;
       return eGrmErrNoError;
     }
+    delete baseA;
 
     int32 tryLastB = tryLast;
-    bool retB =  INVOKE(BracedInitList,tryLastB + 1, tryLastB, curBlock, returner, NOT_OPT);
+    GrammarReturnerBase * baseB = new GrammarReturnerBase(eMemInitializer, "");
+    bool retB =  INVOKE(BracedInitList,tryLastB + 1, tryLastB, curBlock, baseB, NOT_OPT);
     if (retB)
     {
       lastIndex = tryLastB;
+      if (returner)
+      {
+        base -> mergeChild(baseB);
+        returner -> addChild(base);
+      }
+      else
+      {
+        delete base;
+      }
+      delete baseB;
       return eGrmErrNoError;
     }
+    delete baseB;
   }
+  delete base;
   return eGrmErrUnknown;
 }
 
