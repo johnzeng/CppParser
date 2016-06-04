@@ -7712,6 +7712,16 @@ uint32 GrammarAnalyzer::handleExceptionDeclaration(int index, int& lastIndex, Gr
     }
   }
   delete base;
+
+  if (EXPECT(index, lastIndex, "...", NOT_OPT, NOT_IN_ONE_LINE))
+  {
+    if (returner)
+    {
+      GrammarReturnerBase * baseExp = new GrammarReturnerBase(eExceptionDeclaration, "...");
+      returner -> addChild(baseExp);
+    }
+    return eGrmErrNoError;
+  }
   return eGrmErrUnknown;
 }
 

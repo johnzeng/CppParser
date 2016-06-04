@@ -1,9 +1,9 @@
 void mythrow()
 {
-   throw ExceptionClass("my throw");
+   throw 11;
 }
 
-void maint()
+int main()
 {
   try{
     mythrow();
