@@ -214,6 +214,7 @@ protected:
   bool isLegalVarIdentify(const string& id, GrammarBlock* curBlock);
 
 private:
+  GrammarReturnerBase * mTopReturner;
 
   LexRecList mRecList;
 

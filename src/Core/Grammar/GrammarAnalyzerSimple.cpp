@@ -2,7 +2,7 @@
   put some simple api into this file 
  ********************************************************/
 
-
+#include "GrammarReturner.h"
 #include "GrammarAnalyzer.h"
 #include "GrammarUtil.h"
 #include "LexUtil.h"
@@ -12,10 +12,13 @@ GrammarAnalyzer::GrammarAnalyzer(LexRecList list):
   mRecList(list),
   mTopBlock(GrammarBlock::createTopNode())
 {
+
+  mTopReturner = new GrammarReturnerBase(eGrmTop, "");
 }
 
 GrammarAnalyzer::~GrammarAnalyzer()
 {
+  delete mTopReturner;
 }
 
 GrammarBlock* GrammarAnalyzer::getTopBlock()

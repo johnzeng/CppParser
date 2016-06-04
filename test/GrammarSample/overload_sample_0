@@ -1,0 +1,106 @@
+class test{
+public:
+  int b;
+};
+
+int operator + (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator - (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator * (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator / (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator | (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator & (test a, int b)
+{
+  return a.b + b;
+}
+
+bool operator < (test a, int b)
+{
+  return a.b + b;
+}
+
+bool operator > (test a, int b)
+{
+  return a.b + b;
+}
+
+bool operator >= (test a, int b)
+{
+  return a.b + b;
+}
+
+bool operator <= (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator << (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator >> (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator <<= (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator >>= (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator ~ (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator != (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator + (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator + (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator + (test a, int b)
+{
+  return a.b + b;
+}
+
+int operator + (test a, int b)
+{
+  return a.b + b;
+}
+
+

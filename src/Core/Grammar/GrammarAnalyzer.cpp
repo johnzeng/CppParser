@@ -10,14 +10,11 @@ uint32 GrammarAnalyzer::doAnalyze()
   int index = 0;
   int listSize = mRecList.size();
   int32 lastIndex = 0;
-  GrammarReturnerBase *base = new GrammarReturnerBase(eGrmTop, "");
-  bool ret = INVOKE(DeclarationSeq, 0, lastIndex, &mTopBlock, base, NOT_OPT);
-  //should do some analyze
-  base->printAllChild(0);
-  delete base;
+  bool ret = INVOKE(DeclarationSeq, 0, lastIndex, &mTopBlock, mTopReturner, NOT_OPT);
+  mTopReturner->printAllChild(0);
   if (ret)
   {
-    return lastIndex == mRecList.size();
+    return lastIndex == mRecList.size() ? eGrmErrNoError: eGrmErrUnknown;
   }
   return eGrmErrUnknown;
 
