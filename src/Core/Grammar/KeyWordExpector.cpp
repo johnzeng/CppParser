@@ -101,7 +101,7 @@ uint32 GrammarAnalyzer::handleStorageClassSpecifier(int index, int& lastIndex, G
   }
 
   uint32 expStatic = expect("static", index);
-  if (eGrmErrNoError == expRegister)
+  if (eGrmErrNoError == expStatic)
   {
     lastIndex = index;
     if (ret)
@@ -113,7 +113,7 @@ uint32 GrammarAnalyzer::handleStorageClassSpecifier(int index, int& lastIndex, G
   }
 
   uint32 expThreadLocal = expect("thread_local", index);
-  if (eGrmErrNoError == expRegister)
+  if (eGrmErrNoError == expThreadLocal)
   {
     lastIndex = index;
 //    ret = eGramIsThreadLocal;
@@ -138,7 +138,7 @@ uint32 GrammarAnalyzer::handleStorageClassSpecifier(int index, int& lastIndex, G
   }
 
   uint32 expMutable = expect("mutable", index);
-  if (eGrmErrNoError == expRegister)
+  if (eGrmErrNoError == expMutable)
   {
     lastIndex = index;
     if (ret)

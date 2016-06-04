@@ -14,7 +14,14 @@ uint32 GrammarAnalyzer::doAnalyze()
   mTopReturner->printAllChild(0);
   if (ret)
   {
-    return lastIndex == mRecList.size() ? eGrmErrNoError: eGrmErrUnknown;
+    if (lastIndex == mRecList.size() - 1)
+    {
+      return eGrmErrNoError;
+    }
+    else
+    {
+      JZWRITE_ERROR("last index is: %d", lastIndex);
+    }
   }
   return eGrmErrUnknown;
 
