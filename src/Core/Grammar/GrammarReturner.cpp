@@ -7,6 +7,15 @@ void GrammarReturnerBase::initMap()
 {
   sNameMap[eGrmTop] = "eGrmTop";
   sNameMap[eTypeId] = "eTypeId";
+  sNameMap[eCapture] = "eCapture";
+  sNameMap[eCaptureDefault] = "eCaptureDefault";
+  sNameMap[eCaptureList] = "eCaptureList";
+  sNameMap[eTypeIdList] = "eTypeIdList";
+  sNameMap[eNoexceptSpecification] = "eNoexceptSpecification";
+  sNameMap[eDynamicExceptionSpecification] = "eDynamicExceptionSpecification";
+  sNameMap[eExceptionSpecification] = "eExceptionSpecification";
+  sNameMap[eTrailingReturnType] = "eTrailingReturnType";
+  sNameMap[eTrailingTypeSpecifierSeq] = "eTrailingTypeSpecifierSeq";
   sNameMap[eFunctionTryBlock] = "eFunctionTryBlock";
   sNameMap[eExceptionDeclaration] = "eExceptionDeclaration";
   sNameMap[eAliasDeclaration] = "eAliasDeclaration";
