@@ -1,13 +1,13 @@
 class tester;
 
 class test{
-  test operator+ (int b);
-  test operator() (int b);
+  int operator+ (int b);
+  int operator() (int b);
 
-  final void finalTest();
+  void finalTest();
 
-  explicit void init(const string hello);
-  friend tester;
+  void init(const int hello);
+  friend class tester;
   friend void testercall();
 
   class newTest{

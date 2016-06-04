@@ -1,0 +1,21 @@
+int operator >> (test a, int b)
+{
+  return a.b + b;
+}
+
+
+
+operator-function-id
+  id-expression
+    priamry-expression
+      postfix-expression
+    declarator-id
+      noptr-declarator
+        ptr-declarator
+          declarator
+            init-declarator
+            parameter-declaration
+            function-defination
+    type-parameter
+    template-argument
+

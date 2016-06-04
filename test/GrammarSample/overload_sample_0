@@ -3,102 +3,102 @@ public:
   int b;
 };
 
-int operator + (test a, int b)
+int operator + (int a, int b)
 {
   return a.b + b;
 }
 
-int operator - (test a, int b)
+int operator - (int a, int b)
 {
   return a.b + b;
 }
 
-int operator * (test a, int b)
+int operator * (int a, int b)
 {
   return a.b + b;
 }
 
-int operator / (test a, int b)
+int operator / (int a, int b)
 {
   return a.b + b;
 }
 
-int operator | (test a, int b)
+int operator | (int a, int b)
 {
   return a.b + b;
 }
 
-int operator & (test a, int b)
+int operator & (int a, int b)
 {
   return a.b + b;
 }
 
-bool operator < (test a, int b)
+bool operator < (int a, int b)
 {
   return a.b + b;
 }
 
-bool operator > (test a, int b)
+bool operator > (int a, int b)
 {
   return a.b + b;
 }
 
-bool operator >= (test a, int b)
+bool operator >= (int a, int b)
 {
   return a.b + b;
 }
 
-bool operator <= (test a, int b)
+bool operator <= (int a, int b)
 {
   return a.b + b;
 }
 
-int operator << (test a, int b)
+int operator << (int a, int b)
 {
   return a.b + b;
 }
 
-int operator >> (test a, int b)
+int operator >> (int a, int b)
 {
   return a.b + b;
 }
 
-int operator <<= (test a, int b)
+int operator <<= (int a, int b)
 {
   return a.b + b;
 }
 
-int operator >>= (test a, int b)
+int operator >>= (int a, int b)
 {
   return a.b + b;
 }
 
-int operator ~ (test a, int b)
+int operator ~ (int a, int b)
 {
   return a.b + b;
 }
 
-int operator != (test a, int b)
+int operator != (int a, int b)
 {
   return a.b + b;
 }
 
-int operator + (test a, int b)
+int operator + (int a, int b)
 {
   return a.b + b;
 }
 
-int operator + (test a, int b)
+int operator + (int a, int b)
 {
   return a.b + b;
 }
 
-int operator + (test a, int b)
+int operator + (int a, int b)
 {
   return a.b + b;
 }
 
-int operator + (test a, int b)
+int operator + (int a, int b)
 {
   return a.b + b;
 }

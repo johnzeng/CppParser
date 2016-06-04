@@ -792,6 +792,26 @@ uint32 GrammarAnalyzer::handleSimpleTypeSpecifier(int index, int& lastIndex, Gra
 uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   JZFUNC_BEGIN_LOG();
+  int32 trylast002 = index;
+  GrammarReturnerBase *base002 = new GrammarReturnerBase(eDeclarator, "");
+  bool ret002 = INVOKE(NonPtrDeclarator, index, trylast002, curBlock, base002, NOT_OPT) &&
+    INVOKE(ParametersAndQualifiers, trylast002 + 1, trylast002, curBlock, base002, NOT_OPT) &&
+    INVOKE(TrailingReturnType, trylast002 + 1, trylast002, curBlock, base002, NOT_OPT);
+  if (ret002)
+  {
+    lastIndex = trylast002;
+    if (returner)
+    {
+      returner->addChild(base002);
+    }
+    return eGrmErrNoError;
+  }
+  else
+  {
+    delete base002;
+    base002 = NULL;
+  }
+
   int32 trylast001 = index;
   GrammarReturnerBase *base001 = new GrammarReturnerBase(eDeclarator, "");
   bool ret001 = INVOKE(PtrDeclarator, index, trylast001, curBlock, base001, NOT_OPT);
@@ -812,27 +832,6 @@ uint32 GrammarAnalyzer::handleDeclarator(int index, int& lastIndex, GrammarBlock
   {
     delete base001;
     base001 = NULL;
-  }
-
-//this part is cpp 11 standard
-  int32 trylast002 = index;
-  GrammarReturnerBase *base002 = new GrammarReturnerBase(eDeclarator, "");
-  bool ret002 = INVOKE(NonPtrDeclarator, index, trylast002, curBlock, base002, NOT_OPT) &&
-    INVOKE(ParametersAndQualifiers, trylast002 + 1, trylast002, curBlock, base002, NOT_OPT) &&
-    INVOKE(TrailingReturnType, trylast002 + 1, trylast002, curBlock, base002, NOT_OPT);
-  if (ret002)
-  {
-    lastIndex = trylast002;
-    if (returner)
-    {
-      returner->addChild(base002);
-    }
-    return eGrmErrNoError;
-  }
-  else
-  {
-    delete base002;
-    base002 = NULL;
   }
 
   return eGrmErrUnknown;
@@ -861,7 +860,7 @@ uint32 GrammarAnalyzer::handleNonPtrDeclarator(int index, int& lastIndex, Gramma
       if (returner)
       {
         baseB -> mergeChild(baseB1);
-        returner -> addChild(baseB1);
+        returner -> addChild(baseB);
       }
       else
       {
@@ -4694,7 +4693,7 @@ uint32 GrammarAnalyzer::handleClassSpecifier(int index, int& lastIndex, GrammarB
   GrammarReturnerBase * base = new GrammarReturnerBase(eClassSpecifier, "");
   bool ret = INVOKE(ClassHead, index, tryLast, curBlock, base, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, "{", NOT_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(MemberSpecification, tryLast + 1, tryLast, curBlock, base, NOT_OPT) &&
+    INVOKE(MemberSpecification, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
     EXPECT(tryLast + 1, tryLast, "}", NOT_OPT, NOT_IN_ONE_LINE);
   if (ret)
   {
