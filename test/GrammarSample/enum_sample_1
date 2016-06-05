@@ -1,4 +1,4 @@
-enum test{
+enum struct test{
   hello,
   hi = 1,
   nono,

@@ -5,7 +5,7 @@ class test final explicit{
   int operator+ (int b);
   int operator() (int b);
 
-  void finalTest();
+  void finalTest()override;
 
   void init(const int hello);
   friend class tester;

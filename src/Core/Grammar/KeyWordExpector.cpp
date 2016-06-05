@@ -1155,7 +1155,7 @@ uint32 GrammarAnalyzer::handleClassKey(int index, int& lastIndex, GrammarBlock* 
     return eGrmErrNoError;
   }
 
-  uint32 exp3 = expect("uion", index);
+  uint32 exp3 = expect("union", index);
   if (eGrmErrNoError == exp3)
   {
     lastIndex = index;

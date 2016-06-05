@@ -103,4 +103,13 @@ int operator + (int a, int b)
   return a.b + b;
 }
 
+int operator ^ (int a, int b)
+{
+  return a.b + b;
+}
+
+int operator % (int a, int b)
+{
+  return a.b + b;
+}
 
