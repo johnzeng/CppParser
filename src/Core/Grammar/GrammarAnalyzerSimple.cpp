@@ -126,3 +126,7 @@ bool GrammarAnalyzer::invoke(const string& file, const int line, const int index
     return false;
   }
 }
+
+GrammarReturnerBase* GrammarAnalyzer::getReturner() const{
+  return mTopReturner;
+}

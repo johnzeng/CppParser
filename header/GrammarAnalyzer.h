@@ -16,6 +16,8 @@ public:
   uint32 doAnalyze();
 
   GrammarBlock *getTopBlock();
+  GrammarReturnerBase* getReturner() const;
+
 protected:
 
   uint32 handleLiteralOperatorId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner = NULL);
