@@ -1,1 +1,1 @@
-int (*hello())(int a, int b);
+explicit int (*hello())(int& a, int&& b);

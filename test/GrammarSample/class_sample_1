@@ -1,6 +1,7 @@
 class tester;
 
-class test{
+class test final explicit{
+  int c final;
   int operator+ (int b);
   int operator() (int b);
 

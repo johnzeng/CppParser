@@ -6353,7 +6353,7 @@ uint32 GrammarAnalyzer::handleVirtSpecifierSeq(int index, int& lastIndex, Gramma
   int32 tryLast = index - 1;
   GrammarReturnerBase * base = new GrammarReturnerBase(eVirtSpecifierSeq, "");
   bool inLoop = false;
-  while (INVOKE(VirtSpecifier, index, tryLast, curBlock, base, NOT_OPT))
+  while (INVOKE(VirtSpecifier, tryLast + 1, tryLast, curBlock, base, NOT_OPT))
   {
     inLoop = true;
   }

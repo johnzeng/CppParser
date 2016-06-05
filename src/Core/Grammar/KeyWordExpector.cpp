@@ -367,7 +367,7 @@ uint32 GrammarAnalyzer::handleClassVirtSpecifier(int index, int& lastIndex, Gram
     lastIndex = index;
     if (ret)
     {
-      GrammarReturnerBase* base = new GrammarReturnerBase(eVirtSpecifier, "final");
+      GrammarReturnerBase* base = new GrammarReturnerBase(eClassVirtSpecifier, "final");
       ret -> addChild(base);
     }
 //    ret = eGramIsFinal;
