@@ -46,20 +46,16 @@ bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBloc
     {
       if (true == LexUtil::isConstNumberChar(id[i]))
       {
-        //should not start with number
-//        JZFUNC_END_LOG();
         return false;
       }
       else if (true == LexUtil::isInterpunction(id[i]))
       {
-//        JZFUNC_END_LOG();
         return false;
       }
     }
     char curChar = id[i];
     if (false == LexUtil::isIdentifyChar(curChar))
     {
-//      JZFUNC_END_LOG();
       return false;
     }
   }
