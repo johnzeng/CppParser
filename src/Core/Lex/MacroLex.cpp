@@ -253,8 +253,13 @@ uint32 MacroLex::handleSharp()
 	{
 		if (ret == eLexReachLineEnd && false == LexUtil::isEmptyInput(word))
 		{
-			JZWRITE_DEBUG("simply reach line end");	
+			JZWRITE_DEBUG("simply reach line end, should return no erro depend on the rule");	
+			JZFUNC_END_LOG();
 		}
+    else if (ret == eLexReachLineEnd && true == LexUtil::isEmptyInput(word)) 
+    {
+      return eLexNoError;
+    }
 		else
 		{
 			JZFUNC_END_LOG();

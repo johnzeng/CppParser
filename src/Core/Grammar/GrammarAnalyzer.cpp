@@ -11,7 +11,7 @@ uint32 GrammarAnalyzer::doAnalyze()
   int listSize = mRecList.size();
   int32 lastIndex = 0;
   bool ret = INVOKE(DeclarationSeq, 0, lastIndex, &mTopBlock, mTopReturner, NOT_OPT);
-  mTopReturner->printAllChild(0);
+//  mTopReturner->printAllChild(0);
   if (ret)
   {
     if (lastIndex == mRecList.size() - 1)

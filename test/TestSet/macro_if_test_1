@@ -42,3 +42,7 @@ yes4
 #ifdef Linux
 yes5
 #endif
+#
+#if DebugLevel==4
+yes6
+#endif

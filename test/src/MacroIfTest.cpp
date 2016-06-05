@@ -26,7 +26,7 @@ TEST(MacroLex, macroIfTest1){
 
   LexRecList recList = lex.getRecList();
 
-  ASSERT_EQ(9, recList.size());
+  ASSERT_EQ(10, recList.size());
   ASSERT_STREQ("hello", recList[0].word.c_str());
   ASSERT_STREQ("nono", recList[1].word.c_str());
   ASSERT_STREQ("yes", recList[2].word.c_str());
@@ -36,6 +36,7 @@ TEST(MacroLex, macroIfTest1){
   ASSERT_STREQ("hello", recList[6].word.c_str());
   ASSERT_STREQ(")", recList[7].word.c_str());
   ASSERT_STREQ("yes5", recList[8].word.c_str());
+  ASSERT_STREQ("yes6", recList[9].word.c_str());
 }
 
 //cover case: simple calculation
