@@ -7,7 +7,6 @@
 using namespace LexUtil;
 
 
-
 uint32 MacroLex::isMacroSuccess(const LexRecList& logic, bool* ret)
 {
 
@@ -238,8 +237,6 @@ int64 GrammarUtil::singleOperatorNum(int mark, int64 number)
 {
 	switch(mark)
 	{
-		case eOpRightBracket:
-			return number;
 		case eOpLogicalNegation:
 			return !number;
 		case eOpBitwiseComplement:

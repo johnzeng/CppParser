@@ -46,3 +46,7 @@ yes5
 #if DebugLevel==4
 yes6
 #endif
+#
+#if DebugLevel==4|4
+yes7
+#endif
