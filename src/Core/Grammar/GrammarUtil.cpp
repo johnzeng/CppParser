@@ -95,6 +95,7 @@ void GrammarUtil::init()
   mKeyWordSet.insert("reinterpret_cast");
   mKeyWordSet.insert("operator");
   mKeyWordSet.insert("long");
+  mKeyWordSet.insert("namespace");
   mKeyWordSet.insert("unsigned");
   mKeyWordSet.insert("throw");
   mKeyWordSet.insert("class");

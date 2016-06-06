@@ -17,6 +17,7 @@ public:
 
   GrammarBlock *getTopBlock();
   GrammarReturnerBase* getReturner() const;
+  void printInvokeCount()const;
 
 protected:
 
@@ -207,7 +208,7 @@ protected:
 
   typedef uint32(GrammarAnalyzer::*handler)(int,int&,GrammarBlock*, GrammarReturnerBase* ret);
 
-  bool invoke(handler han, const string& func, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt);
+  bool invoke(handler han, const string& handStr, const string& func, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt);
 
   bool invoke(const string& func, const int line, const int index, int& lastIndex, const string& key, bool isOpt, bool inOoneLine = false);
 
@@ -223,6 +224,9 @@ private:
   GrammarBlock mTopBlock;
   
   LoopBreaker mLoopBreaker;
+
+  map<string, int> mInvokeCount;
+  
 };
 
 //this macro should only be used in this file
@@ -232,7 +236,7 @@ private:
 #define IN_ONE_LINE true
 #define NOT_IN_ONE_LINE false
 
-#define INVOKE(handler, index, lastIndex, curBlock, returner, isOpt) invoke(&GrammarAnalyzer::handle ## handler, __func__, __LINE__,index, lastIndex, curBlock, returner, isOpt)
+#define INVOKE(handler, index, lastIndex, curBlock, returner, isOpt) invoke(&GrammarAnalyzer::handle ## handler,#handler,__func__, __LINE__,index, lastIndex, curBlock, returner, isOpt)
 
 #define EXPECT(index,lastIndex, key, isOpt, inOneLine) invoke(__func__,__LINE__,index, lastIndex, key, isOpt, inOneLine)
 

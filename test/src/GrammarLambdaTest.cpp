@@ -4,12 +4,12 @@
 #include "GrammarAnalyzer.h"
 #include "JZLogger.h"
 
-TEST(GrammarAnalyzer, OverloadOperatorTest)
+TEST(GrammarAnalyzer, Lambda0)
 {
   int argc = 2;
   char argv0[128] = {0},argv1[128] = {0};
   strcpy(argv0,"tester");
-  strcpy(argv1,"./test/GrammarSample/overload_sample_0");
+  strcpy(argv1,"./test/GrammarSample/lambda_sample_0");
   char* argv[2] = {argv0,argv1};
 
 	//analyze command line input
@@ -26,13 +26,11 @@ TEST(GrammarAnalyzer, OverloadOperatorTest)
 
   GrammarAnalyzer grammar = GrammarAnalyzer(recList);
 
+//  JZSetLoggerLevel(JZ_LOG_DEBUG);
   uint32 ret = grammar.doAnalyze();
-  JZSetLoggerLevel(JZ_LOG_DEBUG);
-  grammar.printInvokeCount();
-
   JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(eGrmErrNoError, ret);
 
+  
 }
-

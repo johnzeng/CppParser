@@ -62,8 +62,9 @@ bool GrammarAnalyzer::isLegalVarIdentify(const string& id, GrammarBlock* curBloc
   return true;
 }
 
-bool GrammarAnalyzer::invoke(handler han, const string& func, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt)
+bool GrammarAnalyzer::invoke(handler han,const string& handStr, const string& func, const int line, const int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* ret,bool isOpt)
 {
+  mInvokeCount[handStr]++;
   if (index == mRecList.size())
   {
     return false;
@@ -129,4 +130,12 @@ bool GrammarAnalyzer::invoke(const string& file, const int line, const int index
 
 GrammarReturnerBase* GrammarAnalyzer::getReturner() const{
   return mTopReturner;
+}
+
+void GrammarAnalyzer::printInvokeCount() const{
+  for(auto it = mInvokeCount.begin(); mInvokeCount.end()  != it ; it++ )
+  {
+    printf("Invoke:%s num:%d\n", it->first.c_str(), it->second);
+  }
+  
 }

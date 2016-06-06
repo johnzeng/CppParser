@@ -3,6 +3,7 @@
 #include "CmdInputFactor.h"
 #include "GrammarAnalyzer.h"
 #include "JZLogger.h"
+#include "GrammarReturner.h"
 
 //basic function declaration
 TEST(GrammarAnalyzer, Namespace0)
@@ -29,6 +30,7 @@ TEST(GrammarAnalyzer, Namespace0)
 
 //  JZSetLoggerLevel(JZ_LOG_DEBUG|JZ_LOG_TRACE);
   uint32 ret = grammar.doAnalyze();
+  grammar.getReturner()->printAllChild(0);
   JZSetLoggerLevel(JZ_LOG_TEST);
 
   ASSERT_EQ(eGrmErrNoError, ret);

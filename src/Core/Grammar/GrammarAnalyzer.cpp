@@ -5721,7 +5721,7 @@ uint32 GrammarAnalyzer::handleNamespaceBody(int index, int& lastIndex, GrammarBl
 {
   int32 tryLast = index;
   GrammarReturnerBase * baseA = new GrammarReturnerBase(eNamespaceBody, "");
-  bool ret = INVOKE(DeclarationSeq, index, tryLast , curBlock, returner, NOT_OPT);
+  bool ret = INVOKE(DeclarationSeq, index, tryLast , curBlock, baseA, NOT_OPT);
   if (ret)
   {
     if (returner)

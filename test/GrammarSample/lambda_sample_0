@@ -1,0 +1,7 @@
+int main(int argc, const char *argv[])
+{
+  auto glambda = [](int a, int&& b) { return a < b; };
+  bool b = glambda(3,4); // ok
+   
+  return 0;
+}
