@@ -7076,7 +7076,8 @@ uint32 GrammarAnalyzer::handleNewInitializer(int index, int& lastIndex, GrammarB
   int32 tryLastB = index;
   GrammarReturnerBase * baseB = new GrammarReturnerBase( eNewInitializer, "" );
   bool retB = EXPECT(tryLastB, tryLastB, "(", NOT_OPT, NOT_IN_ONE_LINE) && 
-    INVOKE(ExpressionList, tryLastB + 1, tryLastB, curBlock, baseB, IS_OPT);
+    INVOKE(ExpressionList, tryLastB + 1, tryLastB, curBlock, baseB, IS_OPT) &&
+    EXPECT(tryLastB + 1, tryLastB, ")", NOT_OPT, NOT_IN_ONE_LINE);
   if (retB)
   {
     if (returner)

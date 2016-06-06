@@ -19,4 +19,6 @@ int main()
   a = *aptr;
   b = sizeof(int);
   a = alignof(int);
+  char * d = new char();
+  delete d;
 }
