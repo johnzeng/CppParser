@@ -168,6 +168,7 @@ public:
 	bool isDeci(const string& input);
   bool endWithDeciSuffix(const string& input,int fromIndex);
   bool isLoopBreakerKey(const string& input);
+  bool isOverloadableOpt(const string& input);
 	int getNum(const char input);
 
 	template <typename type> type str2Num(const string& input);
@@ -186,6 +187,7 @@ private:
 	OpTypeMap mOperatorSet;
 	OpTypeMap mPreprocessOperatorSet;
 	StringSet mDoubleMeanWord;
+	StringSet mOverloadableOperators;
 	OpTypeMarkMap mOpMarkMap;
 	StringSet mKeyWordSet;
 };

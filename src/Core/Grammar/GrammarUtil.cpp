@@ -158,6 +158,55 @@ void GrammarUtil::init()
   mKeyWordSet.insert(",");
   mKeyWordSet.insert(".");
   
+  /*********************************************************
+    Overloadable operators 
+   ********************************************************/
+  
+  mOverloadableOperators.insert("+");
+  mOverloadableOperators.insert("-");
+  mOverloadableOperators.insert("*");
+  mOverloadableOperators.insert("/");
+  mOverloadableOperators.insert("%");
+  mOverloadableOperators.insert("^");
+  mOverloadableOperators.insert("|");
+  mOverloadableOperators.insert("&");
+  mOverloadableOperators.insert("!");
+  mOverloadableOperators.insert("~");
+  mOverloadableOperators.insert("=");
+  mOverloadableOperators.insert("<");
+  mOverloadableOperators.insert(">");
+  mOverloadableOperators.insert("+=");
+  mOverloadableOperators.insert("+=");
+  mOverloadableOperators.insert("-=");
+  mOverloadableOperators.insert("*=");
+  mOverloadableOperators.insert("/=");
+  mOverloadableOperators.insert("%=");
+  mOverloadableOperators.insert("%=");
+  mOverloadableOperators.insert("^=");
+  mOverloadableOperators.insert("&=");
+  mOverloadableOperators.insert("|=");
+  mOverloadableOperators.insert("<<");
+  mOverloadableOperators.insert(">>");
+  mOverloadableOperators.insert("<=");
+  mOverloadableOperators.insert(">=");
+  mOverloadableOperators.insert("<<=");
+  mOverloadableOperators.insert(">>=");
+  mOverloadableOperators.insert("==");
+  mOverloadableOperators.insert("!=");
+  mOverloadableOperators.insert("&&");
+  mOverloadableOperators.insert("||");
+  mOverloadableOperators.insert("++");
+  mOverloadableOperators.insert("--");
+  mOverloadableOperators.insert(",");
+  mOverloadableOperators.insert("->*");
+  mOverloadableOperators.insert("->");
+  mOverloadableOperators.insert("--");
+  mOverloadableOperators.insert("(");
+  mOverloadableOperators.insert("[");
+  mOverloadableOperators.insert("new");
+  mOverloadableOperators.insert("delete");
+  
+  
 }
 
 void GrammarUtil::insertOperatorToPreprocessOpSet(const string& op,uint32 priority, uint32 mark,int opNum, int associativity)
@@ -564,3 +613,8 @@ bool GrammarUtil::endWithDeciSuffix(const string& input, int fromIndex)
   return false;
 }
 
+bool GrammarUtil::isOverloadableOpt(const string& input)
+{
+  auto it = mOverloadableOperators.find(input);
+  return mOverloadableOperators.end() != it;
+}
