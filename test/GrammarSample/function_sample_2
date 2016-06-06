@@ -9,3 +9,4 @@ extern "C++" {
   int testB(int a, ...);
 };
 
+extern "C" int c;
