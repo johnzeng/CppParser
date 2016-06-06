@@ -22,102 +22,99 @@ JZNamespace::test::b = 1;
 And the grammar tree is look like this:
 
 ```shell
-eGrmTop
-|  eDeclarationSeq
-|  |  eDeclaration
-|  |  |  eNamespaceDefinition
-|  |  |  |  eNamedNamespaceDefinition
-|  |  |  |  |  eOriginalNamespaceDefinition
-|  |  |  |  |  |  eIdentifier:JZNamespace
-|  |  |  |  |  |  eNamespaceBody
-|  |  |  |  |  |  |  eDeclarationSeq
-|  |  |  |  |  |  |  |  eDeclaration
-|  |  |  |  |  |  |  |  |  eBlockDeclaration
-|  |  |  |  |  |  |  |  |  |  eSimpleDeclaration
-|  |  |  |  |  |  |  |  |  |  |  eDeclSpecifierSeq
-|  |  |  |  |  |  |  |  |  |  |  |  eDeclSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  eTypeSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  eClassSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eClassHead
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eClassKey:class
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eClassHeadName
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eClassName
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eIdentifier:test
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eMemberSpecification
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eMemberDeclaration
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eDeclSpecifierSeq
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eDeclSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eTypeSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eTrailingTypeSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eSimpleTypeSpecifier:long
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eDeclSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eTypeSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eTrailingTypeSpecifier
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eSimpleTypeSpecifier:int
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eMemberDeclaratorList
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eMemberDeclarator
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eDeclarator
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ePtrDeclarator
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eNonPtrDeclarator
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eNonPtrDeclarator
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eDeclaratorId
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eIdExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eUnqualifiedId
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eIdentifier:b
-|  |  eDeclaration
-|  |  |  eBlockDeclaration
-|  |  |  |  eSimpleDeclaration
-|  |  eDeclaration
-|  |  |  eBlockDeclaration
-|  |  |  |  eUsingDirective
-|  |  |  |  |  eNamespaceName
-|  |  |  |  |  |  eOriginalNamespaceName
-|  |  |  |  |  |  |  eIdentifier:JZNamespace
-|  |  eDeclaration
-|  |  |  eBlockDeclaration
-|  |  |  |  eSimpleDeclaration
-|  |  |  |  |  eInitDeclaratorList
-|  |  |  |  |  |  eInitDeclarator
-|  |  |  |  |  |  |  eDeclarator
-|  |  |  |  |  |  |  |  ePtrDeclarator
-|  |  |  |  |  |  |  |  |  eNonPtrDeclarator
-|  |  |  |  |  |  |  |  |  |  eNonPtrDeclarator
-|  |  |  |  |  |  |  |  |  |  |  eDeclaratorId
-|  |  |  |  |  |  |  |  |  |  |  |  eIdExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  eUnqualifiedId
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  eIdentifier:JZNamespace
-|  |  |  |  |  |  |  |  |  |  eNonPtrDeclarator
-|  |  |  |  |  |  |  |  |  |  |  eDeclaratorId
-|  |  |  |  |  |  |  |  |  |  |  |  eIdExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  eQualifiedId
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  eIdentifier:test
-|  |  |  |  |  |  |  |  |  |  eNonPtrDeclarator
-|  |  |  |  |  |  |  |  |  |  |  eDeclaratorId
-|  |  |  |  |  |  |  |  |  |  |  |  eIdExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  eQualifiedId
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  eIdentifier:b
-|  |  |  |  |  |  |  eInitializer
-|  |  |  |  |  |  |  |  eBraceOrEqualInitializer
-|  |  |  |  |  |  |  |  |  eInitializerClause
-|  |  |  |  |  |  |  |  |  |  eAssignmentExpression
-|  |  |  |  |  |  |  |  |  |  |  eConditionalExpression
-|  |  |  |  |  |  |  |  |  |  |  |  eLogicalOrExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  eLogicalAndExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  eInclusiveOrExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eExclusiveOrExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eAndExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eEqualityExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eRelationalExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eShiftExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eAdditiveExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eMultiplicativeExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ePmExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eCastExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eUnaryExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ePostfixExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ePostfixExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ePrimaryExpression
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  eLiteral:1
+GrmTop
+|  DeclarationSeq
+|  |  Declaration
+|  |  |  NamespaceDefinition
+|  |  |  |  NamedNamespaceDefinition
+|  |  |  |  |  OriginalNamespaceDefinition
+|  |  |  |  |  |  Identifier:JZNamespace
+|  |  |  |  |  |  NamespaceBody
+|  |  |  |  |  |  |  DeclarationSeq
+|  |  |  |  |  |  |  |  Declaration
+|  |  |  |  |  |  |  |  |  BlockDeclaration
+|  |  |  |  |  |  |  |  |  |  SimpleDeclaration
+|  |  |  |  |  |  |  |  |  |  |  DeclSpecifierSeq
+|  |  |  |  |  |  |  |  |  |  |  |  DeclSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  TypeSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  ClassSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ClassHead
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ClassKey:class
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ClassHeadName
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ClassName
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  Identifier:test
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  MemberSpecification
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  MemberDeclaration
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  DeclSpecifierSeq
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  DeclSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  TypeSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  TrailingTypeSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SimpleTypeSpecifier:long
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  DeclSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  TypeSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  TrailingTypeSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SimpleTypeSpecifier:int
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  MemberDeclaratorList
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  MemberDeclarator
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  Declarator
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  PtrDeclarator
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  NonPtrDeclarator
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  NonPtrDeclarator
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  DeclaratorId
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ClassName
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  Identifier:b
+|  |  Declaration
+|  |  |  BlockDeclaration
+|  |  |  |  SimpleDeclaration
+|  |  Declaration
+|  |  |  BlockDeclaration
+|  |  |  |  UsingDirective
+|  |  |  |  |  NamespaceName
+|  |  |  |  |  |  OriginalNamespaceName
+|  |  |  |  |  |  |  Identifier:JZNamespace
+|  |  Declaration
+|  |  |  BlockDeclaration
+|  |  |  |  SimpleDeclaration
+|  |  |  |  |  InitDeclaratorList
+|  |  |  |  |  |  InitDeclarator
+|  |  |  |  |  |  |  Declarator
+|  |  |  |  |  |  |  |  PtrDeclarator
+|  |  |  |  |  |  |  |  |  NonPtrDeclarator
+|  |  |  |  |  |  |  |  |  |  NonPtrDeclarator
+|  |  |  |  |  |  |  |  |  |  |  DeclaratorId
+|  |  |  |  |  |  |  |  |  |  |  |  NestNameSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  NestNameSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  TypeName
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ClassName
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  Identifier:JZNamespace
+|  |  |  |  |  |  |  |  |  |  |  |  |  NestNameSpecifier
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  TypeName
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ClassName
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  Identifier:test
+|  |  |  |  |  |  |  |  |  |  |  |  ClassName
+|  |  |  |  |  |  |  |  |  |  |  |  |  Identifier:b
+|  |  |  |  |  |  |  Initializer
+|  |  |  |  |  |  |  |  BraceOrEqualInitializer
+|  |  |  |  |  |  |  |  |  InitializerClause
+|  |  |  |  |  |  |  |  |  |  AssignmentExpression
+|  |  |  |  |  |  |  |  |  |  |  ConditionalExpression
+|  |  |  |  |  |  |  |  |  |  |  |  LogicalOrExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  LogicalAndExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  InclusiveOrExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ExclusiveOrExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  AndExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  EqualityExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  RelationalExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ShiftExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  AdditiveExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  MultiplicativeExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  PmExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  CastExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  UnaryExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  PostfixExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  PostfixExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  PrimaryExpression
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  Literal:1
 ```
 ##2016/05/22
 All BNF is trans to code. Now we need to debug and raise the cover rage.

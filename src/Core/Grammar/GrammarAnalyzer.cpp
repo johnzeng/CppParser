@@ -1186,25 +1186,6 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
 }
 uint32 GrammarAnalyzer::handleDeclaratorId(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  int32 tryLast001 = index;
-  GrammarReturnerBase *base001 = new GrammarReturnerBase(eDeclaratorId, "");
-  bool ret001 = EXPECT(index, tryLast001, "...", IS_OPT, NOT_IN_ONE_LINE) &&
-    INVOKE(IdExpression, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT);
-  if (ret001)
-  {
-    if (returner)
-    {
-      returner->addChild(base001);
-    }
-    else
-    {
-      delete base001;
-    }
-    lastIndex = tryLast001;
-    return eGrmErrNoError;
-  }
-  delete base001;
-  
   int32 tryLast002 = index;
   GrammarReturnerBase *base002 = new GrammarReturnerBase(eDeclaratorId, "");
   bool ret002 = EXPECT(index, tryLast002, "::", IS_OPT, NOT_IN_ONE_LINE) &&
@@ -1224,6 +1205,25 @@ uint32 GrammarAnalyzer::handleDeclaratorId(int index, int& lastIndex, GrammarBlo
     return eGrmErrNoError;
   }
   delete base002;
+  
+  int32 tryLast001 = index;
+  GrammarReturnerBase *base001 = new GrammarReturnerBase(eDeclaratorId, "");
+  bool ret001 = EXPECT(index, tryLast001, "...", IS_OPT, NOT_IN_ONE_LINE) &&
+    INVOKE(IdExpression, tryLast001 + 1, tryLast001, curBlock, base001, NOT_OPT);
+  if (ret001)
+  {
+    if (returner)
+    {
+      returner->addChild(base001);
+    }
+    else
+    {
+      delete base001;
+    }
+    lastIndex = tryLast001;
+    return eGrmErrNoError;
+  }
+  delete base001;
   
 
   return eGrmErrUnknown;
