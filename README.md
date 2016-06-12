@@ -44,11 +44,13 @@ running test need gtest support, I already add checkout comment into makefile.
 
 ###build lib:
 
-```make```
+```shell
+make
+```
 
 ###running test:
 
-```
+```shell
 make travis
 ```
 
