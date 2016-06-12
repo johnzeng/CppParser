@@ -5,8 +5,11 @@ This SimpleCompletor is aiming to create a completor for vim ,which is easy to c
 First work is to complete the c codes in property way.
 
 ###how to build:
+
 Just use make is enough.
+
 ##Mac
+
 #dependency:
 
 ```
@@ -17,15 +20,20 @@ Just use make is enough.
 
 #build lib:
 
-```make```
+```shell
+make
+```
 
 #running test:
 
-```make test```
+```shell
+make test
+```
 
 running test need gtest support, I already add checkout comment into makefile. 
 
 ##linux
+
 #dependency:
 
 ```
@@ -40,7 +48,9 @@ running test need gtest support, I already add checkout comment into makefile.
 
 #running test:
 
-```make travis```
+```
+make travis
+```
 
 this target is used to run test on travis, don't feel strange for this. you can also use `make test debug_var=2` to run the test
 
