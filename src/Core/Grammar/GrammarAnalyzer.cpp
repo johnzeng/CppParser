@@ -1106,7 +1106,7 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
   GrammarReturnerBase *baseA = new GrammarReturnerBase(ePtrOperator, "");
   bool retA = EXPECT(index, tryLastA, "*", NOT_OPT, NOT_IN_ONE_LINE) &&
     INVOKE(Attributes, tryLastA + 1, tryLastA, curBlock, baseA, IS_OPT) &&
-    INVOKE(CVQualifier, tryLastA + 1, tryLastA, curBlock, baseA, IS_OPT);
+    INVOKE(CVQualifierSeq, tryLastA + 1, tryLastA, curBlock, baseA, IS_OPT);
   if (retA)
   {
     lastIndex = tryLastA;
@@ -1166,7 +1166,7 @@ uint32 GrammarAnalyzer::handlePtrOperator(int index, int& lastIndex, GrammarBloc
     INVOKE(NestNameSpecifier, tryLastD + 1, tryLastC, curBlock, baseD, NOT_OPT) &&
     EXPECT(tryLastD + 1, tryLastD, "*", NOT_OPT, NOT_IN_ONE_LINE) &&
     INVOKE(Attributes, tryLastC + 1, tryLastC, curBlock, baseD, IS_OPT) &&
-    INVOKE(CVQualifier, tryLastC + 1, tryLastC, curBlock, baseD, IS_OPT);
+    INVOKE(CVQualifierSeq, tryLastC + 1, tryLastC, curBlock, baseD, IS_OPT);
   if (retD)
   {
     lastIndex = tryLastD;
@@ -4113,7 +4113,7 @@ uint32 GrammarAnalyzer::handleParametersAndQualifiers(int index, int& lastIndex,
     INVOKE(ParameterDeclarationClause, tryLast + 1, tryLast, curBlock, base, NOT_OPT) &&
     EXPECT(tryLast + 1, tryLast, ")", NOT_OPT, NOT_IN_ONE_LINE) &&
     INVOKE(Attributes, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
-    INVOKE(CVQualifier, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
+    INVOKE(CVQualifierSeq, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
     INVOKE(RefQualifier, tryLast + 1, tryLast, curBlock, base, IS_OPT) &&
     INVOKE(ExceptionSpecification, tryLast + 1, tryLast, curBlock, base, IS_OPT) ;
   if (ret)

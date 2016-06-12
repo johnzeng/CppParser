@@ -2,12 +2,12 @@ class tester;
 
 class test final explicit{
   int c final;
-  int operator+ (int b);
-  int operator() (int b);
+  int operator+ (int b = 1) = default;
+  int operator() (int b) = delete;
 
   void finalTest()override;
 
-  void init(const int hello);
+  void init(const int hello)const volatile;
   friend class tester;
   friend void testercall();
 
