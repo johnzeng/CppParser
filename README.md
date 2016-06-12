@@ -4,13 +4,13 @@
 This SimpleCompletor is aiming to create a completor for vim ,which is easy to config,and good enough to complete the c,cpp coding input.
 First work is to complete the c codes in property way.
 
-###how to build:
+##how to build:
 
 Just use make is enough.
 
 ##Mac
 
-#dependency:
+###dependency:
 
 ```
 1, clang
@@ -18,13 +18,13 @@ Just use make is enough.
 3, cmake if you wanna run test
 ```
 
-#build lib:
+###build lib:
 
 ```shell
 make
 ```
 
-#running test:
+###running test:
 
 ```shell
 make test
@@ -34,7 +34,7 @@ running test need gtest support, I already add checkout comment into makefile.
 
 ##linux
 
-#dependency:
+###dependency:
 
 ```
 1,gcc
@@ -42,11 +42,11 @@ running test need gtest support, I already add checkout comment into makefile.
 3,cmkae if you wanna run test
 ```
 
-#build lib:
+###build lib:
 
 ```make```
 
-#running test:
+###running test:
 
 ```
 make travis
