@@ -8,24 +8,40 @@ First work is to complete the c codes in property way.
 Just use make is enough.
 ##Mac
 #dependency:
+
+```
 1, clang
 2, make
 3, cmake if you wanna run test
+```
+
 #build lib:
-`make`
+
+```make```
+
 #running test:
-`make test`
+
+```make test```
+
 running test need gtest support, I already add checkout comment into makefile. 
 
 ##linux
 #dependency:
+
+```
 1,gcc
 2,make
 3,cmkae if you wanna run test
+```
+
 #build lib:
-`make`
+
+```make```
+
 #running test:
-`make travis`
+
+```make travis```
+
 this target is used to run test on travis, don't feel strange for this. you can also use `make test debug_var=2` to run the test
 
 ##2016/06/06
