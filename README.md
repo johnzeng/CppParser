@@ -1,13 +1,38 @@
 # CppParser
-[![Build Status](https://travis-ci.org/johnzeng/CppParser.svg?branch=develop)](https://travis-ci.org/johnzeng/CppParser)[![Coverage Status](https://coveralls.io/repos/github/johnzeng/CppParser/badge.svg?branch=develop)](https://coveralls.io/github/johnzeng/CppParser?branch=develop)
+[![Build Status](https://travis-ci.org/johnzeng/CppParser.svg?branch=master)](https://travis-ci.org/johnzeng/CppParser)[![Coverage Status](https://coveralls.io/repos/github/johnzeng/CppParser/badge.svg?branch=master)](https://coveralls.io/github/johnzeng/CppParser?branch=master)
 
 This SimpleCompletor is aiming to create a completor for vim ,which is easy to config,and good enough to complete the c,cpp coding input.
 First work is to complete the c codes in property way.
+
+###how to build:
+Just use make is enough.
+##Mac
+#dependency:
+1, clang
+2, make
+3, cmake if you wanna run test
+#build lib:
+`make`
+#running test:
+`make test`
+running test need gtest support, I already add checkout comment into makefile. 
+
+##linux
+#dependency:
+1,gcc
+2,make
+3,cmkae if you wanna run test
+#build lib:
+`make`
+#running test:
+`make travis`
+this target is used to run test on travis, don't feel strange for this. you can also use `make test debug_var=2` to run the test
 
 ##2016/06/06
 update a sample for grammar analyze result:
 
 here is the original file:
+
 ```cpp
 namespace JZNamespace{
   class test{
