@@ -1297,22 +1297,23 @@ uint32 GrammarAnalyzer::handleNamespaceName(int index, int& lastIndex, GrammarBl
 
 uint32 GrammarAnalyzer::handleNamespaceAlias(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
-  GrammarReturnerBase *base = new GrammarReturnerBase(eNamespaceAlias, "");
+//  GrammarReturnerBase *base = new GrammarReturnerBase(eNamespaceAlias, "");
   int32 tryLast = index;
-  if (INVOKE(Identifier, index, tryLast, curBlock, base, NOT_OPT))
+//  if (INVOKE(Identifier, index, tryLast, curBlock, base, NOT_OPT))
+  if (INVOKE(Identifier, index, tryLast, curBlock, returner, NOT_OPT))
   {
-    if (returner)
-    {
-      returner -> addChild(base);
-    }
-    else
-    {
-      delete base;
-    }
+//    if (returner)
+//    {
+//      returner -> addChild(base);
+//    }
+//    else
+//    {
+//      delete base;
+//    }
     lastIndex = tryLast;
     return eGrmErrNoError;
   }
-  delete base;
+//  delete base;
 
   return eGrmErrUnknown;
 }
@@ -5703,15 +5704,16 @@ uint32 GrammarAnalyzer::handleOriginalNamespaceDefinition(int index, int& lastIn
 uint32 GrammarAnalyzer::handleOriginalNamespaceName(int index, int& lastIndex, GrammarBlock* curBlock, GrammarReturnerBase* returner)
 {
   int32 tryLast = index;
-  GrammarReturnerBase * baseA = new GrammarReturnerBase(eOriginalNamespaceName, "");
-  bool ret = INVOKE(Identifier, index, tryLast, curBlock, baseA, NOT_OPT);
+//  GrammarReturnerBase * baseA = new GrammarReturnerBase(eOriginalNamespaceName, "");
+//  bool ret = INVOKE(Identifier, index, tryLast, curBlock, baseA, NOT_OPT);
+  bool ret = INVOKE(Identifier, index, tryLast, curBlock, returner, NOT_OPT);
   if (ret)
   {
     lastIndex = tryLast;
-    if (returner)
-    {
-      returner -> addChild(baseA);
-    }
+//    if (returner)
+//    {
+//      returner -> addChild(baseA);
+//    }
     return eGrmErrNoError;
   }
   return eGrmErrUnknown;
@@ -5994,22 +5996,23 @@ uint32 GrammarAnalyzer::handleMemInitializerId(int index, int& lastIndex, Gramma
   delete baseA;
 
   int32 tryLastB = index;
-  GrammarReturnerBase * baseB = new GrammarReturnerBase(eMemInitializerId, "");
-  bool retB = INVOKE(Identifier, index, tryLastB, curBlock, baseB, NOT_OPT);
+//  GrammarReturnerBase * baseB = new GrammarReturnerBase(eMemInitializerId, "");
+//  bool retB = INVOKE(Identifier, index, tryLastB, curBlock, baseB, NOT_OPT);
+  bool retB = INVOKE(Identifier, index, tryLastB, curBlock, returner, NOT_OPT);
   if (retB)
   {
     lastIndex = tryLastB;
-    if (returner)
-    {
-      returner -> addChild(baseB);
-    }
-    else
-    {
-      delete baseB;
-    }
+//    if (returner)
+//    {
+//      returner -> addChild(baseB);
+//    }
+//    else
+//    {
+//      delete baseB;
+//    }
     return eGrmErrNoError;
   }
-  delete baseB;
+//  delete baseB;
   return eGrmErrUnknown;
 }
 
