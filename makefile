@@ -22,7 +22,7 @@ endif
 
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header
 OTHER_C_FLAGS=
-OTHER_CPP_FLAGS=--std=c++0x
+OTHER_CPP_FLAGS=--std=c++0x -ll
 OTHER_FLAGS=${RELEASE_FLAG} $(PLATFORM_FLAG)
 
 TEST_FLAG=-isystem $(mylib_PATH)/test/include 
@@ -127,7 +127,6 @@ cov:
 	@echo "=================== now gen cov html file ============================="
 	gcovr -r ./src --html --html-details -o target/cov.html
 
-
 depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
 	@echo "=================== now gen depend  =================================="
 	-@sh $(depend_generator) "$(CPPFLAGS) $(TEST_FLAG)" 2>&1 > /dev/null
@@ -140,5 +139,5 @@ generated:
 #we will begin a new project here, but we don't wanna rewrite some of the functions, so we just write it here
 lex: $(LEXFILE) generated
 	flex -o generated/lex.c $(LEXFILE) 
-	$(CC) generated/lex.c -ll -o generated/lex
+	$(CC) generated/lex.c -c -o generated/lex.o
 
