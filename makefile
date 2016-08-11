@@ -34,6 +34,8 @@ TEST_TARGET=target/tester
 TEST_LIB=target/libtest.a
 
 SOURCES=$(shell find ./src -type f -name '*.cpp') $(shell find ./src -type f -name '*.c')
+LEXFILE=$(shell find ./script -type f -name '*.l')
+BASIONFILE=$(shell find ./script -type f -name '*.yacc')
 
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 HEADERS=$(wildcard ./*/*.h)
@@ -131,3 +133,8 @@ depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
 	-@sh $(depend_generator) "$(CPPFLAGS) $(TEST_FLAG)" 2>&1 > /dev/null
 
 .PHONY:count,clean,test,macro,debuger,release,cov
+
+
+#we will begin a new project here, but we don't wanna rewrite some of the functions, so we just write it here
+lex: $(LEXFILE)
+	flex $(LEXFILE)
