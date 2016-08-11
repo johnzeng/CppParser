@@ -134,7 +134,11 @@ depend:$(HEADERS) $(SOURCES) $(mylib_PATH)
 
 .PHONY:count,clean,test,macro,debuger,release,cov
 
+generated:
+	mkdir generated
 
 #we will begin a new project here, but we don't wanna rewrite some of the functions, so we just write it here
-lex: $(LEXFILE)
-	flex $(LEXFILE)
+lex: $(LEXFILE) generated
+	flex -o generated/lex.c $(LEXFILE) 
+	$(CC) generated/lex.c -ll -o generated/lex
+
