@@ -141,3 +141,6 @@ lex: $(LEXFILE) generated
 	flex -o generated/lex.c $(LEXFILE) 
 	$(CC) generated/lex.c -c -o generated/lex.o
 
+lexTest: lex
+	$(CC) generated/lex.o -ll -o ./a.out
+	cat testCase | ./a.out
