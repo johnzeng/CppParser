@@ -138,9 +138,9 @@ generated:
 
 #we will begin a new project here, but we don't wanna rewrite some of the functions, so we just write it here
 lex: $(LEXFILE) generated
-	flex -o generated/lex.c $(LEXFILE) 
-	$(CC) generated/lex.c -c -o generated/lex.o
+	flex -o generated/lex.cpp --header-file=generated/lex.h $(LEXFILE) 
+	$(CXX) generated/lex.cpp -c -o generated/lex.o
 
 lexTest: lex
-	$(CC) generated/lex.o -ll -o ./a.out
+	$(CXX) generated/lex.o -ll -o ./a.out
 	cat testCase | ./a.out

@@ -1,9 +1,15 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
+using namespace std;
 
+static string S_StrBuf = "";
 //how should I record string?
 %}
+
+%option c++
+%option noyywrap
 
 %x _line_comment_
 %x _block_comment_
@@ -24,7 +30,7 @@
 
 "\"" {BEGIN(_string_);}
 <_string_>"\\\""  {printf("\\\"");}
-<_string_>.*\\[\t ]*\n {}
+<_string_>.*\\[\t ]*\n {S_StrBuf += "1";}
 <_string_>"\"" {BEGIN(INITIAL);}
 
 "'" {BEGIN(_char_);}
@@ -38,66 +44,70 @@
 [1-9][0-9]+\.[0-9]+[d] {/*double*/}
 [1-9][0-9]+ {/*Decimal*/}
 
-"auto"|
-"int"|
-"float"|
-"double"|
-"if"|
-"else"|
-"switch"|
-"case"|
-"long"|
-"class"|
-"struct"|
-"char"|
-"const"|
-"while"|
-"do"|
-"public"|
-"private"|
-"protected"|
-"enum"|
-"union"|
-"typedef"|
-"static"|
-"inline"|
-"void"|
-"return"|
-"asm"|
-"catch"|
-"const_cast"|
-"continue"|
-"default"|
-"delete"|
-"dynamic_cast"|
-"explicit"|
-"extern"|
-"false"|
-"true"|
-"for"|
-"goto"|
-"mutable"|
-"operator"|
-"namespace"|
-"new"|
-"register"|
-"reinterpret_cast"|
-"short"|
-"signed"|
-"sizeof"|
-"static_cast"|
-"template"|
-"this"|
-"throw"|
-"try"|
-"typename"|
-"unsigned"|
-"virtual"|
-"volatile"|
-"wchar_t" {/*tokens*/}
 
-
-
+"auto" |
+"int" |
+"float" |
+"double" |
+"if" |
+"else" |
+"switch" |
+"case" |
+"long" |
+"class" |
+"struct" |
+"char" |
+"const" |
+"while" |
+"do" |
+"public" |
+"private" |
+"protected" |
+"enum" |
+"union" |
+"typedef" |
+"static" |
+"inline" |
+"void" |
+"return" |
+"asm" |
+"catch" |
+"const_cast" |
+"continue" |
+"default" |
+"delete" |
+"dynamic_cast" |
+"explicit" |
+"extern" |
+"false" |
+"true" |
+"for" |
+"goto" |
+"mutable" |
+"operator" |
+"namespace" |
+"new" |
+"register" |
+"reinterpret_cast" |
+"short" |
+"signed" |
+"sizeof" |
+"static_cast" |
+"template" |
+"this" |
+"throw" |
+"try" |
+"typename" |
+"unsigned" |
+"virtual" |
+"volatile" |
+"wchar_t" {/*tokens*/printf("[key]");}
 
 %%
-
+int main( int /* argc */, char** /* argv */ )
+{
+   FlexLexer* lexer = new yyFlexLexer;
+   while(lexer->yylex() != 0)
+       ;
+   return 0;
+}
