@@ -22,7 +22,8 @@ endif
 
 INCLUDE_FLAGS=-I./header -I$(mylib_PATH)/header
 OTHER_C_FLAGS=
-OTHER_CPP_FLAGS=--std=c++0x -ll
+OTHER_CPP_FLAGS=--std=c++0x
+LINK_FLAGS=-ll
 OTHER_FLAGS=${RELEASE_FLAG} $(PLATFORM_FLAG)
 
 TEST_FLAG=-isystem $(mylib_PATH)/test/include 

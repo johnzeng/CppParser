@@ -101,7 +101,7 @@ static string S_StrBuf = "";
 "unsigned" |
 "virtual" |
 "volatile" |
-"wchar_t" {/*tokens*/printf("[key]");}
+"wchar_t" {/*tokens*/printf("[key:%s]", yytext);}
 
 %%
 int main( int /* argc */, char** /* argv */ )
