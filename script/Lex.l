@@ -28,21 +28,32 @@ static string S_StrBuf = "";
 <_line_comment_>.*\\[\t ]*\n {}
 <_line_comment_>.*\n {BEGIN(INITIAL);}
 
-"\"" {BEGIN(_string_);}
-<_string_>"\\\""  {printf("\\\"");}
-<_string_>.*\\[\t ]*\n {S_StrBuf += "1";}
-<_string_>"\"" {BEGIN(INITIAL);}
+"\"" {BEGIN(_string_); S_StrBuf = "";}
+<_string_>"\\\""  {S_StrBuf += "\\\"";}
+<_string_>\\\s* {/*do nothing*/}
+<_string_>"\"" {
+  printf("[%s]\n", S_StrBuf.c_str());
+  /*save it here*/
+  S_StrBuf = "";
+  BEGIN(INITIAL);
+  }
+<_string_>. {S_StrBuf += yytext;}
 
-"'" {BEGIN(_char_);}
-<_char_>"\\'" {printf("\\'");}
-<_char_>.*\\[\t ]*\n {}
-<_char_>"'" {BEGIN(INITIAL);}
+"'" {BEGIN(_char_);S_StrBuf = "";}
+<_char_>"\\'" {S_StrBuf += "\\\"";}
+<_char_>\\\s* {}
+<_char_>"'" {
+  printf("[char:%s]\n", S_StrBuf.c_str());
+  BEGIN(INITIAL);
+  }
+<_char_>. {S_StrBuf += yytext;}
 
 0[1-7][0-7]+ {/*Octal*/}
 0x[1-9a-fA-F][0-9a-fA-F]+ {/*Hex*/}
 [1-9][0-9]+\.[0-9]+[f] {/*float*/}
 [1-9][0-9]+\.[0-9]+[d] {/*double*/}
 [1-9][0-9]+ {/*Decimal*/}
+
 
 "auto" |
 "int" |
@@ -150,9 +161,12 @@ static string S_StrBuf = "";
 "{" |
 ","   {/* return token*/}
 
+[a-zA-A][a-zA-A0-9_]* {/*normal word, we should check the define here*/}
+
 "\\"[\t ]*\n {/**/}
 
 %%
+
 int main( int /* argc */, char** /* argv */ )
 {
    FlexLexer* lexer = new yyFlexLexer;
