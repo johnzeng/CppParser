@@ -23,6 +23,7 @@ void LexPatternTable::insertPattern(const string input, const LexPatternHandler 
 
 LexPatternHandler LexPatternTable::getMacroPattern(const string& input)
 {
+
 	if (mStrPatternHandlerMap.find(input) != mStrPatternHandlerMap.end())
 	{
 		return mStrPatternHandlerMap[input];

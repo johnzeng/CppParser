@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include "grammar.hpp"
 using namespace std;
 
 static string S_StrBuf = "";
@@ -36,6 +37,7 @@ static string S_StrBuf = "";
   /*save it here*/
   S_StrBuf = "";
   BEGIN(INITIAL);
+  return STRING;
   }
 <_string_>. {S_StrBuf += yytext;}
 
@@ -163,7 +165,7 @@ static string S_StrBuf = "";
 
 [a-zA-A][a-zA-A0-9_]* {/*normal word, we should check the define here*/}
 
-"\\"[\t ]*\n {/**/}
+"\\"\s* {/**/}
 
 %%
 

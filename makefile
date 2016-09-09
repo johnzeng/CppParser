@@ -36,6 +36,7 @@ TEST_LIB=target/libtest.a
 
 SOURCES=$(shell find ./src -type f -name '*.cpp') $(shell find ./src -type f -name '*.c')
 LEXFILE=$(shell find ./script -type f -name '*.l')
+GRAMFILE=$(shell find ./script -type f -name '*.y')
 BASIONFILE=$(shell find ./script -type f -name '*.yacc')
 
 OBJS=$(patsubst %.c, %.o,$(patsubst %.cpp,%.o,$(SOURCES)))
@@ -138,9 +139,10 @@ generated:
 	mkdir generated
 
 #we will begin a new project here, but we don't wanna rewrite some of the functions, so we just write it here
-lex: $(LEXFILE) generated
+lex: $(LEXFILE) generated $(GRAMFILE)
+	bison -o generated/grammar.cpp -d $(GRAMFILE) 
 	flex -o generated/lex.cpp --header-file=generated/lex.h $(LEXFILE) 
-	$(CXX) generated/lex.cpp -c -o generated/lex.o
+	$(CXX) generated/lex.cpp -c -o generated/lex.o -I./generated
 
 lexTest: lex
 	$(CXX) generated/lex.o -ll -o ./a.out
